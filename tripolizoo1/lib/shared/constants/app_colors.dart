@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 /// Central color palette for Tripoli Zoo.
 abstract final class AppColors {
-  static const Color primary = Color(0xFF0B5913);
-  static const Color primaryDark = Color(0xFF0F3D24);
-  static const Color primaryLight = Color(0xFF14532D);
+  static const Color primary = Color(0xFF2E7D32);
+  static const Color primaryDark = Color(0xFF1B5E20);
+  static const Color primaryLight = Color(0xFF4CAF50);
   static const Color accent = Color(0xFFF57C00);
   static const Color accentLight = Color(0xFFFF9800);
   static const Color emerald = Color(0xFF10B981);
@@ -18,7 +18,7 @@ abstract final class AppColors {
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF0B5913), Color(0xFF14532D), Color(0xFF0F3D24)],
+    colors: [Color(0xFF2E7D32), Color(0xFF4CAF50), Color(0xFF1B5E20)],
   );
 
   static const LinearGradient accentGradient = LinearGradient(

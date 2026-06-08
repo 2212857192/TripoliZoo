@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:tripolizoo/shared/constants/app_colors.dart';
 import 'package:tripolizoo/shared/constants/app_constants.dart';
 import 'package:tripolizoo/features/visitor/visitor_auth/presentation/auth_provider.dart';
 import 'package:tripolizoo/shared/widgets/app_text_field.dart';
@@ -56,6 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return AuthLayout(
       title: 'تسجيل الدخول',
+      subtitle: 'مرحباً بك في ${AppConstants.appName}',
+      heroTag: 'SIGN IN',
       child: Form(
         key: _formKey,
         child: Column(
@@ -67,18 +71,19 @@ class _LoginScreenState extends State<LoginScreen> {
               hint: 'example@gmail.com',
               icon: Icons.email_outlined,
               keyboardType: TextInputType.emailAddress,
+              textAlign: TextAlign.left,
               validator: (v) {
                 if (v == null || v.isEmpty) return 'أدخل البريد الإلكتروني';
                 if (!v.contains('@')) return 'بريد غير صالح';
                 return null;
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
             AppTextField(
               controller: _passwordController,
               label: 'كلمة المرور',
               hint: '••••••••',
-              icon: Icons.lock_outline,
+              icon: Icons.lock_outline_rounded,
               obscureText: _obscurePassword,
               onToggleVisibility: () =>
                   setState(() => _obscurePassword = !_obscurePassword),
@@ -89,36 +94,85 @@ class _LoginScreenState extends State<LoginScreen> {
                 return null;
               },
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 4),
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: TextButton(
                 onPressed: () => context.push('/forgot-password'),
-                child: const Text('هل نسيت كلمة المرور؟'),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  'هل نسيت كلمة المرور؟',
+                  style: GoogleFonts.cairo(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primary,
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             PrimaryButton(
               label: 'تسجيل الدخول',
               isLoading: auth.isLoading,
               onPressed: _login,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TextButton(
-                  onPressed: () => context.push('/register'),
-                  child: const Text('إنشاء حساب'),
+                Expanded(child: Divider(color: Colors.grey.shade200)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Text(
+                    'أو',
+                    style: GoogleFonts.cairo(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
                 ),
-                const Text('مستخدم جديد؟', style: TextStyle(color: Colors.grey)),
+                Expanded(child: Divider(color: Colors.grey.shade200)),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             PrimaryButton(
               label: 'دخول كزائر',
               outlined: true,
               onPressed: auth.isLoading ? null : _guestLogin,
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'مستخدم جديد؟',
+                  style: GoogleFonts.cairo(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => context.push('/register'),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    'إنشاء حساب',
+                    style: GoogleFonts.cairo(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

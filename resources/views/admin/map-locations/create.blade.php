@@ -1,4 +1,4 @@
-@extends('admin.layout')
+@extends($__layout ?? 'admin.layout')
 @section('title', 'إضافة موقع جديد على الخريطة | Tripoli Zoo')
 @section('page_title', 'إدارة مواقع الخريطة')
 

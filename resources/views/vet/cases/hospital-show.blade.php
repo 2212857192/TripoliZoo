@@ -1,4 +1,4 @@
-@extends('vet.layout')
+@extends($__layout ?? 'vet.layout')
 @section('title', 'تفاصيل حالة المستشفى | Tripoli Zoo')
 @section('page_title', 'تفاصيل حالة المستشفى')
 

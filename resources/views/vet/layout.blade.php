@@ -449,11 +449,6 @@
                 <span class="nav-item-text">الرئيسية</span>
             </a>
 
-            <a href="/vet/quarantine" class="nav-item {{ request()->is('vet/quarantine*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                <span class="nav-item-text">الحجر الصحي</span>
-            </a>
-
             <!-- Dropdown Cases -->
             <div class="nav-dropdown {{ request()->is('vet/cases*') ? 'open' : '' }}">
                 <button class="nav-item dropdown-toggle" onclick="toggleDropdown(this)">
@@ -462,16 +457,21 @@
                     <svg class="arrow-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
                 <div class="dropdown-menu" style="{{ request()->is('vet/cases*') ? 'display: flex;' : 'display: none;' }}">
-                    <a href="/vet/cases/hospital" class="nav-item {{ request()->is('vet/cases/hospital*') ? 'active' : '' }}">
-                        <span style="font-size: 0.8rem; color: #64748b;">•</span>
-                        <span class="nav-item-text">داخل المستشفى</span>
-                    </a>
                     <a href="/vet/cases/field" class="nav-item {{ request()->is('vet/cases/field*') ? 'active' : '' }}">
                         <span style="font-size: 0.8rem; color: #64748b;">•</span>
                         <span class="nav-item-text">الميدانية الطبية</span>
                     </a>
+                    <a href="/vet/cases/hospital" class="nav-item {{ request()->is('vet/cases/hospital*') ? 'active' : '' }}">
+                        <span style="font-size: 0.8rem; color: #64748b;">•</span>
+                        <span class="nav-item-text">داخل المستشفى</span>
+                    </a>
                 </div>
             </div>
+
+            <a href="/vet/quarantine" class="nav-item {{ request()->is('vet/quarantine*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <span class="nav-item-text">الحجر الصحي</span>
+            </a>
 
             <!-- Dropdown Referrals -->
             <div class="nav-dropdown {{ request()->is('vet/referrals*') ? 'open' : '' }}">

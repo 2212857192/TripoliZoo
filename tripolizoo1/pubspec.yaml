@@ -32,6 +32,9 @@ flutter:
 
   assets:
     - assets/images/background.jpg
+    - assets/images/main.PNG
+    - assets/images/map_nav_icon.png
+    - assets/images/zoo_map.png
     - assets/images/شعار.jpg
     - assets/images/image1.png
     - assets/images/image2.png
@@ -42,3 +45,4 @@ flutter:
     - assets/images/tiger.jpg
     - assets/images/flamengo.jpg
     - assets/images/panorama/
+    - assets/images/panorama/marked/

@@ -65,6 +65,13 @@ class _TripoliZooAppState extends State<TripoliZooApp> {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
+            builder: (context, child) {
+              final isRtl = localeProvider.locale == AppLocale.ar;
+              return Directionality(
+                textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+                child: child ?? const SizedBox.shrink(),
+              );
+            },
           );
         },
       ),

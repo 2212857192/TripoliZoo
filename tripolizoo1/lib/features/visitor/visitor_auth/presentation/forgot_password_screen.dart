@@ -43,6 +43,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     return AuthLayout(
       title: 'نسيت كلمة المرور',
+      heroTag: 'RECOVERY',
       showBackButton: true,
       child: Form(
         key: _formKey,

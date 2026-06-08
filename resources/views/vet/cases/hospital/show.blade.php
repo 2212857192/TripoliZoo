@@ -1,4 +1,4 @@
-@extends('vet.layout')
+@extends($__layout ?? 'vet.layout')
 @section('title', 'HC-2025-001 — تفاصيل الحالة | المستشفى البيطري')
 @section('page_title', 'HC-2025-001 — تفاصيل الحالة')
 

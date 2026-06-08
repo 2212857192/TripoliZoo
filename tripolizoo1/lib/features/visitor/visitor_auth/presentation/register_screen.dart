@@ -59,6 +59,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     return AuthLayout(
       title: 'إنشاء حساب',
+      heroTag: 'REGISTER',
       showBackButton: true,
       child: Form(
         key: _formKey,

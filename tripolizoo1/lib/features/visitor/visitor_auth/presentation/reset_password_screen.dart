@@ -54,6 +54,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
     return AuthLayout(
       title: 'كلمة مرور جديدة',
+      heroTag: 'RESET',
       child: Form(
         key: _formKey,
         child: Column(

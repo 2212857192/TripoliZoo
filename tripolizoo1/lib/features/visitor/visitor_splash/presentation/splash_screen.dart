@@ -80,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen>
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: AppColors.accent.withValues(alpha: 0.6),
+                            color: AppColors.primaryLight.withValues(alpha: 0.7),
                             width: 3,
                           ),
                         ),
@@ -147,11 +147,11 @@ class PrimarySplashButton extends StatelessWidget {
         width: double.infinity,
         height: 58,
         decoration: BoxDecoration(
-          gradient: AppColors.accentGradient,
+          gradient: AppColors.primaryGradient,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: AppColors.accent.withValues(alpha: 0.45),
+              color: AppColors.primary.withValues(alpha: 0.4),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -169,7 +169,7 @@ class PrimarySplashButton extends StatelessWidget {
               ),
             ),
             SizedBox(width: 8),
-            Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+            Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 16),
           ],
         ),
       ),

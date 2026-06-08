@@ -1,4 +1,4 @@
-@extends('admin.layout')
+@extends($__layout ?? 'admin.layout')
 @section('title', 'إدارة التذاكر | Tripoli Zoo')
 @section('page_title', 'إدارة التذاكر والمبيعات')
 

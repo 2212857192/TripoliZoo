@@ -43,6 +43,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
     return AuthLayout(
       title: 'رمز التحقق',
+      heroTag: 'VERIFY',
       showBackButton: true,
       child: Form(
         key: _formKey,

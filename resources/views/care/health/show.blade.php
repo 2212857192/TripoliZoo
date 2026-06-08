@@ -1,4 +1,4 @@
-@extends('care.layout')
+@extends($__layout ?? 'care.layout')
 @section('title', 'تفاصيل حالة صحية | الرعاية والتغذية')
 @section('page_title', 'تفاصيل حالة صحية')
 

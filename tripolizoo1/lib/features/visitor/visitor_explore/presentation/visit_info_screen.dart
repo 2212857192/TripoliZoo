@@ -20,39 +20,47 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 220,
-            pinned: true,
-            backgroundColor: AppColors.primaryDark,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-              onPressed: () => context.pop(),
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              title: const Text('معلومات الزيارة',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              background: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image.asset('assets/images/Hello2.jpg', fit: BoxFit.cover),
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          AppColors.primaryDark.withValues(alpha: 0.8),
-                        ],
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 220,
+              pinned: true,
+              backgroundColor: AppColors.primaryDark,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 20),
+                onPressed: () => context.pop(),
+              ),
+              flexibleSpace: FlexibleSpaceBar(
+                title: const Text(
+                  'معلومات الزيارة',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
+                ),
+                background: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset('assets/images/Hello2.jpg', fit: BoxFit.cover),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            AppColors.primaryDark.withValues(alpha: 0.8),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
           SliverPadding(
             padding: const EdgeInsets.all(20),
             sliver: SliverList(
@@ -86,69 +94,76 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          Row(
+                            children: [
+                              Icon(t.icon, color: AppColors.primary, size: 20),
+                              const SizedBox(width: 10),
+                              Text(t.categoryLabel,
+                                  style: const TextStyle(fontWeight: FontWeight.w600)),
+                            ],
+                          ),
                           Text('${t.price} د.ل',
                               style: const TextStyle(
                                   fontWeight: FontWeight.w900,
                                   color: AppColors.accent,
                                   fontSize: 16)),
-                          Row(
-                            children: [
-                              Text(t.categoryLabel,
-                                  style: const TextStyle(fontWeight: FontWeight.w600)),
-                              const SizedBox(width: 10),
-                              Icon(t.icon, color: AppColors.primary, size: 20),
-                            ],
-                          ),
                         ],
                       ),
                     )).toList(),
                   ),
                 ),
                 const SizedBox(height: 20),
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF071912), Color(0xFF0F3D24)],
+                GestureDetector(
+                  onTap: () => context.go('/tickets'),
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF1B5E20), Color(0xFF2E7D32)],
+                      ),
+                      borderRadius: BorderRadius.circular(24),
                     ),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text('شراء تذكرة إلكترونية',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16)),
-                          SizedBox(width: 10),
-                          Icon(Icons.qr_code_2, color: AppColors.emerald),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'اصدر تذكرتك مباشرة وادخل عبر QR Code',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.7),
-                            fontSize: 13),
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () => context.go('/tickets'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.emerald,
-                            foregroundColor: Colors.white,
-                          ),
-                          child: const Text('شراء تذكرة الآن'),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text('شراء تذكرة إلكترونية',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16)),
+                            SizedBox(width: 10),
+                            Icon(Icons.qr_code_2, color: Colors.white),
+                          ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 10),
+                        Text(
+                          'اصدر تذكرتك مباشرة وادخل عبر QR Code',
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.7),
+                              fontSize: 13),
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => context.go('/tickets'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: AppColors.primary,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text('شراء تذكرة الآن', style: TextStyle(fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -183,8 +198,9 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                 const SizedBox(height: 40),
               ]),
             ),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -241,15 +257,15 @@ class _SectionCard extends StatelessWidget {
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (trailing != null) trailing!,
               Text(title,
                   style: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold)),
+              if (trailing != null) trailing!,
             ],
           ),
           const SizedBox(height: 16),
@@ -327,7 +343,7 @@ class _InfoBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
               style: const TextStyle(

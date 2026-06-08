@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/domain/animal.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/data/animal_repository.dart';
 
 // ─────────────────────────────────────────────
-//  Category model with icon + colour
+//  Category model
 // ─────────────────────────────────────────────
 class _Category {
   final String id;
   final String label;
   final IconData icon;
-  final Color color;
-  const _Category(this.id, this.label, this.icon, this.color);
+  const _Category(this.id, this.label, this.icon);
 }
 
 const _categories = [
-  _Category('all',       'الكل',      Icons.pets,                  Color(0xFF0F3D24)),
-  _Category('predators', 'مفترسات',   Icons.crisis_alert_rounded,  Color(0xFFB71C1C)),
-  _Category('mammals',   'ثدييات',    Icons.nature_people_rounded,  Color(0xFF4527A0)),
-  _Category('birds',     'طيور',      Icons.flutter_dash,           Color(0xFF01579B)),
+  _Category('all',       'الكل',      Icons.apps_rounded),
+  _Category('predators', 'مفترسات',   Icons.crisis_alert_rounded),
+  _Category('birds',     'طيور',      Icons.flutter_dash),
+  _Category('mammals',   'ثدييات',    Icons.nature_people_rounded),
 ];
 
 // ─────────────────────────────────────────────
@@ -40,6 +40,7 @@ class _AnimalsExploreScreenState extends State<AnimalsExploreScreen>
   String _category = 'all';
   String _search = '';
   bool _loading = true;
+  final _searchCtrl = TextEditingController();
 
   late final AnimationController _fadeCtrl = AnimationController(
     vsync: this,
@@ -59,6 +60,7 @@ class _AnimalsExploreScreenState extends State<AnimalsExploreScreen>
   @override
   void dispose() {
     _fadeCtrl.dispose();
+    _searchCtrl.dispose();
     super.dispose();
   }
 
@@ -80,62 +82,128 @@ class _AnimalsExploreScreenState extends State<AnimalsExploreScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF0F4F2),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0F3D24),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-          onPressed: () => context.pop(),
-        ),
-        title: const Text(
-          'مستكشف الحيوانات',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        centerTitle: true,
-      ),
-      body: _loading
-          ? const _LoadingView()
-          : FadeTransition(
-              opacity: _fadeAnim,
-              child: CustomScrollView(
-                slivers: [
-                  _buildSearchBar(),
-                  _buildCategoryRow(),
-                  _buildGrid(),
-                ],
-              ),
+    final topPad = MediaQuery.of(context).padding.top;
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Column(
+          children: [
+            _buildHeader(topPad),
+            Expanded(
+              child: _loading
+                  ? const _LoadingView()
+                  : FadeTransition(
+                      opacity: _fadeAnim,
+                      child: CustomScrollView(
+                        slivers: [
+                          _buildSearchBar(),
+                          _buildCategoryRow(),
+                          _buildStaggeredGrid(),
+                          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                        ],
+                      ),
+                    ),
             ),
+          ],
+        ),
+      ),
     );
   }
 
-  // ── Search bar ────────────────────────────────────
-  Widget _buildSearchBar() {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+  // ── Header — نفس أسلوب التذاكر / حسابي ─────────────
+  Widget _buildHeader(double topPad) {
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.fromLTRB(20, topPad + 16, 20, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'EXPLORE',
+                    style: GoogleFonts.cairo(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade500,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  Text(
+                    'اكتشف الحيوانات',
+                    style: GoogleFonts.amiri(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1A1A1A),
+                      height: 1.15,
+                    ),
+                  ),
+                ],
+              ),
+              GestureDetector(
+                onTap: () => context.pop(),
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 16,
+                    color: Colors.black87,
+                  ),
+                ),
               ),
             ],
           ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  // ── Search bar ─────────────────────────────────────
+  Widget _buildSearchBar() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(50),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
           child: TextField(
+            controller: _searchCtrl,
             textAlign: TextAlign.right,
+            textDirection: TextDirection.rtl,
             onChanged: (v) => setState(() => _search = v),
+            style: GoogleFonts.cairo(fontSize: 14, color: const Color(0xFF1A1A1A)),
             decoration: InputDecoration(
-              hintText: 'ابحث عن حيوان...',
-              hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-              prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1B6B35)),
+              hintText: 'ابحث عن نوع...',
+              hintStyle: GoogleFonts.cairo(
+                color: Colors.grey.shade400,
+                fontSize: 14,
+              ),
+              prefixIcon: Icon(Icons.search_rounded, color: Colors.grey.shade400),
+              suffixIcon: _search.isNotEmpty
+                  ? IconButton(
+                      icon: Icon(Icons.clear_rounded, color: Colors.grey.shade400, size: 18),
+                      onPressed: () {
+                        _searchCtrl.clear();
+                        setState(() => _search = '');
+                      },
+                    )
+                  : null,
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             ),
           ),
         ),
@@ -143,14 +211,15 @@ class _AnimalsExploreScreenState extends State<AnimalsExploreScreen>
     );
   }
 
-  // ── Category chips ────────────────────────────────
+  // ── Category chips (RTL, scrollable) ───────────────
   Widget _buildCategoryRow() {
     return SliverToBoxAdapter(
       child: SizedBox(
-        height: 64,
+        height: 56,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          reverse: true,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           itemCount: _categories.length,
           itemBuilder: (_, i) {
             final cat = _categories[i];
@@ -160,35 +229,42 @@ class _AnimalsExploreScreenState extends State<AnimalsExploreScreen>
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 220),
                 curve: Curves.easeInOut,
-                margin: const EdgeInsets.only(left: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                margin: const EdgeInsets.only(right: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 decoration: BoxDecoration(
-                  color: active ? cat.color : Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: active
-                          ? cat.color.withValues(alpha: 0.35)
-                          : Colors.black.withValues(alpha: 0.04),
-                      blurRadius: active ? 10 : 4,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
+                  color: active ? AppColors.primary : Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(50),
+                  border: Border.all(
+                    color: active ? AppColors.primary : Colors.grey.shade200,
+                    width: 1.5,
+                  ),
+                  boxShadow: active
+                      ? [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.28),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]
+                      : [],
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       cat.label,
-                      style: TextStyle(
-                        color: active ? Colors.white : Colors.grey.shade600,
-                        fontWeight: FontWeight.bold,
+                      style: GoogleFonts.cairo(
+                        color: active ? Colors.white : Colors.grey.shade700,
+                        fontWeight: FontWeight.w700,
                         fontSize: 13,
                       ),
                     ),
                     const SizedBox(width: 6),
-                    Icon(cat.icon, size: 16,
-                        color: active ? Colors.white : Colors.grey.shade500),
+                    Icon(
+                      cat.icon,
+                      size: 15,
+                      color: active ? Colors.white : Colors.grey.shade500,
+                    ),
                   ],
                 ),
               ),
@@ -199,37 +275,71 @@ class _AnimalsExploreScreenState extends State<AnimalsExploreScreen>
     );
   }
 
-  // ── Animal grid ───────────────────────────────────
-  Widget _buildGrid() {
+  // ── Staggered masonry grid ──────────────────────────
+  Widget _buildStaggeredGrid() {
     final items = _filtered;
     if (items.isEmpty) {
       return const SliverFillRemaining(child: _EmptyState());
     }
-    return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-      sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 14,
-          crossAxisSpacing: 14,
-          childAspectRatio: 0.72,
-        ),
-        delegate: SliverChildBuilderDelegate(
-          (ctx, i) => _AnimalCard(animal: items[i], index: i),
-          childCount: items.length,
-        ),
+
+    // Group into chunks of 3: 1 tall (left) + 2 short stacked (right)
+    final groups = <List<Animal>>[];
+    for (int i = 0; i < items.length; i += 3) {
+      final end = (i + 3) > items.length ? items.length : i + 3;
+      groups.add(items.sublist(i, end));
+    }
+
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (ctx, i) {
+          final group  = groups[i];
+          final tall   = group[0];
+          final short1 = group.length > 1 ? group[1] : null;
+          final short2 = group.length > 2 ? group[2] : null;
+
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Tall card (left column ~55%)
+                Expanded(
+                  flex: 55,
+                  child: _AnimalCard(animal: tall, height: 362),
+                ),
+                const SizedBox(width: 12),
+                // Two short cards stacked (right column ~45%)
+                Expanded(
+                  flex: 45,
+                  child: Column(
+                    children: [
+                      if (short1 != null)
+                        _AnimalCard(animal: short1, height: 175),
+                      if (short1 != null && short2 != null)
+                        const SizedBox(height: 12),
+                      if (short2 != null)
+                        _AnimalCard(animal: short2, height: 175),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+        childCount: groups.length,
+        addAutomaticKeepAlives: false,
       ),
     );
   }
 }
 
 // ─────────────────────────────────────────────
-//  Animal card
+//  Animal card — Discover style
 // ─────────────────────────────────────────────
 class _AnimalCard extends StatefulWidget {
   final Animal animal;
-  final int index;
-  const _AnimalCard({required this.animal, required this.index});
+  final double height;
+  const _AnimalCard({required this.animal, required this.height});
 
   @override
   State<_AnimalCard> createState() => _AnimalCardState();
@@ -243,35 +353,30 @@ class _AnimalCardState extends State<_AnimalCard>
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 180));
-    _scaleAnim = Tween<double>(begin: 1, end: 0.96)
+    _ctrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 150));
+    _scaleAnim = Tween<double>(begin: 1, end: 0.97)
         .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
-
-  // Category accent colour
-  Color get _accentColor {
-    switch (widget.animal.category) {
-      case 'predators': return const Color(0xFFB71C1C);
-      case 'birds':     return const Color(0xFF01579B);
-      case 'mammals':   return const Color(0xFF4527A0);
-      default:          return const Color(0xFF0F3D24);
-    }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
   }
 
-  String get _categoryLabel {
+  String get _categoryArabic {
     switch (widget.animal.category) {
-      case 'predators': return 'مفترس';
-      case 'birds':     return 'طائر';
-      case 'mammals':   return 'ثديي';
+      case 'predators': return 'مفترسات';
+      case 'birds':     return 'طيور';
+      case 'mammals':   return 'ثدييات';
       default:          return '';
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isTall = widget.height > 250;
     return ScaleTransition(
       scale: _scaleAnim,
       child: GestureDetector(
@@ -285,115 +390,78 @@ class _AnimalCardState extends State<_AnimalCard>
                 opacity: anim,
                 child: AnimalDetailScreen(animal: widget.animal),
               ),
-              transitionDuration: const Duration(milliseconds: 400),
+              transitionDuration: const Duration(milliseconds: 380),
             ),
           );
         },
         onTapCancel: () => _ctrl.reverse(),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.12),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
+        child: SizedBox(
+          height: widget.height,
           child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  // Animal image
-                  Image.asset(
-                    widget.animal.image,
-                    fit: BoxFit.cover,
-                    cacheWidth: 400,
-                    errorBuilder: (_, __, ___) => Container(
-                      color: const Color(0xFF1B3A2A),
-                      child: const Icon(Icons.pets, color: Colors.white30, size: 48),
-                    ),
+            borderRadius: BorderRadius.circular(22),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // ── Animal image
+                Image.asset(
+                  widget.animal.image,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    color: const Color(0xFF1B3A2A),
+                    child: const Icon(Icons.pets, color: Colors.white24, size: 48),
                   ),
+                ),
 
-                  // Gradient overlay
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        stops: const [0.3, 1.0],
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withValues(alpha: 0.82),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Category badge (top left)
-                  Positioned(
-                    top: 12,
-                    left: 12,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: _accentColor,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        _categoryLabel,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Name + location (bottom)
-                  Positioned(
-                    left: 12,
-                    right: 12,
-                    bottom: 14,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          widget.animal.name,
-                          textAlign: TextAlign.right,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            shadows: [Shadow(blurRadius: 6, color: Colors.black45)],
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              widget.animal.location,
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.75),
-                                fontSize: 11,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            const Icon(Icons.location_on_rounded,
-                                color: Color(0xFF4CAF50), size: 13),
-                          ],
-                        ),
+                // ── Dark gradient overlay at bottom
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      stops: const [0.35, 1.0],
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.80),
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+
+                // ── Bottom text: category label + animal name
+                Positioned(
+                  left: 12,
+                  right: 12,
+                  bottom: 14,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (_categoryArabic.isNotEmpty)
+                        Text(
+                          _categoryArabic,
+                          style: GoogleFonts.cairo(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white.withValues(alpha: 0.72),
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      const SizedBox(height: 2),
+                      Text(
+                        widget.animal.name,
+                        style: GoogleFonts.cairo(
+                          fontSize: isTall ? 17 : 13,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          height: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
+          ),
         ),
       ),
     );
@@ -412,7 +480,7 @@ class AnimalDetailScreen extends StatelessWidget {
       case 'predators': return const Color(0xFFB71C1C);
       case 'birds':     return const Color(0xFF01579B);
       case 'mammals':   return const Color(0xFF4527A0);
-      default:          return const Color(0xFF0F3D24);
+      default:          return AppColors.primary;
     }
   }
 
@@ -565,7 +633,7 @@ class AnimalDetailScreen extends StatelessWidget {
                       icon: const Icon(Icons.location_on_rounded),
                       label: const Text('عرض موقعه على الخريطة'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0F3D24),
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -593,8 +661,6 @@ class AnimalDetailScreen extends StatelessWidget {
 class _StatsCard extends StatelessWidget {
   final Map<String, String> stats;
   const _StatsCard({required this.stats});
-
-  static const _green = Color(0xFF0F3D24);
 
   IconData _iconFor(String label) {
     if (label.contains('عمر') || label.contains('سنة')) return Icons.cake_rounded;
@@ -638,7 +704,7 @@ class _StatItem extends StatelessWidget {
   final IconData icon;
   const _StatItem({required this.label, required this.value, required this.icon});
 
-  static const _green = Color(0xFF0F3D24);
+  static const _green = AppColors.primary;
 
   @override
   Widget build(BuildContext context) {
@@ -674,7 +740,7 @@ class _InfoSection extends StatelessWidget {
   final IconData icon;
   const _InfoSection({required this.title, required this.body, required this.icon});
 
-  static const _green = Color(0xFF0F3D24);
+  static const _green = AppColors.primary;
 
   @override
   Widget build(BuildContext context) {
@@ -724,7 +790,7 @@ class _SectionTitle extends StatelessWidget {
   final IconData icon;
   const _SectionTitle({required this.title, required this.icon});
 
-  static const _green = Color(0xFF0F3D24);
+  static const _green = AppColors.primary;
 
   @override
   Widget build(BuildContext context) {
@@ -773,11 +839,11 @@ class _FactTile extends StatelessWidget {
             width: 26,
             height: 26,
             decoration: const BoxDecoration(
-              color: Color(0xFF0F3D24),
+              color: AppColors.primary,
               shape: BoxShape.circle,
             ),
-            child: Center(
-              child: const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
+            child: const Center(
+              child: Icon(Icons.star_rounded, color: Colors.amber, size: 14),
             ),
           ),
         ],
@@ -799,7 +865,7 @@ class _LoadingView extends StatelessWidget {
         children: [
           CircularProgressIndicator(color: Color(0xFF1B6B35), strokeWidth: 3),
           SizedBox(height: 16),
-          Text('جاري تحميل الحيوانات...', style: TextStyle(color: Colors.grey)),
+          Text('جاري التحميل...', style: TextStyle(color: Colors.grey)),
         ],
       ),
     );

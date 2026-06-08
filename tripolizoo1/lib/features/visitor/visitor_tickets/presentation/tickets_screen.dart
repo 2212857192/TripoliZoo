@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:tripolizoo/shared/constants/app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tripolizoo/shared/constants/app_constants.dart';
 import 'package:tripolizoo/shared/constants/ticket_data.dart';
 import 'package:tripolizoo/features/visitor/visitor_tickets/presentation/ticket_cart_provider.dart';
@@ -19,10 +19,18 @@ class TicketsScreen extends StatefulWidget {
 class _TicketsScreenState extends State<TicketsScreen> {
   int _step = 0;
 
-  void _goToConfirm() {
-    setState(() => _step = 1);
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final cart = context.read<TicketCartProvider>();
+      if (cart.purchasedTickets.isNotEmpty) {
+        setState(() => _step = 1);
+      }
+    });
   }
 
+  void _goToConfirm() => setState(() => _step = 1);
   void _goBack() {
     if (_step == 1) {
       setState(() => _step = 0);
@@ -34,25 +42,14 @@ class _TicketsScreenState extends State<TicketsScreen> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
+      value: SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF4F7F5), // Very light pleasant background
-        appBar: AppBar(
-          backgroundColor: const Color(0xFF0F3D24), // Rich dark green to avoid dullness
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-            onPressed: _goBack,
-          ),
-          title: Text(
-            _step == 0 ? 'حجز التذاكر' : 'التذكرة الإلكترونية',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          centerTitle: true,
-        ),
+        backgroundColor: Colors.white,
         body: AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
-          child: _step == 0 ? _SelectionView(onPurchase: _goToConfirm) : const _TicketView(),
+          child: _step == 0
+              ? _SelectionView(onPurchase: _goToConfirm, onBack: _goBack)
+              : _TicketView(onBack: _goBack),
         ),
       ),
     );
@@ -60,98 +57,262 @@ class _TicketsScreenState extends State<TicketsScreen> {
 }
 
 // ══════════════════════════════
-// STEP 1 — Clean Colored Selection
+// STEP 1 — Selection View
 // ══════════════════════════════
-class _SelectionView extends StatelessWidget {
+class _SelectionView extends StatefulWidget {
   final VoidCallback onPurchase;
-  const _SelectionView({required this.onPurchase});
+  final VoidCallback onBack;
+  const _SelectionView({required this.onPurchase, required this.onBack});
+
+  @override
+  State<_SelectionView> createState() => _SelectionViewState();
+}
+
+class _SelectionViewState extends State<_SelectionView> {
+  int _tab = 0; // 0 = Citizens, 1 = Foreigners
+
+  static const _green = Color(0xFF2E7D32);
+  static const _lightGreen = Color(0xFFE8F5E9);
+  static const _bg = Colors.white;
 
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<TicketCartProvider>();
+    final topPad = MediaQuery.of(context).padding.top;
+    final bottomPad = MediaQuery.of(context).padding.bottom;
+    final tickets = _tab == 0 ? TicketData.local : TicketData.foreign;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(20),
+        // ── Header ──
+        Container(
+          color: _bg,
+          padding: EdgeInsets.fromLTRB(20, topPad + 16, 20, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Date Card
-              _CompactDateCard(cart: cart),
-              const SizedBox(height: 24),
-
-              const Text(
-                'تذاكر المواطنين',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F3D24)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'زيارة',
+                        style: GoogleFonts.cairo(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                      Text(
+                        'التذاكر',
+                        style: GoogleFonts.cairo(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF1A1A1A),
+                          height: 1.1,
+                        ),
+                      ),
+                    ],
+                  ),
+                  GestureDetector(
+                    onTap: widget.onBack,
+                    child: Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.black87),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              ...TicketData.local.map((t) => _CleanTicketCard(type: t)),
-              const SizedBox(height: 24),
-
-              const Text(
-                'تذاكر الأجانب',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F3D24)),
-              ),
-              const SizedBox(height: 12),
-              ...TicketData.foreign.map((t) => _CleanTicketCard(type: t)),
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
             ],
           ),
         ),
 
-        // Bottom Action Bar
+        // ── Body ──
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, bottomPad + 100),
+            children: [
+
+              // ── Tabs ──
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _TabBtn(
+                        label: 'المواطنون',
+                        active: _tab == 0,
+                        onTap: () => setState(() => _tab = 0),
+                      ),
+                    ),
+                    Expanded(
+                      child: _TabBtn(
+                        label: 'الأجانب',
+                        active: _tab == 1,
+                        isRight: true,
+                        onTap: () => setState(() => _tab = 1),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // ── Ticket rows ──
+              ...tickets.map((t) => _TicketRow(type: t)),
+
+              const SizedBox(height: 24),
+
+              // ── Free admission ──
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'دخول مجاني',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.grey.shade500,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF0F7E8),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.favorite_outline_rounded, color: _green, size: 16),
+                        const SizedBox(width: 8),
+                        Text(
+                          'مجاني دائماً',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: _green,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _FreePill(icon: Icons.child_care_rounded, label: 'أطفال أقل من 3'),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _FreePill(icon: Icons.accessible_rounded, label: 'ذوو الإعاقة'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        // ── Bottom Bar ──
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: EdgeInsets.fromLTRB(24, 16, 24, bottomPad + 16),
           decoration: BoxDecoration(
             color: Colors.white,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, -2),
+                blurRadius: 16,
+                offset: const Offset(0, -4),
               ),
             ],
           ),
-          child: SafeArea(
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'الإجمالي',
+                    style: GoogleFonts.cairo(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                  Text(
+                    '${cart.totalVisitors} تذكرة',
+                    style: GoogleFonts.cairo(
+                      fontSize: 14,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${cart.totalPrice.toStringAsFixed(0)} د.ل',
+                    style: GoogleFonts.cairo(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1A1A1A),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: cart.totalPrice > 0
+                      ? () {
+                          context.read<TicketCartProvider>().purchase();
+                          widget.onPurchase();
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2E7D32),
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.grey.shade200,
+                    disabledForegroundColor: Colors.grey.shade400,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    elevation: 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('الإجمالي', style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.bold)),
+                      const Icon(Icons.confirmation_number_rounded, size: 20),
+                      const SizedBox(width: 8),
                       Text(
-                        '${cart.totalPrice.toInt()} د.ل',
-                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF0F3D24)),
+                        'احجز تذكرتك الآن',
+                        style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                 ),
-                Expanded(
-                  flex: 2,
-                  child: ElevatedButton(
-                    onPressed: cart.totalPrice > 0
-                        ? () {
-                            context.read<TicketCartProvider>().purchase();
-                            onPurchase();
-                          }
-                        : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1B8A2A),
-                      foregroundColor: Colors.white,
-                      disabledBackgroundColor: Colors.grey.shade300,
-                      disabledForegroundColor: Colors.grey.shade500,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      elevation: 0,
-                    ),
-                    child: const Text('تأكيد الحجز', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ],
@@ -159,61 +320,33 @@ class _SelectionView extends StatelessWidget {
   }
 }
 
-class _CompactDateCard extends StatelessWidget {
-  final TicketCartProvider cart;
-  const _CompactDateCard({required this.cart});
+// ── Tab Button ──
+class _TabBtn extends StatelessWidget {
+  final String label;
+  final bool active;
+  final bool isRight;
+  final VoidCallback onTap;
+
+  const _TabBtn({required this.label, required this.active, this.isRight = false, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () async {
-            final picked = await showDatePicker(
-              context: context,
-              initialDate: cart.selectedDate,
-              firstDate: DateTime.now(),
-              lastDate: DateTime.now().add(const Duration(days: 30)),
-              builder: (context, child) => Theme(
-                data: Theme.of(context).copyWith(
-                  colorScheme: const ColorScheme.light(primary: Color(0xFF1B8A2A)),
-                ),
-                child: child!,
-              ),
-            );
-            if (picked != null && context.mounted) {
-              context.read<TicketCartProvider>().setDate(picked);
-            }
-          },
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                const Icon(Icons.calendar_month_rounded, color: Color(0xFF1B8A2A), size: 24),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('تاريخ الزيارة', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                      const SizedBox(height: 2),
-                      Text(
-                        DateFormat('EEEE, d MMMM yyyy', 'ar').format(cart.selectedDate),
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87),
-                      ),
-                    ],
-                  ),
-                ),
-                const Text('تغيير', style: TextStyle(color: Color(0xFF1B8A2A), fontSize: 13, fontWeight: FontWeight.bold)),
-              ],
-            ),
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: active ? const Color(0xFF2E7D32) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.cairo(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: active ? Colors.white : const Color(0xFFC8A84B),
           ),
         ),
       ),
@@ -221,76 +354,91 @@ class _CompactDateCard extends StatelessWidget {
   }
 }
 
-class _CleanTicketCard extends StatelessWidget {
+// ── Ticket Row ──
+class _TicketRow extends StatelessWidget {
   final dynamic type;
-  const _CleanTicketCard({required this.type});
+  const _TicketRow({required this.type});
+
+  static const _green = Color(0xFF2E7D32);
 
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<TicketCartProvider>();
     final qty = cart.cart[type.id] ?? 0;
-    final isSelected = qty > 0;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFFF0FDF4) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isSelected ? const Color(0xFF1B8A2A) : Colors.grey.shade200,
-          width: isSelected ? 1.5 : 1,
-        ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade100, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          Icon(type.icon, color: isSelected ? const Color(0xFF1B8A2A) : Colors.grey.shade500, size: 28),
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE8F5E9),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(type.icon, color: _green, size: 22),
+          ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  type.title,
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: isSelected ? const Color(0xFF0F3D24) : Colors.black87),
-                ),
-                if (type.subtitle.isNotEmpty) ...[
-                  const SizedBox(height: 2),
-                  Text(type.subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                ],
+                 Text(
+                   type.title,
+                   style: GoogleFonts.cairo(
+                     fontSize: 15,
+                     fontWeight: FontWeight.bold,
+                     color: const Color(0xFF1A1A1A),
+                   ),
+                 ),
+                 const SizedBox(height: 2),
+                 Text(
+                   '${type.subtitle} · ${type.price} د.ل',
+                   style: GoogleFonts.cairo(
+                     fontSize: 12,
+                     fontWeight: FontWeight.w600,
+                     color: Colors.grey.shade500,
+                   ),
+                 ),
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          // Counter
+          Row(
             children: [
-              Text(
-                '${type.price} د.ل',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1B8A2A)),
+              _CounterBtn(
+                icon: Icons.remove,
+                enabled: qty > 0,
+                filled: false,
+                onTap: () => context.read<TicketCartProvider>().decrement(type.id),
               ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  _CleanCounterBtn(
-                    icon: Icons.remove,
-                    enabled: qty > 0,
-                    onTap: () => context.read<TicketCartProvider>().decrement(type.id),
-                  ),
-                  SizedBox(
-                    width: 32,
-                    child: Text(
-                      '$qty',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  _CleanCounterBtn(
-                    icon: Icons.add,
-                    enabled: true,
-                    onTap: () => context.read<TicketCartProvider>().increment(type.id),
-                  ),
-                ],
+              SizedBox(
+                width: 36,
+                child: Text(
+                  '$qty',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+              _CounterBtn(
+                icon: Icons.add,
+                enabled: true,
+                filled: true,
+                onTap: () => context.read<TicketCartProvider>().increment(type.id),
               ),
             ],
           ),
@@ -300,66 +448,126 @@ class _CleanTicketCard extends StatelessWidget {
   }
 }
 
-class _CleanCounterBtn extends StatelessWidget {
+// ── Counter Button ──
+class _CounterBtn extends StatelessWidget {
   final IconData icon;
   final bool enabled;
+  final bool filled;
   final VoidCallback onTap;
 
-  const _CleanCounterBtn({required this.icon, required this.enabled, required this.onTap});
+  const _CounterBtn({required this.icon, required this.enabled, required this.filled, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: enabled ? onTap : null,
-      borderRadius: BorderRadius.circular(8),
       child: Container(
         width: 30,
         height: 30,
         decoration: BoxDecoration(
-          color: enabled ? const Color(0xFF1B8A2A) : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(8),
+          color: filled
+              ? (enabled ? const Color(0xFF2E7D32) : Colors.grey.shade200)
+              : Colors.transparent,
+          shape: BoxShape.circle,
+          border: !filled
+              ? Border.all(color: enabled ? Colors.grey.shade400 : Colors.grey.shade200, width: 1.5)
+              : null,
         ),
-        child: Icon(icon, size: 18, color: enabled ? Colors.white : Colors.grey.shade400),
+        child: Icon(
+          icon,
+          size: 16,
+          color: filled
+              ? (enabled ? Colors.white : Colors.grey.shade400)
+              : (enabled ? Colors.grey.shade600 : Colors.grey.shade300),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Free Pill ──
+class _FreePill extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  const _FreePill({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.shade200, width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15, color: Colors.grey.shade600),
+          const SizedBox(width: 7),
+          Expanded(
+            child: Text(
+              label,
+              style: GoogleFonts.cairo(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade700,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
 // ══════════════════════════════
-// STEP 2 — Clean Ticket Preview
+// STEP 2 — Ticket View
 // ══════════════════════════════
 class _TicketView extends StatelessWidget {
-  const _TicketView();
+  final VoidCallback onBack;
+  const _TicketView({required this.onBack});
 
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<TicketCartProvider>();
     final ticket = cart.purchasedTickets.isNotEmpty ? cart.purchasedTickets.last : null;
+    final topPad = MediaQuery.of(context).padding.top;
+    final bottomPad = MediaQuery.of(context).padding.bottom;
 
     if (ticket == null) return const SizedBox.shrink();
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.fromLTRB(24, topPad + 24, 24, bottomPad + 120),
       child: Column(
         children: [
-          // Clean Success Message
-          const Icon(Icons.check_circle_rounded, color: Color(0xFF1B8A2A), size: 64),
-          const SizedBox(height: 16),
-          const Text('تم الحجز بنجاح!', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF0F3D24))),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: onBack,
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.7),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: Colors.black87),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          const Icon(Icons.check_circle_rounded, color: Color(0xFF2E7D32), size: 64),
+          const SizedBox(height: 12),
+          Text('تم الحجز بنجاح!', style: GoogleFonts.cairo(fontSize: 22, fontWeight: FontWeight.bold, color: const Color(0xFF1A1A1A))),
           const SizedBox(height: 32),
-
-          // Clean Ticket Card
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey.shade200),
+              borderRadius: BorderRadius.circular(24),
               boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
+                BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 8)),
               ],
             ),
             child: Column(
@@ -368,14 +576,14 @@ class _TicketView extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF0F3D24),
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+                    color: Color(0xFF2E7D32),
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24)),
                   ),
-                  child: const Column(
+                  child: Column(
                     children: [
-                      Text('Tripoli Zoo', style: TextStyle(color: Colors.white70, fontSize: 12, letterSpacing: 1)),
-                      SizedBox(height: 4),
-                      Text('تذكرة دخول', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text('Tripoli Zoo', style: GoogleFonts.inter(color: Colors.white70, fontSize: 12, letterSpacing: 1)),
+                      const SizedBox(height: 4),
+                      Text('تذكرة دخول', style: GoogleFonts.cairo(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
@@ -387,44 +595,45 @@ class _TicketView extends StatelessWidget {
                         data: ticket.qrData,
                         version: QrVersions.auto,
                         size: 180,
-                        eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square, color: Color(0xFF0F3D24)),
-                        dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Color(0xFF0F3D24)),
+                        eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square, color: Color(0xFF2E7D32)),
+                        dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Color(0xFF2E7D32)),
                       ),
-                      const SizedBox(height: 12),
-                      Text('رقم التذكرة: ${ticket.id}', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                      const SizedBox(height: 8),
+                      Text('رقم التذكرة: ${ticket.id}', style: GoogleFonts.inter(color: Colors.grey, fontSize: 12)),
                     ],
                   ),
                 ),
-                const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                const Divider(height: 1),
                 Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
                       _DetailRow('التاريخ', DateFormat('d MMMM yyyy', 'ar').format(ticket.visitDate)),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       const _DetailRow('الوقت', AppConstants.workingHours),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       _DetailRow('الزوار', '${cart.totalVisitors} أشخاص'),
-                      const SizedBox(height: 12),
-                      _DetailRow('المبلغ المدفوع', '${ticket.totalPrice.toInt()} د.ل', isTotal: true),
+                      const SizedBox(height: 10),
+                      _DetailRow('المبلغ المدفوع', '${ticket.totalPrice.toStringAsFixed(0)} د.ل', isTotal: true),
                     ],
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 32),
-
+          const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
-            child: OutlinedButton(
+            child: ElevatedButton(
               onPressed: () => context.go('/home'),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                side: const BorderSide(color: Color(0xFF0F3D24)),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2E7D32),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                elevation: 0,
               ),
-              child: const Text('العودة للرئيسية', style: TextStyle(color: Color(0xFF0F3D24), fontSize: 16, fontWeight: FontWeight.bold)),
+              child: Text('العودة للرئيسية', style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold)),
             ),
           ),
         ],
@@ -437,7 +646,6 @@ class _DetailRow extends StatelessWidget {
   final String label;
   final String value;
   final bool isTotal;
-
   const _DetailRow(this.label, this.value, {this.isTotal = false});
 
   @override
@@ -445,8 +653,12 @@ class _DetailRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
-        Text(value, style: TextStyle(color: isTotal ? const Color(0xFF1B8A2A) : Colors.black87, fontSize: 14, fontWeight: FontWeight.bold)),
+        Text(label, style: GoogleFonts.cairo(color: Colors.grey.shade600, fontSize: 14)),
+        Text(value, style: GoogleFonts.cairo(
+          color: isTotal ? const Color(0xFF2E7D32) : Colors.black87,
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+        )),
       ],
     );
   }
