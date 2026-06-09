@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:panorama_viewer/panorama_viewer.dart';
+import 'package:tripolizoo/debug/agent_log.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/data/tour_marker_detector.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/data/virtual_tour_data.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
@@ -24,10 +27,13 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
   double _viewLon = 0;
   bool _ready = false;
   bool _pendingSnap = false;
+  Completer<void>? _sceneLoadCompleter;
   double _fadeOpacity = 0;
   String? _walkthroughAnimalLabel;
   String _walkthroughPhase = '';
   bool _walkthroughComplete = false;
+  final Map<String, ImageProvider> _imageProviders = {};
+  List<Hotspot> _hotspots = [];
 
   TourScene get _scene => VirtualTourData.sceneById(_currentSceneId);
   int get _sceneIndex => VirtualTourData.indexOf(_currentSceneId);
@@ -47,10 +53,35 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
 
   Future<void> _preload() async {
     final markers = await TourMarkerDetector.detectForScene(_scene);
-    _applyPathArrowView(markers);
+    // #region agent log
+    agentLog(
+      location: 'virtual_tour_screen.dart:_preload',
+      message: 'initial scene markers loaded',
+      hypothesisId: 'E',
+      data: {
+        'runId': 'orange-labels-debug',
+        'sceneId': _currentSceneId,
+        'markers': markers
+            .map(
+              (m) => {
+                'type': m.type.name,
+                'label': m.label,
+                'targetSceneId': m.targetSceneId,
+              },
+            )
+            .toList(),
+      },
+    );
+    // #endregion
+    _applySceneView(
+      markers,
+      sceneId: _currentSceneId,
+      fromForward: true,
+    );
     if (!mounted) return;
     setState(() {
       _markers = markers;
+      _hotspots = _buildHotspots(markers);
       _ready = true;
     });
     _precacheScene(_scene);
@@ -69,34 +100,151 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
     return l;
   }
 
-  /// زاوية الكاميرا = سهم الطريق 🔴، أو مركز المشهد إن لم يكن هناك سهم
-  void _applyPathArrowView(List<TourMarker> markers) {
+  /// يضبط lat/lon مع أقصر مسار لـ longitude لتجنب دوران 360°
+  void _setViewTo(double targetLat, double targetLon) {
+    final lonDelta = _shortestLonDelta(_viewLon, _normalizeLon(targetLon));
+    _viewLat = targetLat;
+    _viewLon = _viewLon + lonDelta;
+  }
+
+  /// زاوية الكاميرا — للأمام: زر التنقل التالي
+  void _applySceneView(
+    List<TourMarker> markers, {
+    required String sceneId,
+    required bool fromForward,
+    String? fromSceneId,
+  }) {
+    TourMarker? chosen;
+    String? chosenSource;
     for (final m in markers) {
       if (m.type == TourMarkerType.next) {
-        _viewLat = m.latitude;
-        _viewLon = _normalizeLon(m.longitude);
-        return;
+        chosen = m;
+        chosenSource = 'next';
+        break;
       }
     }
-    // لا سهم أمام → ابدأ من المركز (0,0) ليرى المستخدم المشهد كاملاً
-    _viewLat = 0;
-    _viewLon = 0;
+    if (chosen == null) {
+      for (final m in markers) {
+        if (m.type == TourMarkerType.animalArea) {
+          chosen = m;
+          chosenSource = 'animalArea';
+          break;
+        }
+      }
+    }
+    if (chosen != null) {
+      _setViewTo(chosen.latitude, chosen.longitude);
+    } else {
+      _setViewTo(0, 0);
+    }
+    // #region agent log
+    agentLog(
+      location: 'virtual_tour_screen.dart:_applySceneView',
+      message: 'camera view applied',
+      hypothesisId: 'A',
+      data: {
+        'sceneId': sceneId,
+        'fromForward': fromForward,
+        'fromSceneId': fromSceneId,
+        'chosenType': chosen?.type.name,
+        'chosenSource': chosenSource,
+        'chosenLabel': chosen?.label,
+        'chosenTarget': chosen?.targetSceneId,
+        'viewLat': _viewLat,
+        'viewLon': _viewLon,
+        'isHorseRoute': VirtualTourData.isHorseRoute(sceneId),
+      },
+    );
+    // #endregion
   }
 
   void _snapCameraToArrow() {
     if (!mounted) return;
+    // #region agent log
+    agentLog(
+      location: 'virtual_tour_screen.dart:_snapCameraToArrow',
+      message: 'camera snap',
+      hypothesisId: 'C',
+      data: {
+        'sceneId': _currentSceneId,
+        'viewLat': _viewLat,
+        'viewLon': _viewLon,
+        'pendingSnap': _pendingSnap,
+      },
+    );
+    // #endregion
     _panoramaController.setAnimSpeed(0);
     _panoramaController.setView(_viewLat, _viewLon);
   }
 
   void _onPanoramaImageLoaded() {
-    if (!_pendingSnap) return;
-    _pendingSnap = false;
-    _snapCameraToArrow();
+    if (_pendingSnap) {
+      _pendingSnap = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _snapCameraToArrow();
+      });
+    }
+    if (_sceneLoadCompleter != null && !_sceneLoadCompleter!.isCompleted) {
+      _sceneLoadCompleter!.complete();
+    }
   }
 
+  Future<void> _navigateToScene(
+    String sceneId, {
+    required bool fromForward,
+    TourMarker? viaMarker,
+  }) async {
+    // #region agent log
+    agentLog(
+      location: 'virtual_tour_screen.dart:_navigateToScene',
+      message: 'navigation start',
+      hypothesisId: 'E',
+      data: {
+        'fromSceneId': _currentSceneId,
+        'toSceneId': sceneId,
+        'fromForward': fromForward,
+        'viaMarkerLat': viaMarker?.latitude,
+        'viaMarkerLon': viaMarker?.longitude,
+        'viaMarkerTarget': viaMarker?.targetSceneId,
+      },
+    );
+    // #endregion
+    final nextScene = VirtualTourData.sceneById(sceneId);
+    await _precacheScene(nextScene);
+    if (!mounted) return;
+    _sceneLoadCompleter = Completer<void>();
+    await _goToScene(
+      sceneId,
+      fromForward: fromForward,
+      viaMarker: viaMarker,
+    );
+    if (!mounted) return;
+    await _sceneLoadCompleter!.future.timeout(
+      const Duration(seconds: 4),
+      onTimeout: () {},
+    );
+    _sceneLoadCompleter = null;
+    // #region agent log
+    agentLog(
+      location: 'virtual_tour_screen.dart:_navigateToScene',
+      message: 'navigation done',
+      hypothesisId: 'E',
+      data: {
+        'sceneId': _currentSceneId,
+        'viewLat': _viewLat,
+        'viewLon': _viewLon,
+      },
+    );
+    // #endregion
+  }
+
+  int get _panoramaCacheWidth => kIsWeb ? 2048 : 4096;
+
   ImageProvider _sceneImageProvider(TourScene scene) {
-    return ResizeImage(AssetImage(scene.imageAsset), width: 4096);
+    return _imageProviders.putIfAbsent(
+      scene.imageAsset,
+      () => ResizeImage(AssetImage(scene.imageAsset), width: _panoramaCacheWidth),
+    );
   }
 
   Future<void> _precacheScene(TourScene scene) async {
@@ -105,7 +253,28 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
   }
 
   Future<void> _precacheHorseRoute() async {
-    for (final n in [5, 6, 7, 8]) {
+    for (final n in [5, 6, 7, 8, 9, 10, 11]) {
+      if (!mounted) return;
+      await _precacheScene(VirtualTourData.sceneById('scene_$n'));
+    }
+  }
+
+  Future<void> _precacheDuckRoute() async {
+    for (final n in [12, 13, 14, 15, 16, 17]) {
+      if (!mounted) return;
+      await _precacheScene(VirtualTourData.sceneById('scene_$n'));
+    }
+  }
+
+  Future<void> _precacheReptileRoute() async {
+    for (final n in [18, 19, 20, 21, 22, 23]) {
+      if (!mounted) return;
+      await _precacheScene(VirtualTourData.sceneById('scene_$n'));
+    }
+  }
+
+  Future<void> _precacheBigCatsRoute() async {
+    for (final n in [24, 25, 26, 27, 28, 29, 30]) {
       if (!mounted) return;
       await _precacheScene(VirtualTourData.sceneById('scene_$n'));
     }
@@ -115,27 +284,113 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
     String sceneId, {
     required bool fromForward,
     bool applyArrowView = true,
+    TourMarker? viaMarker,
   }) async {
     if (sceneId == _currentSceneId) return;
 
+    final fromSceneId = _currentSceneId;
     final nextScene = VirtualTourData.sceneById(sceneId);
+    TourMarkerDetector.invalidateScene(sceneId);
     final markers = await TourMarkerDetector.detectForScene(nextScene);
-    if (applyArrowView) _applyPathArrowView(markers);
-
-    await _precacheScene(nextScene);
-    if (VirtualTourData.isHorseRoute(sceneId)) {
-      await _precacheHorseRoute();
+    // #region agent log
+    agentLog(
+      location: 'virtual_tour_screen.dart:_goToScene',
+      message: 'scene transition start',
+      hypothesisId: 'B',
+      data: {
+        'fromSceneId': fromSceneId,
+        'toSceneId': sceneId,
+        'fromForward': fromForward,
+        'applyArrowView': applyArrowView,
+        'viaMarkerLon': viaMarker?.longitude,
+      },
+    );
+    // #endregion
+    if (applyArrowView) {
+      if (fromForward) {
+        _applySceneView(
+          markers,
+          sceneId: sceneId,
+          fromForward: true,
+          fromSceneId: fromSceneId,
+        );
+      } else if (viaMarker != null) {
+        _setViewTo(viaMarker.latitude, viaMarker.longitude);
+        // #region agent log
+        agentLog(
+          location: 'virtual_tour_screen.dart:_goToScene',
+          message: 'back view from tapped marker',
+          hypothesisId: 'A',
+          data: {
+            'toSceneId': sceneId,
+            'fromSceneId': fromSceneId,
+            'viewLat': _viewLat,
+            'viewLon': _viewLon,
+            'markerTarget': viaMarker.targetSceneId,
+          },
+        );
+        // #endregion
+      }
     }
 
+    // نحمّل الصورة التالية فقط ثم نغيّر المشهد فوراً
+    await _precacheScene(nextScene);
     if (!mounted) return;
-    _pendingSnap = true;
+    _pendingSnap = applyArrowView;
     setState(() {
       _currentSceneId = sceneId;
       _markers = markers;
+      _hotspots = _buildHotspots(markers);
     });
+    // #region agent log
+    agentLog(
+      location: 'virtual_tour_screen.dart:_goToScene',
+      message: 'scene transition applied',
+      hypothesisId: 'D',
+      data: {
+        'runId': 'orange-labels-debug',
+        'fromSceneId': fromSceneId,
+        'toSceneId': sceneId,
+        'fromForward': fromForward,
+        'isHorseRoute': VirtualTourData.isHorseRoute(sceneId),
+        'isWalkthrough': _walkthrough,
+        'viewLat': _viewLat,
+        'viewLon': _viewLon,
+        'backMarker': markers
+            .where((m) => m.type == TourMarkerType.back)
+            .map((m) => {'lat': m.latitude, 'lon': m.longitude, 'target': m.targetSceneId, 'label': m.label})
+            .toList(),
+        'nextMarker': markers
+            .where((m) => m.type == TourMarkerType.next)
+            .map((m) => {'lat': m.latitude, 'lon': m.longitude, 'target': m.targetSceneId, 'label': m.label})
+            .toList(),
+        'animalMarkers': markers
+            .where((m) => m.type == TourMarkerType.animalArea)
+            .map((m) => {'lat': m.latitude, 'lon': m.longitude, 'target': m.targetSceneId, 'label': m.label})
+            .toList(),
+      },
+    );
+    // #endregion
+
+    // نحمّل باقي الصور في الخلفية بدون انتظار
+    if (VirtualTourData.isHorseRoute(sceneId)) {
+      _precacheHorseRoute();
+    }
+    if (VirtualTourData.isDuckRoute(sceneId)) {
+      _precacheDuckRoute();
+    }
+    if (VirtualTourData.isReptileRoute(sceneId)) {
+      _precacheReptileRoute();
+    }
+    if (VirtualTourData.isBigCatsRoute(sceneId)) {
+      _precacheBigCatsRoute();
+    }
   }
 
   bool get _isHorseRoute => VirtualTourData.isHorseRoute(_currentSceneId);
+  bool get _isDuckRoute => VirtualTourData.isDuckRoute(_currentSceneId);
+  bool get _isReptileRoute => VirtualTourData.isReptileRoute(_currentSceneId);
+  bool get _isBigCatsRoute => VirtualTourData.isBigCatsRoute(_currentSceneId);
 
   void _toggleWalkthrough() {
     if (_walkthrough) {
@@ -213,7 +468,14 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
 
   Future<void> _fadeTransition(Future<void> Function() action) async {
     await _fadeTo(1);
+    _sceneLoadCompleter = Completer<void>();
     await action();
+    if (!mounted) return;
+    await _sceneLoadCompleter!.future.timeout(
+      const Duration(seconds: 4),
+      onTimeout: () {},
+    );
+    _sceneLoadCompleter = null;
     if (!mounted) return;
     _snapCameraToArrow();
     await _fadeTo(0);
@@ -290,66 +552,142 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
       final nextTitle = VirtualTourData.sceneById(nextId).title;
 
       // 4) نتجه نحو الممر — مشي
-      _setWalkthroughPhase('نمشي نحو $nextTitle...');
-      if (exitMarker != null) {
-        await _animateViewTo(
-          exitMarker.latitude,
-          exitMarker.longitude,
-          const Duration(milliseconds: 2400),
-          gen: gen,
-        );
-      }
-      if (!_walkthrough || !mounted || gen != _walkthroughGen) return;
-
-      await Future.delayed(const Duration(milliseconds: 700));
-
-      // 5) انتقال بين المشاهد — fade كأننا ندخل ممرًّا جديدًا
-      final fromSceneId = _currentSceneId;
-      await _fadeTransition(() async {
-        await _goToScene(nextId, fromForward: true, applyArrowView: false);
-        _applyWalkthroughEntry(fromSceneId, _markers);
-      });
-      if (!_walkthrough || !mounted || gen != _walkthroughGen) return;
-
-      // 6) دخول المشهد — نرفع رأسنا وننظر للأمام
-      _setWalkthroughPhase('ندخل $nextTitle...');
-      TourMarker? forward;
-      for (final m in _markers) {
-        if (m.type == TourMarkerType.next) {
-          forward = m;
-          break;
-        }
-      }
-      if (forward != null) {
-        await _animateViewTo(
-          forward.latitude,
-          forward.longitude,
-          const Duration(milliseconds: 2800),
-          gen: gen,
-        );
-      } else {
-        await _animateViewTo(_viewLat, _viewLon, const Duration(milliseconds: 1200), gen: gen);
-      }
-      if (!_walkthrough || !mounted || gen != _walkthroughGen) return;
-
-      await Future.delayed(const Duration(milliseconds: 500));
+      await _walkIntoScene(nextId, exitMarker: exitMarker, nextTitle: nextTitle, gen: gen);
     }
   }
 
+  Future<void> _walkIntoScene(
+    String nextId, {
+    required TourMarker? exitMarker,
+    required String nextTitle,
+    required int gen,
+  }) async {
+    _setWalkthroughPhase('نمشي نحو $nextTitle...');
+    if (exitMarker != null) {
+      await _animateViewTo(
+        exitMarker.latitude,
+        exitMarker.longitude,
+        const Duration(milliseconds: 2400),
+        gen: gen,
+      );
+    }
+    if (!_walkthrough || !mounted || gen != _walkthroughGen) return;
+
+    await Future.delayed(const Duration(milliseconds: 700));
+
+    final fromSceneId = _currentSceneId;
+    await _fadeTransition(() async {
+      await _goToScene(nextId, fromForward: true, applyArrowView: false);
+      _applyWalkthroughEntry(fromSceneId, _markers);
+    });
+    if (!_walkthrough || !mounted || gen != _walkthroughGen) return;
+
+    _setWalkthroughPhase('ندخل $nextTitle...');
+    TourMarker? forward;
+    for (final m in _markers) {
+      if (m.type == TourMarkerType.next) {
+        forward = m;
+        break;
+      }
+    }
+    if (forward != null) {
+      await _animateViewTo(
+        forward.latitude,
+        forward.longitude,
+        const Duration(milliseconds: 2800),
+        gen: gen,
+      );
+    } else {
+      await _animateViewTo(_viewLat, _viewLon, const Duration(milliseconds: 1200), gen: gen);
+    }
+    if (!_walkthrough || !mounted || gen != _walkthroughGen) return;
+
+    await Future.delayed(const Duration(milliseconds: 500));
+  }
+
   void _onMarkerTap(TourMarker marker) {
+    // #region agent log
+    agentLog(
+      location: 'virtual_tour_screen.dart:_onMarkerTap',
+      message: 'marker tapped',
+      hypothesisId: 'A',
+      data: {
+        'currentSceneId': _currentSceneId,
+        'markerType': marker.type.name,
+        'markerLabel': marker.label,
+        'targetSceneId': marker.targetSceneId,
+        'markerLat': marker.latitude,
+        'markerLon': marker.longitude,
+      },
+    );
+    // #endregion
     switch (marker.type) {
       case TourMarkerType.next:
         if (marker.targetSceneId != null) {
           _stopWalkthrough();
-          _goToScene(marker.targetSceneId!, fromForward: true);
+          _navigateToScene(
+            marker.targetSceneId!,
+            fromForward: true,
+            viaMarker: marker,
+          );
         }
       case TourMarkerType.back:
         if (marker.targetSceneId != null) {
+          // #region agent log
+          agentLog(
+            location: 'virtual_tour_screen.dart:_onMarkerTap:back',
+            message: 'back navigation',
+            hypothesisId: 'A',
+            data: {
+              'fromSceneId': _currentSceneId,
+              'toSceneId': marker.targetSceneId,
+              'markerLon': marker.longitude,
+              'isHorseLoop': _currentSceneId == 'scene_7' &&
+                  marker.targetSceneId == 'scene_8',
+            },
+          );
+          // #endregion
           _stopWalkthrough();
-          _goToScene(marker.targetSceneId!, fromForward: false);
+          _navigateToScene(
+            marker.targetSceneId!,
+            fromForward: false,
+            viaMarker: marker,
+          );
         }
       case TourMarkerType.animalArea:
-        _showAnimalSheet(marker.label ?? 'منطقة الحيوانات');
+        final target = marker.targetSceneId;
+        // #region agent log
+        agentLog(
+          location: 'virtual_tour_screen.dart:_onMarkerTap:animalArea',
+          message: 'animalArea branch',
+          hypothesisId: target != null ? 'B' : 'A',
+          data: {
+            'label': marker.label,
+            'targetSceneId': target,
+            'branch': target != null ? 'goToScene' : 'showAnimalSheet',
+          },
+        );
+        // #endregion
+        if (target != null) {
+          _stopWalkthrough();
+          _navigateToScene(
+            target,
+            fromForward: true,
+            viaMarker: marker,
+          );
+        } else {
+          // #region agent log
+          agentLog(
+            location: 'virtual_tour_screen.dart:_onMarkerTap:animalArea',
+            message: 'animalArea label-only mode (no sheet)',
+            hypothesisId: 'A',
+            data: {
+              'label': marker.label,
+              'targetSceneId': target,
+            },
+          );
+          // #endregion
+        }
     }
   }
 
@@ -359,67 +697,8 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
     if (_ready) _precacheScene(_scene);
   }
 
-  void _showAnimalSheet(String name) {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => Container(
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: AppColors.accent.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: const Icon(Icons.pets_rounded, color: AppColors.accent, size: 26),
-            ),
-            const SizedBox(height: 14),
-            Text(
-              name,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w900,
-                color: AppColors.primaryDark,
-              ),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'اضغط للاستكشاف',
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  context.push('/animals');
-                },
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                ),
-                child: const Text('استكشف الحيوانات', style: TextStyle(fontWeight: FontWeight.w800)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  List<Hotspot> _buildHotspots() {
-    return _markers.map((m) {
+  List<Hotspot> _buildHotspots(List<TourMarker> markers) {
+    return markers.map((m) {
       final isAnimal = m.type == TourMarkerType.animalArea;
       return Hotspot(
         latitude: m.latitude,
@@ -486,6 +765,84 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                 ),
               ),
             ],
+            if (_isDuckRoute) ...[
+              const SizedBox(height: 2),
+              Container(
+                margin: const EdgeInsets.only(top: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0277BD).withValues(alpha: 0.9),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('🦆', style: TextStyle(fontSize: 10)),
+                    SizedBox(width: 4),
+                    Text(
+                      'طريق البط والبجع',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (_isReptileRoute) ...[
+              const SizedBox(height: 2),
+              Container(
+                margin: const EdgeInsets.only(top: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF558B2F).withValues(alpha: 0.9),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('🦎', style: TextStyle(fontSize: 10)),
+                    SizedBox(width: 4),
+                    Text(
+                      'طريق الزواحف',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (_isBigCatsRoute) ...[
+              const SizedBox(height: 2),
+              Container(
+                margin: const EdgeInsets.only(top: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6D4C41).withValues(alpha: 0.9),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('🦁', style: TextStyle(fontSize: 10)),
+                    SizedBox(width: 4),
+                    Text(
+                      'طريق الأسود والنمور',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
         centerTitle: true,
@@ -525,12 +882,11 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
               onImageLoad: _onPanoramaImageLoaded,
               panoramaController: _panoramaController,
               sensorControl: SensorControl.none,
-              hotspots: _walkthrough ? const [] : _buildHotspots(),
-              child: Image.asset(
-                _scene.imageAsset,
+              hotspots: _walkthrough ? const [] : _hotspots,
+              child: Image(
+                image: _sceneImageProvider(_scene),
                 gaplessPlayback: true,
                 filterQuality: FilterQuality.medium,
-                cacheWidth: 4096,
               ),
             ),
           if (_walkthrough)
@@ -700,9 +1056,15 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                           ? (_walkthroughPhase.isNotEmpty
                               ? _walkthroughPhase
                               : 'جولة تلقائية — اضغط ⏸ للإيقاف')
-                          : _isHorseRoute
-                              ? 'طريق الخيول  •  البوابات الخضراء للانتقال'
-                              : 'اضغط البوابة الأرضية للانتقال  •  البرتقالي للحيوانات',
+                              : _isHorseRoute
+                                  ? 'طريق الخيول  •  انتقل أو منطقة الخيول'
+                              : _isDuckRoute
+                                  ? 'طريق البط والبجع  •  البرتقالي للبركة'
+                                  : _isReptileRoute
+                                      ? 'طريق الزواحف  •  البوابات الخضراء للانتقال'
+                                      : _isBigCatsRoute
+                                          ? 'طريق الأسود والنمور  •  البرتقالي للأقفاص'
+                                      : 'اضغط البوابة الأرضية للانتقال  •  البرتقالي للحيوانات',
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 12,

@@ -8,6 +8,8 @@ import 'package:tripolizoo/features/visitor/visitor_explore/data/virtual_tour_da
 abstract final class TourMarkerDetector {
   static final Map<String, List<TourMarker>> _cache = {};
 
+  static void invalidateScene(String sceneId) => _cache.remove(sceneId);
+
   static Future<List<TourMarker>> detectForScene(TourScene scene) async {
     if (_cache.containsKey(scene.id)) return _cache[scene.id]!;
 
@@ -55,7 +57,13 @@ abstract final class TourMarkerDetector {
 
   /// يجرّب أسماء بديلة (مثل 1.JPG.jpg)
   static Future<String?> _resolveAsset(String path) async {
-    final candidates = [path, '$path.jpg', path.replaceAll('.JPG', '.JPG.jpg')];
+    final base = path.replaceAll('.JPG', '');
+    final candidates = [
+      path,
+      '$base.jpg',
+      '$path.jpg',
+      path.replaceAll('.JPG', '.JPG.jpg'),
+    ];
     for (final candidate in candidates) {
       try {
         await rootBundle.load(candidate);
