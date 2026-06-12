@@ -99,6 +99,26 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<bool> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    if (_user == null || _user!.isGuest) {
+      _error = 'يجب تسجيل الدخول أولاً';
+      notifyListeners();
+      return false;
+    }
+    return _run(() async {
+      if (currentPassword.length < 6) {
+        throw const AuthException('كلمة المرور الحالية غير صحيحة');
+      }
+      if (newPassword.length < 8) {
+        throw const AuthException('كلمة المرور الجديدة ضعيفة');
+      }
+      // Mock — يُستبدل بطلب API لاحقاً.
+    });
+  }
+
   void logout() {
     _user = null;
     _resetToken = null;

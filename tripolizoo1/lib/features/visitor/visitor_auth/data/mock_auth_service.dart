@@ -17,11 +17,15 @@ class MockAuthService implements AuthService {
     if (password.length < AppConstants.minPasswordLength) {
       throw const AuthException('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
     }
+    final normalized = email.trim().toLowerCase();
+    final role = _roleFromEmail(normalized);
+
     return UserModel(
       id: 'user_${email.hashCode}',
-      name: email.split('@').first,
+      name: _nameFromEmail(normalized),
       email: email,
       phone: '+218 91 000 0000',
+      role: role,
     );
   }
 
@@ -95,5 +99,18 @@ class MockAuthService implements AuthService {
     if (!regex.hasMatch(email)) {
       throw const AuthException('البريد الإلكتروني غير صالح');
     }
+  }
+
+  /// حسابات تجريبية للتطوير — تُستبدل ببيانات API لاحقًا.
+  String _roleFromEmail(String email) {
+    if (email.startsWith('supervisor@')) return 'supervisor';
+    if (email.startsWith('doctor@')) return 'doctor';
+    return 'visitor';
+  }
+
+  String _nameFromEmail(String email) {
+    if (email.startsWith('supervisor@')) return 'محمد';
+    if (email.startsWith('doctor@')) return 'د. أحمد';
+    return email.split('@').first;
   }
 }

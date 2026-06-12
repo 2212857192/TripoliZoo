@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,6 +8,7 @@ import 'package:tripolizoo/shared/constants/app_constants.dart';
 import 'package:tripolizoo/features/visitor/visitor_auth/presentation/auth_provider.dart';
 import 'package:tripolizoo/shared/widgets/app_text_field.dart';
 import 'package:tripolizoo/shared/widgets/auth_layout.dart';
+import 'package:tripolizoo/shared/router/post_login_route.dart';
 import 'package:tripolizoo/shared/widgets/primary_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -38,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
     if (!mounted) return;
     if (ok) {
-      context.go('/home');
+      context.go(postLoginRoute(auth.user));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(auth.error ?? 'فشل تسجيل الدخول')),

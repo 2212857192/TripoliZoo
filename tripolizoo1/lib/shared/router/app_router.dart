@@ -16,8 +16,21 @@ import 'package:tripolizoo/features/visitor/visitor_tickets/presentation/tickets
 import 'package:tripolizoo/features/visitor/visitor_explore/presentation/virtual_tour_screen.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/presentation/visit_info_screen.dart';
 import 'package:tripolizoo/shared/widgets/main_shell.dart';
-import 'package:tripolizoo/features/doctor/presentation/doctor_placeholder_screen.dart';
-import 'package:tripolizoo/features/supervisor/presentation/supervisor_placeholder_screen.dart';
+import 'package:tripolizoo/features/doctor/doctor_account/presentation/doctor_account_screen.dart';
+import 'package:tripolizoo/features/doctor/doctor_cases/presentation/doctor_cases_screen.dart';
+import 'package:tripolizoo/features/doctor/doctor_cases/presentation/medical_case_detail_screen.dart';
+import 'package:tripolizoo/features/doctor/doctor_quarantine/presentation/doctor_quarantine_screen.dart';
+import 'package:tripolizoo/features/doctor/doctor_quarantine/presentation/quarantine_detail_screen.dart';
+import 'package:tripolizoo/features/doctor/presentation/doctor_shell.dart';
+import 'package:tripolizoo/features/doctor/presentation/doctor_home_screen.dart';
+import 'package:tripolizoo/features/doctor/presentation/doctor_reports_screen.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_account/presentation/account_screen.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_group_followup/presentation/group_followup_screen.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_health_reports/presentation/health_reports_screen.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_home/presentation/supervisor_home_screen.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_notifications/presentation/supervisor_notifications_screen.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_receiving_tasks/presentation/receiving_tasks_screen.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_shell/presentation/supervisor_shell.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -46,7 +59,7 @@ GoRouter createRouter(AuthProvider authProvider) {
       if (isLoggedIn && isAuthRoute) {
         final role = authProvider.user?.role ?? 'visitor';
         if (role == 'doctor') return '/doctor';
-        if (role == 'supervisor') return '/supervisor';
+        if (role == 'supervisor') return '/supervisor/home';
         return '/home'; // Default visitor
       }
 
@@ -79,11 +92,105 @@ GoRouter createRouter(AuthProvider authProvider) {
       ),
       GoRoute(
         path: '/doctor',
-        builder: (context, state) => const DoctorPlaceholderScreen(),
+        redirect: (context, state) => '/doctor/home',
+      ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            DoctorShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/doctor/home',
+                builder: (context, state) => const DoctorHomeScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/doctor/reports',
+                builder: (context, state) => const DoctorReportsScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/doctor/cases',
+                builder: (context, state) => const DoctorCasesScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/doctor/quarantine',
+                builder: (context, state) => const DoctorQuarantineScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/doctor/account',
+                builder: (context, state) => const DoctorAccountScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
       GoRoute(
         path: '/supervisor',
-        builder: (context, state) => const SupervisorPlaceholderScreen(),
+        redirect: (context, state) => '/supervisor/home',
+      ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            SupervisorShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/supervisor/home',
+                builder: (context, state) => const SupervisorHomeScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/supervisor/health-reports',
+                builder: (context, state) => const HealthReportsScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/supervisor/group-followup',
+                builder: (context, state) => const GroupFollowupScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/supervisor/receiving-tasks',
+                builder: (context, state) => ReceivingTasksScreen(
+                  initialFilterQuery: state.uri.queryParameters['filter'],
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/supervisor/account',
+                builder: (context, state) => const SupervisorAccountScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
@@ -142,6 +249,25 @@ GoRouter createRouter(AuthProvider authProvider) {
         path: '/virtual-tour',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const VirtualTourScreen(),
+      ),
+      GoRoute(
+        path: '/supervisor/notifications',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const SupervisorNotificationsScreen(),
+      ),
+      GoRoute(
+        path: '/doctor/cases/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => MedicalCaseDetailScreen(
+          caseId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: '/doctor/quarantine/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => QuarantineDetailScreen(
+          recordId: state.pathParameters['id']!,
+        ),
       ),
     ],
   );

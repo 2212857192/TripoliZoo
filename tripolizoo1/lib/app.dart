@@ -7,6 +7,12 @@ import 'package:tripolizoo/shared/theme/app_theme.dart';
 import 'package:tripolizoo/features/visitor/visitor_auth/presentation/auth_provider.dart';
 import 'package:tripolizoo/shared/providers/locale_provider.dart';
 import 'package:tripolizoo/features/visitor/visitor_tickets/presentation/ticket_cart_provider.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_group_followup/presentation/follow_up_provider.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_health_reports/presentation/health_reports_provider.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_notifications/presentation/supervisor_notifications_provider.dart';
+import 'package:tripolizoo/features/doctor/doctor_cases/presentation/medical_cases_provider.dart';
+import 'package:tripolizoo/features/doctor/doctor_quarantine/presentation/quarantine_provider.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_receiving_tasks/presentation/receiving_tasks_provider.dart';
 
 class TripoliZooApp extends StatefulWidget {
   const TripoliZooApp({super.key});
@@ -33,6 +39,12 @@ class _TripoliZooAppState extends State<TripoliZooApp> {
         ChangeNotifierProvider.value(value: _authProvider),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider(create: (_) => TicketCartProvider()),
+        ChangeNotifierProvider(create: (_) => FollowUpProvider()),
+        ChangeNotifierProvider(create: (_) => HealthReportsProvider()),
+        ChangeNotifierProvider(create: (_) => ReceivingTasksProvider()),
+        ChangeNotifierProvider(create: (_) => SupervisorNotificationsProvider()),
+        ChangeNotifierProvider(create: (_) => MedicalCasesProvider()),
+        ChangeNotifierProvider(create: (_) => QuarantineProvider()),
       ],
       child: Consumer<LocaleProvider>(
         builder: (context, localeProvider, child) {
