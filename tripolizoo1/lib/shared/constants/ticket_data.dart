@@ -6,8 +6,8 @@ abstract final class TicketData {
   static const List<TicketType> all = [
     TicketType(
       id: 'adult_ly',
-      title: 'بالغ ليبي',
-      categoryLabel: 'بالغين (ليبيون)',
+      title: 'بالغ',
+      categoryLabel: 'بالغ',
       price: 10,
       subtitle: 'فوق 12 سنة',
       icon: Icons.person,
@@ -15,8 +15,8 @@ abstract final class TicketData {
     ),
     TicketType(
       id: 'child_ly',
-      title: 'طفل ليبي',
-      categoryLabel: 'أطفال (3-12 سنة)',
+      title: 'طفل',
+      categoryLabel: 'طفل',
       price: 5,
       subtitle: 'من 3 إلى 12 سنة',
       icon: Icons.child_care,
@@ -24,8 +24,8 @@ abstract final class TicketData {
     ),
     TicketType(
       id: 'student',
-      title: 'طلبة',
-      categoryLabel: 'طلبة (مدارس وجامعات)',
+      title: 'طالب',
+      categoryLabel: 'طالب',
       price: 5,
       subtitle: 'مدارس وجامعات',
       icon: Icons.school,
@@ -33,8 +33,8 @@ abstract final class TicketData {
     ),
     TicketType(
       id: 'adult_intl',
-      title: 'بالغ أجنبي',
-      categoryLabel: 'بالغين (أجانب)',
+      title: 'بالغ',
+      categoryLabel: 'بالغ',
       price: 50,
       subtitle: 'Foreign Adult',
       icon: Icons.public,
@@ -42,8 +42,8 @@ abstract final class TicketData {
     ),
     TicketType(
       id: 'child_intl',
-      title: 'طفل أجنبي',
-      categoryLabel: 'أطفال (أجانب)',
+      title: 'طفل',
+      categoryLabel: 'طفل',
       price: 25,
       subtitle: 'Foreign Child',
       icon: Icons.child_friendly,
@@ -51,11 +51,9 @@ abstract final class TicketData {
     ),
   ];
 
-  static List<TicketType> get local =>
-      all.where((t) => t.isLocal).toList();
+  static List<TicketType> get local => all.where((t) => t.isLocal).toList();
 
-  static List<TicketType> get foreign =>
-      all.where((t) => !t.isLocal).toList();
+  static List<TicketType> get foreign => all.where((t) => !t.isLocal).toList();
 
   static TicketType? byId(String id) {
     try {

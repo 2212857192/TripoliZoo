@@ -13,6 +13,10 @@ Route::get('/login', function () {
     return view('login');
 });
 
+Route::get('/visitor-app', function () {
+    return view('visitor-app');
+});
+
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');

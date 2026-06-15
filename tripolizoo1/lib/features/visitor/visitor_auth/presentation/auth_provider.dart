@@ -20,6 +20,7 @@ class AuthProvider extends ChangeNotifier {
   String? get error => _error;
   bool get isAuthenticated => _user != null;
   bool get isGuest => _user?.isGuest ?? false;
+  bool get hasAccount => _user != null && !_user!.isGuest;
   String? get resetToken => _resetToken;
   String? get pendingEmail => _pendingEmail;
 
@@ -93,9 +94,9 @@ class AuthProvider extends ChangeNotifier {
     });
   }
 
-  void updateProfile({String? name, String? phone}) {
-    if (_user == null || _user!.isGuest) return;
-    _user = _user!.copyWith(name: name, phone: phone);
+  void updateProfile({String? name, String? email, String? phone}) {
+    if (_user == null) return;
+    _user = _user!.copyWith(name: name, email: email, phone: phone);
     notifyListeners();
   }
 

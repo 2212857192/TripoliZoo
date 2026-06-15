@@ -4,6 +4,15 @@ import 'package:tripolizoo/features/visitor/visitor_auth/data/auth_service.dart'
 
 /// Mock implementation — replace with HTTP calls to [ApiConfig] endpoints.
 class MockAuthService implements AuthService {
+  static const _supervisorEmails = {
+    'supervisor@tripolizoo.ly',
+    'm.supervisor@tripoli-zoo.ly',
+  };
+  static const _doctorEmails = {
+    'doctor@tripolizoo.ly',
+    'a.kabti@tripolizoo.ly',
+  };
+
   String? _pendingOtpEmail;
   String? _resetToken;
 
@@ -103,14 +112,14 @@ class MockAuthService implements AuthService {
 
   /// حسابات تجريبية للتطوير — تُستبدل ببيانات API لاحقًا.
   String _roleFromEmail(String email) {
-    if (email.startsWith('supervisor@')) return 'supervisor';
-    if (email.startsWith('doctor@')) return 'doctor';
+    if (_supervisorEmails.contains(email)) return 'supervisor';
+    if (_doctorEmails.contains(email)) return 'doctor';
     return 'visitor';
   }
 
   String _nameFromEmail(String email) {
-    if (email.startsWith('supervisor@')) return 'محمد';
-    if (email.startsWith('doctor@')) return 'د. أحمد';
+    if (_supervisorEmails.contains(email)) return 'محمد';
+    if (_doctorEmails.contains(email)) return 'د. أحمد';
     return email.split('@').first;
   }
 }

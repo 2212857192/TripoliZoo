@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:panorama_viewer/panorama_viewer.dart';
@@ -224,6 +223,7 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
       onTimeout: () {},
     );
     _sceneLoadCompleter = null;
+
     // #region agent log
     agentLog(
       location: 'virtual_tour_screen.dart:_navigateToScene',
@@ -238,12 +238,15 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
     // #endregion
   }
 
-  int get _panoramaCacheWidth => kIsWeb ? 2048 : 4096;
+  // The source panoramas are mostly 5952px wide. Keeping that width avoids
+  // the visible softness caused by the previous 2048/4096px resize.
+  int get _panoramaCacheWidth => 5952;
 
   ImageProvider _sceneImageProvider(TourScene scene) {
     return _imageProviders.putIfAbsent(
       scene.imageAsset,
-      () => ResizeImage(AssetImage(scene.imageAsset), width: _panoramaCacheWidth),
+      () =>
+          ResizeImage(AssetImage(scene.imageAsset), width: _panoramaCacheWidth),
     );
   }
 
@@ -358,15 +361,30 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
         'viewLon': _viewLon,
         'backMarker': markers
             .where((m) => m.type == TourMarkerType.back)
-            .map((m) => {'lat': m.latitude, 'lon': m.longitude, 'target': m.targetSceneId, 'label': m.label})
+            .map((m) => {
+                  'lat': m.latitude,
+                  'lon': m.longitude,
+                  'target': m.targetSceneId,
+                  'label': m.label
+                })
             .toList(),
         'nextMarker': markers
             .where((m) => m.type == TourMarkerType.next)
-            .map((m) => {'lat': m.latitude, 'lon': m.longitude, 'target': m.targetSceneId, 'label': m.label})
+            .map((m) => {
+                  'lat': m.latitude,
+                  'lon': m.longitude,
+                  'target': m.targetSceneId,
+                  'label': m.label
+                })
             .toList(),
         'animalMarkers': markers
             .where((m) => m.type == TourMarkerType.animalArea)
-            .map((m) => {'lat': m.latitude, 'lon': m.longitude, 'target': m.targetSceneId, 'label': m.label})
+            .map((m) => {
+                  'lat': m.latitude,
+                  'lon': m.longitude,
+                  'target': m.targetSceneId,
+                  'label': m.label
+                })
             .toList(),
       },
     );
@@ -424,7 +442,9 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
   }
 
   double _easeInOutCubic(double t) {
-    return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) * (-2 * t + 2) * (-2 * t + 2) / 2;
+    return t < 0.5
+        ? 4 * t * t * t
+        : 1 - (-2 * t + 2) * (-2 * t + 2) * (-2 * t + 2) / 2;
   }
 
   Future<void> _animateViewTo(
@@ -448,7 +468,8 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
       _panoramaController.setAnimSpeed(0);
       _panoramaController.setView(lat, lon);
       if (mounted) setState(() {});
-      await Future.delayed(Duration(milliseconds: duration.inMilliseconds ~/ steps));
+      await Future.delayed(
+          Duration(milliseconds: duration.inMilliseconds ~/ steps));
     }
   }
 
@@ -481,8 +502,10 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
     await _fadeTo(0);
   }
 
-  Future<void> _lookAround(int gen, {Duration duration = const Duration(seconds: 5)}) async {
-    _setWalkthroughPhase('\u0646\u062a\u0644\u0627\u062d\u0638 \u062d\u0648\u0644 \u0627\u0644\u0645\u0643\u0627\u0646...');
+  Future<void> _lookAround(int gen,
+      {Duration duration = const Duration(seconds: 5)}) async {
+    _setWalkthroughPhase(
+        '\u0646\u062a\u0644\u0627\u062d\u0638 \u062d\u0648\u0644 \u0627\u0644\u0645\u0643\u0627\u0646...');
     final baseLat = _viewLat;
     final baseLon = _viewLon;
     final half = Duration(milliseconds: duration.inMilliseconds ~/ 2);
@@ -490,7 +513,8 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
     if (!_walkthrough || gen != _walkthroughGen) return;
     await _animateViewTo(baseLat, _normalizeLon(baseLon + 32), half, gen: gen);
     if (!_walkthrough || gen != _walkthroughGen) return;
-    await _animateViewTo(baseLat, baseLon, const Duration(milliseconds: 900), gen: gen);
+    await _animateViewTo(baseLat, baseLon, const Duration(milliseconds: 900),
+        gen: gen);
   }
 
   void _applyWalkthroughEntry(String fromSceneId, List<TourMarker> markers) {
@@ -507,7 +531,9 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
   Future<void> _visitAnimalDuringWalk(TourMarker marker, int gen) async {
     _setWalkthroughPhase('نقترب من ${marker.label ?? 'الحيوانات'}...');
     setState(() => _walkthroughAnimalLabel = marker.label);
-    await _animateViewTo(marker.latitude, marker.longitude, const Duration(milliseconds: 2000), gen: gen);
+    await _animateViewTo(
+        marker.latitude, marker.longitude, const Duration(milliseconds: 2000),
+        gen: gen);
     if (!_walkthrough || gen != _walkthroughGen) return;
     _setWalkthroughPhase('${marker.label ?? 'منطقة الحيوانات'} — نتأمل...');
     await Future.delayed(const Duration(seconds: 3));
@@ -548,11 +574,13 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
         return;
       }
 
-      final exitMarker = VirtualTourData.walkthroughExitMarker(_currentSceneId, nextId);
+      final exitMarker =
+          VirtualTourData.walkthroughExitMarker(_currentSceneId, nextId);
       final nextTitle = VirtualTourData.sceneById(nextId).title;
 
       // 4) نتجه نحو الممر — مشي
-      await _walkIntoScene(nextId, exitMarker: exitMarker, nextTitle: nextTitle, gen: gen);
+      await _walkIntoScene(nextId,
+          exitMarker: exitMarker, nextTitle: nextTitle, gen: gen);
     }
   }
 
@@ -598,7 +626,9 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
         gen: gen,
       );
     } else {
-      await _animateViewTo(_viewLat, _viewLon, const Duration(milliseconds: 1200), gen: gen);
+      await _animateViewTo(
+          _viewLat, _viewLon, const Duration(milliseconds: 1200),
+          gen: gen);
     }
     if (!_walkthrough || !mounted || gen != _walkthroughGen) return;
 
@@ -726,18 +756,26 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
         leading: IconButton(
           icon: Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+            decoration: BoxDecoration(
+                color: Colors.black54, borderRadius: BorderRadius.circular(12)),
+            child: const Icon(Icons.arrow_back_ios_new,
+                color: Colors.white, size: 18),
           ),
           onPressed: () => context.pop(),
         ),
         title: Column(
           children: [
             const Text('جولة 360°',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16)),
             Text(
               _scene.title,
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.8),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600),
             ),
             if (_isHorseRoute) ...[
               const SizedBox(height: 2),
@@ -879,6 +917,8 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
               latitude: _viewLat,
               longitude: _viewLon,
               animSpeed: 0,
+              latSegments: 48,
+              lonSegments: 96,
               onImageLoad: _onPanoramaImageLoaded,
               panoramaController: _panoramaController,
               sensorControl: SensorControl.none,
@@ -886,7 +926,7 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
               child: Image(
                 image: _sceneImageProvider(_scene),
                 gaplessPlayback: true,
-                filterQuality: FilterQuality.medium,
+                filterQuality: FilterQuality.high,
               ),
             ),
           if (_walkthrough)
@@ -896,7 +936,8 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
               right: 0,
               child: Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(20),
@@ -904,7 +945,8 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.directions_walk_rounded, color: Colors.white, size: 16),
+                      const Icon(Icons.directions_walk_rounded,
+                          color: Colors.white, size: 16),
                       const SizedBox(width: 8),
                       Flexible(
                         child: Text(
@@ -932,7 +974,8 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
               right: 24,
               child: IgnorePointer(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.95),
                     borderRadius: BorderRadius.circular(16),
@@ -952,7 +995,8 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                           color: AppColors.accent.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(Icons.pets_rounded, color: AppColors.accent, size: 20),
+                        child: const Icon(Icons.pets_rounded,
+                            color: AppColors.accent, size: 20),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -999,7 +1043,8 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 48),
+                        const Icon(Icons.check_circle_rounded,
+                            color: AppColors.primary, size: 48),
                         const SizedBox(height: 12),
                         const Text(
                           'انتهت الجولة',
@@ -1028,7 +1073,8 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
           if (_fadeOpacity > 0)
             Positioned.fill(
               child: IgnorePointer(
-                child: ColoredBox(color: Colors.black.withValues(alpha: _fadeOpacity)),
+                child: ColoredBox(
+                    color: Colors.black.withValues(alpha: _fadeOpacity)),
               ),
             ),
           Positioned(
@@ -1037,7 +1083,8 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
             right: 20,
             child: IgnorePointer(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12),
@@ -1046,7 +1093,9 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      _walkthrough ? Icons.pause_circle_outline : Icons.touch_app_outlined,
+                      _walkthrough
+                          ? Icons.pause_circle_outline
+                          : Icons.touch_app_outlined,
                       color: Colors.white70,
                       size: 16,
                     ),
@@ -1056,15 +1105,15 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                           ? (_walkthroughPhase.isNotEmpty
                               ? _walkthroughPhase
                               : 'جولة تلقائية — اضغط ⏸ للإيقاف')
-                              : _isHorseRoute
-                                  ? 'طريق الخيول  •  انتقل أو منطقة الخيول'
+                          : _isHorseRoute
+                              ? 'طريق الخيول  •  انتقل أو منطقة الخيول'
                               : _isDuckRoute
                                   ? 'طريق البط والبجع  •  البرتقالي للبركة'
                                   : _isReptileRoute
                                       ? 'طريق الزواحف  •  البوابات الخضراء للانتقال'
                                       : _isBigCatsRoute
                                           ? 'طريق الأسود والنمور  •  البرتقالي للأقفاص'
-                                      : 'اضغط البوابة الأرضية للانتقال  •  البرتقالي للحيوانات',
+                                          : 'اضغط البوابة الأرضية للانتقال  •  البرتقالي للحيوانات',
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 12,
@@ -1132,22 +1181,22 @@ class _MarkerWidgetState extends State<_MarkerWidget>
         builder: (_, __) {
           return switch (widget.type) {
             TourMarkerType.next => _NavPortal(
-              isForward: true,
-              label: widget.label,
-              pulse: _pulse.value,
-              ring: _ring.value,
-            ),
+                isForward: true,
+                label: widget.label,
+                pulse: _pulse.value,
+                ring: _ring.value,
+              ),
             TourMarkerType.back => _NavPortal(
-              isForward: false,
-              label: widget.label,
-              pulse: _pulse.value,
-              ring: _ring.value,
-            ),
+                isForward: false,
+                label: widget.label,
+                pulse: _pulse.value,
+                ring: _ring.value,
+              ),
             TourMarkerType.animalArea => _AnimalSpot(
-              label: widget.label,
-              pulse: _pulse.value,
-              ring: _ring.value,
-            ),
+                label: widget.label,
+                pulse: _pulse.value,
+                ring: _ring.value,
+              ),
           };
         },
       ),
@@ -1169,14 +1218,12 @@ class _NavPortal extends StatelessWidget {
   final double pulse;
   final double ring;
 
-  Color get _accent =>
-      isForward ? AppColors.primary : const Color(0xFF607D8B);
+  Color get _accent => isForward ? AppColors.primary : const Color(0xFF607D8B);
 
   String get _defaultLabel => isForward ? 'انتقل' : 'رجوع';
 
-  IconData get _labelIcon => isForward
-      ? Icons.explore_rounded
-      : Icons.restart_alt_rounded;
+  IconData get _labelIcon =>
+      isForward ? Icons.explore_rounded : Icons.restart_alt_rounded;
 
   @override
   Widget build(BuildContext context) {
@@ -1235,7 +1282,8 @@ class _NavPortal extends StatelessWidget {
                             Colors.white.withValues(alpha: 0.72),
                           ],
                         ),
-                        border: Border.all(color: _accent.withValues(alpha: 0.7), width: 2),
+                        border: Border.all(
+                            color: _accent.withValues(alpha: 0.7), width: 2),
                         boxShadow: [
                           BoxShadow(
                             color: _accent.withValues(alpha: 0.4),
@@ -1379,7 +1427,8 @@ class _AnimalSpot extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: AppColors.accent.withValues(alpha: ringOpacity),
+                          color:
+                              AppColors.accent.withValues(alpha: ringOpacity),
                           width: 2,
                         ),
                       ),

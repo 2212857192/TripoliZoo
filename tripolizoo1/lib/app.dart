@@ -42,7 +42,8 @@ class _TripoliZooAppState extends State<TripoliZooApp> {
         ChangeNotifierProvider(create: (_) => FollowUpProvider()),
         ChangeNotifierProvider(create: (_) => HealthReportsProvider()),
         ChangeNotifierProvider(create: (_) => ReceivingTasksProvider()),
-        ChangeNotifierProvider(create: (_) => SupervisorNotificationsProvider()),
+        ChangeNotifierProvider(
+            create: (_) => SupervisorNotificationsProvider()),
         ChangeNotifierProvider(create: (_) => MedicalCasesProvider()),
         ChangeNotifierProvider(create: (_) => QuarantineProvider()),
       ],
@@ -56,9 +57,6 @@ class _TripoliZooAppState extends State<TripoliZooApp> {
             case AppLocale.en:
               appLocale = const Locale('en');
               break;
-            case AppLocale.it:
-              appLocale = const Locale('it');
-              break;
           }
 
           return MaterialApp.router(
@@ -70,7 +68,6 @@ class _TripoliZooAppState extends State<TripoliZooApp> {
             supportedLocales: const [
               Locale('ar'),
               Locale('en'),
-              Locale('it'),
             ],
             localizationsDelegates: const [
               GlobalMaterialLocalizations.delegate,

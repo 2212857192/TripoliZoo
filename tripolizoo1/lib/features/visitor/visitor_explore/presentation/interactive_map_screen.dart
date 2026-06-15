@@ -12,10 +12,17 @@ class InteractiveMapScreen extends StatefulWidget {
 }
 
 class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
-  final TransformationController _transformationController = TransformationController();
+  final TransformationController _transformationController =
+      TransformationController();
   String _selectedCategory = 'الكل';
 
-  final List<String> _categories = ['الكل', 'مفترسات', 'طيور', 'ثدييات', 'زواحف'];
+  final List<String> _categories = [
+    'الكل',
+    'مفترسات',
+    'طيور',
+    'ثدييات',
+    'زواحف'
+  ];
 
   // تفاصيل الدبابيس التفاعلية المتطابقة مع الصورة
   final List<Map<String, dynamic>> _pins = [
@@ -26,7 +33,8 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
       'x': 0.50,
       'y': 0.22,
       'image': 'assets/images/lion.jpg',
-      'description': 'ملك الغابة، أحد أقوى المفترسات في الحديقة، يعيش في مساحة مفتوحة تشبه موطنه الأصلي السافانا.',
+      'description':
+          'ملك الغابة، أحد أقوى المفترسات في الحديقة، يعيش في مساحة مفتوحة تشبه موطنه الأصلي السافانا.',
       'diet': 'لحوم',
       'status': 'نشط الآن',
     },
@@ -37,7 +45,8 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
       'x': 0.68,
       'y': 0.20,
       'image': 'assets/images/flamengo.jpg',
-      'description': 'طائر استوائي ذكي ومحبوب، يتميز بريشه الملون الخلاب وقدرته المدهشة على تقليد الأصوات والكلمات.',
+      'description':
+          'طائر استوائي ذكي ومحبوب، يتميز بريشه الملون الخلاب وقدرته المدهشة على تقليد الأصوات والكلمات.',
       'diet': 'فواكه وبذور',
       'status': 'نشط الآن',
     },
@@ -48,7 +57,8 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
       'x': 0.18,
       'y': 0.32,
       'image': 'assets/images/bear.jpg',
-      'description': 'أضخم الثدييات البرية في الحديقة، يتمتع بذكاء فائق وذاكرة قوية، ويفضل اللعب بالماء والاستحمام يومياً.',
+      'description':
+          'أضخم الثدييات البرية في الحديقة، يتمتع بذكاء فائق وذاكرة قوية، ويفضل اللعب بالماء والاستحمام يومياً.',
       'diet': 'عشبي',
       'status': 'وقت الاستحمام',
     },
@@ -59,7 +69,8 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
       'x': 0.31,
       'y': 0.51,
       'image': 'assets/images/tiger.jpg',
-      'description': 'أكبر القطط الكبيرة في العالم، يشتهر بفرائه المخطط المهيب وبنيته العضلية القوية ومهاراته العالية في الصيد والتسلل.',
+      'description':
+          'أكبر القطط الكبيرة في العالم، يشتهر بفرائه المخطط المهيب وبنيته العضلية القوية ومهاراته العالية في الصيد والتسلل.',
       'diet': 'لحوم',
       'status': 'يستريح الآن',
     },
@@ -70,7 +81,8 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
       'x': 0.53,
       'y': 0.78,
       'image': 'assets/images/Hello2.jpg',
-      'description': 'من أندر حيوانات الحديقة وأكثرها شعبية، يقضي معظم يومه في تناول عيدان الخيزران الطازجة واللعب في بركته الخاصة.',
+      'description':
+          'من أندر حيوانات الحديقة وأكثرها شعبية، يقضي معظم يومه في تناول عيدان الخيزران الطازجة واللعب في بركته الخاصة.',
       'diet': 'أوراق الخيزران',
       'status': 'نشط الآن',
     },
@@ -81,7 +93,8 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
       'x': 0.30,
       'y': 0.89,
       'image': 'assets/images/Hello3.jpg',
-      'description': 'حيوان صغير الحجم يعيش في أعالي الأشجار، يشبه الثعالب في لونه المحمر الجذاب وذيله الكثيف المخطط.',
+      'description':
+          'حيوان صغير الحجم يعيش في أعالي الأشجار، يشبه الثعالب في لونه المحمر الجذاب وذيله الكثيف المخطط.',
       'diet': 'بامبو وفواكه',
       'status': 'نائم الآن',
     },
@@ -101,7 +114,7 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
     String mappedCategory = 'mammals';
     if (pin['category'] == 'مفترسات') mappedCategory = 'predators';
     if (pin['category'] == 'طيور') mappedCategory = 'birds';
-    
+
     final animal = Animal(
       id: pin['id'].hashCode,
       name: pin['name'],
@@ -115,14 +128,9 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
       habitat: '',
     );
 
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (_, anim, __) => FadeTransition(
-          opacity: anim,
-          child: AnimalDetailScreen(animal: animal),
-        ),
-        transitionDuration: const Duration(milliseconds: 400),
+    Navigator.of(context, rootNavigator: true).push(
+      MaterialPageRoute<void>(
+        builder: (_) => AnimalDetailScreen(animal: animal),
       ),
     );
   }
@@ -135,7 +143,7 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF4F3ED),
+        backgroundColor: Colors.white,
         body: Stack(
           children: [
             // ══════════════════════════════════════
@@ -212,7 +220,13 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
                         IconButton(
                           icon: const Icon(Icons.arrow_back_ios_new_rounded,
                               color: Color(0xFF1F2937), size: 18),
-                          onPressed: () => context.pop(),
+                          onPressed: () {
+                            if (context.canPop()) {
+                              context.pop();
+                            } else {
+                              context.go('/home');
+                            }
+                          },
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -253,7 +267,8 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? const Color(0xFF1B4332)
-                                  : const Color(0xFF8C733E).withValues(alpha: 0.85),
+                                  : const Color(0xFF8C733E)
+                                      .withValues(alpha: 0.85),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             alignment: Alignment.center,
@@ -293,7 +308,8 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
                         SnackBar(
                           content: Text(
                             'عرض مواقع المطاعم والاستراحات على الخريطة 🍔',
-                            style: GoogleFonts.cairo(fontWeight: FontWeight.w700),
+                            style:
+                                GoogleFonts.cairo(fontWeight: FontWeight.w700),
                           ),
                           backgroundColor: const Color(0xFF8C733E),
                         ),
@@ -309,7 +325,8 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
                         SnackBar(
                           content: Text(
                             'عرض مواقع دورات المياه والخدمات على الخريطة 🚻',
-                            style: GoogleFonts.cairo(fontWeight: FontWeight.w700),
+                            style:
+                                GoogleFonts.cairo(fontWeight: FontWeight.w700),
                           ),
                           backgroundColor: const Color(0xFF8C733E),
                         ),
@@ -325,7 +342,8 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
                         SnackBar(
                           content: Text(
                             'جاري تحديد موقعك الجغرافي داخل الحديقة... 📍',
-                            style: GoogleFonts.cairo(fontWeight: FontWeight.w700),
+                            style:
+                                GoogleFonts.cairo(fontWeight: FontWeight.w700),
                           ),
                           backgroundColor: const Color(0xFF1B4332),
                         ),
@@ -335,7 +353,6 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
                 ],
               ),
             ),
-
           ],
         ),
       ),

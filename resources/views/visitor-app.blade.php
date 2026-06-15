@@ -301,7 +301,7 @@
             </div>
 
             <!-- Visitor Info -->
-            <div class="grid-card">
+            <a href="/visit-info" class="grid-card" style="text-decoration:none; color:inherit;">
                 <div class="icon-wrap c-info">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="10"/>
@@ -312,7 +312,7 @@
                     <div class="card-title">Visitor Info</div>
                     <div class="card-desc">Open 09:00 - 17:00</div>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 </div>
