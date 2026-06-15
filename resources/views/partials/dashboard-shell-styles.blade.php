@@ -208,7 +208,8 @@
         display: block;
     }
 
-    .user-menu-dropdown a {
+    .user-menu-dropdown a,
+    .user-menu-dropdown button[type="submit"] {
         display: flex;
         align-items: center;
         gap: 8px;
@@ -220,14 +221,58 @@
         font-weight: 700;
         color: #dc2626;
         transition: background 0.2s;
+        width: 100%;
+        background: none;
+        border: none;
+        cursor: pointer;
     }
 
-    .user-menu-dropdown a:hover {
+    .user-menu-dropdown a:hover,
+    .user-menu-dropdown button[type="submit"]:hover {
         background: #fef2f2;
     }
 
-    .sidebar-footer {
-        display: none;
+    .sidebar .sidebar-footer {
+        display: block;
+        margin-top: auto;
+    }
+
+    .portal-logout-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+    }
+
+    .portal-logout-btn.is-sidebar {
+        width: 100%;
+        padding: 10px 12px;
+        background: #fef2f2;
+        color: #e11d48;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.8rem;
+    }
+
+    .portal-logout-btn.is-sidebar:hover {
+        background: #fee2e2;
+    }
+
+    .portal-logout-btn.is-dropdown {
+        width: 100%;
+        padding: 10px 12px;
+        background: none;
+        color: #e11d48;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.85rem;
+    }
+
+    .portal-logout-btn.is-dropdown:hover {
+        background: #fef2f2;
     }
 
     /* ── تنقل داخل الصفحة (بدل الهيدر) ── */

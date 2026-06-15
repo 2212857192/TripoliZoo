@@ -312,9 +312,9 @@
     <div class="top-row">
         <div>
             <h2>المحتوى التعريفي للحيوانات</h2>
-            <p>إجمالي <strong id="animalCount">2</strong> محتوى تعريفي مسجل</p>
+            <p>إجمالي <strong id="animalCount">{{ $profiles->count() }}</strong> محتوى تعريفي مسجل</p>
         </div>
-        <a href="/admin/animals/create" class="btn-add">
+        <a href="{{ route('admin.animals.create') }}" class="btn-add">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             إضافة محتوى جديد
         </a>
@@ -329,71 +329,50 @@
 
 <!-- Animals Grid -->
 <div class="animals-grid" id="animalsGrid">
-
-    <!-- Card 1: Lion -->
-    <div class="animal-card" data-vis="visible" data-name="الأسد الإفريقي">
+    @foreach($profiles as $profile)
+    @php
+        $animalName = $profile->animal?->species ?? '—';
+        $sci = $profile->scientific_name ?? '';
+        $code = $profile->display_code ?? $profile->animal?->code ?? '—';
+        $img = $profile->imageUrl();
+    @endphp
+    <div class="animal-card" data-vis="{{ $profile->is_visible ? 'visible' : 'hidden' }}" data-name="{{ $animalName }}">
         <div class="animal-img-wrap">
-            <img src="/zoo_lion.png" alt="الأسد" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="animal-img-placeholder" style="display:none">🦁</div>
-            <span class="vis-badge visible">ظاهر للزوار</span>
+            @if($img)
+            <img src="{{ $img }}" alt="{{ $animalName }}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            @endif
+            <div class="animal-img-placeholder" style="{{ $img ? 'display:none' : '' }}">🦁</div>
+            <span class="vis-badge {{ $profile->is_visible ? 'visible' : 'hidden-app' }}">{{ $profile->is_visible ? 'ظاهر للزوار' : 'مخفي' }}</span>
         </div>
         <div class="animal-body">
-            <h3 class="animal-name">الأسد الإفريقي</h3>
-            <p class="animal-sci">Panthera leo</p>
-            <p class="animal-desc-preview">الأسد الإفريقي من أكبر القطط البرية في العالم. يعيش في مجموعات تُعرف بـ (الفخر). يتميز الذكر بعُرفه الكثيف الذي يزداد قتامةً مع التقدم في السن.</p>
+            <h3 class="animal-name">{{ $animalName }}</h3>
+            @if($sci)<p class="animal-sci">{{ $sci }}</p>@endif
+            <p class="animal-desc-preview">{{ Str::limit($profile->description, 120) }}</p>
             <div class="animal-actions">
-                <a href="/admin/animals/1" class="btn-act view-btn">
+                <a href="{{ route('admin.animals.show', $profile) }}" class="btn-act view-btn">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                     عرض
                 </a>
-                <a href="/admin/animals/1/edit" class="btn-act edit-btn">
+                <a href="{{ route('admin.animals.edit', $profile) }}" class="btn-act edit-btn">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                     تعديل
                 </a>
-                <button class="btn-act vis-btn" onclick="toggleVis(this)" data-vis="visible">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    إخفاء
-                </button>
-                <button class="btn-act qr-btn" onclick="openQR('الأسد الإفريقي','Panthera leo','L-01')">
+                <form method="POST" action="{{ route('admin.animals.visibility', $profile) }}" style="display:inline;">
+                    @csrf
+                    @method('PATCH')
+                    <button type="submit" class="btn-act vis-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        {{ $profile->is_visible ? 'إخفاء' : 'إظهار' }}
+                    </button>
+                </form>
+                <button type="button" class="btn-act qr-btn" onclick="openQR(@json($animalName), @json($sci), @json($code), @json(route('visitor.animal', $profile)))">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                     QR
                 </button>
             </div>
         </div>
     </div>
-
-    <!-- Card 2: Elephant -->
-    <div class="animal-card" data-vis="visible" data-name="الفيل الآسيوي">
-        <div class="animal-img-wrap">
-            <img src="/zoo_elephant.png" alt="الفيل" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="animal-img-placeholder" style="display:none">🐘</div>
-            <span class="vis-badge visible">ظاهر للزوار</span>
-        </div>
-        <div class="animal-body">
-            <h3 class="animal-name">الفيل الآسيوي</h3>
-            <p class="animal-sci">Elephas maximus</p>
-            <p class="animal-desc-preview">الفيل الآسيوي أصغر حجماً من أفريقي، ويتميز بأذنين أصغر ورأس أكثر تحدباً. يُعدّ من أكثر الحيوانات ذكاءً في العالم، ويمتلك ذاكرة استثنائية.</p>
-            <div class="animal-actions">
-                <a href="/admin/animals/2" class="btn-act view-btn">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    عرض
-                </a>
-                <a href="/admin/animals/2/edit" class="btn-act edit-btn">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                    تعديل
-                </a>
-                <button class="btn-act vis-btn" onclick="toggleVis(this)" data-vis="visible">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    إخفاء
-                </button>
-                <button class="btn-act qr-btn" onclick="openQR('الفيل الآسيوي','Elephas maximus','E-04')">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                    QR
-                </button>
-            </div>
-        </div>
-    </div>
-
+    @endforeach
 </div>
 
 <div class="empty-state" id="emptyState">
@@ -456,32 +435,16 @@
 
     document.getElementById('searchInput').addEventListener('input', filterAnimals);
 
-    /* Toggle visibility */
-    function toggleVis(btn) {
-        const card   = btn.closest('.animal-card');
-        const isVis  = card.dataset.vis === 'visible';
-        card.dataset.vis = isVis ? 'hidden' : 'visible';
-
-        const badge = card.querySelector('.vis-badge');
-        badge.textContent = isVis ? 'مخفي' : 'ظاهر للزوار';
-        badge.className   = 'vis-badge ' + (isVis ? 'hidden-app' : 'visible');
-
-        btn.innerHTML = isVis
-            ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><line x1="1" y1="1" x2="23" y2="23"></line></svg> إظهار`
-            : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> إخفاء`;
-
-        filterAnimals();
-        showToast(isVis ? '🚫 تم الإخفاء من تطبيق الزوار' : '👁️ تم الإظهار في تطبيق الزوار');
-    }
+    /* Toggle visibility - server-side via form */
 
     /* QR */
-    function openQR(name, sci, code) {
+    function openQR(name, sci, code, url) {
         currentQRName = name;
         document.getElementById('qrName').textContent = name;
-        document.getElementById('qrCode').textContent = 'رمز: ' + code + ' | ' + sci;
+        document.getElementById('qrCode').textContent = 'رمز: ' + code + (sci ? ' | ' + sci : '');
 
         QRCode.toCanvas(document.getElementById('qrCanvas'),
-            JSON.stringify({ name, scientific: sci, code, zoo: 'حديقة حيوان طرابلس' }),
+            url || JSON.stringify({ name, scientific: sci, code, zoo: 'حديقة حيوان طرابلس' }),
             { width: 200, margin: 1, color: { dark: '#1E293B', light: '#FFFFFF' } }
         );
         document.getElementById('qrModal').classList.add('show');

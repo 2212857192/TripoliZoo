@@ -451,10 +451,7 @@
 
         <div class="sidebar-footer">
             <div style="padding: 1.2rem; border-top: 1px solid #e2e8f0;">
-                <a href="/login" style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #fef2f2; color: #e11d48; border-radius: 8px; text-decoration: none; font-family: 'Cairo', sans-serif; font-size: 0.8rem; font-weight: 700; transition: all 0.2s;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                    تسجيل خروج
-                </a>
+                @include('partials.portal-logout')
             </div>
         </div>
     </aside>
@@ -466,12 +463,13 @@
             @include('partials.topbar-page-info', ['sectionLabel' => 'مدير الحديقة', 'defaultTitle' => 'لوحة المتابعة'])
             <div class="topbar-actions">
                 @include('partials.topbar-notifications', ['notificationCount' => 0])
-                @include('partials.topbar-user-menu', ['userName' => 'م. خالد المنصوري', 'userEmail' => 'director@tripolizoo.com'])
+                @include('partials.topbar-user-menu')
             </div>
         </header>
 
         <!-- Content Area -->
         <div class="content-area">
+            @include('partials.flash-messages')
             @yield('content')
         </div>
     </main>

@@ -30,6 +30,7 @@ class _TripoliZooAppState extends State<TripoliZooApp> {
     super.initState();
     _authProvider = AuthProvider();
     _router = createRouter(_authProvider);
+    _authProvider.bootstrap();
   }
 
   @override

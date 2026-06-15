@@ -3,18 +3,8 @@
 @section('page_title', 'تعديل المحتوى التعريفي')
 
 @php
-$animals = [
-    '1' => ['name'=>'الأسد الإفريقي',  'sci'=>'Panthera leo',           'emoji'=>'🦁', 'code'=>'L-01',
-             'desc'=>'الأسد الإفريقي من أكبر القطط البرية في العالم. يعيش في مجموعات تُعرف بـ (الفخر). يتميز الذكر بعُرفه الكثيف الذي يزداد قتامةً مع التقدم في السن. يصل وزنه إلى 190 كجم ويمكنه الجري بسرعة تصل إلى 80 كم/ساعة لمسافات قصيرة.',
-             'img'=>'/zoo_lion.png'],
-    '2' => ['name'=>'الفيل الآسيوي',   'sci'=>'Elephas maximus',         'emoji'=>'🐘', 'code'=>'E-04',
-             'desc'=>'الفيل الآسيوي أصغر حجماً من الأفريقي، ويتميز بأذنين أصغر ورأس أكثر تحدباً. يُعدّ من أكثر الحيوانات ذكاءً في العالم، ويمتلك ذاكرة استثنائية.',
-             'img'=>'/zoo_elephant.png'],
-    '3' => ['name'=>'النمر البنغالي',  'sci'=>'Panthera tigris',         'emoji'=>'🐯', 'code'=>'T-02',
-             'desc'=>'النمر البنغالي أكبر أنواع القطط وأقواها. يسبح جيداً ويجيد تسلق الأشجار. يُهدَّد بالانقراض بسبب الصيد الجائر وفقدان موطنه.',
-             'img'=>''],
-];
-$animal = $animals[$id ?? '1'] ?? $animals['1'];
+    $animalName = $profile->animal?->species ?? '—';
+    $img = $profile->imageUrl();
 @endphp
 
 @section('styles')
@@ -207,10 +197,14 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
 
 @section('content')
 
-<a href="/admin/animals/{{ $id ?? 1 }}" class="page-back">
+<a href="{{ route('admin.animals.show', $profile) }}" class="page-back">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     العودة لعرض المحتوى التعريفي
 </a>
+
+<form method="POST" action="{{ route('admin.animals.update', $profile) }}" enctype="multipart/form-data">
+@csrf
+@method('PUT')
 
 {{-- ── 1. Animal (read-only) ── --}}
 <div class="section-card">
@@ -223,7 +217,7 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
     </div>
     <div class="section-body">
         <div class="animal-identity-info">
-            <h3>{{ $animal['name'] }}</h3>
+            <h3>{{ $animalName }}</h3>
         </div>
         <div class="readonly-note">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
@@ -244,11 +238,13 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
     <div class="section-body">
         <textarea
             id="desc"
+            name="description"
             class="desc-textarea"
             oninput="onDescInput()"
             rows="6"
-        >{{ $animal['desc'] }}</textarea>
-        <div class="char-count">الأحرف: <span id="charCount">{{ mb_strlen($animal['desc']) }}</span> / 600</div>
+            required
+        >{{ old('description', $profile->description) }}</textarea>
+        <div class="char-count">الأحرف: <span id="charCount">{{ mb_strlen(old('description', $profile->description)) }}</span> / 600</div>
     </div>
 </div>
 
@@ -263,9 +259,9 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
         </div>
         <div class="bottom-card-body">
             <div class="image-slot">
-                <input type="file" id="imgInput" accept="image/*" onchange="previewImg(this)" hidden>
+                <input type="file" id="imgInput" name="image" accept="image/*" onchange="previewImg(this)" hidden>
 
-                <div class="upload-zone" id="uploadZone" @if($animal['img']) style="display:none" @endif onclick="document.getElementById('imgInput').click()">
+                <div class="upload-zone" id="uploadZone" @if($img) style="display:none" @endif onclick="document.getElementById('imgInput').click()">
                     <div class="upload-zone-icon">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
                     </div>
@@ -274,8 +270,8 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
                     <p style="margin-top:4px;">PNG أو JPG حتى 5 ميجابايت</p>
                 </div>
 
-                <div class="img-preview-wrap @if($animal['img']) show @endif" id="imgPreviewWrap">
-                    <img id="imgPreview" src="{{ $animal['img'] ?: '' }}" alt="{{ $animal['name'] }}">
+                <div class="img-preview-wrap @if($img) show @endif" id="imgPreviewWrap">
+                    <img id="imgPreview" src="{{ $img ?: '' }}" alt="{{ $animalName }}">
                     <div class="img-preview-actions">
                         <button type="button" class="img-change-btn" onclick="document.getElementById('imgInput').click()">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -295,19 +291,21 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
             <h3>حفظ التعديلات</h3>
         </div>
         <div class="bottom-card-body">
-            <button class="btn-save" id="btnSave" onclick="submitForm()">
+            <button type="submit" class="btn-save" id="btnSave">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                 حفظ التعديلات
             </button>
-            <a href="/admin/animals/{{ $id ?? 1 }}" class="btn-view">
+            <a href="{{ route('admin.animals.show', $profile) }}" class="btn-view">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 عرض بدون حفظ
             </a>
-            <a href="/admin/animals" class="btn-discard">إلغاء والعودة للقائمة</a>
+            <a href="{{ route('admin.animals.index') }}" class="btn-discard">إلغاء والعودة للقائمة</a>
         </div>
     </div>
 
 </div>
+
+</form>
 
 <div class="toast" id="toast"></div>
 @endsection
@@ -371,29 +369,6 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
         const t = document.getElementById('toast');
         t.textContent = msg; t.classList.add('show');
         setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    function submitForm() {
-        const desc = document.getElementById('desc').value.trim();
-        if (desc.length < 20) {
-            showToast('⚠️ يجب كتابة وصف تعريفي (20 حرف على الأقل)');
-            document.getElementById('desc').focus();
-            return;
-        }
-        if (!hasImage()) {
-            showToast('⚠️ يجب إضافة صورة للحيوان');
-            return;
-        }
-
-        const btn = document.getElementById('btnSave');
-        btn.disabled = true; btn.style.opacity = '.7';
-        btn.innerHTML = '⏳ جاري الحفظ...';
-
-        setTimeout(() => {
-            showToast('✅ تم حفظ التعديلات بنجاح');
-            btn.innerHTML = '✅ تم الحفظ!';
-            setTimeout(() => { window.location.href = '/admin/animals/{{ $id ?? 1 }}'; }, 1200);
-        }, 900);
     }
 </script>
 @endsection

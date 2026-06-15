@@ -69,7 +69,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   setState(() => _obscurePassword = !_obscurePassword),
               validator: (v) {
                 if (v == null || v.length < AppConstants.minPasswordLength) {
-                  return '6 أحرف على الأقل';
+                  return '${AppConstants.minPasswordLength} أحرف على الأقل';
                 }
                 return null;
               },

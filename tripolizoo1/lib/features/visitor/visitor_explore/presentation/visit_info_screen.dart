@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
@@ -44,7 +44,7 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
         SnackBar(
           content: Text(
             context.localized(
-              ar: 'تعذر فتح موقع الحديقة',
+              ar: '╪ز╪╣╪░╪▒ ┘╪ز╪ص ┘à┘ê┘é╪╣ ╪د┘╪ص╪»┘è┘é╪ر',
               en: 'Unable to open the zoo location',
             ),
           ),
@@ -96,7 +96,7 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                         child: _StatChip(
                           icon: Icons.access_time,
                           label: context.localized(
-                            ar: 'ساعات العمل',
+                            ar: '╪│╪د╪╣╪د╪ز ╪د┘╪╣┘à┘',
                             en: 'Opening Hours',
                           ),
                           value: AppConstants.workingHours,
@@ -107,7 +107,7 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                         child: _StatChip(
                           icon: Icons.calendar_month,
                           label: context.localized(
-                            ar: 'أيام العمل',
+                            ar: '╪ث┘è╪د┘à ╪د┘╪╣┘à┘',
                             en: 'Working Days',
                           ),
                           value: context.localized(
@@ -121,7 +121,7 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                   const SizedBox(height: 20),
                   _SectionCard(
                     title: context.localized(
-                      ar: 'موقع الحديقة',
+                      ar: '┘à┘ê┘é╪╣ ╪د┘╪ص╪»┘è┘é╪ر',
                       en: 'Zoo Location',
                     ),
                     icon: Icons.location_on_outlined,
@@ -130,7 +130,7 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                       children: [
                         Text(
                           context.localized(
-                            ar: 'حديقة حيوان طرابلس، طرابلس، ليبيا',
+                            ar: '╪ص╪»┘è┘é╪ر ╪ص┘è┘ê╪د┘ ╪╖╪▒╪د╪ذ┘╪│╪î ╪╖╪▒╪د╪ذ┘╪│╪î ┘┘è╪ذ┘è╪د',
                             en: 'Tripoli Zoo, Tripoli, Libya',
                           ),
                           style: const TextStyle(
@@ -141,7 +141,7 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                         const SizedBox(height: 6),
                         Text(
                           context.localized(
-                            ar: 'افتح الموقع في خرائط Google للحصول على الاتجاهات والوصول بسهولة.',
+                            ar: '╪د┘╪ز╪ص ╪د┘┘à┘ê┘é╪╣ ┘┘è ╪«╪▒╪د╪خ╪╖ Google ┘┘╪ص╪╡┘ê┘ ╪╣┘┘ë ╪د┘╪د╪ز╪ش╪د┘ç╪د╪ز ┘ê╪د┘┘ê╪╡┘ê┘ ╪ذ╪│┘ç┘ê┘╪ر.',
                             en: 'Open the location in Google Maps for directions and easy navigation.',
                           ),
                           style: const TextStyle(
@@ -157,7 +157,7 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                           icon: const Icon(Icons.map_outlined),
                           label: Text(
                             context.localized(
-                              ar: 'فتح في خرائط Google',
+                              ar: '┘╪ز╪ص ┘┘è ╪«╪▒╪د╪خ╪╖ Google',
                               en: 'Open in Google Maps',
                             ),
                           ),
@@ -176,7 +176,7 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                   const SizedBox(height: 20),
                   _SectionCard(
                     title: context.localized(
-                      ar: 'أسعار تذاكر الدخول',
+                      ar: '╪ث╪│╪╣╪د╪▒ ╪ز╪░╪د┘â╪▒ ╪د┘╪»╪«┘ê┘',
                       en: 'Admission Prices',
                     ),
                     icon: Icons.confirmation_number_outlined,
@@ -195,26 +195,26 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                               ticket.title,
                             ),
                             price:
-                                '${ticket.price} ${context.localized(ar: 'د.ل', en: 'LYD')}',
+                                '${ticket.price} ${context.localized(ar: '╪».┘', en: 'LYD')}',
                           ),
                         ),
                         const Divider(height: 24),
                         _PriceRow(
                           icon: Icons.child_friendly_outlined,
                           label: context.localized(
-                            ar: 'الأطفال دون 3 سنوات',
+                            ar: '╪د┘╪ث╪╖┘╪د┘ ╪»┘ê┘ 3 ╪│┘┘ê╪د╪ز',
                             en: 'Children under 3',
                           ),
-                          price: context.localized(ar: 'مجاني', en: 'Free'),
+                          price: context.localized(ar: '┘à╪ش╪د┘┘è', en: 'Free'),
                           isFree: true,
                         ),
                         _PriceRow(
                           icon: Icons.accessible_rounded,
                           label: context.localized(
-                            ar: 'ذوو الاحتياجات الخاصة',
+                            ar: '╪░┘ê┘ê ╪د┘╪د╪ص╪ز┘è╪د╪ش╪د╪ز ╪د┘╪«╪د╪╡╪ر',
                             en: 'Visitors with disabilities',
                           ),
-                          price: context.localized(ar: 'مجاني', en: 'Free'),
+                          price: context.localized(ar: '┘à╪ش╪د┘┘è', en: 'Free'),
                           isFree: true,
                           addBottomSpacing: false,
                         ),
@@ -224,7 +224,7 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                   const SizedBox(height: 20),
                   _SectionCard(
                     title: context.localized(
-                      ar: 'التذكرة الإلكترونية',
+                      ar: '╪د┘╪ز╪░┘â╪▒╪ر ╪د┘╪ح┘┘â╪ز╪▒┘ê┘┘è╪ر',
                       en: 'Electronic Ticket',
                     ),
                     icon: Icons.qr_code_2_rounded,
@@ -233,7 +233,7 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                       children: [
                         Text(
                           context.localized(
-                            ar: 'اختر الفئة والعدد، أكمل الدفع، ثم استخدم رمز QR للدخول.',
+                            ar: '╪د╪«╪ز╪▒ ╪د┘┘╪خ╪ر ┘ê╪د┘╪╣╪»╪»╪î ╪ث┘â┘à┘ ╪د┘╪»┘╪╣╪î ╪س┘à ╪د╪│╪ز╪«╪»┘à ╪▒┘à╪▓ QR ┘┘╪»╪«┘ê┘.',
                             en: 'Choose ticket types and quantities, complete payment, then use the QR code for entry.',
                           ),
                           style: const TextStyle(
@@ -252,7 +252,7 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                           ),
                           label: Text(
                             context.localized(
-                              ar: 'شراء تذكرة',
+                              ar: '╪┤╪▒╪د╪ة ╪ز╪░┘â╪▒╪ر',
                               en: 'Buy a Ticket',
                             ),
                           ),
@@ -270,34 +270,34 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                   const SizedBox(height: 20),
                   _SectionCard(
                     title: context.localized(
-                      ar: 'تعليمات وإرشادات الزيارة',
+                      ar: '╪ز╪╣┘┘è┘à╪د╪ز ┘ê╪ح╪▒╪┤╪د╪»╪د╪ز ╪د┘╪▓┘è╪د╪▒╪ر',
                       en: 'Visit Guidelines',
                     ),
                     icon: Icons.info_outline_rounded,
                     child: _GuidanceList(
                       items: [
                         context.localized(
-                          ar: 'يجب الإشراف على الأطفال طوال وقت الزيارة.',
+                          ar: '┘è╪ش╪ذ ╪د┘╪ح╪┤╪▒╪د┘ ╪╣┘┘ë ╪د┘╪ث╪╖┘╪د┘ ╪╖┘ê╪د┘ ┘ê┘é╪ز ╪د┘╪▓┘è╪د╪▒╪ر.',
                           en: 'Children must be supervised throughout the visit.',
                         ),
                         context.localized(
-                          ar: 'الالتزام بالمسارات واللوحات الإرشادية وتعليمات الموظفين.',
+                          ar: '╪د┘╪د┘╪ز╪▓╪د┘à ╪ذ╪د┘┘à╪│╪د╪▒╪د╪ز ┘ê╪د┘┘┘ê╪ص╪د╪ز ╪د┘╪ح╪▒╪┤╪د╪»┘è╪ر ┘ê╪ز╪╣┘┘è┘à╪د╪ز ╪د┘┘à┘ê╪╕┘┘è┘.',
                           en: 'Follow marked paths, signs, and staff instructions.',
                         ),
                         context.localized(
-                          ar: 'يمنع إطعام الحيوانات أو الاقتراب من الحواجز.',
+                          ar: '┘è┘à┘╪╣ ╪ح╪╖╪╣╪د┘à ╪د┘╪ص┘è┘ê╪د┘╪د╪ز ╪ث┘ê ╪د┘╪د┘é╪ز╪▒╪د╪ذ ┘à┘ ╪د┘╪ص┘ê╪د╪ش╪▓.',
                           en: 'Do not feed animals or approach enclosure barriers.',
                         ),
                         context.localized(
-                          ar: 'يمنع إدخال الأدوات الحادة والدراجات ومكبرات الصوت.',
+                          ar: '┘è┘à┘╪╣ ╪ح╪»╪«╪د┘ ╪د┘╪ث╪»┘ê╪د╪ز ╪د┘╪ص╪د╪»╪ر ┘ê╪د┘╪»╪▒╪د╪ش╪د╪ز ┘ê┘à┘â╪ذ╪▒╪د╪ز ╪د┘╪╡┘ê╪ز.',
                           en: 'Sharp tools, bicycles, and loudspeakers are prohibited.',
                         ),
                         context.localized(
-                          ar: 'المحافظة على النظافة ووضع المخلفات في الأماكن المخصصة.',
+                          ar: '╪د┘┘à╪ص╪د┘╪╕╪ر ╪╣┘┘ë ╪د┘┘╪╕╪د┘╪ر ┘ê┘ê╪╢╪╣ ╪د┘┘à╪«┘┘╪د╪ز ┘┘è ╪د┘╪ث┘à╪د┘â┘ ╪د┘┘à╪«╪╡╪╡╪ر.',
                           en: 'Keep the zoo clean and use designated waste bins.',
                         ),
                         context.localized(
-                          ar: 'احتفظ بالتذكرة ورمز QR جاهزين عند بوابة الدخول.',
+                          ar: '╪د╪ص╪ز┘╪╕ ╪ذ╪د┘╪ز╪░┘â╪▒╪ر ┘ê╪▒┘à╪▓ QR ╪ش╪د┘ç╪▓┘è┘ ╪╣┘╪» ╪ذ┘ê╪د╪ذ╪ر ╪د┘╪»╪«┘ê┘.',
                           en: 'Keep your ticket and QR code ready at the entrance.',
                         ),
                       ],
@@ -359,7 +359,7 @@ class _VisitInfoFlexibleHeader extends StatelessWidget {
               bottom: 16,
               child: Text(
                 context.localized(
-                  ar: 'معلومات الزيارة',
+                  ar: '┘à╪╣┘┘ê┘à╪د╪ز ╪د┘╪▓┘è╪د╪▒╪ر',
                   en: 'Visit Information',
                 ),
                 textAlign: TextAlign.center,
@@ -498,12 +498,12 @@ class _Toggle extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _btn(
-            context.localized(ar: 'أجانب', en: 'Foreign'),
+            context.localized(ar: '╪ث╪ش╪د┘╪ذ', en: 'Foreign'),
             !isLocal,
             () => onChanged(false),
           ),
           _btn(
-            context.localized(ar: 'مواطنون', en: 'Citizens'),
+            context.localized(ar: '┘à┘ê╪د╪╖┘┘ê┘', en: 'Citizens'),
             isLocal,
             () => onChanged(true),
           ),

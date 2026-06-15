@@ -132,8 +132,8 @@
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <div class="stat-card-title">حسابات الموظفين</div>
-        <div class="stat-num">24 حساب مسجل</div>
-        <div class="stat-sub">نشطة: 21 | غير نشطة: 3</div>
+        <div class="stat-num">{{ $employeeCount }} حساب مسجل</div>
+        <div class="stat-sub">نشطة: {{ $activeEmployees }} | غير نشطة: {{ $inactiveEmployees }}</div>
     </div>
 
     <div class="stat-card">
@@ -141,8 +141,8 @@
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         </div>
         <div class="stat-card-title">أنواع التذاكر</div>
-        <div class="stat-num">5 أنواع مسجلة</div>
-        <div class="stat-sub">مفعّلة: 4 | معطلة: 1</div>
+        <div class="stat-num">{{ $ticketTypeCount }} أنواع مسجلة</div>
+        <div class="stat-sub">مفعّلة: {{ $activeTicketTypes }} | معطلة: {{ $inactiveTicketTypes }}</div>
     </div>
 
     <div class="stat-card">
@@ -150,8 +150,8 @@
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 12H16c-.7 2-2 3-4 3s-3.3-1-4-3H2.5"/><path d="M5.5 5.1L2 12v6c0 1.1.9 2 2 2h16a2 2 0 002-2v-6l-3.4-6.9A2 2 0 0017 5H7a2 2 0 00-1.5.1z"/></svg>
         </div>
         <div class="stat-card-title">محتوى الحيوانات للزوار</div>
-        <div class="stat-num">41 محتوى تعريفي</div>
-        <div class="stat-sub">ظاهر: 36 | مخفي: 5</div>
+        <div class="stat-num">{{ $profileCount }} محتوى تعريفي</div>
+        <div class="stat-sub">ظاهر: {{ $visibleProfiles }} | مخفي: {{ $hiddenProfiles }}</div>
     </div>
 
     <div class="stat-card">
@@ -159,7 +159,7 @@
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
         </div>
         <div class="stat-card-title">مواقع الخريطة</div>
-        <div class="stat-num">18 موقع مضاف</div>
+        <div class="stat-num">{{ $mapLocationCount }} موقع مضاف</div>
         <div class="stat-sub-muted">ضمن الخريطة التفاعلية</div>
     </div>
 
@@ -168,7 +168,7 @@
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
         <div class="stat-card-title">معلومات الزيارة</div>
-        <div class="stat-num">آخر تحديث: 13/06/2026</div>
+        <div class="stat-num">آخر تحديث: {{ $visitSettings->updated_at?->format('d/m/Y') ?? '—' }}</div>
     </div>
 </div>
 
@@ -189,19 +189,19 @@
             <tbody>
                 <tr>
                     <td style="font-weight:800;">معلومات الزيارة</td>
-                    <td class="status-text">آخر تحديث: 13/06/2026</td>
+                    <td class="status-text">آخر تحديث: {{ $visitSettings->updated_at?->format('d/m/Y') ?? '—' }}</td>
                 </tr>
                 <tr>
                     <td style="font-weight:800;">أنواع التذاكر</td>
-                    <td class="status-text">4 مفعّلة / 1 معطلة</td>
+                    <td class="status-text">{{ $activeTicketTypes }} مفعّلة / {{ $inactiveTicketTypes }} معطلة</td>
                 </tr>
                 <tr>
                     <td style="font-weight:800;">محتوى الحيوانات للزوار</td>
-                    <td class="status-text">36 ظاهر / 5 مخفي</td>
+                    <td class="status-text">{{ $visibleProfiles }} ظاهر / {{ $hiddenProfiles }} مخفي</td>
                 </tr>
                 <tr>
                     <td style="font-weight:800;">مواقع الخريطة</td>
-                    <td class="status-text">18 موقع مضاف</td>
+                    <td class="status-text">{{ $mapLocationCount }} موقع مضاف</td>
                 </tr>
             </tbody>
         </table>
@@ -224,31 +224,27 @@
                 </tr>
             </thead>
             <tbody>
+                @php
+                    $entityLabels = [
+                        'user' => 'حسابات الموظفين',
+                        'ticket_type' => 'التذاكر',
+                        'ticket_sale' => 'مبيعات التذاكر',
+                        'visit_settings' => 'معلومات الزيارة',
+                        'animal_profile' => 'محتوى الحيوانات',
+                        'map_location' => 'مواقع الخريطة',
+                    ];
+                @endphp
+                @forelse($recentActivities as $activity)
                 <tr>
-                    <td style="color:#64748b;">13/06/2026</td>
-                    <td>حسابات الموظفين</td>
-                    <td>إضافة حساب موظف جديد</td>
+                    <td style="color:#64748b;">{{ $activity->created_at->format('d/m/Y') }}</td>
+                    <td>{{ $entityLabels[$activity->entity_type] ?? $activity->entity_type }}</td>
+                    <td>{{ $activity->summary }}</td>
                 </tr>
+                @empty
                 <tr>
-                    <td style="color:#64748b;">12/06/2026</td>
-                    <td>التذاكر</td>
-                    <td>تعديل سعر تذكرة بالغ</td>
+                    <td colspan="3" style="color:#64748b;text-align:center;">لا توجد عمليات مسجّلة بعد</td>
                 </tr>
-                <tr>
-                    <td style="color:#64748b;">12/06/2026</td>
-                    <td>معلومات الزيارة</td>
-                    <td>تحديث معلومات الزيارة</td>
-                </tr>
-                <tr>
-                    <td style="color:#64748b;">11/06/2026</td>
-                    <td>محتوى الحيوانات</td>
-                    <td>إخفاء محتوى حيوان من تطبيق الزائر</td>
-                </tr>
-                <tr>
-                    <td style="color:#64748b;">10/06/2026</td>
-                    <td>مواقع الخريطة</td>
-                    <td>إضافة موقع جديد للخريطة</td>
-                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

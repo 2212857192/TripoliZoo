@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +13,7 @@ import 'package:tripolizoo/features/visitor/visitor_tickets/presentation/ticket_
 import 'package:tripolizoo/features/visitor/visitor_tickets/services/ticket_image_service.dart';
 import 'package:tripolizoo/shared/utils/date_formatters.dart';
 import 'package:tripolizoo/shared/utils/localized_text.dart';
+import 'package:tripolizoo/shared/router/ticket_access.dart';
 import 'package:tripolizoo/shared/widgets/white_pinned_sliver_header.dart';
 
 String _localizedTicketTitle(BuildContext context, TicketType type) {
@@ -60,7 +61,13 @@ class _TicketsScreenState extends State<TicketsScreen> {
     });
   }
 
-  void _goToPayment() => setState(() => _step = 1);
+  void _goToPayment(BuildContext context) {
+    if (!context.read<AuthProvider>().hasAccount) {
+      promptLoginForPurchase(context);
+      return;
+    }
+    setState(() => _step = 1);
+  }
 
   void _completePayment() {
     final tickets = context.read<TicketCartProvider>().purchase();
@@ -79,28 +86,24 @@ class _TicketsScreenState extends State<TicketsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final hasAccount = context.watch<AuthProvider>().hasAccount;
-
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: hasAccount
-            ? AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: switch (_step) {
-                  0 => _SelectionView(
-                      onContinue: _goToPayment,
-                      onBack: _goBack,
-                    ),
-                  1 => _PaymentView(
-                      onBack: _goBack,
-                      onPaymentConfirmed: _completePayment,
-                    ),
-                  _ => _TicketView(onBack: _goBack),
-                },
-              )
-            : _TicketsAccountRequiredView(onBack: _goBack),
+        body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: switch (_step) {
+            0 => _SelectionView(
+                onContinue: () => _goToPayment(context),
+                onBack: _goBack,
+              ),
+            1 => _PaymentView(
+                onBack: _goBack,
+                onPaymentConfirmed: _completePayment,
+              ),
+            _ => _TicketView(onBack: _goBack),
+          },
+        ),
       ),
     );
   }
@@ -129,7 +132,7 @@ class _TicketsAccountRequiredView extends StatelessWidget {
           child: SizedBox(
             height: 56,
             child: CenteredPageHeader(
-              title: context.localized(ar: 'التذاكر', en: 'Tickets'),
+              title: context.localized(ar: '╪د┘╪ز╪░╪د┘â╪▒', en: 'Tickets'),
               leading: IconButton(
                 onPressed: onBack,
                 icon: const Icon(Icons.arrow_forward_ios_rounded),
@@ -174,7 +177,7 @@ class _TicketsAccountRequiredView extends StatelessWidget {
                   const SizedBox(height: 20),
                   Text(
                     context.localized(
-                      ar: 'تسجيل الدخول مطلوب',
+                      ar: '╪ز╪│╪ش┘è┘ ╪د┘╪»╪«┘ê┘ ┘à╪╖┘┘ê╪ذ',
                       en: 'Sign In Required',
                     ),
                     textAlign: TextAlign.center,
@@ -187,7 +190,7 @@ class _TicketsAccountRequiredView extends StatelessWidget {
                   const SizedBox(height: 10),
                   Text(
                     context.localized(
-                      ar: 'شراء التذاكر الإلكترونية وحفظها في حسابك متاحان للمستخدمين الذين يمتلكون حسابًا فقط.',
+                      ar: '╪┤╪▒╪د╪ة ╪د┘╪ز╪░╪د┘â╪▒ ╪د┘╪ح┘┘â╪ز╪▒┘ê┘┘è╪ر ┘ê╪ص┘╪╕┘ç╪د ┘┘è ╪ص╪│╪د╪ذ┘â ┘à╪ز╪د╪ص╪د┘ ┘┘┘à╪│╪ز╪«╪»┘à┘è┘ ╪د┘╪░┘è┘ ┘è┘à╪ز┘┘â┘ê┘ ╪ص╪│╪د╪ذ┘ï╪د ┘┘é╪╖.',
                       en: 'Electronic ticket purchases and saving tickets to your account are available only to registered users.',
                     ),
                     textAlign: TextAlign.center,
@@ -210,7 +213,7 @@ class _TicketsAccountRequiredView extends StatelessWidget {
                     ),
                     child: Text(
                       context.localized(
-                        ar: 'تسجيل الدخول',
+                        ar: '╪ز╪│╪ش┘è┘ ╪د┘╪»╪«┘ê┘',
                         en: 'Sign In',
                       ),
                       style: GoogleFonts.cairo(fontWeight: FontWeight.w800),
@@ -230,7 +233,7 @@ class _TicketsAccountRequiredView extends StatelessWidget {
                     ),
                     child: Text(
                       context.localized(
-                        ar: 'إنشاء حساب جديد',
+                        ar: '╪ح┘╪┤╪د╪ة ╪ص╪│╪د╪ذ ╪ش╪»┘è╪»',
                         en: 'Create New Account',
                       ),
                       style: GoogleFonts.cairo(fontWeight: FontWeight.w800),
@@ -246,9 +249,9 @@ class _TicketsAccountRequiredView extends StatelessWidget {
   }
 }
 
-// ══════════════════════════════
-// STEP 1 — Selection View
-// ══════════════════════════════
+// ظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـ
+// STEP 1 ظ¤ Selection View
+// ظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـ
 class _SelectionView extends StatefulWidget {
   final VoidCallback onContinue;
   final VoidCallback onBack;
@@ -273,14 +276,14 @@ class _SelectionViewState extends State<_SelectionView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Header ──
+        // ظ¤ظ¤ Header ظ¤ظ¤
         Container(
           color: _bg,
           padding: EdgeInsets.fromLTRB(20, topPad + 8, 20, 8),
           child: SizedBox(
             height: 56,
             child: CenteredPageHeader(
-              title: context.localized(ar: 'التذاكر', en: 'Tickets'),
+              title: context.localized(ar: '╪د┘╪ز╪░╪د┘â╪▒', en: 'Tickets'),
               leading: GestureDetector(
                 onTap: widget.onBack,
                 child: Container(
@@ -298,7 +301,7 @@ class _SelectionViewState extends State<_SelectionView> {
           ),
         ),
 
-        // ── Body ──
+        // ظ¤ظ¤ Body ظ¤ظ¤
         Expanded(
           child: ListView(
             padding: EdgeInsets.fromLTRB(20, 0, 20, bottomPad + 100),
@@ -306,7 +309,7 @@ class _SelectionViewState extends State<_SelectionView> {
               const _VisitTicketInfoCard(),
               const SizedBox(height: 18),
 
-              // ── Tabs ──
+              // ظ¤ظ¤ Tabs ظ¤ظ¤
               Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
@@ -318,7 +321,7 @@ class _SelectionViewState extends State<_SelectionView> {
                     Expanded(
                       child: _TabBtn(
                         label:
-                            context.localized(ar: 'المواطنون', en: 'Citizens'),
+                            context.localized(ar: '╪د┘┘à┘ê╪د╪╖┘┘ê┘', en: 'Citizens'),
                         active: _tab == 0,
                         onTap: () => setState(() => _tab = 0),
                       ),
@@ -326,7 +329,7 @@ class _SelectionViewState extends State<_SelectionView> {
                     Expanded(
                       child: _TabBtn(
                         label:
-                            context.localized(ar: 'الأجانب', en: 'Foreigners'),
+                            context.localized(ar: '╪د┘╪ث╪ش╪د┘╪ذ', en: 'Foreigners'),
                         active: _tab == 1,
                         isRight: true,
                         onTap: () => setState(() => _tab = 1),
@@ -338,14 +341,14 @@ class _SelectionViewState extends State<_SelectionView> {
 
               const SizedBox(height: 16),
 
-              // ── Ticket rows ──
+              // ظ¤ظ¤ Ticket rows ظ¤ظ¤
               ...tickets.map((t) => _TicketRow(type: t)),
               const SizedBox(height: 16),
             ],
           ),
         ),
 
-        // ── Bottom Bar ──
+        // ظ¤ظ¤ Bottom Bar ظ¤ظ¤
         Container(
           padding: EdgeInsets.fromLTRB(20, 10, 20, bottomPad + 10),
           decoration: BoxDecoration(
@@ -367,7 +370,7 @@ class _SelectionViewState extends State<_SelectionView> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      context.localized(ar: 'الإجمالي', en: 'TOTAL'),
+                      context.localized(ar: '╪د┘╪ح╪ش┘à╪د┘┘è', en: 'TOTAL'),
                       style: GoogleFonts.cairo(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
@@ -380,7 +383,7 @@ class _SelectionViewState extends State<_SelectionView> {
                       key: const ValueKey('ticket-total-and-count-row'),
                       children: [
                         Text(
-                          '${cart.totalPrice.toStringAsFixed(0)} ${context.localized(ar: 'د.ل', en: 'LYD')}',
+                          '${cart.totalPrice.toStringAsFixed(0)} ${context.localized(ar: '╪».┘', en: 'LYD')}',
                           style: GoogleFonts.cairo(
                             fontSize: 21,
                             fontWeight: FontWeight.bold,
@@ -392,8 +395,8 @@ class _SelectionViewState extends State<_SelectionView> {
                           child: Text(
                             context.localized(
                               ar: cart.totalVisitors == 1
-                                  ? '(تذكرة واحدة)'
-                                  : '(${cart.totalVisitors} تذاكر)',
+                                  ? '(╪ز╪░┘â╪▒╪ر ┘ê╪د╪ص╪»╪ر)'
+                                  : '(${cart.totalVisitors} ╪ز╪░╪د┘â╪▒)',
                               en: cart.totalVisitors == 1
                                   ? '(1 ticket)'
                                   : '(${cart.totalVisitors} tickets)',
@@ -435,7 +438,7 @@ class _SelectionViewState extends State<_SelectionView> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          context.localized(ar: 'التالي', en: 'Next'),
+                          context.localized(ar: '╪د┘╪ز╪د┘┘è', en: 'Next'),
                           style: GoogleFonts.cairo(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -456,7 +459,7 @@ class _SelectionViewState extends State<_SelectionView> {
   }
 }
 
-// ── Tab Button ──
+// ظ¤ظ¤ Tab Button ظ¤ظ¤
 class _TabBtn extends StatelessWidget {
   final String label;
   final bool active;
@@ -494,7 +497,7 @@ class _TabBtn extends StatelessWidget {
   }
 }
 
-// ── Ticket Row ──
+// ظ¤ظ¤ Ticket Row ظ¤ظ¤
 class _TicketRow extends StatelessWidget {
   final TicketType type;
   const _TicketRow({required this.type});
@@ -547,7 +550,7 @@ class _TicketRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${_localizedTicketSubtitle(context, type)} · ${type.price} ${context.localized(ar: 'د.ل', en: 'LYD')}',
+                  '${_localizedTicketSubtitle(context, type)} ┬╖ ${type.price} ${context.localized(ar: '╪».┘', en: 'LYD')}',
                   style: GoogleFonts.cairo(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -591,7 +594,7 @@ class _TicketRow extends StatelessWidget {
   }
 }
 
-// ── Counter Button ──
+// ظ¤ظ¤ Counter Button ظ¤ظ¤
 class _CounterBtn extends StatelessWidget {
   final IconData icon;
   final bool enabled;
@@ -676,8 +679,8 @@ class _VisitTicketInfoCard extends StatelessWidget {
                   children: [
                     Text(
                       context.localized(
-                        ar: 'مفتوح اليوم · ${AppConstants.workingHours}',
-                        en: 'Open today · ${AppConstants.workingHours}',
+                        ar: '┘à┘╪ز┘ê╪ص ╪د┘┘è┘ê┘à ┬╖ ${AppConstants.workingHours}',
+                        en: 'Open today ┬╖ ${AppConstants.workingHours}',
                       ),
                       style: GoogleFonts.cairo(
                         fontSize: 15,
@@ -686,7 +689,7 @@ class _VisitTicketInfoCard extends StatelessWidget {
                     ),
                     Text(
                       context.localized(
-                        ar: 'آخر دخول قبل موعد الإغلاق بنصف ساعة',
+                        ar: '╪ت╪«╪▒ ╪»╪«┘ê┘ ┘é╪ذ┘ ┘à┘ê╪╣╪» ╪د┘╪ح╪║┘╪د┘é ╪ذ┘╪╡┘ ╪│╪د╪╣╪ر',
                         en: 'Last entry is 30 minutes before closing',
                       ),
                       style: GoogleFonts.cairo(
@@ -702,7 +705,7 @@ class _VisitTicketInfoCard extends StatelessWidget {
           const Divider(height: 28),
           Text(
             context.localized(
-              ar: 'الدخول مجاني للأطفال دون الثالثة ولذوي الاحتياجات الخاصة.',
+              ar: '╪د┘╪»╪«┘ê┘ ┘à╪ش╪د┘┘è ┘┘╪ث╪╖┘╪د┘ ╪»┘ê┘ ╪د┘╪س╪د┘╪س╪ر ┘ê┘╪░┘ê┘è ╪د┘╪د╪ص╪ز┘è╪د╪ش╪د╪ز ╪د┘╪«╪د╪╡╪ر.',
               en: 'Admission is free for children under three and visitors with disabilities.',
             ),
             style: GoogleFonts.cairo(
@@ -754,13 +757,13 @@ class _PaymentViewState extends State<_PaymentView> {
     final digits = (value ?? '').replaceAll(RegExp(r'\D'), '');
     if (digits.isEmpty) {
       return context.localized(
-        ar: 'أدخل رقم الهاتف المرتبط بخدمة الدفع',
+        ar: '╪ث╪»╪«┘ ╪▒┘é┘à ╪د┘┘ç╪د╪ز┘ ╪د┘┘à╪▒╪ز╪ذ╪╖ ╪ذ╪«╪»┘à╪ر ╪د┘╪»┘╪╣',
         en: 'Enter the phone number linked to the payment service',
       );
     }
     if (digits.length < 9 || digits.length > 10) {
       return context.localized(
-        ar: 'أدخل رقم هاتف صحيحًا',
+        ar: '╪ث╪»╪«┘ ╪▒┘é┘à ┘ç╪د╪ز┘ ╪╡╪ص┘è╪ص┘ï╪د',
         en: 'Enter a valid phone number',
       );
     }
@@ -793,7 +796,7 @@ class _PaymentViewState extends State<_PaymentView> {
               height: 56,
               child: CenteredPageHeader(
                 title: context.localized(
-                    ar: 'إتمام الدفع', en: 'Complete Payment'),
+                    ar: '╪ح╪ز┘à╪د┘à ╪د┘╪»┘╪╣', en: 'Complete Payment'),
                 leading: IconButton(
                   onPressed: widget.onBack,
                   icon: const Icon(Icons.arrow_forward_ios_rounded),
@@ -841,7 +844,7 @@ class _PaymentViewState extends State<_PaymentView> {
                           const SizedBox(height: 14),
                           Text(
                             context.localized(
-                              ar: 'المبلغ الإجمالي',
+                              ar: '╪د┘┘à╪ذ┘╪║ ╪د┘╪ح╪ش┘à╪د┘┘è',
                               en: 'Total amount',
                             ),
                             style: GoogleFonts.cairo(
@@ -850,7 +853,7 @@ class _PaymentViewState extends State<_PaymentView> {
                             ),
                           ),
                           Text(
-                            '${cart.totalPrice.toStringAsFixed(0)} ${context.localized(ar: 'د.ل', en: 'LYD')}',
+                            '${cart.totalPrice.toStringAsFixed(0)} ${context.localized(ar: '╪».┘', en: 'LYD')}',
                             style: GoogleFonts.cairo(
                               color: _green,
                               fontSize: 38,
@@ -869,7 +872,7 @@ class _PaymentViewState extends State<_PaymentView> {
                             ),
                             child: Text(
                               context.localized(
-                                ar: 'عدد التذاكر: ${cart.totalVisitors}',
+                                ar: '╪╣╪»╪» ╪د┘╪ز╪░╪د┘â╪▒: ${cart.totalVisitors}',
                                 en: 'Tickets: ${cart.totalVisitors}',
                               ),
                               style: GoogleFonts.cairo(
@@ -884,7 +887,7 @@ class _PaymentViewState extends State<_PaymentView> {
                     const SizedBox(height: 28),
                     _PaymentSectionTitle(
                       title:
-                          context.localized(ar: 'ملخص الفاتورة', en: 'Invoice'),
+                          context.localized(ar: '┘à┘╪«╪╡ ╪د┘┘╪د╪ز┘ê╪▒╪ر', en: 'Invoice'),
                     ),
                     const SizedBox(height: 10),
                     Container(
@@ -902,18 +905,18 @@ class _PaymentViewState extends State<_PaymentView> {
                               padding: const EdgeInsets.only(bottom: 10),
                               child: _InvoiceRow(
                                 label:
-                                    '${_localizedTicketTitle(context, item.type)} × ${item.quantity}',
+                                    '${_localizedTicketTitle(context, item.type)} ├ù ${item.quantity}',
                                 value:
-                                    '${item.type.price * item.quantity} ${context.localized(ar: 'د.ل', en: 'LYD')}',
+                                    '${item.type.price * item.quantity} ${context.localized(ar: '╪».┘', en: 'LYD')}',
                               ),
                             ),
                           ),
                           const Divider(height: 20),
                           _InvoiceRow(
                             label:
-                                context.localized(ar: 'الإجمالي', en: 'Total'),
+                                context.localized(ar: '╪د┘╪ح╪ش┘à╪د┘┘è', en: 'Total'),
                             value:
-                                '${cart.totalPrice.toStringAsFixed(0)} ${context.localized(ar: 'د.ل', en: 'LYD')}',
+                                '${cart.totalPrice.toStringAsFixed(0)} ${context.localized(ar: '╪».┘', en: 'LYD')}',
                             emphasized: true,
                           ),
                         ],
@@ -922,14 +925,14 @@ class _PaymentViewState extends State<_PaymentView> {
                     const SizedBox(height: 26),
                     _PaymentSectionTitle(
                       title: context.localized(
-                          ar: 'طريقة الدفع', en: 'Payment Method'),
+                          ar: '╪╖╪▒┘è┘é╪ر ╪د┘╪»┘╪╣', en: 'Payment Method'),
                     ),
                     const SizedBox(height: 10),
                     _PaymentMethodCard(
                       id: 'edfa3ly',
-                      title: context.localized(ar: 'ادفع لي', en: 'Edfa3ly'),
+                      title: context.localized(ar: '╪د╪»┘╪╣ ┘┘è', en: 'Edfa3ly'),
                       subtitle: context.localized(
-                        ar: 'محفظة إلكترونية آمنة',
+                        ar: '┘à╪ص┘╪╕╪ر ╪ح┘┘â╪ز╪▒┘ê┘┘è╪ر ╪ت┘à┘╪ر',
                         en: 'Secure digital wallet',
                       ),
                       icon: Icons.account_balance_wallet_rounded,
@@ -939,9 +942,9 @@ class _PaymentViewState extends State<_PaymentView> {
                     const SizedBox(height: 10),
                     _PaymentMethodCard(
                       id: 'sadad',
-                      title: context.localized(ar: 'سداد', en: 'Sadad'),
+                      title: context.localized(ar: '╪│╪»╪د╪»', en: 'Sadad'),
                       subtitle: context.localized(
-                        ar: 'دفع إلكتروني عبر الهاتف',
+                        ar: '╪»┘╪╣ ╪ح┘┘â╪ز╪▒┘ê┘┘è ╪╣╪ذ╪▒ ╪د┘┘ç╪د╪ز┘',
                         en: 'Mobile electronic payment',
                       ),
                       icon: Icons.phone_android_rounded,
@@ -951,7 +954,7 @@ class _PaymentViewState extends State<_PaymentView> {
                     const SizedBox(height: 26),
                     _PaymentSectionTitle(
                       title: context.localized(
-                          ar: 'رقم الهاتف', en: 'Phone Number'),
+                          ar: '╪▒┘é┘à ╪د┘┘ç╪د╪ز┘', en: 'Phone Number'),
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
@@ -986,7 +989,7 @@ class _PaymentViewState extends State<_PaymentView> {
                         Expanded(
                           child: Text(
                             context.localized(
-                              ar: 'سيُستخدم الرقم المرتبط بخدمة الدفع لإرسال رمز OTP في خطوة التحقق لاحقًا.',
+                              ar: '╪│┘è┘╪│╪ز╪«╪»┘à ╪د┘╪▒┘é┘à ╪د┘┘à╪▒╪ز╪ذ╪╖ ╪ذ╪«╪»┘à╪ر ╪د┘╪»┘╪╣ ┘╪ح╪▒╪│╪د┘ ╪▒┘à╪▓ OTP ┘┘è ╪«╪╖┘ê╪ر ╪د┘╪ز╪ص┘é┘é ┘╪د╪ص┘é┘ï╪د.',
                               en: 'The number linked to the payment service will be used to send an OTP in a later verification step.',
                             ),
                             style: GoogleFonts.cairo(
@@ -1030,7 +1033,7 @@ class _PaymentViewState extends State<_PaymentView> {
                 ),
                 child: Text(
                   context.localized(
-                    ar: 'تأكيد الدفع',
+                    ar: '╪ز╪ث┘â┘è╪» ╪د┘╪»┘╪╣',
                     en: 'Confirm Payment',
                   ),
                   style: GoogleFonts.cairo(
@@ -1187,9 +1190,9 @@ class _InvoiceRow extends StatelessWidget {
   }
 }
 
-// ══════════════════════════════
-// STEP 3 — Ticket View
-// ══════════════════════════════
+// ظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـ
+// STEP 3 ظ¤ Ticket View
+// ظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـظـ
 class _TicketView extends StatefulWidget {
   final VoidCallback onBack;
   const _TicketView({required this.onBack});
@@ -1215,8 +1218,8 @@ class _TicketViewState extends State<_TicketView> {
         SnackBar(
           content: Text(
             savedCount == tickets.length
-                ? 'تم حفظ $savedCount تذاكر كصور في المعرض'
-                : 'تم حفظ $savedCount من أصل ${tickets.length} تذاكر',
+                ? '╪ز┘à ╪ص┘╪╕ $savedCount ╪ز╪░╪د┘â╪▒ ┘â╪╡┘ê╪▒ ┘┘è ╪د┘┘à╪╣╪▒╪╢'
+                : '╪ز┘à ╪ص┘╪╕ $savedCount ┘à┘ ╪ث╪╡┘ ${tickets.length} ╪ز╪░╪د┘â╪▒',
             style: GoogleFonts.cairo(fontWeight: FontWeight.w700),
           ),
           backgroundColor: const Color(0xFF2E7D32),
@@ -1227,7 +1230,7 @@ class _TicketViewState extends State<_TicketView> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'تعذر حفظ صور التذاكر. تأكد من السماح بالوصول إلى الصور.',
+            '╪ز╪╣╪░╪▒ ╪ص┘╪╕ ╪╡┘ê╪▒ ╪د┘╪ز╪░╪د┘â╪▒. ╪ز╪ث┘â╪» ┘à┘ ╪د┘╪│┘à╪د╪ص ╪ذ╪د┘┘ê╪╡┘ê┘ ╪ح┘┘ë ╪د┘╪╡┘ê╪▒.',
             style: GoogleFonts.cairo(fontWeight: FontWeight.w700),
           ),
           backgroundColor: Colors.red.shade700,
@@ -1255,7 +1258,7 @@ class _TicketViewState extends State<_TicketView> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: CenteredPageHeader(
-              title: context.localized(ar: 'التذاكر', en: 'Tickets'),
+              title: context.localized(ar: '╪د┘╪ز╪░╪د┘â╪▒', en: 'Tickets'),
               leading: GestureDetector(
                 onTap: widget.onBack,
                 child: Container(
@@ -1295,11 +1298,11 @@ class _TicketViewState extends State<_TicketView> {
                 label: Text(
                   _saving
                       ? context.localized(
-                          ar: 'جاري الحفظ...',
+                          ar: '╪ش╪د╪▒┘è ╪د┘╪ص┘╪╕...',
                           en: 'Saving...',
                         )
                       : context.localized(
-                          ar: 'تحميل التذاكر',
+                          ar: '╪ز╪ص┘à┘è┘ ╪د┘╪ز╪░╪د┘â╪▒',
                           en: 'Download tickets',
                         ),
                   style: GoogleFonts.cairo(
@@ -1319,14 +1322,14 @@ class _TicketViewState extends State<_TicketView> {
                 const Icon(Icons.check_circle_rounded,
                     color: Color(0xFF2E7D32), size: 64),
                 const SizedBox(height: 12),
-                Text('تم الحجز بنجاح!',
+                Text('╪ز┘à ╪د┘╪ص╪ش╪▓ ╪ذ┘╪ش╪د╪ص!',
                     style: GoogleFonts.cairo(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: const Color(0xFF1A1A1A))),
                 const SizedBox(height: 6),
                 Text(
-                  'تم إصدار ${tickets.length} ${tickets.length == 1 ? "تذكرة" : "تذاكر"} منفصلة',
+                  '╪ز┘à ╪ح╪╡╪»╪د╪▒ ${tickets.length} ${tickets.length == 1 ? "╪ز╪░┘â╪▒╪ر" : "╪ز╪░╪د┘â╪▒"} ┘à┘┘╪╡┘╪ر',
                   style: GoogleFonts.cairo(
                     fontSize: 14,
                     color: Colors.grey.shade500,
@@ -1357,7 +1360,7 @@ class _TicketViewState extends State<_TicketView> {
                           borderRadius: BorderRadius.circular(50)),
                       elevation: 0,
                     ),
-                    child: Text('العودة للرئيسية',
+                    child: Text('╪د┘╪╣┘ê╪»╪ر ┘┘╪▒╪خ┘è╪│┘è╪ر',
                         style: GoogleFonts.cairo(
                             fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
@@ -1413,7 +1416,7 @@ class _PurchasedTicketCard extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'Tripoli Zoo · $number/$total',
+                  'Tripoli Zoo ┬╖ $number/$total',
                   style: GoogleFonts.cairo(
                     color: Colors.white70,
                     fontSize: 12,
@@ -1422,7 +1425,7 @@ class _PurchasedTicketCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  context.localized(ar: 'تذكرة دخول', en: 'Entry Ticket'),
+                  context.localized(ar: '╪ز╪░┘â╪▒╪ر ╪»╪«┘ê┘', en: 'Entry Ticket'),
                   style: GoogleFonts.cairo(
                     color: Colors.white,
                     fontSize: 18,
@@ -1451,7 +1454,7 @@ class _PurchasedTicketCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'رقم التذكرة: ${ticket.id}',
+                  '╪▒┘é┘à ╪د┘╪ز╪░┘â╪▒╪ر: ${ticket.id}',
                   textDirection: TextDirection.ltr,
                   style: GoogleFonts.cairo(
                     color: Colors.grey,
@@ -1467,23 +1470,23 @@ class _PurchasedTicketCard extends StatelessWidget {
             child: Column(
               children: [
                 _DetailRow(
-                  context.localized(ar: 'الفئة', en: 'Category'),
+                  context.localized(ar: '╪د┘┘╪خ╪ر', en: 'Category'),
                   ticket.localizedCategoryLabel(languageCode),
                 ),
                 const SizedBox(height: 10),
                 _DetailRow(
-                  context.localized(ar: 'التاريخ', en: 'Date'),
+                  context.localized(ar: '╪د┘╪ز╪د╪▒┘è╪«', en: 'Date'),
                   formatArabicDate(ticket.visitDate),
                 ),
                 const SizedBox(height: 10),
                 _DetailRow(
-                  context.localized(ar: 'الوقت', en: 'Time'),
+                  context.localized(ar: '╪د┘┘ê┘é╪ز', en: 'Time'),
                   AppConstants.workingHours,
                 ),
                 const SizedBox(height: 10),
                 _DetailRow(
-                  context.localized(ar: 'السعر', en: 'Price'),
-                  '${ticket.price} ${context.localized(ar: 'د.ل', en: 'LYD')}',
+                  context.localized(ar: '╪د┘╪│╪╣╪▒', en: 'Price'),
+                  '${ticket.price} ${context.localized(ar: '╪».┘', en: 'LYD')}',
                   isTotal: true,
                 ),
               ],

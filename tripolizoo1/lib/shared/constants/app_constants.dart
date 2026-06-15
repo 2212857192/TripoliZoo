@@ -20,5 +20,5 @@ abstract final class AppConstants {
   ];
 
   static const int carouselIntervalSeconds = 4;
-  static const int minPasswordLength = 6;
+  static const int minPasswordLength = 8;
 }

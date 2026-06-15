@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('role')->default('مدير النظام');
+            $table->string('status')->default('active');
+            $table->string('assigned_group')->nullable();
+            $table->date('joined_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

@@ -5,6 +5,7 @@
         android:maxSdkVersion="28"/>
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <application
+        android:usesCleartextTraffic="true"
         android:label="tripolizoo"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">

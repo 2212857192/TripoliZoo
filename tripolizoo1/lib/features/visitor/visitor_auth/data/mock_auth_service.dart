@@ -17,6 +17,12 @@ class MockAuthService implements AuthService {
   String? _resetToken;
 
   @override
+  Future<UserModel?> restoreSession() async => null;
+
+  @override
+  Future<void> logout() async {}
+
+  @override
   Future<UserModel> login({
     required String email,
     required String password,

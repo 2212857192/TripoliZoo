@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:tripolizoo/shared/constants/ticket_data.dart';
 import 'package:tripolizoo/features/visitor/visitor_tickets/domain/ticket_type.dart';
 

@@ -359,29 +359,42 @@
                 <p>يرجى إدخال بياناتك للدخول إلى لوحة التحكم الخاصة بك.</p>
             </div>
 
-            <form onsubmit="handleLogin(event)">
+            @if (session('status'))
+                <div style="background:#F0FDF4;border:1px solid #86EFAC;color:#166534;padding:12px 16px;border-radius:10px;margin-bottom:1.2rem;font-weight:700;font-size:0.9rem;">
+                    {{ session('status') }}
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div style="background:#FEF2F2;border:1px solid #FECACA;color:#991B1B;padding:12px 16px;border-radius:10px;margin-bottom:1.2rem;font-weight:700;font-size:0.9rem;">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
                 
                 <div class="input-group">
                     <label for="email">البريد الإلكتروني</label>
                     <div class="input-wrapper">
                         <!-- تم إضافة القيمة الافتراضية والاتجاه LTR كما طلبت سابقاً -->
-                        <input type="email" id="email" value="admin@wejha.com" placeholder="أدخل بريدك الإلكتروني" required dir="ltr" style="text-align: left;">
+                        <input type="email" id="email" name="email" value="{{ old('email', 'admin@tripolizoo.com') }}" placeholder="أدخل بريدك الإلكتروني" required dir="ltr" style="text-align: left;">
                     </div>
                 </div>
 
                 <div class="input-group">
                     <label for="password">كلمة المرور</label>
                     <div class="input-wrapper">
-                        <input type="password" id="password" value="12345678" placeholder="أدخل كلمة المرور" required dir="ltr" style="text-align: left;">
+                        <input type="password" id="password" name="password" placeholder="أدخل كلمة المرور" required dir="ltr" style="text-align: left;">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <label class="remember">
-                        <input type="checkbox">
+                        <input type="checkbox" name="remember" value="1">
                         <span>البقاء مسجلاً</span>
                     </label>
-                    <a href="#" class="forgot-link">نسيت كلمة المرور؟</a>
+                    <a href="{{ route('password.request') }}" class="forgot-link">نسيت كلمة المرور؟</a>
                 </div>
 
                 <button type="submit" class="btn-primary" id="submitBtn">تسجيل الدخول</button>
@@ -402,16 +415,5 @@
         </div>
     </div>
 
-    <script>
-        function handleLogin(e) {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.classList.add('loading');
-            
-            setTimeout(() => {
-                window.location.href = '/admin/dashboard';
-            }, 800);
-        }
-    </script>
 </body>
 </html>

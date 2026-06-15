@@ -2,48 +2,117 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
+use App\Enums\AppRole;
+use App\Enums\Portal;
+use App\Enums\UserRole;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
+        'role',
+        'status',
+        'assigned_group',
+        'joined_at',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'joined_at' => 'date',
         ];
+    }
+
+    public function roleEnum(): ?UserRole
+    {
+        return UserRole::tryFrom($this->role);
+    }
+
+    public function portal(): ?Portal
+    {
+        return Portal::tryFromRole($this->roleEnum());
+    }
+
+    public function homePath(): string
+    {
+        return $this->roleEnum()?->homePath() ?? '/login';
+    }
+
+    public function hasPortal(Portal $portal): bool
+    {
+        return $this->portal() === $portal;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+
+    public function isSystemAdmin(): bool
+    {
+        return $this->role === UserRole::SystemAdmin->value;
+    }
+
+    public function isVisitor(): bool
+    {
+        return $this->role === UserRole::Visitor->value;
+    }
+
+    public function canUseMobileApp(): bool
+    {
+        return $this->roleEnum()?->canUseMobileApp() ?? false;
+    }
+
+    public function appRole(): ?AppRole
+    {
+        return $this->roleEnum()?->appRole();
+    }
+
+    /** حسابات الموظفين (كل users ما عدا مدير النظام ومدير الحديقة والزائر) */
+    public function scopeEmployees(Builder $query): Builder
+    {
+        return $query->whereNotIn('role', [
+            UserRole::SystemAdmin->value,
+            UserRole::Director->value,
+            UserRole::Visitor->value,
+        ]);
+    }
+
+    public function isEmployeeAccount(): bool
+    {
+        return ! in_array($this->role, [
+            UserRole::SystemAdmin->value,
+            UserRole::Director->value,
+            UserRole::Visitor->value,
+        ], true);
+    }
+
+    public function activityLogs(): HasMany
+    {
+        return $this->hasMany(AdminActivityLog::class);
+    }
+
+    public function ticketSales(): HasMany
+    {
+        return $this->hasMany(TicketSale::class, 'sold_by');
     }
 }

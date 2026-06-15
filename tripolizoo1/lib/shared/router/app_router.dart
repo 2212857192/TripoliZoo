@@ -40,6 +40,7 @@ GoRouter createRouter(AuthProvider authProvider) {
     initialLocation: '/splash',
     refreshListenable: authProvider,
     redirect: (context, state) {
+      final hasSession = authProvider.hasSession;
       final isLoggedIn = authProvider.isAuthenticated;
       final isSplash = state.matchedLocation == '/splash';
       final isAuthRoute = state.matchedLocation.startsWith('/login') ||
@@ -49,11 +50,21 @@ GoRouter createRouter(AuthProvider authProvider) {
           state.matchedLocation.startsWith('/reset-password');
 
       if (isSplash) {
-        return null; // Let splash screen handle its logic
+        return null;
       }
 
-      if (!isLoggedIn && !isAuthRoute) {
+      if (!authProvider.bootstrapped) {
+        return null;
+      }
+
+      if (!hasSession && !isAuthRoute) {
         return '/login';
+      }
+
+      if (hasSession && state.matchedLocation.startsWith('/tickets')) {
+        final role = authProvider.user?.role;
+        if (role == 'supervisor') return '/supervisor/home';
+        if (role == 'doctor') return '/doctor/home';
       }
 
       if (isLoggedIn && isAuthRoute) {

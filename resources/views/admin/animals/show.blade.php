@@ -3,18 +3,11 @@
 @section('page_title', 'عرض المحتوى التعريفي')
 
 @php
-$animals = [
-    '1' => ['name'=>'الأسد الإفريقي',  'sci'=>'Panthera leo',           'emoji'=>'🦁', 'code'=>'L-01',
-             'desc'=>'الأسد الإفريقي من أكبر القطط البرية في العالم. يعيش في مجموعات تُعرف بـ (الفخر). يتميز الذكر بعُرفه الكثيف الذي يزداد قتامةً مع التقدم في السن. يصل وزنه إلى 190 كجم ويمكنه الجري بسرعة تصل إلى 80 كم/ساعة لمسافات قصيرة.',
-             'img'=>'/zoo_lion.png', 'vis'=>true],
-    '2' => ['name'=>'الفيل الآسيوي',   'sci'=>'Elephas maximus',         'emoji'=>'🐘', 'code'=>'E-04',
-             'desc'=>'الفيل الآسيوي أصغر حجماً من الأفريقي، ويتميز بأذنين أصغر ورأس أكثر تحدباً. يُعدّ من أكثر الحيوانات ذكاءً في العالم، ويمتلك ذاكرة استثنائية.',
-             'img'=>'/zoo_elephant.png','vis'=>true],
-    '3' => ['name'=>'النمر البنغالي',  'sci'=>'Panthera tigris',         'emoji'=>'🐯', 'code'=>'T-02',
-             'desc'=>'النمر البنغالي أكبر أنواع القطط وأقواها. يسبح جيداً ويجيد تسلق الأشجار. يُهدَّد بالانقراض بسبب الصيد الجائر وفقدان موطنه.',
-             'img'=>'', 'vis'=>true],
-];
-$animal = $animals[$id ?? '1'] ?? $animals['1'];
+    $animalName = $profile->animal?->species ?? '—';
+    $sci = $profile->scientific_name ?? '';
+    $code = $profile->display_code ?? $profile->animal?->code ?? '—';
+    $img = $profile->imageUrl();
+    $qrUrl = route('visitor.animal', $profile);
 @endphp
 
 @section('styles')
@@ -224,7 +217,7 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
 
 @section('content')
 
-<a href="/admin/animals" class="page-back">
+<a href="{{ route('admin.animals.index') }}" class="page-back">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     العودة إلى قائمة المحتوى التعريفي
 </a>
@@ -241,27 +234,27 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
                 <p>معلومات الهوية الأساسية للحيوان المسجّل في الحديقة</p>
             </div>
         </div>
-        <span class="vis-badge {{ $animal['vis'] ? 'on' : 'off' }}">
-            {{ $animal['vis'] ? '👁 ظاهر للزوار' : '🚫 مخفي' }}
+        <span class="vis-badge {{ $profile->is_visible ? 'on' : 'off' }}">
+            {{ $profile->is_visible ? '👁 ظاهر للزوار' : '🚫 مخفي' }}
         </span>
     </div>
     <div class="animal-hero">
         <div class="animal-hero-img">
-            @if($animal['img'])
-                <img src="{{ $animal['img'] }}" alt="{{ $animal['name'] }}"
+            @if($img)
+                <img src="{{ $img }}" alt="{{ $animalName }}"
                      onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-                <span style="display:none">{{ $animal['emoji'] }}</span>
+                <span style="display:none">🦁</span>
             @else
-                <span>{{ $animal['emoji'] }}</span>
+                <span>🦁</span>
             @endif
         </div>
         <div class="animal-hero-info">
-            <h2>{{ $animal['name'] }}</h2>
-            <p>{{ $animal['sci'] }}</p>
+            <h2>{{ $animalName }}</h2>
+            @if($sci)<p>{{ $sci }}</p>@endif
             <div class="meta-pills">
                 <span class="meta-pill">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                    الرمز: {{ $animal['code'] }}
+                    الرمز: {{ $code }}
                 </span>
             </div>
         </div>
@@ -280,10 +273,10 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
                 <p>المحتوى الذي يظهر للزوار عند مسح رمز QR</p>
             </div>
         </div>
-        <span style="font-size:.78rem;color:var(--text-muted);font-weight:700;">{{ mb_strlen($animal['desc']) }} حرف</span>
+        <span style="font-size:.78rem;color:var(--text-muted);font-weight:700;">{{ mb_strlen($profile->description) }} حرف</span>
     </div>
     <div class="section-body">
-        <p class="desc-block">{{ $animal['desc'] }}</p>
+        <p class="desc-block">{{ $profile->description }}</p>
     </div>
 </div>
 
@@ -298,11 +291,11 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
         </div>
         <div class="bottom-card-body">
             <div class="img-display">
-                @if($animal['img'])
-                    <img src="{{ $animal['img'] }}" alt="{{ $animal['name'] }}"
-                         onerror="this.parentElement.innerHTML='<span>{{ $animal['emoji'] }}</span>'">
+                @if($img)
+                    <img src="{{ $img }}" alt="{{ $animalName }}"
+                         onerror="this.parentElement.innerHTML='<span>🦁</span>'">
                 @else
-                    <span>{{ $animal['emoji'] }}</span>
+                    <span>🦁</span>
                 @endif
             </div>
         </div>
@@ -316,7 +309,7 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
         </div>
         <div class="bottom-card-body">
             <div class="actions-grid">
-                <a href="/admin/animals/{{ $id ?? 1 }}/edit" class="btn-action edit">
+                <a href="{{ route('admin.animals.edit', $profile) }}" class="btn-action edit">
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     تعديل المحتوى التعريفي
                 </a>
@@ -324,7 +317,7 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                     عرض رمز QR التعريفي
                 </button>
-                <a href="/admin/animals" class="btn-action back">
+                <a href="{{ route('admin.animals.index') }}" class="btn-action back">
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                     العودة للقائمة
                 </a>
@@ -342,8 +335,8 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
             <button class="btn-close-x" onclick="closeQR()">×</button>
         </div>
         <div class="qr-body">
-            <h4>{{ $animal['name'] }}</h4>
-            <p>{{ $animal['sci'] }} — رمز: {{ $animal['code'] }}</p>
+            <h4>{{ $animalName }}</h4>
+            <p>{{ $sci }} — رمز: {{ $code }}</p>
             <canvas id="qrCanvas" width="180" height="180"></canvas>
             <div class="qr-actions">
                 <button class="btn-qr-dl" onclick="downloadQR()">
@@ -370,7 +363,7 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
 
     function openQR() {
         QRCode.toCanvas(document.getElementById('qrCanvas'),
-            JSON.stringify({ name:'{{ $animal['name'] }}', sci:'{{ $animal['sci'] }}', code:'{{ $animal['code'] }}', zoo:'حديقة حيوان طرابلس' }),
+            @json($qrUrl),
             { width:180, margin:1, color:{dark:'#1E293B',light:'#FFFFFF'} }
         );
         document.getElementById('qrModal').classList.add('show');
@@ -380,7 +373,7 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
 
     function downloadQR() {
         const link = document.createElement('a');
-        link.download = 'QR-{{ $animal['name'] }}.png';
+        link.download = 'QR-{{ $animalName }}.png';
         link.href = document.getElementById('qrCanvas').toDataURL('image/png');
         link.click();
         showToast('⬇️ تم تحميل رمز QR');

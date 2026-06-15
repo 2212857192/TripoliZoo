@@ -44,7 +44,11 @@
     .content-area button.action-btn,
     .content-area .user-menu-chevron,
     .content-area .topbar-user-menu,
-    .content-area .user-menu-dropdown a {
+    .content-area .user-menu-dropdown a,
+    .topbar .portal-logout-form,
+    .topbar .portal-logout-btn,
+    .sidebar .portal-logout-form,
+    .sidebar .portal-logout-btn {
         display: inline-flex !important;
         pointer-events: auto;
     }
@@ -169,6 +173,8 @@
             if (e.target.closest('.action-btn')) return;
             if (e.target.closest('.user-menu-chevron')) return;
             if (e.target.closest('.topbar-user-menu')) return;
+            if (e.target.closest('.portal-logout-form')) return;
+            if (e.target.closest('.sidebar-footer')) return;
             if (e.target.closest('.modal-tab')) return;
             if (e.target.closest('.btn-tbl.view')) return;
             if (e.target.closest('.modal-close')) return;

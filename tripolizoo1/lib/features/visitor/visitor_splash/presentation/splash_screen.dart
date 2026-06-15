@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
 import 'package:tripolizoo/shared/constants/app_constants.dart';
+import 'package:tripolizoo/features/visitor/visitor_auth/presentation/auth_provider.dart';
+import 'package:tripolizoo/shared/router/post_login_route.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -120,7 +123,14 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                       const SizedBox(height: 40),
                       PrimarySplashButton(
-                        onTap: () => context.go('/login'),
+                        onTap: () {
+                          final auth = context.read<AuthProvider>();
+                          if (auth.isAuthenticated) {
+                            context.go(postLoginRoute(auth.user));
+                          } else {
+                            context.go('/login');
+                          }
+                        },
                       ),
                     ],
                   ),

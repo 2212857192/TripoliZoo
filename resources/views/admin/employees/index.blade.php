@@ -463,10 +463,49 @@
     }
 
     .toast.show { transform: translateX(-50%) translateY(0); }
+
+    .modal-form-error {
+        display: none;
+        margin: 0 1.5rem 1rem;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        color: #991B1B;
+        font-size: 0.88rem;
+        font-weight: 700;
+        line-height: 1.6;
+    }
+
+    .modal-form-error.show { display: block; }
+
+    .form-input.input-error {
+        border-color: #EF4444 !important;
+        background: #FFF5F5;
+    }
+
+    .field-error {
+        margin-top: 6px;
+        font-size: 0.78rem;
+        color: #DC2626;
+        font-weight: 700;
+    }
 </style>
 @endsection
 
 @section('content')
+
+@if (session('success'))
+    <div style="background:#F0FDF4;border:1px solid #86EFAC;color:#166534;padding:12px 16px;border-radius:10px;margin-bottom:1.2rem;font-weight:700;font-size:0.9rem;">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if (session('error'))
+    <div style="background:#FEF2F2;border:1px solid #FECACA;color:#991B1B;padding:12px 16px;border-radius:10px;margin-bottom:1.2rem;font-weight:700;font-size:0.9rem;">
+        {{ session('error') }}
+    </div>
+@endif
 
 <!-- Top Card: Header + Filters -->
 <div class="top-card">
@@ -474,7 +513,7 @@
     <div class="page-header">
         <div class="page-header-info">
             <h2>حسابات الموظفين</h2>
-            <p>إجمالي <strong id="empCount">3</strong> موظف مسجل في النظام</p>
+            <p>إجمالي <strong id="empCount">{{ $employees->count() }}</strong> موظف مسجل في النظام</p>
         </div>
         <button class="btn-add" onclick="openModal('addModal')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -495,11 +534,9 @@
         </select>
         <select id="roleFilter" class="filter-select">
             <option value="all">كل الأدوار</option>
-            <option value="مشرف المجموعة">مشرف المجموعة</option>
-            <option value="الطبيب البيطري">الطبيب البيطري</option>
-            <option value="رئيس قسم الرعاية والتغذية">رئيس قسم الرعاية والتغذية</option>
-            <option value="رئيس قسم المستشفى البيطري">رئيس قسم المستشفى البيطري</option>
-            <option value="مسؤول السجلات والتوثيق">مسؤول السجلات والتوثيق</option>
+            @foreach($roleOptions as $roleOption)
+            <option value="{{ $roleOption }}">{{ $roleOption }}</option>
+            @endforeach
         </select>
     </div>
 </div>
@@ -517,84 +554,46 @@
             </tr>
         </thead>
         <tbody id="empTbody">
-            <tr data-status="active" data-role="الطبيب البيطري"
-                data-name="أحمد سالم" data-email="ahmed@tripolizoo.ly"
-                data-join="2022-03-15" data-color="c1" data-group="مجموعة الثديات الكبرى">
+            @forelse($employees as $employee)
+            <tr data-id="{{ $employee->id }}"
+                data-status="{{ $employee->status }}"
+                data-role="{{ $employee->role }}"
+                data-name="{{ $employee->name }}"
+                data-email="{{ $employee->email }}"
+                data-join="{{ $employee->joined_at?->format('d/m/Y') ?? '—' }}"
+                data-group="{{ $employee->assigned_group ?? '' }}">
                 <td>
                     <div class="emp-info">
-                        <strong>أحمد سالم</strong>
-                        <span>ahmed@tripolizoo.ly</span>
+                        <strong>{{ $employee->name }}</strong>
+                        <span>{{ $employee->email }}</span>
                     </div>
                 </td>
-                <td>الطبيب البيطري</td>
-                <td>15 مارس 2022</td>
-                <td><span class="badge active">نشط</span></td>
+                <td>{{ $employee->role }}</td>
+                <td>{{ $employee->joined_at?->format('d/m/Y') ?? '—' }}</td>
+                <td><span class="badge {{ $employee->status }}">{{ $employee->status === 'active' ? 'نشط' : 'غير نشط' }}</span></td>
                 <td>
                     <div class="actions-cell">
-                        <button class="btn-icon view" title="عرض التفاصيل" onclick="openView(this)">
+                        <button type="button" class="btn-icon view" title="عرض التفاصيل" onclick="openView(this)">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                         </button>
-                        <button class="btn-icon edit" title="تعديل" onclick="openEdit(this)">
+                        <button type="button" class="btn-icon edit" title="تعديل" onclick="openEdit(this)">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                         </button>
-                        <button class="btn-icon toggle-on" title="إيقاف الحساب" onclick="toggleStatus(this)">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
-                        </button>
+                        <form method="POST" action="{{ route('admin.employees.toggle', $employee) }}" style="display:inline;">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" class="btn-icon {{ $employee->status === 'active' ? 'toggle-on' : 'toggle-off' }}" title="{{ $employee->status === 'active' ? 'إيقاف الحساب' : 'تفعيل الحساب' }}">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+                            </button>
+                        </form>
                     </div>
                 </td>
             </tr>
-            <tr data-status="active" data-role="رئيس قسم الرعاية والتغذية"
-                data-name="سعاد مسعود" data-email="suad@tripolizoo.ly"
-                data-join="2023-01-10" data-color="c2">
-                <td>
-                    <div class="emp-info">
-                        <strong>سعاد مسعود</strong>
-                        <span>suad@tripolizoo.ly</span>
-                    </div>
-                </td>
-                <td>رئيس قسم الرعاية والتغذية</td>
-                <td>10 يناير 2023</td>
-                <td><span class="badge active">نشط</span></td>
-                <td>
-                    <div class="actions-cell">
-                        <button class="btn-icon view" title="عرض التفاصيل" onclick="openView(this)">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        </button>
-                        <button class="btn-icon edit" title="تعديل" onclick="openEdit(this)">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        </button>
-                        <button class="btn-icon toggle-on" title="إيقاف الحساب" onclick="toggleStatus(this)">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
-                        </button>
-                    </div>
-                </td>
+            @empty
+            <tr>
+                <td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem;">لا يوجد موظفون مسجلون بعد</td>
             </tr>
-            <tr data-status="inactive" data-role="مسؤول السجلات والتوثيق"
-                data-name="خالد منصور" data-email="khaled@tripolizoo.ly"
-                data-join="2021-06-20" data-color="c3">
-                <td>
-                    <div class="emp-info">
-                        <strong>خالد منصور</strong>
-                        <span>khaled@tripolizoo.ly</span>
-                    </div>
-                </td>
-                <td>مسؤول السجلات والتوثيق</td>
-                <td>20 يونيو 2021</td>
-                <td><span class="badge inactive">غير نشط</span></td>
-                <td>
-                    <div class="actions-cell">
-                        <button class="btn-icon view" title="عرض التفاصيل" onclick="openView(this)">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        </button>
-                        <button class="btn-icon edit" title="تعديل" onclick="openEdit(this)">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        </button>
-                        <button class="btn-icon toggle-off" title="تفعيل الحساب" onclick="toggleStatus(this)">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
-                        </button>
-                    </div>
-                </td>
-            </tr>
+            @endforelse
         </tbody>
     </table>
     <div class="empty-state" id="emptyState">
@@ -635,7 +634,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeModal('viewModal')">إغلاق</button>
+            <button type="button" class="btn-cancel" onclick="closeModal('viewModal')">إغلاق</button>
         </div>
     </div>
 </div>
@@ -645,55 +644,69 @@
 ══════════════════════════════════ -->
 <div class="modal-overlay" id="editModal">
     <div class="modal-box">
-        <div class="modal-head">
-            <h3>تعديل بيانات الموظف</h3>
-            <button class="btn-close-x" onclick="closeModal('editModal')">&times;</button>
-        </div>
-        <div class="modal-body-pad">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>الاسم الكامل</label>
-                    <input type="text" id="editName" class="form-input">
+        <form method="POST" id="editForm" action="">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="form_context" value="edit">
+            <input type="hidden" name="_employee_id" id="editEmployeeId" value="{{ old('_employee_id') }}">
+            <div class="modal-head">
+                <h3>تعديل بيانات الموظف</h3>
+                <button type="button" class="btn-close-x" onclick="closeModal('editModal')">&times;</button>
+            </div>
+            <div id="editFormError" class="modal-form-error @if($errors->any() && old('form_context') === 'edit') show @endif">
+                @if($errors->any() && old('form_context') === 'edit')
+                    @foreach($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
+                @endif
+            </div>
+            <div class="modal-body-pad">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>الاسم الكامل</label>
+                        <input type="text" name="name" id="editName" class="form-input @error('name') input-error @enderror" value="{{ old('name') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>الدور الوظيفي</label>
+                        <select name="role" id="editRole" class="form-input" onchange="toggleEditGroupField()" required>
+                            <option value="">اختر الدور</option>
+                            @foreach($roleOptions as $roleOption)
+                            <option value="{{ $roleOption }}" @selected(old('role') === $roleOption)>{{ $roleOption }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>الدور الوظيفي</label>
-                    <select id="editRole" class="form-input" onchange="toggleEditGroupField()">
-                        <option value="">اختر الدور</option>
-                        <option value="مشرف المجموعة">مشرف المجموعة</option>
-                        <option value="الطبيب البيطري">الطبيب البيطري</option>
-                        <option value="رئيس قسم الرعاية والتغذية">رئيس قسم الرعاية والتغذية</option>
-                        <option value="رئيس قسم المستشفى البيطري">رئيس قسم المستشفى البيطري</option>
-                        <option value="مسؤول السجلات والتوثيق">مسؤول السجلات والتوثيق</option>
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" name="email" id="editEmail" class="form-input @error('email') input-error @enderror" dir="ltr" value="{{ old('email') }}" required>
+                    @error('email')
+                        @if(old('form_context') === 'edit')
+                            <p class="field-error">{{ $message }}</p>
+                        @endif
+                    @enderror
+                </div>
+                <div class="form-group">
+                    <label>الحالة</label>
+                    <select name="status" id="editStatus" class="form-input">
+                        <option value="active" @selected(old('status', 'active') === 'active')>نشط</option>
+                        <option value="inactive" @selected(old('status') === 'inactive')>غير نشط</option>
+                    </select>
+                </div>
+                <div class="form-group" id="editGroupField" style="display: none;">
+                    <label>المجموعة المسندة</label>
+                    <select name="assigned_group" id="editGroup" class="form-input">
+                        <option value="">اختر المجموعة</option>
+                        @foreach($groupOptions as $group)
+                        <option value="{{ $group }}" @selected(old('assigned_group') === $group)>{{ $group }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
-            <div class="form-group">
-                <label>البريد الإلكتروني</label>
-                <input type="email" id="editEmail" class="form-input" dir="ltr">
+            <div class="modal-footer">
+                <button type="submit" class="btn-save">حفظ التعديلات</button>
+                <button type="button" class="btn-cancel" onclick="closeModal('editModal')">إلغاء</button>
             </div>
-            <div class="form-group">
-                <label>الحالة</label>
-                <select id="editStatus" class="form-input">
-                    <option value="active">نشط</option>
-                    <option value="inactive">غير نشط</option>
-                </select>
-            </div>
-            <div class="form-group" id="editGroupField" style="display: none;">
-                <label>المجموعة المسندة</label>
-                <select id="editGroup" class="form-input">
-                    <option value="">اختر المجموعة</option>
-                    <option value="مجموعة الثديات الكبرى">مجموعة الثديات الكبرى</option>
-                    <option value="مجموعة قرود ورئيسات">مجموعة قرود ورئيسات</option>
-                    <option value="مجموعة طيور">مجموعة طيور</option>
-                    <option value="مجموعة الزواحف">مجموعة الزواحف</option>
-                    <option value="مجموعة اكلات العشب">مجموعة اكلات العشب</option>
-                </select>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-save" onclick="saveEdit()">حفظ التعديلات</button>
-            <button class="btn-cancel" onclick="closeModal('editModal')">إلغاء</button>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -702,55 +715,68 @@
 ══════════════════════════════════ -->
 <div class="modal-overlay" id="addModal">
     <div class="modal-box">
-        <div class="modal-head">
-            <h3>إضافة موظف جديد</h3>
-            <button class="btn-close-x" onclick="closeModal('addModal')">&times;</button>
-        </div>
-        <div class="modal-body-pad">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>الاسم الكامل</label>
-                    <input type="text" id="addName" class="form-input" placeholder="مثال: محمد علي">
+        <form method="POST" action="{{ route('admin.employees.store') }}" id="addForm">
+            @csrf
+            <input type="hidden" name="form_context" value="add">
+            <div class="modal-head">
+                <h3>إضافة موظف جديد</h3>
+                <button type="button" class="btn-close-x" onclick="closeModal('addModal')">&times;</button>
+            </div>
+            <div id="addFormError" class="modal-form-error @if($errors->any() && old('form_context') === 'add') show @endif">
+                @if($errors->any() && old('form_context') === 'add')
+                    @foreach($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
+                @endif
+            </div>
+            <div class="modal-body-pad">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>الاسم الكامل</label>
+                        <input type="text" name="name" id="addName" class="form-input @error('name') input-error @enderror" value="{{ old('name') }}" placeholder="مثال: محمد علي" required>
+                    </div>
+                    <div class="form-group">
+                        <label>الدور الوظيفي</label>
+                        <select name="role" id="addRole" class="form-input" onchange="toggleGroupField()" required>
+                            <option value="">اختر الدور</option>
+                            @foreach($roleOptions as $roleOption)
+                            <option value="{{ $roleOption }}" @selected(old('role') === $roleOption)>{{ $roleOption }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>الدور الوظيفي</label>
-                    <select id="addRole" class="form-input" onchange="toggleGroupField()">
-                        <option value="">اختر الدور</option>
-                        <option value="مشرف المجموعة">مشرف المجموعة</option>
-                        <option value="الطبيب البيطري">الطبيب البيطري</option>
-                        <option value="رئيس قسم الرعاية والتغذية">رئيس قسم الرعاية والتغذية</option>
-                        <option value="رئيس قسم المستشفى البيطري">رئيس قسم المستشفى البيطري</option>
-                        <option value="مسؤول السجلات والتوثيق">مسؤول السجلات والتوثيق</option>
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" name="email" id="addEmail" class="form-input @error('email') input-error @enderror" dir="ltr" value="{{ old('email') }}" placeholder="name@tripolizoo.ly" required>
+                    @error('email')
+                        @if(old('form_context') === 'add')
+                            <p class="field-error">{{ $message }}</p>
+                        @endif
+                    @enderror
+                    <p style="margin-top:6px;font-size:0.78rem;color:var(--text-muted);font-weight:600;">سيُرسل إلى هذا البريد رسالة ترحيب باسم المنصة مع بيانات الدخول.</p>
+                </div>
+                <div class="form-group">
+                    <label>الحالة</label>
+                    <select name="status" id="addStatus" class="form-input">
+                        <option value="active" @selected(old('status', 'active') === 'active')>نشط</option>
+                        <option value="inactive" @selected(old('status') === 'inactive')>غير نشط</option>
+                    </select>
+                </div>
+                <div class="form-group" id="addGroupField" style="display: none;">
+                    <label>المجموعة المسندة</label>
+                    <select name="assigned_group" id="addGroup" class="form-input">
+                        <option value="">اختر المجموعة</option>
+                        @foreach($groupOptions as $group)
+                        <option value="{{ $group }}" @selected(old('assigned_group') === $group)>{{ $group }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
-            <div class="form-group">
-                <label>البريد الإلكتروني</label>
-                <input type="email" id="addEmail" class="form-input" dir="ltr" placeholder="name@tripolizoo.ly">
+            <div class="modal-footer">
+                <button type="submit" class="btn-save">إضافة الموظف</button>
+                <button type="button" class="btn-cancel" onclick="closeModal('addModal')">إلغاء</button>
             </div>
-            <div class="form-group">
-                <label>الحالة</label>
-                <select id="addStatus" class="form-input">
-                    <option value="active">نشط</option>
-                    <option value="inactive">غير نشط</option>
-                </select>
-            </div>
-            <div class="form-group" id="addGroupField" style="display: none;">
-                <label>المجموعة المسندة</label>
-                <select id="addGroup" class="form-input">
-                    <option value="">اختر المجموعة</option>
-                    <option value="مجموعة الثديات الكبرى">مجموعة الثديات الكبرى</option>
-                    <option value="مجموعة قرود ورئيسات">مجموعة قرود ورئيسات</option>
-                    <option value="مجموعة طيور">مجموعة طيور</option>
-                    <option value="مجموعة الزواحف">مجموعة الزواحف</option>
-                    <option value="مجموعة اكلات العشب">مجموعة اكلات العشب</option>
-                </select>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-save" onclick="addEmployee()">إضافة الموظف</button>
-            <button class="btn-cancel" onclick="closeModal('addModal')">إلغاء</button>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -761,35 +787,17 @@
 
 @section('scripts')
 <script>
-    const avatarColors = ['c1','c2','c3','c4'];
-    const avatarGradients = {
-        c1: 'linear-gradient(135deg, #E8651A, #c0510d)',
-        c2: 'linear-gradient(135deg, #2E7D32, #1B5E20)',
-        c3: 'linear-gradient(135deg, #0284C7, #01579B)',
-        c4: 'linear-gradient(135deg, #7C3AED, #5B21B6)',
-    };
     const ROLES_WITH_GROUP = ['الطبيب البيطري', 'مشرف المجموعة'];
-    let currentEditRow = null;
-    let colorIndex = 0;
+    const employeeUpdateBase = @json(url('/admin/employees'));
 
-    /* ── Modal helpers ── */
     function openModal(id) { document.getElementById(id).classList.add('show'); }
     function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
-    /* ── Toast ── */
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2800);
-    }
-
-    /* ── Search & Filter ── */
     function filterTable() {
         const q = document.getElementById('searchInput').value.trim().toLowerCase();
         const st = document.getElementById('statusFilter').value;
         const rl = document.getElementById('roleFilter').value;
-        const rows = document.querySelectorAll('#empTbody tr');
+        const rows = document.querySelectorAll('#empTbody tr[data-id]');
         let visible = 0;
 
         rows.forEach(row => {
@@ -803,22 +811,20 @@
             if (show) visible++;
         });
 
-        document.getElementById('emptyState').style.display = visible === 0 ? 'block' : 'none';
+        document.getElementById('emptyState').style.display = visible === 0 && rows.length > 0 ? 'block' : 'none';
     }
 
     document.getElementById('searchInput').addEventListener('input', filterTable);
     document.getElementById('statusFilter').addEventListener('change', filterTable);
     document.getElementById('roleFilter').addEventListener('change', filterTable);
 
-    /* ── View ── */
     function openView(btn) {
         const r = btn.closest('tr');
         document.getElementById('viewName').textContent  = r.dataset.name;
         document.getElementById('viewEmail').textContent = r.dataset.email;
         document.getElementById('viewRole').textContent  = r.dataset.role;
-        document.getElementById('viewJoin').textContent  = r.cells[2].textContent;
+        document.getElementById('viewJoin').textContent  = r.dataset.join;
 
-        // Show group field if applicable
         const groupField = document.getElementById('viewGroupField');
         if (r.dataset.group) {
             groupField.style.display = 'flex';
@@ -827,10 +833,9 @@
             groupField.style.display = 'none';
         }
 
-        const badge = r.querySelector('.badge');
         const isActive = r.dataset.status === 'active';
         document.getElementById('viewStatus').innerHTML =
-            `<span class="badge ${isActive ? 'active' : 'inactive'}">${badge.textContent}</span>`;
+            `<span class="badge ${isActive ? 'active' : 'inactive'}">${isActive ? 'نشط' : 'غير نشط'}</span>`;
 
         openModal('viewModal');
     }
@@ -839,16 +844,15 @@
         return ROLES_WITH_GROUP.includes(role);
     }
 
-    /* ── Toggle Edit Group Field ── */
     function toggleEditGroupField() {
         const role = document.getElementById('editRole').value;
         document.getElementById('editGroupField').style.display = roleNeedsGroup(role) ? 'block' : 'none';
     }
 
-    /* ── Edit ── */
     function openEdit(btn) {
-        currentEditRow = btn.closest('tr');
-        const r = currentEditRow;
+        const r = btn.closest('tr');
+        document.getElementById('editEmployeeId').value = r.dataset.id;
+        document.getElementById('editForm').action = employeeUpdateBase + '/' + r.dataset.id;
         document.getElementById('editName').value  = r.dataset.name;
         document.getElementById('editEmail').value = r.dataset.email;
         document.getElementById('editRole').value  = r.dataset.role;
@@ -858,130 +862,47 @@
         openModal('editModal');
     }
 
-    function saveEdit() {
-        if (!currentEditRow) return;
-        const name  = document.getElementById('editName').value.trim();
-        const email = document.getElementById('editEmail').value.trim();
-        const role  = document.getElementById('editRole').value;
-        const status = document.getElementById('editStatus').value;
-        const group = document.getElementById('editGroup').value;
-        if (!name || !email || !role) { showToast('⚠️ الاسم والبريد والدور مطلوبة'); return; }
-        if (roleNeedsGroup(role) && !group) { showToast('⚠️ يجب اختيار المجموعة لهذا الدور'); return; }
-
-        // Update data attrs
-        currentEditRow.dataset.name  = name;
-        currentEditRow.dataset.email = email;
-        currentEditRow.dataset.role  = role;
-        currentEditRow.dataset.status = status;
-        currentEditRow.dataset.group = group || '';
-
-        // Update DOM
-        currentEditRow.querySelector('.emp-info strong').textContent = name;
-        currentEditRow.querySelector('.emp-info span').textContent   = email;
-        currentEditRow.cells[1].textContent = role;
-
-        // Update status badge
-        const badge = currentEditRow.querySelector('.badge');
-        badge.textContent = status === 'active' ? 'نشط' : 'غير نشط';
-        badge.className = 'badge ' + status;
-
-        closeModal('editModal');
-        showToast('✅ تم حفظ التعديلات بنجاح');
-    }
-
-    /* ── Toggle Status ── */
-    function toggleStatus(btn) {
-        const row = btn.closest('tr');
-        const isActive = row.dataset.status === 'active';
-        row.dataset.status = isActive ? 'inactive' : 'active';
-
-        const badge = row.querySelector('.badge');
-        badge.textContent = isActive ? 'غير نشط' : 'نشط';
-        badge.className   = 'badge ' + (isActive ? 'inactive' : 'active');
-
-        btn.className = isActive ? 'btn-icon toggle-off' : 'btn-icon toggle-on';
-        btn.title     = isActive ? 'تفعيل الحساب' : 'إيقاف الحساب';
-
-        filterTable();
-        showToast(isActive ? '🔴 تم إيقاف الحساب' : '🟢 تم تفعيل الحساب');
-    }
-
-    /* ── Toggle Group Field ── */
     function toggleGroupField() {
         const role = document.getElementById('addRole').value;
         document.getElementById('addGroupField').style.display = roleNeedsGroup(role) ? 'block' : 'none';
     }
 
-    /* ── Add Employee ── */
-    function addEmployee() {
-        const name  = document.getElementById('addName').value.trim();
-        const email = document.getElementById('addEmail').value.trim();
-        const role  = document.getElementById('addRole').value;
-        const status = document.getElementById('addStatus').value;
+    document.getElementById('addForm').addEventListener('submit', function(e) {
+        const role = document.getElementById('addRole').value;
         const group = document.getElementById('addGroup').value;
-        if (!name || !email || !role) { showToast('⚠️ الاسم والبريد والدور مطلوبة'); return; }
-        if (roleNeedsGroup(role) && !group) { showToast('⚠️ يجب اختيار المجموعة لهذا الدور'); return; }
+        if (roleNeedsGroup(role) && !group) {
+            e.preventDefault();
+            alert('يجب اختيار المجموعة لهذا الدور');
+        }
+    });
 
-        const color = avatarColors[colorIndex % avatarColors.length];
-        colorIndex++;
+    document.getElementById('editForm').addEventListener('submit', function(e) {
+        const role = document.getElementById('editRole').value;
+        const group = document.getElementById('editGroup').value;
+        if (roleNeedsGroup(role) && !group) {
+            e.preventDefault();
+            alert('يجب اختيار المجموعة لهذا الدور');
+        }
+    });
 
-        const today = new Date().toLocaleDateString('ar-LY', { day: 'numeric', month: 'long', year: 'numeric' });
-
-        const tr = document.createElement('tr');
-        tr.dataset.status = status;
-        tr.dataset.role   = role;
-        tr.dataset.name   = name;
-        tr.dataset.email  = email;
-        tr.dataset.join   = today;
-        tr.dataset.color  = color;
-        tr.dataset.group  = group || '';
-
-        tr.innerHTML = `
-            <td>
-                <div class="emp-cell">
-                    <div class="emp-avatar ${color}" style="background: ${avatarGradients[color]}">${name[0]}</div>
-                    <div class="emp-info">
-                        <strong>${name}</strong>
-                        <span>${email}</span>
-                    </div>
-                </div>
-            </td>
-            <td>${role}</td>
-            <td>${today}</td>
-            <td><span class="badge ${status}">${status === 'active' ? 'نشط' : 'غير نشط'}</span></td>
-            <td>
-                <div class="actions-cell">
-                    <button class="btn-icon view" title="عرض" onclick="openView(this)">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    </button>
-                    <button class="btn-icon edit" title="تعديل" onclick="openEdit(this)">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                    </button>
-                    <button class="btn-icon ${status === 'active' ? 'toggle-on' : 'toggle-off'}" title="${status === 'active' ? 'إيقاف الحساب' : 'تفعيل الحساب'}" onclick="toggleStatus(this)">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
-                    </button>
-                </div>
-            </td>`;
-
-        document.getElementById('empTbody').appendChild(tr);
-
-        // Update count
-        const count = document.querySelectorAll('#empTbody tr').length;
-        document.getElementById('empCount').textContent = count;
-
-        // Reset form
-        ['addName','addEmail','addStatus','addGroup'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('addRole').selectedIndex = 0;
-        document.getElementById('addGroupField').style.display = 'none';
-
-        closeModal('addModal');
-        filterTable();
-        showToast('✅ تمت إضافة الموظف بنجاح');
-    }
-
-    // Close modal on overlay click
     document.querySelectorAll('.modal-overlay').forEach(ov => {
         ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('show'); });
     });
+
+    @if(old('form_context') === 'add')
+    document.addEventListener('DOMContentLoaded', function () {
+        openModal('addModal');
+        toggleGroupField();
+    });
+    @elseif(old('form_context') === 'edit')
+    document.addEventListener('DOMContentLoaded', function () {
+        const employeeId = @json(old('_employee_id'));
+        if (employeeId) {
+            document.getElementById('editForm').action = employeeUpdateBase + '/' + employeeId;
+        }
+        openModal('editModal');
+        toggleEditGroupField();
+    });
+    @endif
 </script>
 @endsection

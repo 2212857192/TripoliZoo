@@ -1,4 +1,4 @@
-﻿@extends($__layout ?? 'admin.layout')
+@extends($__layout ?? 'admin.layout')
 @section('title', 'إضافة محتوى تعريفي | Tripoli Zoo')
 @section('page_title', 'إضافة محتوى تعريفي جديد')
 
@@ -238,10 +238,13 @@
 
 @section('content')
 
-<a href="/admin/animals" class="page-back">
+<a href="{{ route('admin.animals.index') }}" class="page-back">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     العودة إلى قائمة المحتوى التعريفي
 </a>
+
+<form method="POST" action="{{ route('admin.animals.store') }}" enctype="multipart/form-data" id="createForm">
+@csrf
 
 {{-- ── Step 1: Animal ── --}}
 <div class="section-card">
@@ -255,13 +258,13 @@
     <div class="section-body">
         <div class="animal-select-wrapper">
             <svg class="select-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-            <select id="animalSelect" onchange="onAnimalChange()">
+            <select id="animalSelect" name="animal_id" onchange="onAnimalChange()" required>
                 <option value="">— اختر حيواناً من القائمة —</option>
-                <option value="1" data-emoji="🦁" data-sci="Panthera leo">الأسد الإفريقي</option>
-                <option value="2" data-emoji="🐘" data-sci="Elephas maximus">الفيل الآسيوي</option>
-                <option value="3" data-emoji="🐯" data-sci="Panthera tigris">النمر البنغالي</option>
-                <option value="4" data-emoji="🦒" data-sci="Giraffa camelopardalis">الزرافة</option>
-                <option value="5" data-emoji="🐊" data-sci="Crocodylus niloticus">التمساح النيلي</option>
+                @forelse($animals as $animal)
+                <option value="{{ $animal->id }}" @selected(old('animal_id') == $animal->id)>{{ $animal->displayLabel() }} ({{ $animal->code }})</option>
+                @empty
+                <option value="" disabled>لا توجد حيوانات بدون محتوى تعريفي</option>
+                @endforelse
             </select>
             <svg class="select-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
@@ -287,11 +290,13 @@
     <div class="section-body">
         <textarea
             id="desc"
+            name="description"
             class="desc-textarea"
-            placeholder="مثال: الأسد الإفريقي من أكبر القطط البرية في العالم، يعيش في مجموعات تُعرف بـ (الفخر)، ويتميز الذكر بعُرفه الكثيف..."
+            placeholder="مثال: الأسد الإفريقي من أكبر القطط البرية في العالم..."
             oninput="onDescInput()"
             rows="6"
-        ></textarea>
+            required
+        >{{ old('description') }}</textarea>
         <div class="char-count">الأحرف: <span id="charCount">0</span> / 600</div>
 
     </div>
@@ -308,7 +313,7 @@
         </div>
         <div class="bottom-card-body">
             <div class="upload-zone" id="uploadZone">
-                <input type="file" id="imgInput" accept="image/*" onchange="previewImg(this)">
+                <input type="file" id="imgInput" name="image" accept="image/*" onchange="previewImg(this)" required>
                 <div class="upload-zone-icon">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
                 </div>
@@ -331,29 +336,23 @@
             <h3>حفظ ونشر المحتوى</h3>
         </div>
         <div class="bottom-card-body">
-            <button class="btn-save" id="btnSave" onclick="submitForm()">
+            <button type="submit" class="btn-save" id="btnSave">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                 حفظ المحتوى التعريفي
             </button>
-            <a href="/admin/animals" class="btn-discard">إلغاء والتراجع</a>
+            <a href="{{ route('admin.animals.index') }}" class="btn-discard">إلغاء والتراجع</a>
         </div>
     </div>
 
 </div>
+
+</form>
 
 <div class="toast" id="toast"></div>
 @endsection
 
 @section('scripts')
 <script>
-    const animalData = {
-        '1': { name: 'الأسد الإفريقي' },
-        '2': { name: 'الفيل الآسيوي' },
-        '3': { name: 'النمر البنغالي' },
-        '4': { name: 'الزرافة' },
-        '5': { name: 'التمساح النيلي' },
-    };
-
     function showToast(msg) {
         const t = document.getElementById('toast');
         t.textContent = msg;
@@ -361,25 +360,21 @@
         setTimeout(() => t.classList.remove('show'), 3000);
     }
 
-    /* ── Animal change ── */
     function onAnimalChange() {
-        const val = document.getElementById('animalSelect').value;
+        const sel = document.getElementById('animalSelect');
         const preview = document.getElementById('animalPreview');
-        if (val && animalData[val]) {
-            document.getElementById('previewName').textContent = animalData[val].name;
+        if (sel.value) {
+            document.getElementById('previewName').textContent = sel.options[sel.selectedIndex].text;
             preview.classList.add('show');
         } else {
             preview.classList.remove('show');
         }
     }
 
-    /* ── Description counter ── */
     function onDescInput() {
-        const len = document.getElementById('desc').value.length;
-        document.getElementById('charCount').textContent = len;
+        document.getElementById('charCount').textContent = document.getElementById('desc').value.length;
     }
 
-    /* ── Image preview ── */
     function previewImg(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -399,7 +394,6 @@
         document.getElementById('imgInput').value = '';
     }
 
-    /* ── Drag & drop ── */
     const uploadZone = document.getElementById('uploadZone');
     uploadZone.addEventListener('dragover',  e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
     uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
@@ -416,35 +410,7 @@
         }
     });
 
-    /* ── Submit ── */
-    function submitForm() {
-        const animal = document.getElementById('animalSelect').value;
-        const desc   = document.getElementById('desc').value.trim();
-        const hasImg = document.getElementById('imgPreviewWrap').classList.contains('show');
-
-        if (!animal) {
-            showToast('⚠️ يجب اختيار الحيوان أولاً');
-            return;
-        }
-        if (desc.length < 20) {
-            showToast('⚠️ يجب كتابة وصف تعريفي (20 حرف على الأقل)');
-            document.getElementById('desc').focus();
-            return;
-        }
-        if (!hasImg) {
-            showToast('⚠️ يجب إضافة صورة للحيوان');
-            return;
-        }
-
-        const btn = document.getElementById('btnSave');
-        btn.disabled = true; btn.style.opacity = '.7';
-        btn.innerHTML = '⏳ جاري الحفظ...';
-
-        setTimeout(() => {
-            showToast('✅ تمت إضافة المحتوى التعريفي بنجاح');
-            btn.innerHTML = '✅ تم الحفظ بنجاح!';
-            setTimeout(() => { window.location.href = '/admin/animals'; }, 1200);
-        }, 900);
-    }
+    onDescInput();
+    onAnimalChange();
 </script>
 @endsection

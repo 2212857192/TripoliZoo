@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Http\Resources;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+/** @mixin User */
+class ApiUserResource extends JsonResource
+{
+    /** @return array<string, mixed> */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => (string) $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone ?? '',
+            'role' => $this->appRole()?->value ?? 'visitor',
+            'is_guest' => false,
+            'assigned_group' => $this->assigned_group,
+        ];
+    }
+}

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -50,8 +49,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _guestLogin() async {
     final auth = context.read<AuthProvider>();
-    await auth.guestLogin();
-    if (mounted) context.go('/home');
+    final ok = await auth.guestLogin();
+    if (!mounted) return;
+    if (ok) {
+      context.go('/home');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(auth.error ?? 'تعذّر الدخول كزائر')),
+      );
+    }
   }
 
   @override
@@ -91,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   setState(() => _obscurePassword = !_obscurePassword),
               validator: (v) {
                 if (v == null || v.length < AppConstants.minPasswordLength) {
-                  return '6 أحرف على الأقل';
+                  return '${AppConstants.minPasswordLength} أحرف على الأقل';
                 }
                 return null;
               },
