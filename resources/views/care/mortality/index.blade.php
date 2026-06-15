@@ -38,14 +38,6 @@
         background: linear-gradient(135deg, #1a4a2e, #2d7a47);
         border-color: transparent; color: #fff;
     }
-    .animal-thumb {
-        width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
-        background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
-        border: 1.5px solid #bbf7d0;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.35rem; overflow: hidden;
-    }
-    .animal-name { font-weight: 800; color: #0f172a; line-height: 1.3; }
     .custom-table { width: 100%; border-collapse: collapse; text-align: right; }
     .custom-table thead th { background: #F8FAFC; color: var(--text-muted); font-size: 0.8rem; font-weight: 800; padding: 14px 20px; border-bottom: 1px solid var(--border); }
     .custom-table tbody tr { transition: background 0.15s; }
@@ -184,13 +176,9 @@
             <option>محالة للتشريح</option>
         </select>
         <select class="filter-select">
-            <option value="">كل المجموعات</option>
-            <option>السباع والضواري</option>
-            <option>الرئيسيات</option>
-            <option>العواشب</option>
-            <option>الطيور</option>
+                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
         </select>
-        <input type="date" class="filter-select">
+        @include('partials.date-filter')
     </div>
 </div>
 
@@ -200,9 +188,7 @@
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>اسم الحيوان</th>
-                    <th>صورة الحيوان</th>
-                    <th>رقم الحيوان</th>
+                    <th>الحيوان</th>
                     <th>المجموعة</th>
                     <th>تاريخ النفوق</th>
                     <th>الحالة</th>
@@ -211,10 +197,8 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><span class="animal-name">سيمبا</span></td>
-                    <td><div class="animal-thumb">🦁</div></td>
-                    <td><span class="animal-id">#ANL-0041-2026</span></td>
-                    <td>السباع</td>
+                    @include('partials.animal-table-cell', ['name' => 'سيمبا', 'emoji' => '🦁', 'animalId' => '#ANL-0041-2026'])
+                    <td>القططية</td>
                     <td>2026-06-07</td>
                     <td><span class="badge badge-new"><span class="dot"></span>جديدة</span></td>
                     <td>
@@ -224,10 +208,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="animal-name" style="color:#94a3b8; font-style:italic;">—</span></td>
-                    <td><div class="animal-thumb">🐒</div></td>
-                    <td><span class="animal-id">#ANL-0182-2025</span></td>
-                    <td>الرئيسيات</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => '#ANL-0182-2025'])
+                    <td>القرود</td>
                     <td>2026-06-06</td>
                     <td><span class="badge badge-new"><span class="dot"></span>جديدة</span></td>
                     <td>
@@ -237,9 +219,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="animal-name">نعيمة</span></td>
-                    <td><div class="animal-thumb">🦩</div></td>
-                    <td><span class="animal-id">#ANL-0091-2024</span></td>
+                    @include('partials.animal-table-cell', ['name' => 'نعيمة', 'emoji' => '🦩', 'animalId' => '#ANL-0091-2024'])
                     <td>الطيور</td>
                     <td>2026-06-04</td>
                     <td><span class="badge badge-approved"><span class="dot"></span>معتمدة</span></td>
@@ -250,10 +230,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="animal-name">ريم</span></td>
-                    <td><div class="animal-thumb">🦌</div></td>
-                    <td><span class="animal-id">#ANL-0120-2026</span></td>
-                    <td>العواشب</td>
+                    @include('partials.animal-table-cell', ['name' => 'ريم', 'emoji' => '🦌', 'animalId' => '#ANL-0120-2026'])
+                    <td>الغزلان</td>
                     <td>2026-06-03</td>
                     <td><span class="badge badge-autopsy"><span class="dot"></span>محالة للتشريح</span></td>
                     <td>
@@ -263,10 +241,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="animal-name">فهد</span></td>
-                    <td><div class="animal-thumb">🐆</div></td>
-                    <td><span class="animal-id">#ANL-0305-2024</span></td>
-                    <td>السباع</td>
+                    @include('partials.animal-table-cell', ['name' => 'فهد', 'emoji' => '🐆', 'animalId' => '#ANL-0305-2024'])
+                    <td>القططية</td>
                     <td>2026-05-28</td>
                     <td><span class="badge badge-approved"><span class="dot"></span>معتمدة</span></td>
                     <td>
@@ -471,14 +447,14 @@
             'new_visible': {
                 caseId: 'MC-2026-001', emoji: '🦁', animalName: 'سيمبا',
                 animalId: '#ANL-0041-2026', animalType: 'أسد إفريقي',
-                group: 'السباع', date: '2026-06-07', cause: 'عضة واضحة من حيوان آخر',
+                group: 'القططية', date: '2026-06-07', cause: 'عضة واضحة من حيوان آخر',
                 notes: 'وجد ميتاً قرب السياج الداخلي. يظهر جرح بالغ الأثر في الرقبة.',
                 status: 'جديدة'
             },
             'new_unknown': {
                 caseId: 'MC-2026-002', emoji: '🐒', animalName: null,
                 animalId: '#ANL-0182-2025', animalType: 'قرد المكاك',
-                group: 'الرئيسيات', date: '2026-06-06', cause: 'غير ظاهر',
+                group: 'القرود', date: '2026-06-06', cause: 'غير ظاهر',
                 notes: 'وجد ميتاً في المنطقة المرتفعة. لا يوجد جرح ظاهر ولا علامات تدل على سبب واضح.',
                 status: 'جديدة'
             },
@@ -492,14 +468,14 @@
             'autopsy': {
                 caseId: 'MC-2026-004', emoji: '🦌', animalName: 'ريم',
                 animalId: '#ANL-0120-2026', animalType: 'غزال الريم',
-                group: 'العواشب', date: '2026-06-03', cause: 'غير ظاهر — بانتظار نتيجة التشريح',
+                group: 'الغزلان', date: '2026-06-03', cause: 'غير ظاهر — بانتظار نتيجة التشريح',
                 notes: 'وجد ميتاً بدون سبب ظاهر. تم إحالته للتشريح للتحقق.',
                 status: 'محالة للتشريح'
             },
             'approved_result': {
                 caseId: 'MC-2026-005', emoji: '🐆', animalName: 'فهد',
                 animalId: '#ANL-0305-2024', animalType: 'فهد أفريقي',
-                group: 'السباع', date: '2026-05-28', cause: 'فشل كلوي حاد مصحوب بعدوى بكتيرية',
+                group: 'القططية', date: '2026-05-28', cause: 'فشل كلوي حاد مصحوب بعدوى بكتيرية',
                 notes: 'وفاة مفاجئة بلا أعراض سابقة. وافق رئيس المستشفى على نتيجة التشريح وتم توثيقها.',
                 status: 'معتمدة'
             }

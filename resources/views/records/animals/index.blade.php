@@ -11,17 +11,6 @@
 
     .animal-id { font-family:'Courier New',monospace; font-size:0.8rem; background:#f8fafc; padding:3px 8px; border-radius:6px; color:#334155; font-weight:800; display:inline-block; border:1px solid #e2e8f0; }
     .animal-id.monitoring { color:#15803d; background:#f0fdf4; border-color:#bbf7d0; }
-
-    .animal-cell { display:flex; align-items:center; gap:10px; }
-    .animal-thumb {
-        width:40px; height:40px; border-radius:10px; flex-shrink:0;
-        background:linear-gradient(135deg,#E8F5E9,#C8E6C9);
-        border:1.5px solid #bbf7d0;
-        display:flex; align-items:center; justify-content:center;
-        font-size:1.25rem; overflow:hidden;
-    }
-    .animal-cell-name { font-weight:800; color:#0f172a; line-height:1.3; }
-    .animal-cell-sub { font-size:0.75rem; color:#64748b; font-weight:600; }
     .source-tag { font-size:0.68rem; font-weight:800; padding:2px 7px; border-radius:6px; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; margin-top:3px; display:inline-block; }
 
     .page-header-actions { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
@@ -157,15 +146,7 @@
             <input type="text" placeholder="بحث برقم الحيوان، الاسم، أو النوع...">
         </div>
         <select class="filter-select">
-            <option value="">كل المجموعات</option>
-            <option>القططية</option>
-            <option>الطيور</option>
-            <option>الزواحف</option>
-            <option>الغزلان</option>
-            <option>القرود</option>
-            <option>الثدييات الصغيرة</option>
-            <option>الثدييات الكبيرة</option>
-            <option>الدب واللامة</option>
+                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
         </select>
         <div class="legend-wrap">
             <span class="legend-dot"></span>
@@ -184,7 +165,6 @@
             <thead>
                 <tr>
                     <th>الحيوان</th>
-                    <th>رقم الحيوان</th>
                     <th>النوع</th>
                     <th>المجموعة</th>
                     <th>الجنس</th>
@@ -195,16 +175,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>
-                        <div class="animal-cell">
-                            <div class="animal-thumb">🦁</div>
-                            <div>
-                                <div class="animal-cell-name">سيمبا</div>
-                                <div class="animal-cell-sub">أسد أفريقي</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td><span class="animal-id">#ANM-0012</span></td>
+                    @include('partials.animal-table-cell', ['name' => 'سيمبا', 'emoji' => '🦁', 'animalId' => '#ANM-0012', 'sub' => 'أسد أفريقي'])
                     <td>أسد أفريقي</td>
                     <td>القططية</td>
                     <td>ذكر</td>
@@ -217,17 +188,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                        <div class="animal-cell">
-                            <div class="animal-thumb">🐒</div>
-                            <div>
-                                <div class="animal-cell-name" style="color:#94a3b8;font-style:italic;">—</div>
-                                <div class="animal-cell-sub">قرد مكاك</div>
-                                <span class="source-tag">من الحجر الصحي</span>
-                            </div>
-                        </div>
-                    </td>
-                    <td><span class="animal-id monitoring">#MON-1046</span></td>
+                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => '#MON-1046', 'sub' => 'قرد مكاك', 'sourceTag' => 'من الحجر الصحي'])
                     <td>قرد مكاك</td>
                     <td>القرود</td>
                     <td>أنثى</td>
@@ -240,17 +201,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                        <div class="animal-cell">
-                            <div class="animal-thumb">🦌</div>
-                            <div>
-                                <div class="animal-cell-name" style="color:#94a3b8;font-style:italic;">—</div>
-                                <div class="animal-cell-sub">غزال الريم</div>
-                                <span class="source-tag">من الحجر الصحي</span>
-                            </div>
-                        </div>
-                    </td>
-                    <td><span class="animal-id">#GZL-1045</span></td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦌', 'animalId' => '#GZL-1045', 'sub' => 'غزال الريم', 'sourceTag' => 'من الحجر الصحي'])
                     <td>غزال الريم</td>
                     <td>الغزلان</td>
                     <td>ذكر</td>
@@ -263,16 +214,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                        <div class="animal-cell">
-                            <div class="animal-thumb">🦁</div>
-                            <div>
-                                <div class="animal-cell-name">سلطان</div>
-                                <div class="animal-cell-sub">أسد</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td><span class="animal-id">#ANM-0200</span></td>
+                    @include('partials.animal-table-cell', ['name' => 'سلطان', 'emoji' => '🦁', 'animalId' => '#ANM-0200', 'sub' => 'أسد'])
                     <td>أسد</td>
                     <td>القططية</td>
                     <td>ذكر</td>
@@ -285,16 +227,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                        <div class="animal-cell">
-                            <div class="animal-thumb">🦁</div>
-                            <div>
-                                <div class="animal-cell-name" style="color:#94a3b8;font-style:italic;">—</div>
-                                <div class="animal-cell-sub">أسد أفريقي — مولود نافق</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td><span class="animal-id">#ANM-0201</span></td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦁', 'animalId' => '#ANM-0201', 'sub' => 'أسد أفريقي — مولود نافق'])
                     <td>أسد أفريقي</td>
                     <td>القططية</td>
                     <td>أنثى</td>
@@ -307,16 +240,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                        <div class="animal-cell">
-                            <div class="animal-thumb">🐄</div>
-                            <div>
-                                <div class="animal-cell-name" style="color:#94a3b8;font-style:italic;">—</div>
-                                <div class="animal-cell-sub">بقر — ذبح اضطراري</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td><span class="animal-id">#ANM-0202</span></td>
+                    @include('partials.animal-table-cell', ['emoji' => '🐄', 'animalId' => '#ANM-0202', 'sub' => 'بقر — ذبح اضطراري'])
                     <td>بقر</td>
                     <td>الثدييات الكبيرة</td>
                     <td>أنثى</td>
@@ -329,18 +253,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                        <div class="animal-cell">
-                            <div class="animal-thumb">🦒</div>
-                            <div>
-                                <div class="animal-cell-name" style="color:#94a3b8;font-style:italic;">—</div>
-                                <div class="animal-cell-sub">زرافة — خارج من الحديقة</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td><span class="animal-id">#ANM-0203</span></td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦒', 'animalId' => '#ANM-0203', 'sub' => 'زرافة — خارج من الحديقة'])
                     <td>زرافة</td>
-                    <td>العناقيد الكبرى</td>
+                    <td>الثدييات الكبيرة</td>
                     <td>ذكر</td>
                     <td style="color:#64748b; font-size:0.85rem;">4 سنوات</td>
                     <td style="color:#64748b; font-size:0.85rem;">2023-01-15</td>
@@ -392,10 +307,7 @@
                     <div class="field-group">
                         <label class="field-label"><span class="required">*</span> المجموعة</label>
                         <select class="form-control" id="addGroupSelect" onchange="updateGeneratedId()">
-                            <option value="" disabled selected>اختر المجموعة...</option>
-                            <option value="القططية">القططية</option><option value="الطيور">الطيور</option><option value="الزواحف">الزواحف</option>
-                            <option value="الغزلان">الغزلان</option><option value="القرود">القرود</option><option value="الثدييات الصغيرة">الثدييات الصغيرة</option>
-                            <option value="الثدييات الكبيرة">الثدييات الكبيرة</option><option value="الدب واللامة">الدب واللامة</option>
+                            @include('partials.animal-group-options', ['prompt' => 'اختر المجموعة...', 'withValues' => true])
                         </select>
                     </div>
                     <div class="field-group">
@@ -563,8 +475,8 @@
 
     const groupPrefixes = {
         'القططية': 'ANM', 'الطيور': 'BRD', 'الزواحف': 'RPT',
-        'الغزلان': 'GZL', 'القرود': 'MON', 'الثدييات الصغيرة': 'SML',
-        'الثدييات الكبيرة': 'LRG', 'الدب واللامة': 'BLA'
+        'القرود': 'MON', 'الغزلان': 'GZL', 'الثدييات الكبيرة': 'LRG',
+        'الثدييات الصغيرة': 'SML', 'الدب واللامة': 'BLA'
     };
     const groupCounters = { ANM: 1050, BRD: 201, RPT: 88, GZL: 1046, MON: 1047, SML: 330, LRG: 120, BLA: 45 };
 

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 require_once app_path('Helpers/director.php');
+require_once app_path('Helpers/animal_groups.php');
 
 Route::get('/', function () {
     return view('welcome');

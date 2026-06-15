@@ -50,8 +50,6 @@
 
     .animal-id { font-family: 'Courier New', monospace; font-size: 0.75rem; background: #f8fafc; padding: 3px 8px; border-radius: 6px; color: #334155; font-weight: 800; display: inline-block; border: 1px solid #e2e8f0; }
 
-    #datePickerWrap { display: none; }
-    #datePickerWrap.show { display: block; }
 </style>
 @endsection
 
@@ -77,21 +75,9 @@
             <option>لا يتطلب استلام</option>
         </select>
         <select class="filter-select">
-            <option value="">كل المجموعات</option>
-            <option>السباع والضواري</option>
-            <option>الرئيسيات</option>
-            <option>العواشب</option>
-            <option>الطيور</option>
+                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
         </select>
-        <select class="filter-select" id="dateFilter" onchange="toggleDatePicker(this.value)">
-            <option value="">كل التواريخ</option>
-            <option value="today">اليوم</option>
-            <option value="week">الأسبوع</option>
-            <option value="custom">التاريخ</option>
-        </select>
-        <div id="datePickerWrap">
-            <input type="date" class="filter-select" id="customDate">
-        </div>
+        @include('partials.date-filter')
     </div>
 </div>
 
@@ -101,7 +87,7 @@
             <thead>
                 <tr>
                     <th>نوع القرار</th>
-                    <th>رقم الحيوان</th>
+                    <th>الحيوان</th>
                     <th>نوع الحيوان</th>
                     <th>المجموعة</th>
                     <th>تاريخ القرار</th>
@@ -112,9 +98,9 @@
             <tbody>
                 <tr>
                     <td><span class="badge type-discharge"><span class="dot"></span>خروج بعد العلاج</span></td>
-                    <td><span class="animal-id">#ANL-0041-2022</span></td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦁', 'animalId' => '#ANL-0041-2022'])
                     <td style="font-weight:700;">أسد إفريقي</td>
-                    <td>السباع والضواري</td>
+                    <td>القططية</td>
                     <td>2026-06-07</td>
                     <td><span class="badge status-pending">بانتظار الاستلام</span></td>
                     <td>
@@ -125,9 +111,9 @@
                 </tr>
                 <tr>
                     <td><span class="badge type-release"><span class="dot"></span>إفراج صحي</span></td>
-                    <td><span class="animal-id">#Q-0182-2026</span></td>
+                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => '#Q-0182-2026'])
                     <td style="font-weight:700;">قرد المكاك</td>
-                    <td>الرئيسيات</td>
+                    <td>القرود</td>
                     <td>2026-06-06</td>
                     <td><span class="badge status-received">تم الاستلام</span></td>
                     <td>
@@ -138,9 +124,9 @@
                 </tr>
                 <tr>
                     <td><span class="badge type-slaughter"><span class="dot"></span>ذبح اضطراري</span></td>
-                    <td><span class="animal-id">#ANL-0120-2024</span></td>
+                    @include('partials.animal-table-cell', ['name' => 'ريم', 'emoji' => '🦌', 'animalId' => '#ANL-0120-2024'])
                     <td style="font-weight:700;">غزال الريم</td>
-                    <td>العواشب</td>
+                    <td>الغزلان</td>
                     <td>2026-06-05</td>
                     <td><span class="badge status-none">لا يتطلب استلام</span></td>
                     <td>
@@ -151,7 +137,7 @@
                 </tr>
                 <tr>
                     <td><span class="badge type-discharge"><span class="dot"></span>خروج بعد العلاج</span></td>
-                    <td><span class="animal-id">#ANL-0250-2025</span></td>
+                    @include('partials.animal-table-cell', ['name' => 'صقر', 'emoji' => '🦅', 'animalId' => '#ANL-0250-2025'])
                     <td style="font-weight:700;">نسر أسمر</td>
                     <td>الطيور</td>
                     <td>2026-06-04</td>
@@ -167,17 +153,4 @@
     </div>
 </div>
 
-@endsection
-
-@section('scripts')
-<script>
-    function toggleDatePicker(value) {
-        const wrap = document.getElementById('datePickerWrap');
-        if (value === 'custom') {
-            wrap.classList.add('show');
-        } else {
-            wrap.classList.remove('show');
-        }
-    }
-</script>
 @endsection

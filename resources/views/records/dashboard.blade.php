@@ -240,8 +240,7 @@
                     <th>التاريخ</th>
                     <th>نوع السجل / العملية</th>
                     <th>المجموعة</th>
-                    <th>رقم الحيوان</th>
-                    <th>النوع</th>
+                    <th>الحيوان</th>
                 </tr>
             </thead>
             <tbody>
@@ -249,29 +248,25 @@
                     <td style="color:#64748b; font-size:0.85rem;">2026-06-07</td>
                     <td><span class="badge badge-success">إضافة حيوان</span></td>
                     <td>الغزلان</td>
-                    <td style="font-family: monospace; color:#0f172a; font-weight:800;">#ANM-1045</td>
-                    <td style="font-weight:700;">غزال الريم</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦌', 'animalId' => '#ANM-1045', 'sub' => 'غزال الريم'])
                 </tr>
                 <tr>
                     <td style="color:#64748b; font-size:0.85rem;">2026-06-06</td>
                     <td><span class="badge badge-danger">نفوق</span></td>
                     <td>الطيور</td>
-                    <td style="font-family: monospace; color:#0f172a; font-weight:800;">#ANM-0899</td>
-                    <td style="font-weight:700;">نعامة</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦩', 'animalId' => '#ANM-0899', 'sub' => 'نعامة'])
                 </tr>
                 <tr>
                     <td style="color:#64748b; font-size:0.85rem;">2026-06-05</td>
                     <td><span class="badge badge-primary">ولادة</span></td>
                     <td>القرود</td>
-                    <td style="font-family: monospace; color:#8b5cf6; font-weight:800;">#ANM-1046 <span style="font-size:0.7rem;">(قيد المتابعة)</span></td>
-                    <td style="font-weight:700;">قرد مكاك</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => '#ANM-1046', 'sub' => 'قرد مكاك', 'sourceTag' => 'قيد المتابعة'])
                 </tr>
                 <tr>
                     <td style="color:#64748b; font-size:0.85rem;">2026-06-05</td>
                     <td><span class="badge badge-gray">تعديل ملف</span></td>
                     <td>القططية</td>
-                    <td style="font-family: monospace; color:#0f172a; font-weight:800;">#ANM-0012</td>
-                    <td style="font-weight:700;">نمر سيبيري</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🐯', 'animalId' => '#ANM-0012', 'sub' => 'نمر سيبيري'])
                 </tr>
             </tbody>
         </table>

@@ -154,8 +154,6 @@
                         <div class="info-cell-value" id="sCloseDate">—</div>
                     </div>
                 </div>
-                <h3 class="section-title" style="margin-top:1.5rem;">سبب فتح الحالة</h3>
-                <div class="content-box" id="sReason">—</div>
             </div>
 
             <div class="animal-card">
@@ -236,7 +234,7 @@
             vet: 'د. خالد العربي',
             reason: 'خمول ملحوظ ورفض جزئي للطعام.',
             animalId: '#ANM-154', animalType: 'زرافة نيلية', animalName: '', mark: '',
-            animalEmoji: '🦒', group: 'العناقيد الكبرى',
+            animalEmoji: '🦒', group: 'الغزلان',
             followUps: [
                 { date: '2026-06-01', vet: 'د. خالد العربي', diagnosis: 'تحسن في الشهية.', treatment: 'مكملات فيتامين.', note: '', nutrition: null }
             ]
@@ -338,7 +336,6 @@
         document.getElementById('sOpenDate').textContent = d.openDate;
         document.getElementById('sLastUpdate').textContent = d.lastUpdate;
         document.getElementById('sVet').textContent = d.vet;
-        document.getElementById('sReason').textContent = d.reason;
 
         document.getElementById('sAnimalPhoto').textContent = d.animalEmoji;
         document.getElementById('sAnimalId').textContent = d.animalId;

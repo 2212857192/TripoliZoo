@@ -334,7 +334,7 @@
                         <div style="font-weight: 700; color: #0f172a;">الفهد البري (صخر)</div>
                         <div class="animal-id">#ANM-109</div>
                     </td>
-                    <td>السباع والضواري</td>
+                    <td>القططية</td>
                     <td>2026-06-03</td>
                     <td><span class="badge badge-pending">قيد المراجعة</span></td>
                     <td>
@@ -351,7 +351,7 @@
                         <div style="font-weight: 700; color: #0f172a;">طائر العقاب الذهبي</div>
                         <div class="animal-id">#ANM-009-D</div>
                     </td>
-                    <td>بيت الطيور الكبرى</td>
+                    <td>الطيور</td>
                     <td>2026-06-02</td>
                     <td><span class="badge badge-pending">انتظار التقرير</span></td>
                     <td>

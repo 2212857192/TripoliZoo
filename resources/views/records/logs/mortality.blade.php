@@ -32,26 +32,14 @@
             <input type="text" placeholder="بحث برقم الحيوان، النوع، أو المجموعة...">
         </div>
         <select class="filter-select">
-            <option value="">كل المجموعات</option>
-            <option>القططية</option>
-            <option>الطيور</option>
-            <option>الزواحف</option>
-            <option>الغزلان</option>
-            <option>القرود</option>
-            <option>الثدييات الصغيرة</option>
-            <option>الثدييات الكبيرة</option>
-            <option>الدب واللامة</option>
+                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
         </select>
         <select class="filter-select">
             <option value="">التشريح: الكل</option>
             <option>نعم — تمت الإحالة</option>
             <option>لا — بدون تشريح</option>
         </select>
-        <select class="filter-select">
-            <option value="">كل التواريخ</option>
-            <option>هذا الشهر</option>
-            <option>هذا العام</option>
-        </select>
+        @include('partials.date-filter', ['showWeek' => false, 'showMonth' => true, 'showYear' => true])
     </div>
 </div>
 
@@ -63,7 +51,7 @@
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>رقم الحيوان</th>
+                    <th>الحيوان</th>
                     <th>النوع</th>
                     <th>المجموعة</th>
                     <th>تاريخ النفوق</th>
@@ -75,8 +63,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>#ANM-0899</td>
-                    <td>نسر ذهبي</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦅', 'animalId' => '#ANM-0899', 'sub' => 'نسر ذهبي'])
                     <td>الطيور</td>
                     <td>2025-12-18</td>
                     <td><span class="cause-text">فشل تنفسي حاد — نتيجة تشريح</span></td>
@@ -89,9 +76,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>#ANM-0750</td>
-                    <td>زرافة نيلية</td>
-                    <td>العناقيد الكبرى</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦒', 'animalId' => '#ANM-0750', 'sub' => 'زرافة نيلية'])
+                    <td>الثدييات الكبيرة</td>
                     <td>2025-09-04</td>
                     <td><span class="cause-text">اعتراض كبد مزمن — اعتماد مباشر</span></td>
                     <td><span class="badge badge-none"><span class="dot"></span>لا</span></td>
@@ -103,8 +89,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>#ANM-0612</td>
-                    <td>شمبانزي أفريقي</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => '#ANM-0612', 'sub' => 'شمبانزي أفريقي'])
                     <td>القرود</td>
                     <td>2025-06-21</td>
                     <td><span class="cause-text">عدوى بكتيرية — نتيجة تشريح</span></td>
@@ -117,8 +102,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>#ANM-0440</td>
-                    <td>أسد أفريقي</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦁', 'animalId' => '#ANM-0440', 'sub' => 'أسد أفريقي'])
                     <td>القططية</td>
                     <td>2024-11-10</td>
                     <td><span class="cause-text">شيخوخة — اعتماد مباشر</span></td>

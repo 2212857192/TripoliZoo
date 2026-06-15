@@ -6,15 +6,19 @@
 // Preset ticket types base info
 $ticketId = $id ?? '1';
 $types = [
-    '1' => ['name' => 'تذكرة الكبار', 'price' => 10.00, 'target' => 'كبار (فوق 12 سنة)', 'benefits' => 'الدخول العام للحديقة'],
-    '2' => ['name' => 'تذكرة الأطفال', 'price' => 5.00, 'target' => 'أطفال (3 - 12 سنة)', 'benefits' => 'الدخول العام للحديقة'],
-    '3' => ['name' => 'تذكرة كبار الشخصيات VIP', 'price' => 25.00, 'target' => 'العائلات وVIP', 'benefits' => 'سيارة جولف + مرشد'],
+    '1' => ['name' => 'تذكرة الكبار', 'price' => 10.00, 'target' => 'كبار (فوق 12 سنة)', 'benefits' => 'الدخول العام للحديقة', 'nationality' => 'مواطن', 'age' => 'بالغ'],
+    '2' => ['name' => 'تذكرة الأطفال', 'price' => 5.00, 'target' => 'أطفال (3 - 12 سنة)', 'benefits' => 'الدخول العام للحديقة', 'nationality' => 'مواطن', 'age' => 'طفل'],
+    '3' => ['name' => 'تذكرة كبار الشخصيات VIP', 'price' => 25.00, 'target' => 'العائلات وVIP', 'benefits' => 'سيارة جولف + مرشد', 'nationality' => 'مواطن', 'age' => 'بالغ'],
+    '4' => ['name' => 'تذكرة السياح الأجانب', 'price' => 50.00, 'target' => 'الزوار غير الليبيين', 'benefits' => 'مرشد سياحي خاص', 'nationality' => 'أجنبي', 'age' => 'بالغ'],
+    '5' => ['name' => 'تذكرة الطلاب', 'price' => 7.00, 'target' => 'طلاب المدارس والجامعات', 'benefits' => 'الدخول العام — يُطلب إبراز بطاقة طالب', 'nationality' => 'مواطن', 'age' => 'طالب'],
 ];
 $ticketType = $types[$ticketId] ?? $types['1'];
 
 // Query params customization
 $qty = request()->query('qty', 1);
 $customerName = request()->query('name', 'عام');
+$visitorNationality = request()->query('nationality', $ticketType['nationality']);
+$visitorAge = request()->query('age', $ticketType['age']);
 $total = $ticketType['price'] * $qty;
 $ticketNo = 'TK-' . rand(100000, 999999);
 @endphp
@@ -230,6 +234,14 @@ $ticketNo = 'TK-' . rand(100000, 999999);
                 <div class="ticket-info-row">
                     <label>اسم الزائر</label>
                     <span>{{ $customerName }}</span>
+                </div>
+                <div class="ticket-info-row">
+                    <label>نوع الزائر</label>
+                    <span>{{ $visitorNationality }}</span>
+                </div>
+                <div class="ticket-info-row">
+                    <label>العمر</label>
+                    <span>{{ $visitorAge }}</span>
                 </div>
                 <div class="ticket-info-row">
                     <label>فئة التذكرة</label>

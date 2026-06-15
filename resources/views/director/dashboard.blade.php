@@ -213,8 +213,11 @@
                     <div class="legend-row"><span>القططية</span><span>18 <span class="legend-dot" style="background:#1a4a2e"></span></span></div>
                     <div class="legend-row"><span>الطيور</span><span>60 <span class="legend-dot" style="background:#16a34a"></span></span></div>
                     <div class="legend-row"><span>الزواحف</span><span>22 <span class="legend-dot" style="background:#22c55e"></span></span></div>
-                    <div class="legend-row"><span>الثدييات الكبيرة</span><span>35 <span class="legend-dot" style="background:#4ade80"></span></span></div>
                     <div class="legend-row"><span>القرود</span><span>15 <span class="legend-dot" style="background:#86efac"></span></span></div>
+                    <div class="legend-row"><span>الغزلان</span><span>12 <span class="legend-dot" style="background:#65a30d"></span></span></div>
+                    <div class="legend-row"><span>الثدييات الكبيرة</span><span>35 <span class="legend-dot" style="background:#4ade80"></span></span></div>
+                    <div class="legend-row"><span>الثدييات الصغيرة</span><span>9 <span class="legend-dot" style="background:#a3e635"></span></span></div>
+                    <div class="legend-row"><span>الدب واللامة</span><span>4 <span class="legend-dot" style="background:#bef264"></span></span></div>
                 </div>
             </div>
         </div>

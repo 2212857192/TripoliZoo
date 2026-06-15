@@ -32,21 +32,9 @@
             <input type="text" placeholder="بحث برقم الحيوان، النوع، أو المجموعة...">
         </div>
         <select class="filter-select">
-            <option value="">كل المجموعات</option>
-            <option>القططية</option>
-            <option>الطيور</option>
-            <option>الزواحف</option>
-            <option>الغزلان</option>
-            <option>القرود</option>
-            <option>الثدييات الصغيرة</option>
-            <option>الثدييات الكبيرة</option>
-            <option>الدب واللامة</option>
+                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
         </select>
-        <select class="filter-select">
-            <option value="">كل التواريخ</option>
-            <option>هذا الشهر</option>
-            <option>هذا العام</option>
-        </select>
+        @include('partials.date-filter', ['showWeek' => false, 'showMonth' => true, 'showYear' => true])
     </div>
 </div>
 
@@ -58,7 +46,7 @@
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>رقم الحيوان</th>
+                    <th>الحيوان</th>
                     <th>النوع</th>
                     <th>المجموعة</th>
                     <th>الجنس</th>
@@ -70,9 +58,9 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>#ANM-1045</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦒', 'animalId' => '#ANM-1045', 'sub' => 'زرافة نيلية'])
                     <td>زرافة نيلية</td>
-                    <td>العناقيد الكبرى</td>
+                    <td>الثدييات الكبيرة</td>
                     <td>أنثى</td>
                     <td>2025-11-02</td>
                     <td>2025-11-28</td>
@@ -84,7 +72,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>#ANM-1038</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦅', 'animalId' => '#ANM-1038', 'sub' => 'نسر ذهبي'])
                     <td>نسر ذهبي</td>
                     <td>الطيور</td>
                     <td>ذكر</td>
@@ -98,7 +86,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>#ANM-1022</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => '#ANM-1022', 'sub' => 'شمبانزي أفريقي'])
                     <td>شمبانزي أفريقي</td>
                     <td>القرود</td>
                     <td>ذكر</td>
@@ -112,7 +100,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>#ANM-1010</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦌', 'animalId' => '#ANM-1010', 'sub' => 'غزال دوركاس'])
                     <td>غزال دوركاس</td>
                     <td>الغزلان</td>
                     <td>أنثى</td>

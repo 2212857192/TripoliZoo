@@ -342,7 +342,7 @@
                         <div style="font-weight: 700; color: #0f172a;">أسد إفريقي</div>
                         <div class="animal-id">#ANL-0041-2026</div>
                     </td>
-                    <td>السباع</td>
+                    <td>القططية</td>
                     <td>جرح عميق بالقدم الأمامية (تحتاج إحالة)</td>
                     <td>2026-06-07</td>
                     <td>
@@ -359,7 +359,7 @@
                         <div style="font-weight: 700; color: #0f172a;">غزال الريم</div>
                         <div class="animal-id">#ANL-0120-2026</div>
                     </td>
-                    <td>العواشب</td>
+                    <td>الغزلان</td>
                     <td>وفاة مفاجئة في الحظيرة (جديدة)</td>
                     <td>2026-06-06</td>
                     <td>
@@ -392,7 +392,7 @@
                         <div style="font-weight: 700; color: #0f172a;">قرد المكاك</div>
                         <div class="animal-id">#ANL-0305-2026</div>
                     </td>
-                    <td>الرئيسيات</td>
+                    <td>القرود</td>
                     <td>قريب من إكمال مدة المتابعة الأولية</td>
                     <td>2026-06-05</td>
                     <td>

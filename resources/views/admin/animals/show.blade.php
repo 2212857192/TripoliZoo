@@ -125,7 +125,7 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
         display:flex; align-items:center; justify-content:center;
         min-height:160px;
     }
-    .img-display img  { width:100%; max-height:220px; object-fit:cover; display:block; }
+    .img-display img  { width:100%; max-height:320px; height:auto; object-fit:contain; display:block; margin:0 auto; }
     .img-display span { font-size:5rem; }
 
     /* ── Action buttons ── */

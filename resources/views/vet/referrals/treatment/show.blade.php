@@ -126,6 +126,35 @@
 .info-item-label { font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 4px; }
 .info-item-value { font-size: 0.85rem; font-weight: 700; color: #0f172a; }
 
+.summary-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+@media (max-width: 768px) { .summary-layout { grid-template-columns: 1fr; } }
+.animal-card {
+    background: #fff; border-radius: 12px; padding: 1.5rem;
+    border: 1px solid #e8edf5; box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+.animal-card-title { font-size: 1.1rem; font-weight: 800; color: #1e293b; margin-bottom: 1.5rem; text-align: center; }
+.animal-photo-wrap { display: flex; justify-content: center; margin-bottom: 1.2rem; }
+.animal-photo {
+    width: 72px; height: 72px; border-radius: 16px;
+    background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+    border: 2px solid #bbf7d0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.2rem; overflow: hidden;
+}
+.q-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9;
+}
+.q-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.q-label { color: #64748b; font-size: 0.9rem; font-weight: 700; }
+.q-value { color: #0f172a; font-size: 0.95rem; font-weight: 800; text-align: left; }
+.section-title { font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #e2e8f0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+.info-cell { background: #fff; padding: 16px 20px; }
+.info-cell-label { font-size: 0.8rem; color: #64748b; font-weight: 800; margin-bottom: 6px; }
+.info-cell-value { font-size: 1rem; color: #0f172a; font-weight: 800; }
+.id-tag { font-family: 'Courier New', monospace; font-size: 0.85rem; background: #f1f5f9; padding: 4px 10px; border-radius: 6px; color: #334155; font-weight: 800; display: inline-block; border: 1px solid #e2e8f0; }
+
 /* ═══ REASON CARD ═══ */
 .reason-card {
     background: #fff;
@@ -321,53 +350,54 @@
 {{-- ═══ TABS ═══ --}}
 <div class="tabs-container">
     <div class="tabs-header">
-        <button class="tab-btn active" onclick="switchTab('animal')">بيانات الحيوان والإحالة</button>
-        <button class="tab-btn" onclick="switchTab('reason')">سبب الإحالة والملاحظات</button>
+        <button class="tab-btn active" onclick="switchTab('animal')">ملخص الإحالة</button>
+        <button class="tab-btn" onclick="switchTab('reason')">الملاحظات</button>
     </div>
 
-    {{-- Tab 1: Animal Data --}}
+    {{-- Tab 1: Summary --}}
     <div class="tab-content active" id="tab-animal">
-        <div class="summary-card">
-            <div class="summary-header">
-                <div class="animal-avatar">🐒</div>
-                <div class="animal-info">
-                    <h3>شمبانزي أفريقي</h3>
-                    <p>001-2025-TR — #ANL-0871</p>
+        <div class="summary-layout">
+            <div class="animal-card">
+                <h4 class="animal-card-title">بيانات الحيوان</h4>
+                <div class="animal-photo-wrap">
+                    <div class="animal-photo">🐒</div>
+                </div>
+                <div class="q-row">
+                    <span class="q-label">رقم الحيوان</span>
+                    <span class="q-value id-tag">#ANL-0871</span>
+                </div>
+                <div class="q-row">
+                    <span class="q-label">نوع الحيوان</span>
+                    <span class="q-value">شمبانزي أفريقي</span>
+                </div>
+                <div class="q-row">
+                    <span class="q-label">الجنس</span>
+                    <span class="q-value">ذكر</span>
+                </div>
+                <div class="q-row">
+                    <span class="q-label">العمر</span>
+                    <span class="q-value">6 سنوات</span>
+                </div>
+                <div class="q-row">
+                    <span class="q-label">المجموعة</span>
+                    <span class="q-value">القرود</span>
                 </div>
             </div>
-            <div class="summary-body">
-                <div class="summary-grid">
-                    <div class="info-item">
-                        <div class="info-item-label">رقم الإحالة</div>
-                        <div class="info-item-value">TR-2025-001</div>
+
+            <div>
+                <h3 class="section-title">معلومات الإحالة</h3>
+                <div class="info-grid">
+                    <div class="info-cell">
+                        <div class="info-cell-label">رقم الإحالة</div>
+                        <div class="info-cell-value id-tag">TR-2025-001</div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-item-label">رقم الحيوان</div>
-                        <div class="info-item-value">#ANL-0871</div>
+                    <div class="info-cell">
+                        <div class="info-cell-label">تاريخ الإحالة</div>
+                        <div class="info-cell-value">2025-05-13</div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-item-label">نوع الحيوان</div>
-                        <div class="info-item-value">شمبانزي أفريقي</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-item-label">الجنس</div>
-                        <div class="info-item-value">ذكر</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-item-label">العمر</div>
-                        <div class="info-item-value">6 سنوات</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-item-label">المجموعة</div>
-                        <div class="info-item-value">القرود</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-item-label">تاريخ الإحالة</div>
-                        <div class="info-item-value">2025-05-13</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-item-label">حالة الإحالة</div>
-                        <div class="info-item-value">
+                    <div class="info-cell">
+                        <div class="info-cell-label">حالة الإحالة</div>
+                        <div class="info-cell-value">
                             <span class="badge badge-pending"><span class="dot"></span>قيد المراجعة</span>
                         </div>
                     </div>
@@ -380,16 +410,9 @@
     <div class="tab-content" id="tab-reason">
         <div class="reason-card">
             <div class="reason-header">
-                <h3>سبب الإحالة والملاحظات</h3>
+                <h3>الملاحظات</h3>
             </div>
             <div class="reason-body">
-                <div class="reason-section">
-                    <div class="reason-label">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                        سبب الإحالة
-                    </div>
-                    <div class="reason-content">إصابة في الطرف الأمامي</div>
-                </div>
                 <div class="reason-section">
                     <div class="reason-label">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>

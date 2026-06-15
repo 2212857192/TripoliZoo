@@ -1,8 +1,8 @@
 <style>
-    /* ── Sidebar: بدون تدرج أخضر ── */
+    /* ── Sidebar: تدرج أخضر تحت الشعار ── */
     .sidebar-header {
-        background: #ffffff;
-        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, #e8f5e9 0%, #f0fdf4 60%, #ffffff 100%) !important;
+        border-bottom: 1px solid rgba(46, 125, 50, 0.15) !important;
     }
 
     .sidebar-header .logo {
@@ -272,6 +272,86 @@
         align-items: center;
         flex-wrap: wrap;
         gap: 1rem;
+    }
+
+    /* ── عمود الحيوان الموحّد (صورة + اسم) ── */
+    .animal-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+    }
+
+    .animal-thumb {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+        border: 1.5px solid #bbf7d0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        overflow: hidden;
+    }
+
+    .animal-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .animal-cell-name {
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .animal-cell-name.is-muted {
+        color: #94a3b8;
+        font-style: italic;
+        font-weight: 600;
+    }
+
+    .animal-cell-id {
+        font-family: 'Courier New', monospace;
+        font-size: 0.72rem;
+        color: #475569;
+        font-weight: 800;
+        margin-top: 2px;
+        letter-spacing: 0.02em;
+    }
+
+    .animal-cell-sub {
+        font-size: 0.75rem;
+        color: #64748b;
+        font-weight: 600;
+        margin-top: 2px;
+    }
+
+    /* ── فلتر التاريخ مع تاريخ محدد ── */
+    .date-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 0;
+    }
+
+    .date-filter-picker-wrap {
+        display: none;
+    }
+
+    .date-filter-picker-wrap.show {
+        display: block;
+    }
+
+    .date-filter-picker-wrap input {
+        width: 100%;
     }
 
 </style>

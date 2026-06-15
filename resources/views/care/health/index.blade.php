@@ -59,15 +59,6 @@
 
     /* ── Table ── */
     .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 2rem; }
-    .animal-thumb {
-        width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
-        background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
-        border: 1.5px solid #bbf7d0;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.35rem; overflow: hidden;
-    }
-    .animal-thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .animal-name { font-weight: 800; color: #0f172a; line-height: 1.3; }
     .custom-table { width: 100%; border-collapse: collapse; text-align: right; }
     .custom-table thead th { background: #F8FAFC; color: var(--text-muted); font-size: 0.8rem; font-weight: 800; letter-spacing: 0.5px; padding: 14px 20px; border-bottom: 1px solid var(--border); }
     .custom-table tbody tr { transition: background 0.15s; }
@@ -189,18 +180,14 @@
             <input type="text" placeholder="بحث برقم الحيوان أو نوع الحيوان...">
         </div>
         <select class="filter-select">
-            <option value="">كل المجموعات</option>
-            <option>السباع والضواري</option>
-            <option>الرئيسيات</option>
-            <option>العواشب</option>
-            <option>الطيور</option>
+                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
         </select>
         <select class="filter-select">
             <option value="">كل أنواع المتابعة</option>
             <option>تحتاج إحالة</option>
             <option>لا تحتاج إحالة</option>
         </select>
-        <input type="date" class="filter-select">
+        @include('partials.date-filter')
     </div>
 </div>
 
@@ -210,9 +197,7 @@
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>اسم الحيوان</th>
-                    <th>صورة الحيوان</th>
-                    <th>رقم الحيوان</th>
+                    <th>الحيوان</th>
                     <th>نوع الحيوان</th>
                     <th>الحالة</th>
                     <th>الإجراءات</th>
@@ -220,39 +205,27 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><span class="animal-name">سيمبا</span></td>
-                    <td>
-                        <div class="animal-thumb">🦁</div>
-                    </td>
-                    <td><span class="animal-id">#ANL-0041-2026</span></td>
+                    @include('partials.animal-table-cell', ['name' => 'سيمبا', 'emoji' => '🦁', 'animalId' => '#ANL-0041-2026'])
                     <td style="font-weight:700;">أسد إفريقي</td>
                     <td><span class="badge badge-status-new"><span class="dot"></span>جديدة</span></td>
                     <td>
-                        <button onclick="openModal('new_urgent','HC-2026-001','سيمبا','#ANL-0041-2026','🦁','أسد إفريقي','السباع','جرح عميق بالقدم الأمامية اليمنى','خالد منصور','2026-06-07','تحتاج إحالة','جديدة','الحيوان يرفض تناول الطعام، جرح عميق بالقدم الأمامية.','تنظيف الجرح مبدئياً — يتطلب تدخلاً جراحياً.')" class="btn-tbl view" title="عرض التفاصيل">
+                        <button onclick="openModal('new_urgent','HC-2026-001','سيمبا','#ANL-0041-2026','🦁','أسد إفريقي','القططية','جرح عميق بالقدم الأمامية اليمنى','خالد منصور','2026-06-07','تحتاج إحالة','جديدة','الحيوان يرفض تناول الطعام، جرح عميق بالقدم الأمامية.','تنظيف الجرح مبدئياً — يتطلب تدخلاً جراحياً.')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="animal-name" style="color:#94a3b8; font-style:italic;">—</span></td>
-                    <td>
-                        <div class="animal-thumb">🐒</div>
-                    </td>
-                    <td><span class="animal-id">#ANL-0182-2025</span></td>
+                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => '#ANL-0182-2025'])
                     <td style="font-weight:700;">قرد المكاك</td>
                     <td><span class="badge badge-status-new"><span class="dot"></span>جديدة</span></td>
                     <td>
-                        <button onclick="openModal('new_normal','HC-2026-002',null,'#ANL-0182-2025','🐒','قرد المكاك','الرئيسيات','كدمة على الرسغ الأيسر','ياسر الغيثي','2026-06-06','لا تحتاج إحالة','جديدة','كدمة بسيطة على الرسغ من احتكاك السياج.','المنطقة المصابة نظيفة ولا توجد عدوى.')" class="btn-tbl view" title="عرض التفاصيل">
+                        <button onclick="openModal('new_normal','HC-2026-002',null,'#ANL-0182-2025','🐒','قرد المكاك','القرود','كدمة على الرسغ الأيسر','ياسر الغيثي','2026-06-06','لا تحتاج إحالة','جديدة','كدمة بسيطة على الرسغ من احتكاك السياج.','المنطقة المصابة نظيفة ولا توجد عدوى.')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="animal-name">نعيمة</span></td>
-                    <td>
-                        <div class="animal-thumb">🦩</div>
-                    </td>
-                    <td><span class="animal-id">#ANL-0091-2024</span></td>
+                    @include('partials.animal-table-cell', ['name' => 'نعيمة', 'emoji' => '🦩', 'animalId' => '#ANL-0091-2024'])
                     <td style="font-weight:700;">نعامة إفريقية</td>
                     <td><span class="badge badge-status-reviewed"><span class="dot"></span>تمت المراجعة</span></td>
                     <td>
@@ -262,15 +235,11 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="animal-name">ريم</span></td>
-                    <td>
-                        <div class="animal-thumb">🦌</div>
-                    </td>
-                    <td><span class="animal-id">#ANL-0120-2026</span></td>
+                    @include('partials.animal-table-cell', ['name' => 'ريم', 'emoji' => '🦌', 'animalId' => '#ANL-0120-2026'])
                     <td style="font-weight:700;">غزال الريم</td>
                     <td><span class="badge badge-status-referred"><span class="dot"></span>محالة للعلاج</span></td>
                     <td>
-                        <button onclick="openModal('referred','HC-2026-004','ريم','#ANL-0120-2026','🦌','غزال الريم','العواشب','عرج واضح في الساق الأمامية اليمنى','أحمد الكواري','2026-06-04','تحتاج إحالة','محالة للعلاج','كسر مشتبه في الساق الأمامية اليمنى.','تم توثيق الإحالة وإرسالها للمستشفى.')" class="btn-tbl view" title="عرض التفاصيل">
+                        <button onclick="openModal('referred','HC-2026-004','ريم','#ANL-0120-2026','🦌','غزال الريم','الغزلان','عرج واضح في الساق الأمامية اليمنى','أحمد الكواري','2026-06-04','تحتاج إحالة','محالة للعلاج','كسر مشتبه في الساق الأمامية اليمنى.','تم توثيق الإحالة وإرسالها للمستشفى.')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>

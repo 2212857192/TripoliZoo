@@ -153,13 +153,9 @@
             <input type="text" placeholder="بحث برقم الحيوان أو نوعه أو رقم الأم...">
         </div>
         <select class="filter-select">
-            <option value="">كل المجموعات</option>
-            <option>السباع والضواري</option>
-            <option>الرئيسيات</option>
-            <option>العواشب</option>
-            <option>الطيور</option>
+                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
         </select>
-        <input type="date" class="filter-select">
+        @include('partials.date-filter')
     </div>
 </div>
 
@@ -168,7 +164,7 @@
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>رقم الحيوان</th>
+                    <th>الحيوان</th>
                     <th>المجموعة</th>
                     <th>تاريخ الولادة</th>
                     <th>الأيام المتبقية</th>
@@ -178,37 +174,37 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><span class="animal-id">NB-26-001</span></td>
-                    <td>السباع</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦁', 'animalId' => 'NB-26-001', 'sub' => 'أسد إفريقي'])
+                    <td>القططية</td>
                     <td>2026-05-23</td>
                     <td><span class="days-danger">يوم واحد ⚠️</span></td>
                     <td><span class="badge badge-status-monitoring"><span class="dot"></span>قيد المتابعة</span></td>
                     <td>
-                        <button onclick="openModal('monitoring','NB-26-001','🦁','أسد إفريقي','السباع','#ANL-0041-2022','2026-05-23','يوم واحد','قيد المتابعة','خالد منصور','—','1.4 كجم','المولود بصحة جيدة ونشط ويرضع بشكل طبيعي.')" class="btn-tbl view" title="عرض التفاصيل">
+                        <button onclick="openModal('monitoring','NB-26-001','🦁','أسد إفريقي','القططية','#ANL-0041-2022','2026-05-23','يوم واحد','قيد المتابعة','خالد منصور','—','1.4 كجم','المولود بصحة جيدة ونشط ويرضع بشكل طبيعي.')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="animal-id">NB-26-002</span></td>
-                    <td>الرئيسيات</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => 'NB-26-002', 'sub' => 'قرد المكاك'])
+                    <td>القرود</td>
                     <td>2026-06-03</td>
                     <td><span class="days-ok">11 يوماً</span></td>
                     <td><span class="badge badge-status-monitoring"><span class="dot"></span>قيد المتابعة</span></td>
                     <td>
-                        <button onclick="openModal('monitoring','NB-26-002','🐒','قرد المكاك','الرئيسيات','#ANL-0182-2023','2026-06-03','11 يوماً','قيد المتابعة','ياسر الغيثي','كدمة على الرسغ الأيسر','0.6 كجم','يتم إرضاع المولود بشكل طبيعي، حيوي ونشط.')" class="btn-tbl view" title="عرض التفاصيل">
+                        <button onclick="openModal('monitoring','NB-26-002','🐒','قرد المكاك','القرود','#ANL-0182-2023','2026-06-03','11 يوماً','قيد المتابعة','ياسر الغيثي','كدمة على الرسغ الأيسر','0.6 كجم','يتم إرضاع المولود بشكل طبيعي، حيوي ونشط.')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="animal-id">NB-26-003</span></td>
-                    <td>العواشب</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦌', 'animalId' => 'NB-26-003', 'sub' => 'غزال الريم'])
+                    <td>الغزلان</td>
                     <td>2026-05-15</td>
                     <td><span style="color:#94a3b8;">—</span></td>
                     <td><span class="badge badge-status-completed"><span class="dot"></span>اكتملت المتابعة</span></td>
                     <td>
-                        <button onclick="openModal('completed','NB-26-003','🦌','غزال الريم','العواشب','#ANL-0120-2024','2026-05-15','—','اكتملت المتابعة','أحمد الكواري','عرج واضح في الساق','3.2 كجم','تمت المتابعة بنجاح وتم اعتماده كحيوان دائم.')" class="btn-tbl view" title="عرض التفاصيل">
+                        <button onclick="openModal('completed','NB-26-003','🦌','غزال الريم','الغزلان','#ANL-0120-2024','2026-05-15','—','اكتملت المتابعة','أحمد الكواري','عرج واضح في الساق','3.2 كجم','تمت المتابعة بنجاح وتم اعتماده كحيوان دائم.')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>

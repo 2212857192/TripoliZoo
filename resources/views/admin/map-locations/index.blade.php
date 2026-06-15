@@ -373,7 +373,7 @@
                 <div class="icon-wrapper">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon></svg>
                 </div>
-                مواقع أقفاص الحيوانات
+                مواقع الخريطة
             </h3>
             <a href="/admin/map-locations/create" class="btn-add-location">
                 + إضافة موقع جديد
@@ -388,7 +388,10 @@
                     <svg class="search-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </div>
                 <select id="mapFilter" class="filter-select" onchange="filterLocations()">
-                    <option value="enclosure" selected>أقفاص وموائل الحيوانات</option>
+                    <option value="all">كل الفئات والتصنيفات</option>
+                    <option value="enclosure">أقفاص وموائل الحيوانات</option>
+                    <option value="service">الخدمات والمرافق العامة</option>
+                    <option value="dining">المطاعم والمقاهي</option>
                 </select>
             </div>
 
@@ -443,6 +446,54 @@
                     </div>
                 </div>
 
+                <!-- Item 3 -->
+                <div class="location-item-card" data-id="3" data-name="البوابة الرئيسية" data-type="service" onclick="selectLocation(3, 32.8465, 13.1788)" id="list-item-3">
+                    <div class="location-item-header">
+                        <span class="location-title">البوابة الرئيسية للدخول</span>
+                        <span class="category-badge service">مرافق وخدمات</span>
+                    </div>
+                    <div class="location-details-row">
+                        <span>الرمز: EN-01</span>
+                        <span>شمال: 32.8465</span>
+                        <span>شرق: 13.1788</span>
+                    </div>
+                    <div class="location-actions">
+                        <button class="btn-action-pill" title="تفعيل على الخريطة" onclick="event.stopPropagation(); toggleMapVisibility(3)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                        <a href="/admin/map-locations/3/edit" class="btn-action-pill edit" title="تعديل">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </a>
+                        <button class="btn-action-pill delete" title="حذف" onclick="event.stopPropagation(); deleteLocation(3)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="location-item-card" data-id="4" data-name="مطعم الواحة الأخضر" data-type="dining" onclick="selectLocation(4, 32.8485, 13.1765)" id="list-item-4">
+                    <div class="location-item-header">
+                        <span class="location-title">مطعم الواحة الأخضر</span>
+                        <span class="category-badge dining">مطاعم ومقاهي</span>
+                    </div>
+                    <div class="location-details-row">
+                        <span>الرمز: DN-03</span>
+                        <span>شمال: 32.8485</span>
+                        <span>شرق: 13.1765</span>
+                    </div>
+                    <div class="location-actions">
+                        <button class="btn-action-pill" title="تفعيل على الخريطة" onclick="event.stopPropagation(); toggleMapVisibility(4)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                        <a href="/admin/map-locations/4/edit" class="btn-action-pill edit" title="تعديل">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </a>
+                        <button class="btn-action-pill delete" title="حذف" onclick="event.stopPropagation(); deleteLocation(4)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -451,7 +502,7 @@
     <div class="map-canvas-card">
         <div class="map-canvas-header">
             <h3>إدارة الخريطة التفاعلية</h3>
-            <p>عرض أقفاص وموائل الحيوانات المسجّلة على خريطة الحديقة</p>
+            <p>عرض مواقع الحديقة المسجّلة على الخريطة التفاعلية</p>
         </div>
         <div id="leafletMap"></div>
     </div>
@@ -495,6 +546,20 @@
             iconAnchor: [10, 10]
         });
 
+        const serviceIcon = L.divIcon({
+            className: 'custom-leaflet-icon',
+            html: `<div style="background:#0EA5E9; width:20px; height:20px; border-radius:50%; border:3px solid white; box-shadow:0 3px 8px rgba(0,0,0,0.3); position:relative;"></div>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+
+        const diningIcon = L.divIcon({
+            className: 'custom-leaflet-icon',
+            html: `<div style="background:#F59E0B; width:20px; height:20px; border-radius:50%; border:3px solid white; box-shadow:0 3px 8px rgba(0,0,0,0.3); position:relative;"></div>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+
         addMarker(1, [32.8492, 13.1782], `
             <div class="premium-popup-content">
                 <div class="premium-popup-title">🦁 قفص الأسد الأفريقي</div>
@@ -510,6 +575,22 @@
                 <div class="premium-popup-desc">البحيرة الطبيعية والمظلات المخصصة للفيلة الآسيوية الكبرى.</div>
             </div>
         `, animalIcon);
+
+        addMarker(3, [32.8465, 13.1788], `
+            <div class="premium-popup-content">
+                <div class="premium-popup-title">🎫 البوابة الرئيسية</div>
+                <div class="premium-popup-code">رمز الموقع: EN-01</div>
+                <div class="premium-popup-desc">مدخل ومخرج الزوار الرئيسي، ويضم مكتب إصدار التذاكر الموحد.</div>
+            </div>
+        `, serviceIcon);
+
+        addMarker(4, [32.8485, 13.1765], `
+            <div class="premium-popup-content">
+                <div class="premium-popup-title">🍔 مطعم الواحة الأخضر</div>
+                <div class="premium-popup-code">رمز الموقع: DN-03</div>
+                <div class="premium-popup-desc">منطقة المطاعم الرئيسية وسط الحديقة، تقدّم الوجبات السريعة والعائلية.</div>
+            </div>
+        `, diningIcon);
     }
 
     function addMarker(id, coords, popupText, iconStyle) {
@@ -578,7 +659,7 @@
             const id = item.getAttribute('data-id');
 
             const matchesQuery = name.includes(query);
-            const matchesCat = type === 'enclosure';
+            const matchesCat = (category === 'all') || (type === category);
 
             if(matchesQuery && matchesCat) {
                 item.style.display = 'flex';

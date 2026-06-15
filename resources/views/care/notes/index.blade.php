@@ -151,13 +151,9 @@
             <option>ملاحظة عامة</option>
         </select>
         <select class="filter-select">
-            <option value="">كل المجموعات</option>
-            <option>السباع والضواري</option>
-            <option>الرئيسيات</option>
-            <option>العواشب</option>
-            <option>الطيور</option>
+                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
         </select>
-        <input type="date" class="filter-select">
+        @include('partials.date-filter')
     </div>
 </div>
 
@@ -165,7 +161,7 @@
 <div id="tab-new" class="tab-content active">
 <div class="notes-grid">
     {{-- Card 1: New / Nutrition --}}
-    <div class="note-card type-nutrition" onclick="openModal('new', 'nutrition', 'NT-0842', 'السباع والضواري', 'خالد منصور', '2026-06-07 / 08:30 ص', 'الأسد الإفريقي (ANL-0041) لم يكمل وجبته لليوم الثاني على التوالي. يترك حوالي 30% من اللحم المقدم له. لا توجد عليه علامات خمول واضحة لكن شهيته منخفضة.')">
+    <div class="note-card type-nutrition" onclick="openModal('new', 'nutrition', 'NT-0842', 'القططية', 'خالد منصور', '2026-06-07 / 08:30 ص', 'الأسد الإفريقي (ANL-0041) لم يكمل وجبته لليوم الثاني على التوالي. يترك حوالي 30% من اللحم المقدم له. لا توجد عليه علامات خمول واضحة لكن شهيته منخفضة.')">
         <div class="note-card-header">
             <span class="note-card-id">NT-0842</span>
             <span class="badge badge-new"><span class="dot"></span>جديدة</span>
@@ -182,12 +178,12 @@
         
         <div class="note-card-footer">
             <span style="display:flex; align-items:center; gap:4px; font-size:0.8rem; color:#64748b; font-weight:700;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 2026-06-07</span>
-            <span style="font-size:0.8rem; color:#475569; font-weight:800;">السباع والضواري</span>
+            <span style="font-size:0.8rem; color:#475569; font-weight:800;">القططية</span>
         </div>
     </div>
 
     {{-- Card 2: New / General --}}
-    <div class="note-card type-general" onclick="openModal('new', 'general', 'NT-0843', 'الرئيسيات', 'ياسر الغيثي', '2026-06-07 / 09:15 ص', 'يرجى إرسال فريق الصيانة. يوجد تمزق في الشبك الداخلي للمجموعة B (قردة المكاك) من الناحية الشمالية. التمزق صغير ولا يسمح بهروب الحيوانات حالياً لكن يجب إصلاحه قبل أن يتسع.')">
+    <div class="note-card type-general" onclick="openModal('new', 'general', 'NT-0843', 'القرود', 'ياسر الغيثي', '2026-06-07 / 09:15 ص', 'يرجى إرسال فريق الصيانة. يوجد تمزق في الشبك الداخلي للمجموعة B (قردة المكاك) من الناحية الشمالية. التمزق صغير ولا يسمح بهروب الحيوانات حالياً لكن يجب إصلاحه قبل أن يتسع.')">
         <div class="note-card-header">
             <span class="note-card-id">NT-0843</span>
             <span class="badge badge-new"><span class="dot"></span>جديدة</span>
@@ -204,7 +200,7 @@
         
         <div class="note-card-footer">
             <span style="display:flex; align-items:center; gap:4px; font-size:0.8rem; color:#64748b; font-weight:700;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 2026-06-07</span>
-            <span style="font-size:0.8rem; color:#475569; font-weight:800;">الرئيسيات</span>
+            <span style="font-size:0.8rem; color:#475569; font-weight:800;">القرود</span>
         </div>
     </div>
 </div>
@@ -235,7 +231,7 @@
     </div>
 
     {{-- Card 4: Reviewed / General --}}
-    <div class="note-card type-general" onclick="openModal('reviewed', 'general', 'NT-0822', 'العواشب', 'أحمد الكواري', '2026-06-05 / 07:30 ص', 'تم إجراء نقل روتيني لذكر المها لإتمام عملية تنظيف وتعقيم الحظيرة الرئيسية. تمت العملية بهدوء وبدون أي إصابات.')">
+    <div class="note-card type-general" onclick="openModal('reviewed', 'general', 'NT-0822', 'الغزلان', 'أحمد الكواري', '2026-06-05 / 07:30 ص', 'تم إجراء نقل روتيني لذكر المها لإتمام عملية تنظيف وتعقيم الحظيرة الرئيسية. تمت العملية بهدوء وبدون أي إصابات.')">
         <div class="note-card-header">
             <span class="note-card-id">NT-0822</span>
             <span class="badge badge-reviewed"><span class="dot"></span>تمت المراجعة</span>
@@ -252,7 +248,7 @@
         
         <div class="note-card-footer">
             <span style="display:flex; align-items:center; gap:4px; font-size:0.8rem; color:#64748b; font-weight:700;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 2026-06-05</span>
-            <span style="font-size:0.8rem; color:#475569; font-weight:800;">العواشب</span>
+            <span style="font-size:0.8rem; color:#475569; font-weight:800;">الغزلان</span>
         </div>
     </div>
 </div>

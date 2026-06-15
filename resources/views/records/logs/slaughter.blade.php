@@ -32,21 +32,9 @@
             <input type="text" placeholder="بحث برقم الحيوان، النوع، أو الطبيب...">
         </div>
         <select class="filter-select">
-            <option value="">كل المجموعات</option>
-            <option>القططية</option>
-            <option>الطيور</option>
-            <option>الزواحف</option>
-            <option>الغزلان</option>
-            <option>القرود</option>
-            <option>الثدييات الصغيرة</option>
-            <option>الثدييات الكبيرة</option>
-            <option>الدب واللامة</option>
+                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
         </select>
-        <select class="filter-select">
-            <option value="">كل التواريخ</option>
-            <option>هذا الشهر</option>
-            <option>هذا العام</option>
-        </select>
+        @include('partials.date-filter', ['showWeek' => false, 'showMonth' => true, 'showYear' => true])
     </div>
 </div>
 
@@ -58,7 +46,7 @@
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>رقم الحيوان</th>
+                    <th>الحيوان</th>
                     <th>النوع</th>
                     <th>المجموعة</th>
                     <th>تاريخ القرار</th>
@@ -70,8 +58,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>#ANM-0315</td>
-                    <td>حصان عربي</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🐴', 'animalId' => '#ANM-0315', 'sub' => 'حصان عربي'])
                     <td>الثدييات الكبيرة</td>
                     <td>2025-08-14</td>
                     <td><span class="cause-text">كسر مفتوح غير قابل للعلاج</span></td>
@@ -84,8 +71,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>#ANM-0288</td>
-                    <td>جاموس مائي</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🐃', 'animalId' => '#ANM-0288', 'sub' => 'جاموس مائي'])
                     <td>الثدييات الكبيرة</td>
                     <td>2024-03-22</td>
                     <td><span class="cause-text">إصابة حادة في الأعضاء الداخلية</span></td>
@@ -98,8 +84,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>#ANM-0195</td>
-                    <td>غزال الريم</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦌', 'animalId' => '#ANM-0195', 'sub' => 'غزال الريم'])
                     <td>الغزلان</td>
                     <td>2023-11-05</td>
                     <td><span class="cause-text">مرض معدٍ مستعصٍ — قرار طبي</span></td>

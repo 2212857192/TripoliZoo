@@ -316,6 +316,21 @@
                     <label>الفئة المستهدفة بالدخول</label>
                     <input type="text" id="target" class="form-input" placeholder="مثال: العائلات (4 أفراد معاً)">
                 </div>
+                <div class="form-group">
+                    <label>نوع الزائر <span style="color:#EF4444">*</span></label>
+                    <select id="nationality" class="form-input">
+                        <option value="مواطن">مواطن</option>
+                        <option value="أجنبي">أجنبي</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>العمر <span style="color:#EF4444">*</span></label>
+                    <select id="age" class="form-input">
+                        <option value="بالغ">بالغ</option>
+                        <option value="طفل">طفل</option>
+                        <option value="طالب">طالب</option>
+                    </select>
+                </div>
             </div>
 
             <!-- Divider -->

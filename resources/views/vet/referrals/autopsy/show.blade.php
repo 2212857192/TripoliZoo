@@ -176,31 +176,6 @@
     {{-- TAB 1: Summary --}}
     <div class="tab-content active" id="tab-1">
         <div class="summary-layout">
-            <div>
-                <h3 class="section-title">معلومات الإحالة</h3>
-                <div class="info-grid" style="margin-bottom:1.5rem;">
-                    <div class="info-cell">
-                        <div class="info-cell-label">رقم الإحالة</div>
-                        <div class="info-cell-value id-tag" id="sRefId">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">تاريخ الإحالة</div>
-                        <div class="info-cell-value" id="sRefDate">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">رقم حالة النفوق المرتبطة</div>
-                        <div class="info-cell-value id-tag" id="sMortalityId">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">المشرف المسجل</div>
-                        <div class="info-cell-value" id="sSupervisor">—</div>
-                    </div>
-                </div>
-                <h3 class="section-title" style="margin-top:1.5rem;">سبب التحويل للتشريح</h3>
-                <div class="content-box" id="sTransferReason">—</div>
-                <div id="resultBlock" style="margin-top:1.5rem;"></div>
-            </div>
-
             <div class="animal-card">
                 <h4 class="animal-card-title">بيانات الحيوان</h4>
                 <div class="animal-photo-wrap">
@@ -230,6 +205,31 @@
                     <span class="q-label">المجموعة</span>
                     <span class="q-value" id="sGroup">—</span>
                 </div>
+            </div>
+
+            <div>
+                <h3 class="section-title">معلومات الإحالة</h3>
+                <div class="info-grid" style="margin-bottom:1.5rem;">
+                    <div class="info-cell">
+                        <div class="info-cell-label">رقم الإحالة</div>
+                        <div class="info-cell-value id-tag" id="sRefId">—</div>
+                    </div>
+                    <div class="info-cell">
+                        <div class="info-cell-label">تاريخ الإحالة</div>
+                        <div class="info-cell-value" id="sRefDate">—</div>
+                    </div>
+                    <div class="info-cell">
+                        <div class="info-cell-label">رقم حالة النفوق المرتبطة</div>
+                        <div class="info-cell-value id-tag" id="sMortalityId">—</div>
+                    </div>
+                    <div class="info-cell">
+                        <div class="info-cell-label">المشرف المسجل</div>
+                        <div class="info-cell-value" id="sSupervisor">—</div>
+                    </div>
+                </div>
+                <h3 class="section-title" style="margin-top:1.5rem;">سبب التحويل للتشريح</h3>
+                <div class="content-box" id="sTransferReason">—</div>
+                <div id="resultBlock" style="margin-top:1.5rem;"></div>
             </div>
         </div>
     </div>
@@ -305,7 +305,7 @@
         },
         'AR-003': {
             animalName: 'جميلة', animalEmoji: '🦒',
-            animalId: '#ANM-154', mortalityId: 'MC-2025-008', animalType: 'زرافة نيلية', gender: 'أنثى', age: '4 سنوات', group: 'العناقيد الكبرى',
+            animalId: '#ANM-154', mortalityId: 'MC-2025-008', animalType: 'زرافة نيلية', gender: 'أنثى', age: '4 سنوات', group: 'الثدييات الكبيرة',
             refDate: '2025-05-10', transferReason: 'مشاكل تنفسية',
             deathDate: '2025-05-10', supervisor: 'خالد منصور',
             hCause: 'صعوبة تنفس حادة', hNotes: 'تدهور سريع في التنفس قبل الوفاة.', hCustomReason: '',

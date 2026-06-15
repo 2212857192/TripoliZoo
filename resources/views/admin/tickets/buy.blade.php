@@ -123,7 +123,7 @@
 
     .form-row {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(4, 1fr);
         gap: 1.5rem;
     }
 
@@ -558,11 +558,28 @@
         
         <div class="form-row">
             <div class="form-group">
+                <label>نوع الزائر</label>
+                <select id="visitorNationality" class="form-input" onchange="updateTicketOptions(); updateReceipt();">
+                    <option value="مواطن">مواطن</option>
+                    <option value="أجنبي">أجنبي</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>العمر</label>
+                <select id="visitorAge" class="form-input" onchange="updateTicketOptions(); updateReceipt();">
+                    <option value="بالغ">بالغ</option>
+                    <option value="طفل">طفل</option>
+                    <option value="طالب">طالب</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label>فئة التذكرة</label>
                 <select id="ticketType" class="form-input" onchange="updateReceipt()">
-                    <option value="1" data-price="10.00">تذكرة الكبار (10.00 د.ل)</option>
-                    <option value="2" data-price="5.00">تذكرة الأطفال (5.00 د.ل)</option>
-                    <option value="3" data-price="25.00">تذكرة كبار الشخصيات VIP (25.00 د.ل)</option>
+                    <option value="1" data-price="10.00" data-nationality="مواطن" data-age="بالغ">تذكرة الكبار (10.00 د.ل)</option>
+                    <option value="2" data-price="5.00" data-nationality="مواطن" data-age="طفل">تذكرة الأطفال (5.00 د.ل)</option>
+                    <option value="5" data-price="7.00" data-nationality="مواطن" data-age="طالب" hidden>تذكرة الطلاب (7.00 د.ل)</option>
+                    <option value="3" data-price="25.00" data-nationality="مواطن" data-age="بالغ">تذكرة كبار الشخصيات VIP (25.00 د.ل)</option>
+                    <option value="4" data-price="50.00" data-nationality="أجنبي" data-age="بالغ" hidden>تذكرة السياح الأجانب (50.00 د.ل)</option>
                 </select>
             </div>
             <div class="form-group">
@@ -593,6 +610,14 @@
                 <div class="receipt-cell">
                     <label>اسم الزائر</label>
                     <span id="previewCust">عام</span>
+                </div>
+                <div class="receipt-cell">
+                    <label>نوع الزائر</label>
+                    <span id="previewNationality">مواطن</span>
+                </div>
+                <div class="receipt-cell">
+                    <label>العمر</label>
+                    <span id="previewAge">بالغ</span>
                 </div>
                 <div class="receipt-cell">
                     <label>نوع التذكرة</label>
@@ -639,6 +664,14 @@
                     <div class="ticket-info-row">
                         <label>اسم الزائر</label>
                         <span id="modalVisitorName">عام</span>
+                    </div>
+                    <div class="ticket-info-row">
+                        <label>نوع الزائر</label>
+                        <span id="modalNationality">مواطن</span>
+                    </div>
+                    <div class="ticket-info-row">
+                        <label>العمر</label>
+                        <span id="modalAge">بالغ</span>
                     </div>
                     <div class="ticket-info-row">
                         <label>فئة التذكرة</label>
@@ -692,8 +725,28 @@
         setTimeout(() => t.classList.remove('show'), 3000);
     }
 
+    function updateTicketOptions() {
+        const nationality = document.getElementById('visitorNationality').value;
+        const age = document.getElementById('visitorAge').value;
+        const typeSelect = document.getElementById('ticketType');
+        let firstVisible = null;
+
+        Array.from(typeSelect.options).forEach(opt => {
+            const matchesNationality = opt.getAttribute('data-nationality') === nationality;
+            const matchesAge = opt.getAttribute('data-age') === age;
+            const matches = matchesNationality && matchesAge;
+            opt.hidden = !matches;
+            opt.disabled = !matches;
+            if (matches && !firstVisible) firstVisible = opt;
+        });
+
+        if (firstVisible) typeSelect.value = firstVisible.value;
+    }
+
     function updateReceipt() {
         const cust = document.getElementById('custName').value.trim() || 'عام';
+        const nationality = document.getElementById('visitorNationality').value;
+        const age = document.getElementById('visitorAge').value;
         const typeSelect = document.getElementById('ticketType');
         const selectedOpt = typeSelect.options[typeSelect.selectedIndex];
         const typeName = selectedOpt.text.split('(')[0].trim();
@@ -703,6 +756,8 @@
         const total = price * qty;
 
         document.getElementById('previewCust').textContent = cust;
+        document.getElementById('previewNationality').textContent = nationality;
+        document.getElementById('previewAge').textContent = age;
         document.getElementById('previewType').textContent = typeName;
         document.getElementById('previewUnitPrice').textContent = price.toFixed(2) + ' د.ل';
         document.getElementById('previewQty').textContent = qty;
@@ -720,6 +775,8 @@
             
             // Gather values
             const cust = document.getElementById('custName').value.trim() || 'عام';
+            const nationality = document.getElementById('visitorNationality').value;
+            const age = document.getElementById('visitorAge').value;
             const typeSelect = document.getElementById('ticketType');
             const selectedOpt = typeSelect.options[typeSelect.selectedIndex];
             const typeName = selectedOpt.text.split('(')[0].trim();
@@ -731,6 +788,8 @@
             // Populate Modal ticket elements
             document.getElementById('modalTicketNo').textContent = randNo;
             document.getElementById('modalVisitorName').textContent = cust;
+            document.getElementById('modalNationality').textContent = nationality;
+            document.getElementById('modalAge').textContent = age;
             document.getElementById('modalTicketType').textContent = typeName;
             document.getElementById('modalQty').textContent = qty + ' تذاكر';
             document.getElementById('modalUnitPrice').textContent = price.toFixed(2) + ' د.ل';
@@ -741,6 +800,8 @@
                 JSON.stringify({
                     ticketNo: randNo,
                     visitor: cust,
+                    nationality: nationality,
+                    age: age,
                     type: typeName,
                     qty: qty,
                     total: total.toFixed(2) + " د.ل",
@@ -769,6 +830,7 @@
         }
     });
 
+    updateTicketOptions();
     updateReceipt();
 </script>
 @endsection

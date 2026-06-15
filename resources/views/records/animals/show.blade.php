@@ -938,7 +938,7 @@
         },
         'ANM-0203': {
             source: 'records', state: 'exited', emoji: '🦒', displayId: '#ANM-0203',
-            name: '—', type: 'زرافة', group: 'العناقيد الكبرى', gender: 'ذكر',
+            name: '—', type: 'زرافة', group: 'الثدييات الكبيرة', gender: 'ذكر',
             age: '4 سنوات', regDate: '2023-01-15', marks: '—', manualEntry: false, repro: null,
             exit: {
                 exitDate: '2027-03-15', exitType: 'نقل', recipient: 'جهة خارجية',

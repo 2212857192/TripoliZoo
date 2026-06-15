@@ -92,6 +92,19 @@
     .form-textarea { resize: vertical; min-height: 80px; }
     .btn-submit { padding: 10px 24px; background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(22,163,74,0.3); }
     .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(22,163,74,0.35); }
+
+    .modal-box.wide { max-width: 680px; }
+    .form-grid.col-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .modal-section { margin-bottom: 1.25rem; grid-column: span 2; }
+    .modal-section-title { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem; padding-bottom: 8px; border-bottom: 2px solid #f1f5f9; }
+    .modal-section-title .sec-icon { width: 30px; height: 30px; border-radius: 8px; background: #e6f4ea; color: #1a4a2e; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .age-toggle { display: flex; border: 1.5px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+    .age-toggle-btn { flex: 1; padding: 9px 10px; text-align: center; cursor: pointer; font-family: 'Cairo', sans-serif; font-size: 0.78rem; font-weight: 700; color: #64748b; background: #f8fafc; border: none; border-left: 1px solid #e2e8f0; transition: all 0.2s; }
+    .age-toggle-btn:last-child { border-left: none; }
+    .age-toggle-btn.active { background: #1a4a2e; color: #fff; }
+    .cond-block { display: none; flex-direction: column; gap: 1rem; margin-top: 0.75rem; }
+    .cond-block.visible { display: flex; }
+    .form-input.generated { background: #f0fdf4; color: #16a34a; font-weight: 800; border-color: #bbf7d0; }
 </style>
 @endsection
 
@@ -150,12 +163,12 @@
                         <td style="font-weight:800;">فهد</td>
                         <td>د. أسامة الورفلي</td>
                         <td>فهد آسيوي</td>
-                        <td>القطط الكبرى</td>
+                        <td>القططية</td>
                         <td>2026-06-01</td>
                         <td>
                             <div style="display:flex; gap:6px; justify-content:center;">
                                 <a href="javascript:void(0)" onclick="openModal('QR-2026-015', 'followup')" class="btn-tbl view" title="عرض التفاصيل">
-                                    @include('partials.icon-chevron-view')
+                                    @include('partials.icon-eye-view')
                                 </a>
                                 @unless($readOnly ?? false)
                                 <a href="javascript:void(0)" onclick="openEditModal('QR-2026-015')" class="btn-tbl edit" title="تعديل">
@@ -175,7 +188,7 @@
                         <td>
                             <div style="display:flex; gap:6px; justify-content:center;">
                                 <a href="javascript:void(0)" onclick="openModal('QR-2026-016', 'followup')" class="btn-tbl view" title="عرض التفاصيل">
-                                    @include('partials.icon-chevron-view')
+                                    @include('partials.icon-eye-view')
                                 </a>
                                 @unless($readOnly ?? false)
                                 <a href="javascript:void(0)" onclick="openEditModal('QR-2026-016')" class="btn-tbl edit" title="تعديل">
@@ -217,13 +230,13 @@
                         <td style="font-weight:800;">زُزُو</td>
                         <td>د. فاطمة الزهراء</td>
                         <td>زرافة</td>
-                        <td>العناقيد الكبرى</td>
+                        <td>الثدييات الكبيرة</td>
                         <td>2026-05-10</td>
                         <td>2026-05-24</td>
                         <td>
                             <div style="display:flex; gap:6px; justify-content:center;">
                                 <a href="javascript:void(0)" onclick="openModal('QR-2026-010', 'cleared')" class="btn-tbl view" title="عرض التفاصيل">
-                                    @include('partials.icon-chevron-view')
+                                    @include('partials.icon-eye-view')
                                 </a>
                                 @unless($readOnly ?? false)
                                 <a href="javascript:void(0)" onclick="openEditModal('QR-2026-010')" class="btn-tbl edit" title="تعديل">
@@ -244,7 +257,7 @@
                         <td>
                             <div style="display:flex; gap:6px; justify-content:center;">
                                 <a href="javascript:void(0)" onclick="openModal('QR-2026-009', 'cleared')" class="btn-tbl view" title="عرض التفاصيل">
-                                    @include('partials.icon-chevron-view')
+                                    @include('partials.icon-eye-view')
                                 </a>
                                 @unless($readOnly ?? false)
                                 <a href="javascript:void(0)" onclick="openEditModal('QR-2026-009')" class="btn-tbl edit" title="تعديل">
@@ -286,13 +299,13 @@
                         <td style="font-weight:800;">سيمبا</td>
                         <td>د. خالد العربي</td>
                         <td>أسد إفريقي</td>
-                        <td>القطط الكبرى</td>
+                        <td>القططية</td>
                         <td>2026-05-12</td>
                         <td>2026-05-18</td>
                         <td>
                             <div style="display:flex; gap:6px; justify-content:center;">
                                 <a href="javascript:void(0)" onclick="openModal('QR-2026-012', 'failed')" class="btn-tbl view" title="عرض التفاصيل">
-                                    @include('partials.icon-chevron-view')
+                                    @include('partials.icon-eye-view')
                                 </a>
                                 @unless($readOnly ?? false)
                                 <a href="javascript:void(0)" onclick="openEditModal('QR-2026-012')" class="btn-tbl edit" title="تعديل">
@@ -415,7 +428,7 @@
 
 {{-- ═══ ADD MODAL ═══ --}}
 <div class="modal-backdrop" id="addModal">
-    <div class="modal-box">
+    <div class="modal-box wide">
         <div class="modal-header">
             <h3>📋 إضافة حيوان للحجر الصحي</h3>
             <button class="modal-close" onclick="closeAddModal()">✕</button>
@@ -442,10 +455,57 @@
                     <label>العلامة المميزة (اختياري)</label>
                     <input type="text" class="form-input" placeholder="مثال: أذن يمين مقطوعة جزئياً...">
                 </div>
-                <div class="form-group">
-                    <label>العمر</label>
-                    <input type="text" class="form-input" placeholder="مثال: 4 سنوات، 6 أشهر...">
+            </div>
+
+            <div class="modal-section">
+                <div class="modal-section-title">
+                    <div class="sec-icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    بيانات العمر
                 </div>
+                <div class="form-group" style="margin-bottom: 0.75rem;">
+                    <label>طريقة تحديد العمر <span class="req">*</span></label>
+                    <div class="age-toggle">
+                        <button type="button" class="age-toggle-btn active" id="addBtnBirth" onclick="setAge('add','birth')">📅 تاريخ ميلاد معروف</button>
+                        <button type="button" class="age-toggle-btn" id="addBtnApprox" onclick="setAge('add','approx')">🔢 عمر تقريبي عند التسجيل</button>
+                    </div>
+                </div>
+                <div class="cond-block visible" id="addBlockBirth">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>تاريخ الميلاد <span class="req">*</span></label>
+                            <input type="date" class="form-input" id="add_birthDate">
+                        </div>
+                        <div class="form-group" style="align-self: end;">
+                            <label style="color:#64748b;">العمر المحسوب</label>
+                            <input type="text" class="form-input generated" id="add_computedAge" placeholder="سيُحسب تلقائياً..." disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="cond-block" id="addBlockApprox">
+                    <div class="form-grid col-3">
+                        <div class="form-group">
+                            <label>العمر التقريبي عند التسجيل <span class="req">*</span></label>
+                            <input type="number" class="form-input" id="add_approxValue" placeholder="مثال: 4" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>وحدة العمر <span class="req">*</span></label>
+                            <select class="form-select" id="add_approxUnit">
+                                <option>أيام</option>
+                                <option>أشهر</option>
+                                <option selected>سنوات</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label style="color:#64748b;">العمر الحالي التقريبي</label>
+                            <input type="text" class="form-input generated" id="add_currentApproxAge" placeholder="سيُحسب تلقائياً..." disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-grid">
                 <div class="form-group">
                     <label>مصدر الحيوان / جهة الإحضار <span class="req">*</span></label>
                     <input type="text" class="form-input" placeholder="مثال: مركز الحياة البرية...">
@@ -473,7 +533,7 @@
 
 {{-- ═══ EDIT MODAL ═══ --}}
 <div class="modal-backdrop" id="editModal">
-    <div class="modal-box">
+    <div class="modal-box wide">
         <div class="modal-header">
             <h3>✏️ تعديل بيانات الحجر الصحي — <span id="editModalCaseId"></span></h3>
             <button class="modal-close" onclick="closeEditModal()">✕</button>
@@ -499,10 +559,57 @@
                     <label>العلامة المميزة (اختياري)</label>
                     <input type="text" class="form-input" id="edit_mark" placeholder="مثال: بقعة بيضاء على الجبهة...">
                 </div>
-                <div class="form-group">
-                    <label>العمر</label>
-                    <input type="text" class="form-input" id="edit_age" value="3 سنوات">
+            </div>
+
+            <div class="modal-section">
+                <div class="modal-section-title">
+                    <div class="sec-icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    بيانات العمر
                 </div>
+                <div class="form-group" style="margin-bottom: 0.75rem;">
+                    <label>طريقة تحديد العمر <span class="req">*</span></label>
+                    <div class="age-toggle">
+                        <button type="button" class="age-toggle-btn active" id="editBtnBirth" onclick="setAge('edit','birth')">📅 تاريخ ميلاد معروف</button>
+                        <button type="button" class="age-toggle-btn" id="editBtnApprox" onclick="setAge('edit','approx')">🔢 عمر تقريبي عند التسجيل</button>
+                    </div>
+                </div>
+                <div class="cond-block visible" id="editBlockBirth">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>تاريخ الميلاد <span class="req">*</span></label>
+                            <input type="date" class="form-input" id="edit_birthDate">
+                        </div>
+                        <div class="form-group" style="align-self: end;">
+                            <label style="color:#64748b;">العمر المحسوب</label>
+                            <input type="text" class="form-input generated" id="edit_computedAge" placeholder="سيُحسب تلقائياً..." disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="cond-block" id="editBlockApprox">
+                    <div class="form-grid col-3">
+                        <div class="form-group">
+                            <label>العمر التقريبي عند التسجيل <span class="req">*</span></label>
+                            <input type="number" class="form-input" id="edit_approxValue" placeholder="مثال: 4" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>وحدة العمر <span class="req">*</span></label>
+                            <select class="form-select" id="edit_approxUnit">
+                                <option>أيام</option>
+                                <option>أشهر</option>
+                                <option selected>سنوات</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label style="color:#64748b;">العمر الحالي التقريبي</label>
+                            <input type="text" class="form-input generated" id="edit_currentApproxAge" placeholder="سيُحسب تلقائياً..." disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-grid">
                 <div class="form-group">
                     <label>مصدر الحيوان / جهة الإحضار <span class="req">*</span></label>
                     <input type="text" class="form-input" id="edit_source" value="مركز الحياة البرية">
@@ -571,7 +678,7 @@
 const quarantineDB = {
     'QR-2026-015': {
         type: 'فهد آسيوي', animalName: 'فهد', mark: 'بقعة سوداء على الجبهة',
-        gender: 'ذكر', group: 'القطط الكبرى', source: 'مركز الحياة البرية',
+        gender: 'ذكر', group: 'القططية', source: 'مركز الحياة البرية',
         vet: 'د. أسامة الورفلي', entryDate: '2026-06-01',
         initialNotes: 'الحيوان بحالة جيدة عموماً، يحتاج مراقبة في أول أسبوع.',
         age: '3 سنوات'
@@ -585,7 +692,7 @@ const quarantineDB = {
     },
     'QR-2026-010': {
         type: 'زرافة', animalName: 'زُزُو', mark: 'ندبة صغيرة على الرقبة',
-        gender: 'أنثى', group: 'العناقيد الكبرى', source: 'تبادل حيوانات',
+        gender: 'أنثى', group: 'الغزلان', source: 'تبادل حيوانات',
         vet: 'د. فاطمة الزهراء', entryDate: '2026-05-10',
         initialNotes: 'سليمة ظاهرياً عند الدخول.',
         age: '5 سنوات'
@@ -599,12 +706,45 @@ const quarantineDB = {
     },
     'QR-2026-012': {
         type: 'أسد إفريقي', animalName: 'سيمبا', mark: 'أذن يسرى مشقوقة',
-        gender: 'ذكر', group: 'القطط الكبرى', source: 'استيراد',
+        gender: 'ذكر', group: 'القططية', source: 'استيراد',
         vet: 'د. خالد العربي', entryDate: '2026-05-12',
         initialNotes: 'ظهور أعراض تنفسية، نُقل للمستشفى.',
         age: '6 سنوات'
     }
 };
+
+function setAge(prefix, method) {
+    ['Birth', 'Approx'].forEach(m => {
+        document.getElementById(prefix + 'Btn' + m).classList.remove('active');
+        const block = document.getElementById(prefix + 'Block' + m);
+        block.classList.remove('visible');
+        block.style.display = 'none';
+    });
+    document.getElementById(prefix + 'Btn' + (method === 'birth' ? 'Birth' : 'Approx')).classList.add('active');
+    const active = document.getElementById(prefix + 'Block' + (method === 'birth' ? 'Birth' : 'Approx'));
+    active.classList.add('visible');
+    active.style.display = 'flex';
+}
+
+function fillAgeFields(prefix, ageText, entryDate) {
+    const approxMatch = (ageText || '').match(/(\d+)/);
+    const approxVal = approxMatch ? approxMatch[1] : '';
+    const unit = (ageText || '').includes('شهر') ? 'أشهر' : ((ageText || '').includes('يوم') ? 'أيام' : 'سنوات');
+
+    document.getElementById(prefix + '_approxValue').value = approxVal;
+    document.getElementById(prefix + '_approxUnit').value = unit;
+    document.getElementById(prefix + '_currentApproxAge').value = ageText || '';
+    document.getElementById(prefix + '_computedAge').value = ageText || '';
+    document.getElementById(prefix + '_birthDate').value = '';
+
+    if (entryDate && approxVal) {
+        const entry = new Date(entryDate);
+        entry.setFullYear(entry.getFullYear() - parseInt(approxVal, 10));
+        document.getElementById(prefix + '_birthDate').value = entry.toISOString().slice(0, 10);
+    }
+
+    setAge(prefix, approxVal ? 'approx' : 'birth');
+}
 
 function switchTab(evt, tabId) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -667,6 +807,11 @@ function closeModal() {
 }
 
 function openAddModal() {
+    setAge('add', 'birth');
+    document.getElementById('add_birthDate').value = '';
+    document.getElementById('add_computedAge').value = '';
+    document.getElementById('add_approxValue').value = '';
+    document.getElementById('add_currentApproxAge').value = '';
     document.getElementById('addModal').classList.add('open');
 }
 
@@ -682,7 +827,7 @@ function openEditModal(caseId) {
         document.getElementById('edit_animalName').value = d.animalName || '';
         document.getElementById('edit_mark').value = d.mark || '';
         document.getElementById('edit_gender').value = d.gender;
-        document.getElementById('edit_age').value = d.age || '';
+        fillAgeFields('edit', d.age, d.entryDate);
         document.getElementById('edit_source').value = d.source;
         document.getElementById('edit_entryDate').value = d.entryDate;
         document.getElementById('edit_initialNotes').value = d.initialNotes;

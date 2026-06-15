@@ -14,16 +14,6 @@
     .filter-select { padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600; color: #334155; outline: none; cursor: pointer; }
     .filter-select:focus { border-color: #2E7D32; }
 
-    .animal-thumb {
-        width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
-        background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
-        border: 1.5px solid #bbf7d0;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.35rem; overflow: hidden;
-    }
-    .animal-name { font-weight: 800; color: #0f172a; line-height: 1.3; }
-    .reason-cell { font-size: 0.88rem; color: #334155; font-weight: 600; max-width: 220px; line-height: 1.4; }
-
     /* ── Table ── */
     .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 2rem; }
     .table-card-header { padding: 1.25rem 1.75rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; background: #FAFBFC; }
@@ -77,6 +67,18 @@
     .info-cell-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; margin-bottom: 4px; }
     .info-cell-value { font-size: 0.9rem; color: #0f172a; font-weight: 800; }
 
+    .summary-layout { display: grid; grid-template-columns: 280px 1fr; gap: 1.25rem; align-items: start; }
+    @media (max-width: 700px) { .summary-layout { grid-template-columns: 1fr; } }
+    .animal-card { background: #fff; border-radius: 12px; padding: 1.25rem; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .animal-card-title { font-size: 1rem; font-weight: 800; color: #1e293b; margin-bottom: 1rem; text-align: center; }
+    .animal-photo-wrap { display: flex; justify-content: center; margin-bottom: 1rem; }
+    .animal-photo { width: 68px; height: 68px; border-radius: 14px; background: linear-gradient(135deg, #E8F5E9, #C8E6C9); border: 2px solid #bbf7d0; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+    .q-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; padding-bottom: 0.7rem; border-bottom: 1px solid #f1f5f9; gap: 8px; }
+    .q-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .q-label { color: #64748b; font-size: 0.78rem; font-weight: 700; flex-shrink: 0; }
+    .q-value { color: #0f172a; font-size: 0.85rem; font-weight: 800; text-align: left; }
+    .section-title { font-size: 1rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem; }
+
     .content-box { background: #fff; padding: 12px 16px; border-radius: 8px; font-size: 0.9rem; color: #1e293b; font-weight: 600; line-height: 1.6; border: 1px solid #e2e8f0; border-right: 4px solid #3b82f6; margin-bottom: 1rem; }
     .section-label { font-size: 0.85rem; color: #0f172a; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
 
@@ -118,13 +120,9 @@
             <option>مرفوضة</option>
         </select>
         <select class="filter-select">
-            <option value="">كل المجموعات</option>
-            <option>السباع والضواري</option>
-            <option>الرئيسيات</option>
-            <option>العواشب</option>
-            <option>الطيور</option>
+                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
         </select>
-        <input type="date" class="filter-select">
+        @include('partials.date-filter')
     </div>
 </div>
 
@@ -139,12 +137,9 @@
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>اسم الحيوان</th>
-                    <th>صورة</th>
-                    <th>رقم الحيوان</th>
+                    <th>الحيوان</th>
                     <th>نوع الحيوان</th>
                     <th>المجموعة</th>
-                    <th>سبب التحويل للعلاج</th>
                     <th>تاريخ الإحالة</th>
                     <th>الحالة</th>
                     <th class="col-actions">الإجراءات</th>
@@ -152,12 +147,9 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><span class="animal-name">سيمبا</span></td>
-                    <td><div class="animal-thumb">🦁</div></td>
-                    <td><span class="animal-id">#ANL-0041-2022</span></td>
+                    @include('partials.animal-table-cell', ['name' => 'سيمبا', 'emoji' => '🦁', 'animalId' => '#ANL-0041-2022'])
                     <td style="font-weight:700;">أسد إفريقي</td>
-                    <td>السباع والضواري</td>
-                    <td><span class="reason-cell">جرح عميق في الفخذ الأيمن إثر شجار</span></td>
+                    <td>القططية</td>
                     <td>2026-06-07</td>
                     <td><span class="badge badge-pending"><span class="dot"></span>قيد المراجعة</span></td>
                     <td class="col-actions">
@@ -167,12 +159,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="animal-name" style="color:#94a3b8; font-style:italic;">—</span></td>
-                    <td><div class="animal-thumb">🐒</div></td>
-                    <td><span class="animal-id">#ANL-0182-2023</span></td>
+                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => '#ANL-0182-2023'])
                     <td style="font-weight:700;">قرد المكاك</td>
-                    <td>الرئيسيات</td>
-                    <td><span class="reason-cell">خمول شديد وارتفاع في الحرارة</span></td>
+                    <td>القرود</td>
                     <td>2026-06-06</td>
                     <td><span class="badge badge-approved"><span class="dot"></span>معتمدة</span></td>
                     <td class="col-actions">
@@ -182,12 +171,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="animal-name">ريم</span></td>
-                    <td><div class="animal-thumb">🦌</div></td>
-                    <td><span class="animal-id">#ANL-0120-2024</span></td>
+                    @include('partials.animal-table-cell', ['name' => 'ريم', 'emoji' => '🦌', 'animalId' => '#ANL-0120-2024'])
                     <td style="font-weight:700;">غزال الريم</td>
-                    <td>العواشب</td>
-                    <td><span class="reason-cell">عرج خفيف في الساق اليسرى الأمامية</span></td>
+                    <td>الغزلان</td>
                     <td>2026-06-05</td>
                     <td><span class="badge badge-rejected"><span class="dot"></span>مرفوضة</span></td>
                     <td class="col-actions">
@@ -221,47 +207,55 @@
         <div class="modal-body">
             {{-- Tab 1: بيانات الإحالة --}}
             <div id="mtab-1">
-                <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.5rem; flex-wrap:wrap;">
-                    <div class="animal-thumb" id="mAnimalPhoto" style="width:52px;height:52px;font-size:1.6rem;">🦁</div>
-                    <div style="flex:1;">
-                        <div style="font-size:1rem;font-weight:800;color:#0f172a;" id="mAnimalName">—</div>
-                        <div style="font-size:0.8rem;color:#64748b;font-weight:600;" id="mAnimalSub">—</div>
+                <div class="summary-layout">
+                    <div class="animal-card">
+                        <h4 class="animal-card-title">بيانات الحيوان</h4>
+                        <div class="animal-photo-wrap">
+                            <div class="animal-photo" id="mAnimalPhoto">🦁</div>
+                        </div>
+                        <div style="text-align:center; margin-bottom:1rem;">
+                            <div style="font-size:0.95rem;font-weight:800;color:#0f172a;" id="mAnimalName">—</div>
+                            <div style="font-size:0.75rem;color:#64748b;font-weight:600;margin-top:4px;" id="mAnimalSub">—</div>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">رقم الحيوان</span>
+                            <span class="q-value" id="mAnimalId">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">نوع الحيوان</span>
+                            <span class="q-value" id="mAnimalType">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">الجنس</span>
+                            <span class="q-value" id="mGender">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">العمر</span>
+                            <span class="q-value" id="mAge">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">المجموعة</span>
+                            <span class="q-value" id="mGroup">—</span>
+                        </div>
                     </div>
-                    <span id="mStatusBadge" style="margin-right:auto;"></span>
-                </div>
 
-                <div class="section-label">سبب التحويل للعلاج</div>
-                <div class="content-box" id="mTransferReason" style="margin-bottom:1.5rem;">—</div>
+                    <div>
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:1rem; flex-wrap:wrap;">
+                            <h3 class="section-title" style="margin-bottom:0;">معلومات الإحالة</h3>
+                            <span id="mStatusBadge"></span>
+                        </div>
 
-                <div class="info-grid">
-                    <div class="info-cell">
-                        <div class="info-cell-label">رقم الحيوان الرسمي</div>
-                        <div class="info-cell-value" style="font-family:'Courier New',monospace; color:#64748b;" id="mAnimalId">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">نوع الحيوان</div>
-                        <div class="info-cell-value" id="mAnimalType">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">الجنس</div>
-                        <div class="info-cell-value" id="mGender">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">العمر</div>
-                        <div class="info-cell-value" id="mAge">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">المجموعة</div>
-                        <div class="info-cell-value" id="mGroup">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">تاريخ إرسال الإحالة</div>
-                        <div class="info-cell-value" id="mDate">—</div>
-                    </div>
-                </div>
+                        <div class="section-label">سبب التحويل للعلاج</div>
+                        <div class="content-box" id="mTransferReason" style="margin-bottom:1rem;">—</div>
 
-                {{-- Status Sections --}}
-                <div id="statusPending" class="status-section status-pending" style="display:none;">
+                        <div class="info-grid" style="margin-bottom:0;">
+                            <div class="info-cell span-2">
+                                <div class="info-cell-label">تاريخ إرسال الإحالة</div>
+                                <div class="info-cell-value" id="mDate">—</div>
+                            </div>
+                        </div>
+
+                        <div id="statusPending" class="status-section status-pending" style="display:none;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" style="margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     <div>الإحالة بانتظار مراجعة رئيس قسم المستشفى البيطري.</div>
                 </div>
@@ -297,6 +291,8 @@
                     <div>
                         <div class="info-cell-label" style="margin-bottom:6px;">سبب الرفض</div>
                         <div class="status-box" id="rejReason">—</div>
+                    </div>
+                </div>
                     </div>
                 </div>
             </div>
@@ -356,7 +352,7 @@
     const dummyData = {
         'TR-042': {
             animalName: 'سيمبا', animalEmoji: '🦁',
-            animalId: '#ANL-0041-2022', animalType: 'أسد إفريقي', gender: 'ذكر', age: '8 سنوات', group: 'السباع والضواري',
+            animalId: '#ANL-0041-2022', animalType: 'أسد إفريقي', gender: 'ذكر', age: '8 سنوات', group: 'القططية',
             date: '2026-06-07', transferReason: 'جرح عميق في الفخذ الأيمن إثر شجار',
             hId: 'HC-1102', hDate: '2026-06-07', hSupervisor: 'خالد منصور',
             hDesc: 'جرح عميق في الفخذ الأيمن إثر شجار', hNotes: 'ينزف بشكل متقطع ويرفض الحركة أو الأكل. تم عزله في القفص الداخلي.',
@@ -364,7 +360,7 @@
         },
         'TR-041': {
             animalName: '', animalEmoji: '🐒',
-            animalId: '#ANL-0182-2023', animalType: 'قرد المكاك', gender: 'أنثى', age: '3 سنوات', group: 'الرئيسيات',
+            animalId: '#ANL-0182-2023', animalType: 'قرد المكاك', gender: 'أنثى', age: '3 سنوات', group: 'القرود',
             date: '2026-06-06', transferReason: 'خمول شديد وارتفاع في الحرارة',
             hId: 'HC-1101', hDate: '2026-06-06', hSupervisor: 'ياسر الغيثي',
             hDesc: 'خمول شديد وارتفاع في الحرارة', hNotes: 'الحيوان لا يتجاوب مع المؤثرات ورافض تماماً لشرب الماء.',
@@ -372,7 +368,7 @@
         },
         'TR-040': {
             animalName: 'ريم', animalEmoji: '🦌',
-            animalId: '#ANL-0120-2024', animalType: 'غزال الريم', gender: 'ذكر', age: 'سنتان', group: 'العواشب',
+            animalId: '#ANL-0120-2024', animalType: 'غزال الريم', gender: 'ذكر', age: 'سنتان', group: 'الغزلان',
             date: '2026-06-05', transferReason: 'عرج خفيف في الساق اليسرى الأمامية',
             hId: 'HC-1100', hDate: '2026-06-05', hSupervisor: 'أحمد الكواري',
             hDesc: 'عرج خفيف في الساق اليسرى الأمامية', hNotes: 'العرج يظهر عند الركض فقط، لكنه يمشي ويأكل بشكل طبيعي.',

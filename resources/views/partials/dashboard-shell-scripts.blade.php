@@ -46,4 +46,11 @@
             }
         }
     });
+
+    function toggleCustomDateFilter(filterId) {
+        const select = document.getElementById(filterId);
+        const wrap = document.getElementById(filterId + 'PickerWrap');
+        if (!select || !wrap) return;
+        wrap.classList.toggle('show', select.value === 'custom');
+    }
 </script>

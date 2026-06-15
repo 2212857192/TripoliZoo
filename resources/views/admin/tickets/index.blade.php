@@ -315,6 +315,14 @@
                     <span>كبار (فوق 12 سنة)</span>
                 </div>
                 <div class="detail-row-ticket">
+                    <span>نوع الزائر</span>
+                    <span>مواطن</span>
+                </div>
+                <div class="detail-row-ticket">
+                    <span>العمر</span>
+                    <span>بالغ</span>
+                </div>
+                <div class="detail-row-ticket">
                     <span>حالة التذكرة</span>
                     <span class="status-badge-ticket active" id="badge-1">نشطة</span>
                 </div>
@@ -343,6 +351,14 @@
                 <div class="detail-row-ticket">
                     <span>الفئة المستهدفة</span>
                     <span>أطفال (3 - 12 سنة)</span>
+                </div>
+                <div class="detail-row-ticket">
+                    <span>نوع الزائر</span>
+                    <span>مواطن</span>
+                </div>
+                <div class="detail-row-ticket">
+                    <span>العمر</span>
+                    <span>طفل</span>
                 </div>
                 <div class="detail-row-ticket">
                     <span>حالة التذكرة</span>
@@ -375,6 +391,14 @@
                     <span>العائلات وVIP</span>
                 </div>
                 <div class="detail-row-ticket">
+                    <span>نوع الزائر</span>
+                    <span>مواطن</span>
+                </div>
+                <div class="detail-row-ticket">
+                    <span>العمر</span>
+                    <span>بالغ</span>
+                </div>
+                <div class="detail-row-ticket">
                     <span>حالة التذكرة</span>
                     <span class="status-badge-ticket active" id="badge-3">نشطة</span>
                 </div>
@@ -405,6 +429,14 @@
                     <span>الزوار غير الليبيين</span>
                 </div>
                 <div class="detail-row-ticket">
+                    <span>نوع الزائر</span>
+                    <span>أجنبي</span>
+                </div>
+                <div class="detail-row-ticket">
+                    <span>العمر</span>
+                    <span>بالغ</span>
+                </div>
+                <div class="detail-row-ticket">
                     <span>حالة التذكرة</span>
                     <span class="status-badge-ticket suspended" id="badge-4">موقوفة</span>
                 </div>
@@ -419,6 +451,44 @@
                 </a>
                 <button class="btn-ticket-op toggle-status activate-btn" id="btn-toggle-4" onclick="toggleTicketStatus(4)">
                     تفعيل التذكرة
+                </button>
+            </div>
+        </div>
+
+        <!-- Ticket 5 -->
+        <div class="ticket-card-premium" data-name="تذكرة الطلاب" data-status="active" id="ticket-5">
+            <div class="ticket-header-gradient">
+                <h4 class="ticket-name">تذكرة الطلاب</h4>
+                <div class="ticket-price"><span id="price-val-5">7.00</span> <span>د.ل</span></div>
+            </div>
+            <div class="ticket-details">
+                <div class="detail-row-ticket">
+                    <span>الفئة المستهدفة</span>
+                    <span>طلاب المدارس والجامعات</span>
+                </div>
+                <div class="detail-row-ticket">
+                    <span>نوع الزائر</span>
+                    <span>مواطن</span>
+                </div>
+                <div class="detail-row-ticket">
+                    <span>العمر</span>
+                    <span>طالب</span>
+                </div>
+                <div class="detail-row-ticket">
+                    <span>حالة التذكرة</span>
+                    <span class="status-badge-ticket active" id="badge-5">نشطة</span>
+                </div>
+                <div class="detail-row-ticket">
+                    <span>شاملة الخدمات</span>
+                    <span>الدخول العام — يُطلب بطاقة طالب</span>
+                </div>
+            </div>
+            <div class="ticket-actions-bar">
+                <a href="/admin/tickets/5/edit" class="btn-ticket-op">
+                    تعديل السعر
+                </a>
+                <button class="btn-ticket-op toggle-status suspended-btn" id="btn-toggle-5" onclick="toggleTicketStatus(5)">
+                    إيقاف التذكرة
                 </button>
             </div>
         </div>

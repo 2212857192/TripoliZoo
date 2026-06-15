@@ -32,21 +32,9 @@
             <input type="text" placeholder="بحث برقم الحيوان، رقم الأم، أو النوع...">
         </div>
         <select class="filter-select">
-            <option value="">كل المجموعات</option>
-            <option>القططية</option>
-            <option>الطيور</option>
-            <option>الزواحف</option>
-            <option>الغزلان</option>
-            <option>القرود</option>
-            <option>الثدييات الصغيرة</option>
-            <option>الثدييات الكبيرة</option>
-            <option>الدب واللامة</option>
+                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
         </select>
-        <select class="filter-select">
-            <option value="">كل التواريخ</option>
-            <option>هذا الشهر</option>
-            <option>هذا العام</option>
-        </select>
+        @include('partials.date-filter', ['showWeek' => false, 'showMonth' => true, 'showYear' => true])
     </div>
 </div>
 
@@ -58,7 +46,7 @@
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>رقم الحيوان</th>
+                    <th>الحيوان</th>
                     <th>رقم الأم</th>
                     <th>النوع</th>
                     <th>المجموعة</th>
@@ -70,7 +58,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>#ANM-1015</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦁', 'animalId' => '#ANM-1015', 'sub' => 'أسد أفريقي'])
                     <td>#ANM-0082</td>
                     <td>أسد أفريقي</td>
                     <td>القططية</td>
@@ -84,7 +72,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>#ANM-0980</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦌', 'animalId' => '#ANM-0980', 'sub' => 'غزال الريم'])
                     <td>#ANM-0145</td>
                     <td>غزال الريم</td>
                     <td>الغزلان</td>
@@ -98,7 +86,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>#ANM-0950</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => '#ANM-0950', 'sub' => 'قرد مكاك'])
                     <td>#ANM-0220</td>
                     <td>قرد مكاك</td>
                     <td>القرود</td>

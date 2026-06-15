@@ -14,16 +14,6 @@
     .filter-select { padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600; color: #334155; outline: none; cursor: pointer; }
     .filter-select:focus { border-color: #2E7D32; }
 
-    .animal-thumb {
-        width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
-        background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
-        border: 1.5px solid #bbf7d0;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.35rem; overflow: hidden;
-    }
-    .animal-name { font-weight: 800; color: #0f172a; line-height: 1.3; }
-    .reason-cell { font-size: 0.88rem; color: #334155; font-weight: 600; max-width: 220px; line-height: 1.4; }
-
     .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 2rem; }
     .table-card-header { padding: 1.25rem 1.75rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; background: #FAFBFC; }
     .table-card-title { display: flex; align-items: center; gap: 12px; font-size: 1.1rem; font-weight: 800; color: #0f172a; }
@@ -65,18 +55,9 @@
             <option>موثقة</option>
         </select>
         <select class="filter-select">
-            <option value="">كل المجموعات</option>
-            <option>القطط الكبرى</option>
-            <option>القرود</option>
-            <option>العناقيد الكبرى</option>
-            <option>الطيور</option>
+                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
         </select>
-        <select class="filter-select">
-            <option value="">كل التواريخ</option>
-            <option>اليوم</option>
-            <option>آخر 7 أيام</option>
-            <option>آخر 30 يوم</option>
-        </select>
+        @include('partials.date-filter', ['showWeek' => false, 'showLast7' => true, 'showLast30' => true])
     </div>
 </div>
 
@@ -91,12 +72,9 @@
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>اسم الحيوان</th>
-                    <th>صورة</th>
-                    <th>رقم الحيوان</th>
+                    <th>الحيوان</th>
                     <th>نوع الحيوان</th>
                     <th>المجموعة</th>
-                    <th>سبب التحويل للتشريح</th>
                     <th>تاريخ الإحالة</th>
                     <th>الحالة</th>
                     <th class="col-actions">الإجراءات</th>
@@ -104,47 +82,38 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><span class="animal-name">صقر</span></td>
-                    <td><div class="animal-thumb">🦅</div></td>
-                    <td><span class="animal-id">#ANM-009</span></td>
+                    @include('partials.animal-table-cell', ['name' => 'صقر', 'emoji' => '🦅', 'animalId' => '#ANM-009'])
                     <td style="font-weight:700;">نسر ذهبي</td>
                     <td>الطيور</td>
-                    <td><span class="reason-cell">وفاة غير معروفة السبب</span></td>
                     <td>2025-05-13</td>
                     <td><span class="badge badge-pending"><span class="dot"></span>بانتظار التوثيق</span></td>
                     <td class="col-actions">
                         <a href="{{ $vetBase }}/referrals/autopsy/AR-001" class="btn-tbl view" title="عرض التفاصيل">
-                            @include('partials.icon-chevron-view')
+                            @include('partials.icon-eye-view')
                         </a>
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="animal-name">كوكو</span></td>
-                    <td><div class="animal-thumb">🐒</div></td>
-                    <td><span class="animal-id">#ANL-0871</span></td>
+                    @include('partials.animal-table-cell', ['name' => 'كوكو', 'emoji' => '🐒', 'animalId' => '#ANL-0871'])
                     <td style="font-weight:700;">شمبانزي أفريقي</td>
                     <td>القرود</td>
-                    <td><span class="reason-cell">وفاة مفاجئة</span></td>
                     <td>2025-05-15</td>
                     <td><span class="badge badge-pending"><span class="dot"></span>بانتظار التوثيق</span></td>
                     <td class="col-actions">
                         <a href="{{ $vetBase }}/referrals/autopsy/AR-002" class="btn-tbl view" title="عرض التفاصيل">
-                            @include('partials.icon-chevron-view')
+                            @include('partials.icon-eye-view')
                         </a>
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="animal-name">جميلة</span></td>
-                    <td><div class="animal-thumb">🦒</div></td>
-                    <td><span class="animal-id">#ANM-154</span></td>
+                    @include('partials.animal-table-cell', ['name' => 'جميلة', 'emoji' => '🦒', 'animalId' => '#ANM-154'])
                     <td style="font-weight:700;">زرافة نيلية</td>
-                    <td>العناقيد الكبرى</td>
-                    <td><span class="reason-cell">مشاكل تنفسية</span></td>
+                    <td>الغزلان</td>
                     <td>2025-05-10</td>
                     <td><span class="badge badge-documented"><span class="dot"></span>موثقة</span></td>
                     <td class="col-actions">
                         <a href="{{ $vetBase }}/referrals/autopsy/AR-003" class="btn-tbl view" title="عرض التفاصيل">
-                            @include('partials.icon-chevron-view')
+                            @include('partials.icon-eye-view')
                         </a>
                     </td>
                 </tr>

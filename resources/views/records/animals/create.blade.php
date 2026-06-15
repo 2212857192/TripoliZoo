@@ -365,15 +365,7 @@
                 <div class="field-group">
                     <label class="field-label"><span class="required">*</span> المجموعة</label>
                     <select class="form-control" id="addGroupSelect" onchange="updateGeneratedId()">
-                        <option value="" disabled selected>اختر المجموعة...</option>
-                        <option value="القططية">القططية</option>
-                        <option value="الطيور">الطيور</option>
-                        <option value="الزواحف">الزواحف</option>
-                        <option value="الغزلان">الغزلان</option>
-                        <option value="القرود">القرود</option>
-                        <option value="الثدييات الصغيرة">الثدييات الصغيرة</option>
-                        <option value="الثدييات الكبيرة">الثدييات الكبيرة</option>
-                        <option value="الدب واللامة">الدب واللامة</option>
+                        @include('partials.animal-group-options', ['prompt' => 'اختر المجموعة...', 'withValues' => true])
                     </select>
                 </div>
 
@@ -600,8 +592,8 @@
 
     const groupPrefixes = {
         'القططية': 'ANM', 'الطيور': 'BRD', 'الزواحف': 'RPT',
-        'الغزلان': 'GZL', 'القرود': 'MON', 'الثدييات الصغيرة': 'SML',
-        'الثدييات الكبيرة': 'LRG', 'الدب واللامة': 'BLA'
+        'القرود': 'MON', 'الغزلان': 'GZL', 'الثدييات الكبيرة': 'LRG',
+        'الثدييات الصغيرة': 'SML', 'الدب واللامة': 'BLA'
     };
     const groupCounters = { ANM: 1050, BRD: 201, RPT: 88, GZL: 1046, MON: 1047, SML: 330, LRG: 120, BLA: 45 };
 

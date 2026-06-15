@@ -490,14 +490,7 @@
                 <div class="field-group">
                     <label class="field-label"><span class="required">*</span> المجموعة</label>
                     <select class="form-control">
-                        <option>القططية</option>
-                        <option>الطيور</option>
-                        <option>الزواحف</option>
-                        <option>الغزلان</option>
-                        <option>القرود</option>
-                        <option>الثدييات الصغيرة</option>
-                        <option>الثدييات الكبيرة</option>
-                        <option>الدب واللامة</option>
+                        @include('partials.animal-group-options')
                     </select>
                 </div>
 

@@ -237,7 +237,7 @@
             treatments: 'مضادات حيوية (أموكسيسيلين) لمدة 7 أيام، مسكنات (ميلوكسيكام)، مغلفات موضعية للجرح.',
             notes: 'يُفضل إبقاء الحيوان بعيداً عن التجمعات الكبيرة لأول يومين.',
             animalName: 'سيمبا', animalEmoji: '🦁', mark: 'أذن يمين مقطوعة جزئياً',
-            aId: '#ANL-0041-2022', aType: 'أسد إفريقي', aGender: 'ذكر', aAge: '8 سنوات', aGroup: 'السباع والضواري',
+            aId: '#ANL-0041-2022', aType: 'أسد إفريقي', aGender: 'ذكر', aAge: '8 سنوات', aGroup: 'القططية',
             rStatus: 'pending', rSupervisor: 'خالد منصور', rTaskDate: '2026-06-07', rActionDate: '', rFailedReason: ''
         },
         'MD-800': { // Release, Received
@@ -246,7 +246,7 @@
             treatments: 'فحوصات دورية، عزل وقائي، مراقبة سلوكية يومية دون علاج دوائي.',
             notes: 'لا توجد أي توصيات خاصة. الحيوان سليم.',
             animalName: 'لولو', animalEmoji: '🐒', mark: 'ندبة صغيرة على الذيل',
-            aId: '#Q-0182-2026', aType: 'قرد المكاك', aGender: 'أنثى', aAge: '3 سنوات', aGroup: 'الرئيسيات',
+            aId: '#Q-0182-2026', aType: 'قرد المكاك', aGender: 'أنثى', aAge: '3 سنوات', aGroup: 'القرود',
             rStatus: 'received', rSupervisor: 'ياسر الغيثي', rTaskDate: '2026-06-06', rActionDate: '2026-06-06', rFailedReason: ''
         },
         'MD-799': { // Slaughter, None
@@ -255,7 +255,7 @@
             treatments: 'مسكنات قوية (بوتورفانول)، تخدير موضعي، محاولات تجبير فاشلة.',
             notes: 'تم تنفيذ الإجراء وفق المعايير الطبية المعتمدة للقتل الرحيم.',
             animalName: 'ريم', animalEmoji: '🦌', mark: 'بقعة بيضاء على الجبهة',
-            aId: '#ANL-0120-2024', aType: 'غزال الريم', aGender: 'ذكر', aAge: 'سنتان', aGroup: 'العواشب',
+            aId: '#ANL-0120-2024', aType: 'غزال الريم', aGender: 'ذكر', aAge: 'سنتان', aGroup: 'الغزلان',
             rStatus: 'none', rSupervisor: '', rTaskDate: '', rActionDate: '', rFailedReason: ''
         },
         'MD-795': { // Discharge, Failed

@@ -7,6 +7,8 @@
 $locations = [
     '1' => ['name' => 'قفص الأسد الأفريقي', 'type' => 'enclosure', 'code' => 'L-01', 'lat' => '32.849200', 'lng' => '13.178200', 'desc' => 'موقع قفص الأسد الأفريقي يقع في الممر الشمالي الشرقي للحديقة بالقرب من بيت الفيل.', 'active' => true],
     '2' => ['name' => 'بحيرة الفيل الأسيوي', 'type' => 'enclosure', 'code' => 'E-04', 'lat' => '32.848000', 'lng' => '13.180000', 'desc' => 'الموائل المخصصة للفيل الآسيوي شاملة البحيرة الصناعية ومناطق الاستحمام الطبيعية.', 'active' => true],
+    '3' => ['name' => 'البوابة الرئيسية', 'type' => 'service', 'code' => 'EN-01', 'lat' => '32.846500', 'lng' => '13.178800', 'desc' => 'المدخل والمخرج الرئيسي للزوار يحتوي على شباك التذاكر الموحد ومركز التفتيش.', 'active' => true],
+    '4' => ['name' => 'مطعم الواحة الأخضر', 'type' => 'dining', 'code' => 'DN-03', 'lat' => '32.848500', 'lng' => '13.176500', 'desc' => 'منطقة مطاعم عائلية ومقاهي لتقديم الوجبات السريعة والمشروبات الباردة للزوار.', 'active' => true],
 ];
 $location = $locations[$id] ?? $locations['1'];
 @endphp
@@ -300,7 +302,7 @@ $location = $locations[$id] ?? $locations['1'];
     <!-- Header Hero -->
     <div class="page-hero">
         <h2>إدارة الخريطة التفاعلية</h2>
-        <p>تعديل موقع قفص أو موئل حيوان مسجّل على خريطة الحديقة</p>
+        <p>تعديل بيانات موقع مسجّل على خريطة الحديقة</p>
     </div>
 
     <!-- Main Container -->
@@ -321,8 +323,11 @@ $location = $locations[$id] ?? $locations['1'];
                 </div>
                 <div class="form-group">
                     <label>فئة الموقع</label>
-                    <input type="text" class="form-input" value="أقفاص وموائل الحيوانات" readonly style="background:#F1F5F9;cursor:not-allowed;font-weight:700;">
-                    <input type="hidden" id="type" value="enclosure">
+                    <select id="type" class="form-input">
+                        <option value="enclosure" {{ $location['type'] === 'enclosure' ? 'selected' : '' }}>أقفاص وموائل الحيوانات</option>
+                        <option value="service" {{ $location['type'] === 'service' ? 'selected' : '' }}>الخدمات والمرافق العامة</option>
+                        <option value="dining" {{ $location['type'] === 'dining' ? 'selected' : '' }}>المطاعم والمقاهي</option>
+                    </select>
                 </div>
             </div>
             
@@ -349,11 +354,6 @@ $location = $locations[$id] ?? $locations['1'];
             <div class="form-group">
                 <label>انقر على نقطة لتعديل الإحداثيات الجغرافية على الخريطة:</label>
                 <div id="leafletSelectMap" style="height: 300px; border-radius: 12px; border: 1.5px solid var(--border); overflow: hidden; z-index: 1;"></div>
-            </div>
-
-            <div class="form-group">
-                <label>الوصف التعريفي بالموقع</label>
-                <textarea id="desc" class="form-input" rows="4">{{ $location['desc'] }}</textarea>
             </div>
 
             <!-- Action buttons inside the same container -->

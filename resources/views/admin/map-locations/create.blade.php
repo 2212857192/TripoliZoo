@@ -291,7 +291,7 @@
     <!-- Header Hero -->
     <div class="page-hero">
         <h2>إدارة الخريطة التفاعلية</h2>
-        <p>إضافة موقع قفص أو موئل حيوان جديد على خريطة الحديقة</p>
+        <p>إضافة موقع جديد على خريطة الحديقة (أقفاص، خدمات، مطاعم)</p>
     </div>
 
     <!-- Main Container -->
@@ -312,8 +312,11 @@
                 </div>
                 <div class="form-group">
                     <label>فئة الموقع</label>
-                    <input type="text" class="form-input" value="أقفاص وموائل الحيوانات" readonly style="background:#F1F5F9;cursor:not-allowed;font-weight:700;">
-                    <input type="hidden" id="type" value="enclosure">
+                    <select id="type" class="form-input">
+                        <option value="enclosure">أقفاص وموائل الحيوانات</option>
+                        <option value="service">الخدمات والمرافق العامة</option>
+                        <option value="dining">المطاعم والمقاهي</option>
+                    </select>
                 </div>
             </div>
             
@@ -332,11 +335,6 @@
             <div class="form-group">
                 <label>انقر على نقطة في الخريطة لتحديد الإحداثيات الجغرافية بدقة:</label>
                 <div id="leafletSelectMap" style="height: 300px; border-radius: 12px; border: 1.5px solid var(--border); overflow: hidden; z-index: 1;"></div>
-            </div>
-
-            <div class="form-group">
-                <label>الوصف التعريفي بالموقع</label>
-                <textarea id="desc" class="form-input" rows="4" placeholder="اكتب نبذة أو وصفاً تعريفياً موجزاً عن هذا الموقع..."></textarea>
             </div>
 
             <!-- Action buttons inside the same container -->

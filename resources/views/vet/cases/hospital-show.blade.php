@@ -142,13 +142,6 @@
             </div>
         </div>
 
-        <h3 class="section-title" style="margin-top:2rem;">سبب الإحالة والملاحظات</h3>
-        <div style="display:flex; flex-direction:column; gap:1.5rem;">
-            <div>
-                <div class="info-cell-label">سبب الإحالة</div>
-                <div class="content-box">لوحظ خمول شديد ورفض لتناول وجبة اللحم لليوم الثاني على التوالي. هنالك جرح سطحي في الساق الخلفية اليمنى مع علامات التهاب أولية.</div>
-            </div>
-        </div>
     </div>
 
     {{-- TAB 2: Animal Data --}}
@@ -161,7 +154,7 @@
             </div>
             <div class="info-cell">
                 <div class="info-cell-label">المجموعة المرتبطة</div>
-                <div class="info-cell-value">القطط الكبرى</div>
+                <div class="info-cell-value">القططية</div>
             </div>
             <div class="info-cell">
                 <div class="info-cell-label">نوع الحيوان</div>

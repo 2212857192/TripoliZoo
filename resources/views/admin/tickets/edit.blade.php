@@ -5,10 +5,11 @@
 @php
 // Static demo ticket data based on id
 $tickets = [
-    '1' => ['name' => 'تذكرة الكبار', 'price' => '10.00', 'target' => 'كبار (فوق 12 سنة)', 'benefits' => 'الدخول العام للحديقة', 'active' => true],
-    '2' => ['name' => 'تذكرة الأطفال', 'price' => '5.00', 'target' => 'أطفال (3 - 12 سنة)', 'benefits' => 'الدخول العام للحديقة', 'active' => true],
-    '3' => ['name' => 'تذكرة كبار الشخصيات VIP', 'price' => '25.00', 'target' => 'العائلات وVIP', 'benefits' => 'سيارة جولف + مرشد', 'active' => true],
-    '4' => ['name' => 'تذكرة السياح الأجانب', 'price' => '50.00', 'target' => 'الزوار غير الليبيين', 'benefits' => 'مرشد سياحي خاص', 'active' => false],
+    '1' => ['name' => 'تذكرة الكبار', 'price' => '10.00', 'target' => 'كبار (فوق 12 سنة)', 'benefits' => 'الدخول العام للحديقة', 'nationality' => 'مواطن', 'age' => 'بالغ', 'active' => true],
+    '2' => ['name' => 'تذكرة الأطفال', 'price' => '5.00', 'target' => 'أطفال (3 - 12 سنة)', 'benefits' => 'الدخول العام للحديقة', 'nationality' => 'مواطن', 'age' => 'طفل', 'active' => true],
+    '3' => ['name' => 'تذكرة كبار الشخصيات VIP', 'price' => '25.00', 'target' => 'العائلات وVIP', 'benefits' => 'سيارة جولف + مرشد', 'nationality' => 'مواطن', 'age' => 'بالغ', 'active' => true],
+    '4' => ['name' => 'تذكرة السياح الأجانب', 'price' => '50.00', 'target' => 'الزوار غير الليبيين', 'benefits' => 'مرشد سياحي خاص', 'nationality' => 'أجنبي', 'age' => 'بالغ', 'active' => false],
+    '5' => ['name' => 'تذكرة الطلاب', 'price' => '7.00', 'target' => 'طلاب المدارس والجامعات', 'benefits' => 'الدخول العام — يُطلب إبراز بطاقة طالب', 'nationality' => 'مواطن', 'age' => 'طالب', 'active' => true],
 ];
 $ticket = $tickets[$id] ?? $tickets['1'];
 @endphp
@@ -326,6 +327,17 @@ $ticket = $tickets[$id] ?? $tickets['1'];
                     <label>الفئة المستهدفة بالدخول</label>
                     <input type="text" id="target" class="form-input" value="{{ $ticket['target'] }}" disabled style="background:#F1F5F9;cursor:not-allowed;">
                 </div>
+                <div class="form-group">
+                    <label>نوع الزائر</label>
+                    <input type="text" id="nationality" class="form-input" value="{{ $ticket['nationality'] }}" disabled style="background:#F1F5F9;cursor:not-allowed;font-weight:700;">
+                </div>
+                <div class="form-group">
+                    <label>العمر</label>
+                    <input type="text" id="age" class="form-input" value="{{ $ticket['age'] }}" disabled style="background:#F1F5F9;cursor:not-allowed;font-weight:700;">
+                </div>
+            </div>
+
+            <div class="form-row">
                 <div class="form-group">
                     <label>الخدمات والمزايا المشمولة</label>
                     <input type="text" id="benefits" class="form-input" value="{{ $ticket['benefits'] }}" disabled style="background:#F1F5F9;cursor:not-allowed;">

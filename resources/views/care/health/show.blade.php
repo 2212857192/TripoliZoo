@@ -229,7 +229,7 @@
             </div>
             <div class="info-item">
                 <div class="info-item-label">المجموعة</div>
-                <div class="info-item-value">{{ $id == 3 ? 'الطيور' : ($id == 4 ? 'العواشب' : 'السباع') }}</div>
+                <div class="info-item-value">{{ $id == 3 ? 'الطيور' : ($id == 4 ? 'الغزلان' : 'القططية') }}</div>
             </div>
             
             <div class="info-item">

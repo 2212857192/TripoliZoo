@@ -128,25 +128,37 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
     .img-preview-wrap {
         display:none; border-radius:14px; overflow:hidden;
         border:1.5px solid var(--border); position:relative;
+        background:#FAFBFC;
     }
     .img-preview-wrap.show { display:block; }
-    .img-preview-wrap img  { width:100%; max-height:220px; object-fit:cover; display:block; }
-
-    .img-remove-btn {
-        position:absolute; top:8px; left:8px;
-        width:28px; height:28px;
-        background:rgba(239,68,68,.9); color:white;
-        border:none; border-radius:6px; font-size:1rem; cursor:pointer;
-        display:flex; align-items:center; justify-content:center; transition:all .2s;
+    .img-preview-wrap img {
+        width:100%; max-height:320px; height:auto;
+        object-fit:contain; display:block; margin:0 auto;
     }
-    .img-remove-btn:hover { background:#DC2626; }
 
-    .img-slot-label {
-        position:absolute; bottom:0; left:0; right:0;
-        padding:8px 12px; background:rgba(0,0,0,.45);
-        color:white; font-size:.75rem; font-weight:700;
-        backdrop-filter:blur(4px);
+    .img-preview-actions {
+        display:flex; gap:8px; padding:10px 12px;
+        border-top:1px solid var(--border); background:white;
     }
+
+    .img-change-btn {
+        flex:1; padding:9px 12px;
+        background:rgba(45,90,39,.08); color:#1e3a1e;
+        border:1.5px solid rgba(45,90,39,.2); border-radius:10px;
+        font-family:'Cairo',sans-serif; font-weight:700; font-size:.82rem;
+        cursor:pointer; transition:all .2s;
+        display:flex; align-items:center; justify-content:center; gap:6px;
+    }
+    .img-change-btn:hover { background:rgba(45,90,39,.14); }
+
+    .img-remove-inline {
+        padding:9px 14px;
+        background:rgba(239,68,68,.08); color:#DC2626;
+        border:1.5px solid rgba(239,68,68,.25); border-radius:10px;
+        font-family:'Cairo',sans-serif; font-weight:700; font-size:.82rem;
+        cursor:pointer; transition:all .2s;
+    }
+    .img-remove-inline:hover { background:rgba(239,68,68,.15); }
 
     /* ── Action buttons ── */
     .btn-save {
@@ -251,8 +263,9 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
         </div>
         <div class="bottom-card-body">
             <div class="image-slot">
-                <div class="upload-zone" id="uploadZone" @if($animal['img']) style="display:none" @endif>
-                    <input type="file" id="imgInput" accept="image/*" onchange="previewImg(this)">
+                <input type="file" id="imgInput" accept="image/*" onchange="previewImg(this)" hidden>
+
+                <div class="upload-zone" id="uploadZone" @if($animal['img']) style="display:none" @endif onclick="document.getElementById('imgInput').click()">
                     <div class="upload-zone-icon">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
                     </div>
@@ -263,8 +276,13 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
 
                 <div class="img-preview-wrap @if($animal['img']) show @endif" id="imgPreviewWrap">
                     <img id="imgPreview" src="{{ $animal['img'] ?: '' }}" alt="{{ $animal['name'] }}">
-                    <button type="button" class="img-remove-btn" onclick="removeImg()" title="حذف الصورة">×</button>
-                    <div class="img-slot-label" id="imgSlotLabel">📷 صورة الحيوان</div>
+                    <div class="img-preview-actions">
+                        <button type="button" class="img-change-btn" onclick="document.getElementById('imgInput').click()">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            تغيير الصورة
+                        </button>
+                        <button type="button" class="img-remove-inline" onclick="removeImg()">حذف</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -313,7 +331,6 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
                 document.getElementById('imgPreview').src = e.target.result;
                 document.getElementById('imgPreviewWrap').classList.add('show');
                 document.getElementById('uploadZone').style.display = 'none';
-                document.getElementById('imgSlotLabel').textContent = '📷 صورة جديدة';
             };
             reader.readAsDataURL(input.files[0]);
         }
@@ -331,6 +348,17 @@ $animal = $animals[$id ?? '1'] ?? $animals['1'];
     uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
     uploadZone.addEventListener('drop', e => {
         e.preventDefault(); uploadZone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const dt = new DataTransfer(); dt.items.add(file);
+            const inp = document.getElementById('imgInput'); inp.files = dt.files;
+            previewImg(inp);
+        }
+    });
+
+    document.getElementById('imgPreviewWrap').addEventListener('dragover', e => { e.preventDefault(); });
+    document.getElementById('imgPreviewWrap').addEventListener('drop', e => {
+        e.preventDefault();
         const file = e.dataTransfer.files[0];
         if (file && file.type.startsWith('image/')) {
             const dt = new DataTransfer(); dt.items.add(file);

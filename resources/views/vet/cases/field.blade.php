@@ -49,16 +49,6 @@
     .btn-tbl { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:9px; border:1px solid #e2e8f0; background:#f8fafc; color:#475569; text-decoration:none; transition:all 0.2s; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,0.05); }
     .btn-tbl:hover { transform:translateY(-1px); box-shadow:0 3px 8px rgba(0,0,0,0.1); background:#e2e8f0; border-color:#cbd5e1; color:#0f172a; }
     .btn-tbl.view:hover { color: #0284C7; background: #E0F2FE; border-color: #BAE6FD; }
-
-    .animal-thumb {
-        width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
-        background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
-        border: 1.5px solid #bbf7d0;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.35rem; overflow: hidden;
-    }
-    .animal-name { font-weight: 800; color: #0f172a; line-height: 1.3; }
-    .cell-animal { display: flex; align-items: center; gap: 10px; }
 </style>
 @endsection
 
@@ -82,18 +72,17 @@
             <input type="text" placeholder="بحث برقم الحيوان أو نوعه..." style="width: 100%; padding: 10px 35px 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 600; outline: none; color: #0f172a;">
         </div>
         <select style="flex: 1; padding: 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; color: #475569; font-weight: 600; outline: none;">
-            <option>جميع المجموعات</option>
-            <option>القطط الكبرى</option>
-            <option>الطيور</option>
-            <option>الزواحف</option>
-            <option>الرئيسيات</option>
+                        @include('partials.animal-group-options', ['emptyLabel' => 'جميع المجموعات'])
         </select>
-        <select style="flex: 1; padding: 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; color: #475569; font-weight: 600; outline: none;">
-            <option>جميع التواريخ</option>
-            <option>اليوم</option>
-            <option>آخر 7 أيام</option>
-            <option>آخر 30 يوم</option>
-        </select>
+        @include('partials.date-filter', [
+            'filterId' => 'fieldDateFilter',
+            'selectClass' => '',
+            'wrapperStyle' => 'flex: 1;',
+            'selectStyle' => 'width: 100%; padding: 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: Cairo, sans-serif; font-size: 0.9rem; color: #475569; font-weight: 600; outline: none;',
+            'showWeek' => false,
+            'showLast7' => true,
+            'showLast30' => true,
+        ])
     </div>
 </div>
 
@@ -107,9 +96,7 @@
             <table class="custom-table">
                 <thead>
                     <tr>
-                        <th>اسم الحيوان</th>
-                        <th>صورة</th>
-                        <th>رقم الحيوان</th>
+                        <th>الحيوان</th>
                         <th>نوع الحيوان</th>
                         <th>المجموعة</th>
                         <th>تاريخ فتح الحالة</th>
@@ -119,44 +106,38 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><span class="animal-name">كوكو</span></td>
-                        <td><div class="animal-thumb">🐒</div></td>
-                        <td><span class="case-id case-id-open">#ANL-0871</span></td>
+                        @include('partials.animal-table-cell', ['name' => 'كوكو', 'emoji' => '🐒', 'animalId' => '#ANL-0871'])
                         <td>شمبانزي أفريقي</td>
                         <td>القرود</td>
                         <td>2026-05-13</td>
                         <td>2026-06-02</td>
                         <td>
                             <a href="{{ $vetBase }}/cases/field/FC-2026-001" class="btn-tbl view" title="عرض التفاصيل">
-                                @include('partials.icon-chevron-view')
+                                @include('partials.icon-eye-view')
                             </a>
                         </td>
                     </tr>
                     <tr>
-                        <td style="color:#94a3b8;font-weight:600;">—</td>
-                        <td><div class="animal-thumb">🦒</div></td>
-                        <td><span class="case-id case-id-open">#ANM-154</span></td>
+                        @include('partials.animal-table-cell', ['emoji' => '🦒', 'animalId' => '#ANM-154'])
                         <td>زرافة نيلية</td>
-                        <td>العناقيد الكبرى</td>
+                        <td>الثدييات الكبيرة</td>
                         <td>2026-05-20</td>
                         <td>2026-06-01</td>
                         <td>
                             <a href="{{ $vetBase }}/cases/field/FC-2026-002" class="btn-tbl view" title="عرض التفاصيل">
-                                @include('partials.icon-chevron-view')
+                                @include('partials.icon-eye-view')
                             </a>
                         </td>
                     </tr>
                     <tr>
-                        <td><span class="animal-name">سيمبا</span></td>
-                        <td><div class="animal-thumb">🦁</div></td>
-                        <td><span class="case-id case-id-open">#ANM-220</span></td>
+                        @include('partials.animal-table-cell', ['name' => 'سيمبا', 'emoji' => '🦁', 'animalId' => '#ANM-220'])
                         <td>أسد إفريقي</td>
-                        <td>القطط الكبرى</td>
+                        <td>القططية</td>
                         <td>2026-06-01</td>
                         <td>2026-06-05</td>
                         <td>
                             <a href="{{ $vetBase }}/cases/field/FC-2026-003" class="btn-tbl view" title="عرض التفاصيل">
-                                @include('partials.icon-chevron-view')
+                                @include('partials.icon-eye-view')
                             </a>
                         </td>
                     </tr>
@@ -176,9 +157,7 @@
             <table class="custom-table">
                 <thead>
                     <tr>
-                        <th>اسم الحيوان</th>
-                        <th>صورة</th>
-                        <th>رقم الحيوان</th>
+                        <th>الحيوان</th>
                         <th>نوع الحيوان</th>
                         <th>المجموعة</th>
                         <th>تاريخ فتح الحالة</th>
@@ -188,44 +167,38 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><span class="animal-name">صقر</span></td>
-                        <td><div class="animal-thumb">🦅</div></td>
-                        <td><span class="case-id case-id-closed">#ANM-088</span></td>
+                        @include('partials.animal-table-cell', ['name' => 'صقر', 'emoji' => '🦅', 'animalId' => '#ANM-088'])
                         <td>نسر ذهبي</td>
                         <td>الطيور</td>
                         <td>2025-05-10</td>
                         <td>2025-05-25</td>
                         <td>
                             <a href="{{ $vetBase }}/cases/field/FC-2025-088" class="btn-tbl view" title="عرض التفاصيل">
-                                @include('partials.icon-chevron-view')
+                                @include('partials.icon-eye-view')
                             </a>
                         </td>
                     </tr>
                     <tr>
-                        <td><span class="animal-name">توم</span></td>
-                        <td><div class="animal-thumb">🐘</div></td>
-                        <td><span class="case-id case-id-closed">#ANM-045</span></td>
+                        @include('partials.animal-table-cell', ['name' => 'توم', 'emoji' => '🐘', 'animalId' => '#ANM-045'])
                         <td>فيل إفريقي</td>
-                        <td>الفيلة</td>
+                        <td>الثدييات الكبيرة</td>
                         <td>2025-04-02</td>
                         <td>2025-04-18</td>
                         <td>
                             <a href="{{ $vetBase }}/cases/field/FC-2025-045" class="btn-tbl view" title="عرض التفاصيل">
-                                @include('partials.icon-chevron-view')
+                                @include('partials.icon-eye-view')
                             </a>
                         </td>
                     </tr>
                     <tr>
-                        <td style="color:#94a3b8;font-weight:600;">—</td>
-                        <td><div class="animal-thumb">🦁</div></td>
-                        <td><span class="case-id case-id-closed">#ANM-033</span></td>
+                        @include('partials.animal-table-cell', ['emoji' => '🦁', 'animalId' => '#ANM-033'])
                         <td>أنثى أسد</td>
-                        <td>القطط الكبرى</td>
+                        <td>القططية</td>
                         <td>2025-03-15</td>
                         <td>2025-03-28</td>
                         <td>
                             <a href="{{ $vetBase }}/cases/field/FC-2025-033" class="btn-tbl view" title="عرض التفاصيل">
-                                @include('partials.icon-chevron-view')
+                                @include('partials.icon-eye-view')
                             </a>
                         </td>
                     </tr>

@@ -191,6 +191,19 @@
     border-color: #ea580c; box-shadow: 0 0 0 3px rgba(234,88,12,0.1); background: #fff;
 }
 .form-textarea { resize: vertical; min-height: 90px; }
+.modal-box.wide { max-width: 680px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-grid.col-3 { grid-template-columns: 1fr 1fr 1fr; }
+.modal-section { margin-bottom: 1.25rem; }
+.modal-section-title { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem; padding-bottom: 8px; border-bottom: 2px solid #f1f5f9; }
+.modal-section-title .sec-icon { width: 30px; height: 30px; border-radius: 8px; background: #ffedd5; color: #c2410c; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.age-toggle { display: flex; border: 1.5px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+.age-toggle-btn { flex: 1; padding: 9px 10px; text-align: center; cursor: pointer; font-family: 'Cairo', sans-serif; font-size: 0.78rem; font-weight: 700; color: #64748b; background: #f8fafc; border: none; border-left: 1px solid #e2e8f0; transition: all 0.2s; }
+.age-toggle-btn:last-child { border-left: none; }
+.age-toggle-btn.active { background: #7c2d12; color: #fff; }
+.cond-block { display: none; flex-direction: column; gap: 1rem; margin-top: 0.75rem; }
+.cond-block.visible { display: flex; }
+.form-input.generated { background: #f0fdf4; color: #16a34a; font-weight: 800; border-color: #bbf7d0; }
 .btn-submit {
     padding: 9px 22px;
     background: linear-gradient(135deg, #431407, #c2410c);
@@ -429,18 +442,18 @@
 
 {{-- ═══ EDIT MODAL ═══ --}}
 <div class="modal-backdrop" id="editModal">
-    <div class="modal-box">
+    <div class="modal-box wide">
         <div class="modal-header">
             <h3>✏️ تعديل بيانات رعد</h3>
             <button class="modal-close" onclick="closeModal('editModal')">✕</button>
         </div>
         <div class="modal-body">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-                <div class="form-group">
+            <div class="form-grid">
+                <div class="form-group" style="margin-bottom:0;">
                     <label>نوع الحيوان</label>
                     <input type="text" class="form-input" value="نمر بنغالي">
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom:0;">
                     <label>الجنس</label>
                     <select class="form-select">
                         <option selected>ذكر</option>
@@ -448,11 +461,58 @@
                         <option>غير محدد</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>العمر التقريبي</label>
-                    <input type="text" class="form-input" value="4 سنوات">
+            </div>
+
+            <div class="modal-section">
+                <div class="modal-section-title">
+                    <div class="sec-icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    بيانات العمر
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom:0.75rem;">
+                    <label>طريقة تحديد العمر <span style="color:#ef4444;">*</span></label>
+                    <div class="age-toggle">
+                        <button type="button" class="age-toggle-btn" id="editBtnBirth" onclick="setAge('edit','birth')">📅 تاريخ ميلاد معروف</button>
+                        <button type="button" class="age-toggle-btn active" id="editBtnApprox" onclick="setAge('edit','approx')">🔢 عمر تقريبي عند التسجيل</button>
+                    </div>
+                </div>
+                <div class="cond-block" id="editBlockBirth">
+                    <div class="form-grid">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>تاريخ الميلاد <span style="color:#ef4444;">*</span></label>
+                            <input type="date" class="form-input" id="edit_birthDate" value="2022-06-01">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0; align-self:end;">
+                            <label style="color:#64748b;">العمر المحسوب</label>
+                            <input type="text" class="form-input generated" id="edit_computedAge" value="4 سنوات" disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="cond-block visible" id="editBlockApprox">
+                    <div class="form-grid col-3">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>العمر التقريبي عند التسجيل <span style="color:#ef4444;">*</span></label>
+                            <input type="number" class="form-input" id="edit_approxValue" value="4" min="1">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>وحدة العمر <span style="color:#ef4444;">*</span></label>
+                            <select class="form-select" id="edit_approxUnit">
+                                <option>أيام</option>
+                                <option>أشهر</option>
+                                <option selected>سنوات</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label style="color:#64748b;">العمر الحالي التقريبي</label>
+                            <input type="text" class="form-input generated" id="edit_currentApproxAge" value="4 سنوات" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group" style="margin-bottom:0;">
                     <label>مصدر الحيوان</label>
                     <input type="text" class="form-input" value="حديقة حيوان تونس">
                 </div>
@@ -508,9 +568,23 @@
 @section('scripts')
 <script>
 function openReleaseModal() { document.getElementById('releaseModal').classList.add('open'); }
-function openEditModal()    { document.getElementById('editModal').classList.add('open'); }
+function openEditModal()    { setAge('edit', 'approx'); document.getElementById('editModal').classList.add('open'); }
 function openEndModal()     { document.getElementById('endModal').classList.add('open'); }
 function closeModal(id)     { document.getElementById(id).classList.remove('open'); }
+
+function setAge(prefix, method) {
+    ['Birth', 'Approx'].forEach(m => {
+        document.getElementById(prefix + 'Btn' + m).classList.remove('active');
+        const block = document.getElementById(prefix + 'Block' + m);
+        block.classList.remove('visible');
+        block.style.display = 'none';
+    });
+    document.getElementById(prefix + 'Btn' + (method === 'birth' ? 'Birth' : 'Approx')).classList.add('active');
+    const active = document.getElementById(prefix + 'Block' + (method === 'birth' ? 'Birth' : 'Approx'));
+    active.classList.add('visible');
+    active.style.display = 'flex';
+}
+
 document.querySelectorAll('.modal-backdrop').forEach(function(b) {
     b.addEventListener('click', function(e) { if (e.target === b) b.classList.remove('open'); });
 });

@@ -42,21 +42,9 @@
             <option>أخرى</option>
         </select>
         <select class="filter-select">
-            <option value="">كل المجموعات</option>
-            <option>القططية</option>
-            <option>الطيور</option>
-            <option>الزواحف</option>
-            <option>الغزلان</option>
-            <option>القرود</option>
-            <option>الثدييات الصغيرة</option>
-            <option>الثدييات الكبيرة</option>
-            <option>الدب واللامة</option>
+                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
         </select>
-        <select class="filter-select">
-            <option value="">كل التواريخ</option>
-            <option>هذا الشهر</option>
-            <option>هذا العام</option>
-        </select>
+        @include('partials.date-filter', ['showWeek' => false, 'showMonth' => true, 'showYear' => true])
     </div>
 </div>
 
@@ -68,8 +56,7 @@
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>رقم الحيوان</th>
-                    <th>اسم الحيوان</th>
+                    <th>الحيوان</th>
                     <th>النوع</th>
                     <th>المجموعة</th>
                     <th>الجنس</th>
@@ -82,8 +69,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>#ANM-0520</td>
-                    <td>لونا</td>
+                    @include('partials.animal-table-cell', ['name' => 'لونا', 'emoji' => '🦙', 'animalId' => '#ANM-0520', 'sub' => 'لاما'])
                     <td>لاما</td>
                     <td>الدب واللامة</td>
                     <td>أنثى</td>
@@ -98,8 +84,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>#ANM-0488</td>
-                    <td>—</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🦜', 'animalId' => '#ANM-0488', 'sub' => 'ببغاء أفريقي رمادي'])
                     <td>ببغاء أفريقي رمادي</td>
                     <td>الطيور</td>
                     <td>ذكر</td>
@@ -114,8 +99,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>—</td>
-                    <td>—</td>
+                    @include('partials.animal-table-cell', ['emoji' => '🐍', 'sub' => 'ثعبان ملكي'])
                     <td>ثعبان ملكي</td>
                     <td>الزواحف</td>
                     <td>أنثى</td>
@@ -128,8 +112,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>#ANM-0330</td>
-                    <td>رجو</td>
+                    @include('partials.animal-table-cell', ['name' => 'رجو', 'emoji' => '🦌', 'animalId' => '#ANM-0330', 'sub' => 'غزال الريم'])
                     <td>غزال الريم</td>
                     <td>الغزلان</td>
                     <td>ذكر</td>

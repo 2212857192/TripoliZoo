@@ -231,10 +231,6 @@
                     </div>
                 </div>
 
-                <h3 class="section-title">سبب الإحالة</h3>
-                <div class="content-box" id="sReason">—</div>
-            </div>
-
             <div class="notes-panel">
                 <div class="notes-panel-title">الملاحظات المسجلة عن الحيوان</div>
                 <div class="notes-panel-body" id="sNotes">—</div>
@@ -261,7 +257,7 @@
             reason: 'إصابة في الطرف الأمامي مع التهاب موضعي يستدعي الرعاية داخل المستشفى.',
             notes: 'تم نقل الحيوان من حظيرة الأسود الرئيسية. يُراقب الشهية والحركة يومياً. آخر وزن: 185 كغ.',
             animalId: '#ANM-101', animalType: 'أسد إفريقي', animalName: 'سيمبا', mark: '',
-            animalEmoji: '🦁', gender: 'ذكر', age: '6 سنوات', group: 'القطط الكبرى',
+            animalEmoji: '🦁', gender: 'ذكر', age: '6 سنوات', group: 'القططية',
             admissionDate: '2026-05-30', dischargeDate: '',
             followUps: [
                 {
@@ -285,7 +281,7 @@
             reason: 'خمول ورفض جزئي للطعام مع إصابة في الساق الخلفية.',
             notes: 'الحيوان تحت المراقبة المستمرة. يحتاج دعم غذائي.',
             animalId: '#ANM-154', animalType: 'زرافة نيلية', animalName: 'جميلة', mark: 'بقع بنية على الرقبة',
-            animalEmoji: '🦒', gender: 'أنثى', age: '4 سنوات', group: 'العناقيد الكبرى',
+            animalEmoji: '🦒', gender: 'أنثى', age: '4 سنوات', group: 'الغزلان',
             admissionDate: '2026-06-02', dischargeDate: '',
             followUps: [
                 { date: '2026-06-04', vet: 'د. فاطمة الزهراء', diagnosis: 'تحسن طفيف في الشهية.', treatment: 'مكملات غذائية ومسكنات.', note: '', nutrition: null }
@@ -309,7 +305,7 @@
             reason: 'التهاب معوي حاد.',
             notes: 'تم استلام الحيوان من مسؤول المجموعة.',
             animalId: '#ANM-042', animalType: 'شمبانزي', animalName: 'بونغو', mark: '',
-            animalEmoji: '🐒', gender: 'ذكر', age: '8 سنوات', group: 'الرئيسيات',
+            animalEmoji: '🐒', gender: 'ذكر', age: '8 سنوات', group: 'القرود',
             admissionDate: '2026-05-10', dischargeDate: '2026-05-20',
             followUps: [
                 { date: '2026-05-20', vet: 'د. خالد العربي', diagnosis: 'شفاء تام.', treatment: 'إيقاف العلاج.', note: 'خروج بعد العلاج.', nutrition: null }
@@ -398,7 +394,6 @@
         document.getElementById('sAge').textContent = d.age;
         document.getElementById('sGroup').textContent = d.group;
         document.getElementById('sAdmissionDate').textContent = d.admissionDate;
-        document.getElementById('sReason').textContent = d.reason;
         document.getElementById('sNotes').textContent = d.notes;
 
         if (d.animalName) {
