@@ -13,9 +13,12 @@ class TicketCartProvider extends ChangeNotifier {
   };
 
   final List<PurchasedTicket> _purchased = [];
+  List<PurchasedTicket> _lastPurchaseTickets = [];
 
   Map<String, int> get cart => Map.unmodifiable(_cart);
   List<PurchasedTicket> get purchasedTickets => List.unmodifiable(_purchased);
+  List<PurchasedTicket> get lastPurchaseTickets =>
+      List.unmodifiable(_lastPurchaseTickets);
 
   int get totalVisitors => _cart.values.fold(0, (a, b) => a + b);
 
@@ -46,18 +49,41 @@ class TicketCartProvider extends ChangeNotifier {
     }
   }
 
-  PurchasedTicket? purchase() {
-    if (totalPrice <= 0) return null;
-    final ticket = PurchasedTicket(
-      id: 'ZL-${DateTime.now().millisecondsSinceEpoch}',
-      qrData: 'TRIPOLI-ZOO-${DateTime.now().millisecondsSinceEpoch}',
-      visitDate: selectedDate,
-      items: Map.from(_cart),
-      totalPrice: totalPrice,
-      purchasedAt: DateTime.now(),
-    );
-    _purchased.add(ticket);
+  List<PurchasedTicket> purchase() {
+    if (totalVisitors == 0) return const [];
+
+    final purchasedAt = DateTime.now();
+    final batchId = purchasedAt.microsecondsSinceEpoch;
+    final created = <PurchasedTicket>[];
+    var sequence = 1;
+
+    for (final entry in _cart.entries) {
+      final type = TicketData.byId(entry.key);
+      if (type == null) continue;
+
+      for (var index = 0; index < entry.value; index++) {
+        final serial = sequence.toString().padLeft(2, '0');
+        created.add(
+          PurchasedTicket(
+            id: 'ZL-$batchId-$serial',
+            qrData: 'TRIPOLI-ZOO-$batchId-$serial-${type.id}',
+            visitDate: selectedDate,
+            typeId: type.id,
+            typeTitle: type.title,
+            price: type.price,
+            purchasedAt: purchasedAt,
+          ),
+        );
+        sequence++;
+      }
+    }
+
+    _lastPurchaseTickets = created;
+    _purchased.addAll(created);
+    for (final id in _cart.keys) {
+      _cart[id] = 0;
+    }
     notifyListeners();
-    return ticket;
+    return List.unmodifiable(created);
   }
 }

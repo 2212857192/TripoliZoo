@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
 import 'package:tripolizoo/shared/constants/app_constants.dart';
@@ -21,6 +22,16 @@ class AuthLayout extends StatelessWidget {
     this.onBack,
   });
 
+  void _handleBack(BuildContext context) {
+    if (onBack != null) {
+      onBack!();
+    } else if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go('/login');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final topPad = MediaQuery.of(context).padding.top;
@@ -90,7 +101,7 @@ class AuthLayout extends StatelessWidget {
                         right: 20,
                         child: _CircleIconButton(
                           icon: Icons.arrow_forward_ios_rounded,
-                          onTap: onBack ?? () => Navigator.pop(context),
+                          onTap: () => _handleBack(context),
                         ),
                       ),
                     // عنوان على الهيرو
@@ -113,7 +124,7 @@ class AuthLayout extends StatelessWidget {
                           const SizedBox(height: 6),
                           Text(
                             title,
-                            style: GoogleFonts.amiri(
+                            style: GoogleFonts.cairo(
                               fontSize: 34,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,

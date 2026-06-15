@@ -135,7 +135,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             const SizedBox(height: 16),
             TextButton(
-              onPressed: () => context.pop(),
+              onPressed: () => context.go('/login'),
               child: const Text('لديك حساب؟ تسجيل الدخول'),
             ),
           ],

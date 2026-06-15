@@ -6,9 +6,15 @@ import 'package:tripolizoo/shared/constants/app_colors.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/domain/animal.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/data/animal_repository.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/presentation/animals_explore_screen.dart';
+import 'package:tripolizoo/shared/utils/localized_text.dart';
 
 class QrScannerScreen extends StatefulWidget {
-  const QrScannerScreen({super.key});
+  const QrScannerScreen({
+    super.key,
+    this.requestCameraPermission,
+  });
+
+  final Future<bool> Function()? requestCameraPermission;
 
   @override
   State<QrScannerScreen> createState() => _QrScannerScreenState();
@@ -28,10 +34,12 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   }
 
   Future<void> _requestPermission() async {
-    final status = await Permission.camera.request();
+    final isGranted = widget.requestCameraPermission != null
+        ? await widget.requestCameraPermission!()
+        : (await Permission.camera.request()).isGranted;
     if (mounted) {
       setState(() {
-        _permissionGranted = status.isGranted;
+        _permissionGranted = isGranted;
         _checkingPermission = false;
       });
     }
@@ -60,7 +68,15 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(
-          animal != null ? 'تم التعرف على الحيوان!' : 'تم المسح بنجاح',
+          animal != null
+              ? context.localized(
+                  ar: 'تم التعرف على الحيوان!',
+                  en: 'Animal identified!',
+                )
+              : context.localized(
+                  ar: 'تم المسح بنجاح',
+                  en: 'Scan completed',
+                ),
           textAlign: TextAlign.center,
         ),
         content: Column(
@@ -69,7 +85,8 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
             if (animal != null) ...[
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Image.asset(animal.image, height: 120, fit: BoxFit.cover),
+                child:
+                    Image.asset(animal.image, height: 120, fit: BoxFit.cover),
               ),
               const SizedBox(height: 12),
               Text(animal.name,
@@ -78,7 +95,10 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
               Text(animal.location,
                   style: const TextStyle(color: AppColors.accent)),
             ] else
-              Text('الكود: $code', textAlign: TextAlign.center),
+              Text(
+                '${context.localized(ar: 'الكود', en: 'Code')}: $code',
+                textAlign: TextAlign.center,
+              ),
           ],
         ),
         actions: [
@@ -93,7 +113,9 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                   ),
                 );
               },
-              child: const Text('عرض التفاصيل'),
+              child: Text(
+                context.localized(ar: 'عرض التفاصيل', en: 'View details'),
+              ),
             ),
           Center(
             child: ElevatedButton(
@@ -101,7 +123,9 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                 Navigator.pop(ctx);
                 _controller.start();
               },
-              child: const Text('مسح آخر'),
+              child: Text(
+                context.localized(ar: 'مسح آخر', en: 'Scan another'),
+              ),
             ),
           ),
         ],
@@ -113,7 +137,8 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   Widget build(BuildContext context) {
     if (_checkingPermission) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+        body:
+            Center(child: CircularProgressIndicator(color: AppColors.primary)),
       );
     }
 
@@ -131,14 +156,34 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.camera_alt_outlined, size: 64, color: Colors.grey),
+                const Icon(Icons.camera_alt_outlined,
+                    size: 64, color: Colors.grey),
                 const SizedBox(height: 16),
-                const Text('يحتاج التطبيق إذن الكاميرا لمسح QR',
-                    textAlign: TextAlign.center),
+                Text(
+                  context.localized(
+                    ar: 'يحتاج التطبيق إذن الكاميرا لمسح QR',
+                    en: 'Camera permission is required to scan QR codes',
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  context.localized(
+                    ar: 'امسح رمز الحيوان لاستكشاف معلوماته والتعرّف عليه.',
+                    en: 'Scan an animal code to explore its information and learn more about it.',
+                  ),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: AppColors.textSecondary),
+                ),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _requestPermission,
-                  child: const Text('منح الإذن'),
+                  child: Text(
+                    context.localized(
+                      ar: 'منح الإذن',
+                      en: 'Grant Permission',
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -227,10 +272,34 @@ class _Overlay extends StatelessWidget {
               gradient: AppColors.primaryGradient,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text(
-              'وجّه الكاميرا على QR Code الخاص بالحيوان',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  context.localized(
+                    ar: 'وجّه الكاميرا نحو رمز QR الخاص بالحيوان',
+                    en: 'Point the camera at the animal QR code',
+                  ),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  context.localized(
+                    ar: 'لاستكشاف معلومات الحيوان والتعرّف عليه.',
+                    en: 'Explore the animal information and learn more about it.',
+                  ),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.82),
+                    fontSize: 12,
+                    height: 1.5,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

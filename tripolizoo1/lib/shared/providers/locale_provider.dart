@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-enum AppLocale { ar, en, it }
+enum AppLocale { ar, en }
 
 class LocaleProvider extends ChangeNotifier {
   AppLocale _locale = AppLocale.ar;
@@ -13,16 +13,13 @@ class LocaleProvider extends ChangeNotifier {
         return 'AR';
       case AppLocale.en:
         return 'EN';
-      case AppLocale.it:
-        return 'IT';
     }
   }
 
   void cycleLocale() {
     _locale = switch (_locale) {
       AppLocale.ar => AppLocale.en,
-      AppLocale.en => AppLocale.it,
-      AppLocale.it => AppLocale.ar,
+      AppLocale.en => AppLocale.ar,
     };
     notifyListeners();
   }

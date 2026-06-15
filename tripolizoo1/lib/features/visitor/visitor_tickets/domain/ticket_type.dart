@@ -34,16 +34,36 @@ class PurchasedTicket {
   final String id;
   final String qrData;
   final DateTime visitDate;
-  final Map<String, int> items;
-  final double totalPrice;
+  final String typeId;
+  final String typeTitle;
+  final int price;
   final DateTime purchasedAt;
 
   const PurchasedTicket({
     required this.id,
     required this.qrData,
     required this.visitDate,
-    required this.items,
-    required this.totalPrice,
+    required this.typeId,
+    required this.typeTitle,
+    required this.price,
     required this.purchasedAt,
   });
+
+  String localizedTypeTitle(String languageCode) {
+    final isArabic = languageCode == 'ar';
+    return switch (typeId) {
+      'adult_ly' || 'adult_intl' => isArabic ? 'بالغ' : 'Adult',
+      'child_ly' || 'child_intl' => isArabic ? 'طفل' : 'Child',
+      'student' => isArabic ? 'طالب' : 'Student',
+      _ => typeTitle,
+    };
+  }
+
+  String localizedCategoryLabel(String languageCode) {
+    final isArabic = languageCode == 'ar';
+    final audience = typeId.endsWith('_intl')
+        ? (isArabic ? 'أجنبي' : 'Foreigner')
+        : (isArabic ? 'مواطن' : 'Citizen');
+    return '$audience (${localizedTypeTitle(languageCode)})';
+  }
 }

@@ -1,0 +1,45 @@
+Attached Element Context from Integrated Browser
+
+Element: span
+
+URL: http://127.0.0.1:8000/admin/dashboard
+
+HTML Path: aside.sidebar > div.sidebar-header > div.title > span
+
+Outer HTML:
+```html
+<span>نظام الإدارة المتكامل</span>
+```
+
+Dimensions:
+- top: 54px
+- left: 188px
+- width: 107px
+- height: 23px
+
+CSS:
+```css
+* { margin: 0; padding: 0; box-sizing: border-box; }
+.sidebar-header .title span { font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600; }
+
+/* Inherited */
+body { font-family: 'Cairo', sans-serif; color: var(--text-main) }
+
+/* Resolved values */
+margin: 0px;
+padding: 0px;
+box-sizing: border-box;
+color: rgb(100, 116, 139);
+display: inline;
+font-family: Cairo, sans-serif;
+font-size: 12px;
+font-weight: 600;
+height: auto;
+width: auto;
+
+/* CSS variables */
+--text-main: #1E293B;
+--text-muted: #64748B;
+```

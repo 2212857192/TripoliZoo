@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -5,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/data/animal_repository.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/domain/animal.dart';
+import 'package:tripolizoo/features/visitor/visitor_explore/presentation/animals_explore_screen.dart';
 import 'package:tripolizoo/shared/constants/app_constants.dart';
 import 'package:tripolizoo/shared/providers/locale_provider.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
@@ -21,9 +24,11 @@ class _HomeScreenState extends State<HomeScreen>
   late final AnimationController _fadeController;
   late final Animation<double> _fadeAnimation;
   final _repo = MockAnimalRepository();
+  final _scrollController = ScrollController();
 
   List<Animal> _animals = [];
   String _category = 'all';
+  bool _headerScrolled = false;
 
   static const _categories = [
     _CatChip('all', 'الكل', Icons.auto_awesome_rounded),
@@ -44,7 +49,15 @@ class _HomeScreenState extends State<HomeScreen>
       curve: Curves.easeOut,
     );
     _fadeController.forward();
+    _scrollController.addListener(_handleScroll);
     _loadAnimals();
+  }
+
+  void _handleScroll() {
+    final isScrolled = _scrollController.offset > 24;
+    if (isScrolled != _headerScrolled) {
+      setState(() => _headerScrolled = isScrolled);
+    }
   }
 
   Future<void> _loadAnimals() async {
@@ -60,6 +73,9 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void dispose() {
     _fadeController.dispose();
+    _scrollController
+      ..removeListener(_handleScroll)
+      ..dispose();
     super.dispose();
   }
 
@@ -69,200 +85,207 @@ class _HomeScreenState extends State<HomeScreen>
     final size = MediaQuery.of(context).size;
     final bottomPad = MediaQuery.of(context).padding.bottom;
     final heroHeight = size.height * 0.50;
-    const sheetOverlap = 88.0;
+    const sheetOverlap = 60.0;
     const sheetHeight = 296.0;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
+      value: _headerScrolled
+          ? SystemUiOverlayStyle.dark
+          : SystemUiOverlayStyle.light,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF4F3ED),
-        body: FadeTransition(
-          opacity: _fadeAnimation,
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    SizedBox(
-                      height: heroHeight,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Image.asset(
-                            'assets/images/main.PNG',
-                            fit: BoxFit.cover,
-                            alignment: Alignment.center,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.black.withValues(alpha: 0.12),
-                                  Colors.transparent,
-                                  Colors.black.withValues(alpha: 0.52),
-                                ],
-                                stops: const [0.0, 0.55, 1.0],
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            child: SafeArea(
-                              bottom: false,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    _GlassPill(
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Container(
-                                            width: 7,
-                                            height: 7,
-                                            decoration: const BoxDecoration(
-                                              color: Color(0xFFC5D639),
-                                              shape: BoxShape.circle,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            'مفتوح اليوم',
-                                            style: GoogleFonts.cairo(
-                                              color: Colors.black87,
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: locale.cycleLocale,
-                                      child: _GlassPill(
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Icon(
-                                              Icons.language_rounded,
-                                              color: Colors.black87,
-                                              size: 16,
-                                            ),
-                                            const SizedBox(width: 6),
-                                            Text(
-                                              locale.code,
-                                              style: GoogleFonts.cairo(
-                                                color: Colors.black87,
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w800,
-                                              ),
-                                            ),
-                                            const Icon(
-                                              Icons.keyboard_arrow_down_rounded,
-                                              color: Colors.black87,
-                                              size: 18,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            left: 20,
-                            right: 20,
-                            bottom: sheetOverlap + 8,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  '${AppConstants.appName.toUpperCase()} · حديقة ذكية',
-                                  style: GoogleFonts.cairo(
-                                    color: Colors.white.withValues(alpha: 0.88),
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 1.2,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: AlignmentDirectional.centerStart,
-                                  child: RichText(
-                                    textDirection: TextDirection.rtl,
-                                    text: TextSpan(
-                                      style: GoogleFonts.amiri(
-                                        fontSize: 42,
-                                        fontWeight: FontWeight.w700,
-                                        height: 1.1,
-                                      ),
-                                      children: const [
-                                        TextSpan(
-                                          text: 'استكشف الحياة البرية ',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        TextSpan(
-                                          text: 'اليوم.',
-                                          style: TextStyle(color: Color(0xFFC5D639)),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      left: 10,
-                      right: 10,
-                      top: heroHeight - sheetOverlap,
-                      child: _NavPanel(
-                        onQr: () => context.push('/qr-scanner'),
-                        onTour: () => context.push('/virtual-tour'),
-                        onMap: () => context.go('/map'),
-                        onVisitInfo: () => context.push('/visit-info'),
-                      ),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: sheetHeight - sheetOverlap + 16),
-
-                Padding(
-                  padding: EdgeInsets.fromLTRB(20, 0, 20, bottomPad + 100),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _DiscoverSection(
+        backgroundColor: Colors.white,
+        body: Stack(
+          children: [
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: CustomScrollView(
+                controller: _scrollController,
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  _buildHeroContent(
+                    heroHeight,
+                    sheetHeight,
+                    sheetOverlap,
+                  ),
+                  SliverPadding(
+                    padding: EdgeInsets.fromLTRB(20, 16, 20, bottomPad + 100),
+                    sliver: SliverToBoxAdapter(
+                      child: _DiscoverSection(
                         categories: _categories,
                         selected: _category,
                         animals: _filtered,
                         onCategoryTap: (id) => setState(() => _category = id),
                         onSeeAll: () => context.push('/animals'),
                       ),
-                      const SizedBox(height: 28),
-                      const _EmergencyCard(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: _buildLanguageHeader(locale),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeroContent(
+    double heroHeight,
+    double sheetHeight,
+    double sheetOverlap,
+  ) {
+    return SliverToBoxAdapter(
+      child: SizedBox(
+        height: heroHeight + sheetHeight - sheetOverlap,
+        child: Stack(
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: heroHeight,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    'assets/images/main.PNG',
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withValues(alpha: 0.12),
+                          Colors.transparent,
+                          Colors.black.withValues(alpha: 0.52),
+                        ],
+                        stops: const [0.0, 0.55, 1.0],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: 20,
+                    right: 20,
+                    bottom: sheetOverlap + 8,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${AppConstants.appName.toUpperCase()} · حديقة ذكية',
+                          style: GoogleFonts.cairo(
+                            color: Colors.white.withValues(alpha: 0.88),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: AlignmentDirectional.centerStart,
+                          child: RichText(
+                            textDirection: TextDirection.rtl,
+                            text: TextSpan(
+                              style: GoogleFonts.cairo(
+                                fontSize: 42,
+                                fontWeight: FontWeight.w700,
+                                height: 1.1,
+                              ),
+                              children: const [
+                                TextSpan(
+                                  text: 'استكشف الحياة البرية ',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                TextSpan(
+                                  text: 'اليوم.',
+                                  style: TextStyle(color: Color(0xFFC5D639)),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              left: 10,
+              right: 10,
+              top: heroHeight - sheetOverlap,
+              child: _NavPanel(
+                onQr: () => context.push('/qr-scanner'),
+                onTour: () => context.push('/virtual-tour'),
+                onMap: () => context.go('/map'),
+                onVisitInfo: () => context.push('/visit-info'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageHeader(LocaleProvider locale) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      decoration: BoxDecoration(
+        color: _headerScrolled ? Colors.white : Colors.transparent,
+        border: _headerScrolled
+            ? Border(
+                bottom: BorderSide(
+                  color: Colors.black.withValues(alpha: 0.06),
+                ),
+              )
+            : null,
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: SizedBox(
+          height: 64,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: GestureDetector(
+                onTap: locale.cycleLocale,
+                child: _GlassPill(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.language_rounded,
+                        color: Colors.black87,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        locale.code,
+                        style: GoogleFonts.cairo(
+                          color: Colors.black87,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: Colors.black87,
+                        size: 18,
+                      ),
                     ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -270,7 +293,6 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 }
-
 
 class _NavPanel extends StatelessWidget {
   const _NavPanel({
@@ -285,86 +307,108 @@ class _NavPanel extends StatelessWidget {
   final VoidCallback onMap;
   final VoidCallback onVisitInfo;
 
-  static const _sheetColor = Color(0xFFF4F3ED);
-
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: _sheetColor.withValues(alpha: 0.96),
         borderRadius: BorderRadius.circular(40),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
+            color: AppColors.primary.withValues(alpha: 0.055),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: SizedBox(
-          height: 260,
-          child: Column(
-            children: [
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(40),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.white.withValues(alpha: 0.78),
+                  Colors.white.withValues(alpha: 0.90),
+                  Colors.white,
+                ],
+                stops: const [0.0, 0.46, 1.0],
+              ),
+              borderRadius: BorderRadius.circular(40),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.65),
+                width: 1.2,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: SizedBox(
+                height: 260,
+                child: Column(
                   children: [
                     Expanded(
-                      child: _MenuTile(
-                        icon: Icons.qr_code_scanner_rounded,
-                        iconColor: const Color(0xFF2E7D32),
-                        iconBg: const Color(0xFFE8F5E9),
-                        title: 'ماسح QR',
-                        subtitle: 'امسح رمز أي حظيرة',
-                        onTap: onQr,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: _MenuTile(
+                              icon: Icons.qr_code_scanner_rounded,
+                              iconColor: const Color(0xFF2E7D32),
+                              iconBg: const Color(0xFFE8F5E9),
+                              title: 'ماسح QR',
+                              subtitle: 'امسح رمز أي حظيرة',
+                              onTap: onQr,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _MenuTile(
+                              icon: Icons.explore_outlined,
+                              iconColor: const Color(0xFF558B2F),
+                              iconBg: const Color(0xFFEDF5CE),
+                              title: 'جولة افتراضية',
+                              subtitle: 'بانوراما 360°',
+                              onTap: onTour,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(height: 8),
                     Expanded(
-                      child: _MenuTile(
-                        icon: Icons.explore_outlined,
-                        iconColor: const Color(0xFF558B2F),
-                        iconBg: const Color(0xFFEDF5CE),
-                        title: 'جولة افتراضية',
-                        subtitle: 'بانوراما 360°',
-                        onTap: onTour,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: _MenuTile(
+                              icon: Icons.map_outlined,
+                              iconColor: const Color(0xFF5D4037),
+                              iconBg: const Color(0xFFEFEBE9),
+                              title: 'خريطة تفاعلية',
+                              subtitle: 'توجيه حي',
+                              onTap: onMap,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _MenuTile(
+                              icon: Icons.access_time_rounded,
+                              iconColor: const Color(0xFF1B5E20),
+                              iconBg: const Color(0xFFE8F5E9),
+                              title: 'معلومات الزوار',
+                              subtitle: 'مفتوح 09:00 – 17:00',
+                              onTap: onVisitInfo,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: _MenuTile(
-                        icon: Icons.map_outlined,
-                        iconColor: const Color(0xFF5D4037),
-                        iconBg: const Color(0xFFEFEBE9),
-                        title: 'خريطة تفاعلية',
-                        subtitle: 'توجيه حي',
-                        onTap: onMap,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _MenuTile(
-                        icon: Icons.access_time_rounded,
-                        iconColor: const Color(0xFF1B5E20),
-                        iconBg: const Color(0xFFE8F5E9),
-                        title: 'معلومات الزوار',
-                        subtitle: 'مفتوح 09:00 – 17:00',
-                        onTap: onVisitInfo,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -419,7 +463,7 @@ class _DiscoverSection extends StatelessWidget {
                 ),
                 Text(
                   'اكتشف',
-                  style: GoogleFonts.amiri(
+                  style: GoogleFonts.cairo(
                     fontSize: 32,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
@@ -461,9 +505,7 @@ class _DiscoverSection extends StatelessWidget {
                     color: active ? _darkGreen : Colors.white,
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
-                      color: active
-                          ? _darkGreen
-                          : const Color(0xFFE5E7EB),
+                      color: active ? _darkGreen : const Color(0xFFE5E7EB),
                     ),
                   ),
                   child: Row(
@@ -480,7 +522,8 @@ class _DiscoverSection extends StatelessWidget {
                         style: GoogleFonts.cairo(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
-                          color: active ? Colors.white : const Color(0xFF374151),
+                          color:
+                              active ? Colors.white : const Color(0xFF374151),
                         ),
                       ),
                     ],
@@ -507,8 +550,7 @@ class _DiscoverSection extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   itemCount: animals.length,
                   separatorBuilder: (_, __) => const SizedBox(width: 14),
-                  itemBuilder: (context, i) =>
-                      _AnimalCard(animal: animals[i]),
+                  itemBuilder: (context, i) => _AnimalCard(animal: animals[i]),
                 ),
         ),
       ],
@@ -530,79 +572,88 @@ class _AnimalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => context.push('/animals'),
-      child: Container(
-        width: 158,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.12),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-          ],
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => Navigator.of(context, rootNavigator: true).push(
+          MaterialPageRoute<void>(
+            builder: (_) => AnimalDetailScreen(animal: animal),
+          ),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(28),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Image.asset(
-                animal.image,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  color: AppColors.primary,
-                  child: const Icon(Icons.pets, color: Colors.white38, size: 48),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.75),
-                    ],
-                    stops: const [0.45, 1.0],
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 14,
-                left: 14,
-                bottom: 16,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      _categoryLabel.toUpperCase(),
-                      style: GoogleFonts.cairo(
-                        color: Colors.white.withValues(alpha: 0.75),
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      animal.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.amiri(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        height: 1.1,
-                      ),
-                    ),
-                  ],
-                ),
+        borderRadius: BorderRadius.circular(28),
+        child: Ink(
+          width: 158,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.12),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
               ),
             ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(28),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.asset(
+                  animal.image,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    color: AppColors.primary,
+                    child:
+                        const Icon(Icons.pets, color: Colors.white38, size: 48),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.75),
+                      ],
+                      stops: const [0.45, 1.0],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: 14,
+                  left: 14,
+                  bottom: 16,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _categoryLabel.toUpperCase(),
+                        style: GoogleFonts.cairo(
+                          color: Colors.white.withValues(alpha: 0.75),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        animal.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.cairo(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          height: 1.1,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -654,9 +705,9 @@ class _MenuTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
+            color: AppColors.primary.withValues(alpha: 0.055),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -708,176 +759,6 @@ class _MenuTile extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _EmergencyCard extends StatelessWidget {
-  const _EmergencyCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ─ الأيقونة الجانبية ─
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFFFF1F2),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.warning_amber_rounded,
-                  color: Color(0xFFDC2626),
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 14),
-              // ─ النصوص ─
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'مركز الإرسال لحالات الطوارئ',
-                      style: GoogleFonts.cairo(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF881337),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'اضغط لطلب مساعدة فورية من الفريق الميداني',
-                      style: GoogleFonts.cairo(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF64748B),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          // ─ الأزرار ─
-          Row(
-            children: [
-              // ─ زر اطلب الأمن ─
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'تم إرسال طلب الأمن للموقع الحالي',
-                          style: GoogleFonts.cairo(fontWeight: FontWeight.w700),
-                        ),
-                        backgroundColor: AppColors.primary,
-                      ),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xFFF1F5F9),
-                        width: 1.5,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.security_rounded,
-                          color: AppColors.primary,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'اطلب الأمن',
-                          style: GoogleFonts.cairo(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              // ─ زر طلب الإسعاف ─
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'تم إرسال طلب الإسعاف للموقع الحالي',
-                          style: GoogleFonts.cairo(fontWeight: FontWeight.w700),
-                        ),
-                        backgroundColor: const Color(0xFFDC2626),
-                      ),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xFFF1F5F9),
-                        width: 1.5,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.medical_services_rounded,
-                          color: Color(0xFFDC2626),
-                          size: 18,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'طلب الإسعاف',
-                          style: GoogleFonts.cairo(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFFDC2626),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

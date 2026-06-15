@@ -26,6 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -51,6 +55,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>يحتاج التطبيق إلى الكاميرا لمسح رموز QR الخاصة بالحيوانات</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>يحتاج التطبيق إلى حفظ صور التذاكر في معرض الصور</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
