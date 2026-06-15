@@ -424,6 +424,7 @@
         }
 
     </style>
+    @include('partials.dashboard-shell-styles')
     @yield('styles')
 </head>
 <body>
@@ -504,45 +505,10 @@
     <main class="main-content">
         <!-- Top Navbar -->
         <header class="topbar">
-            <div class="topbar-right">
-                <div style="display:flex; align-items:center; justify-content:center; width:42px; height:42px; background:var(--green-light); color:var(--green); border-radius:12px;">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                </div>
-                <div class="page-title">
-                    <h1>@yield('page_title', 'لوحة التحكم')</h1>
-                    <div class="breadcrumb">
-                        السجلات والتوثيق <span>/</span> @yield('page_title', 'لوحة التحكم')
-                    </div>
-                </div>
-            </div>
-            
+            @include('partials.topbar-page-info', ['sectionLabel' => 'السجلات والتوثيق', 'defaultTitle' => 'لوحة التحكم'])
             <div class="topbar-actions">
-                <div style="display: flex; align-items: center; gap: 10px; padding-left: 15px; border-left: 1px solid var(--border);">
-                    <div style="text-align: left;">
-                        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-main); line-height: 1;">أ. فاطمة سالم</div>
-                        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">موظف قسم السجلات</span>
-                    </div>
-                    <div style="width:38px; height:38px; border-radius:10px; background:#f1f5f9; color:#1e293b; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1rem;">ف.س</div>
-                </div>
-                
-                <!-- Notification Dropdown -->
-                <div class="notification-dropdown-wrapper" style="position: relative;">
-                    <button class="action-btn" id="notificationBtn" onclick="toggleNotifications()" style="position: relative;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                        <span class="notification-badge" style="position: absolute; top: 8px; right: 8px; background: var(--orange); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 0 2px var(--white);"></span>
-                    </button>
-                    <div class="notification-dropdown" id="notificationMenu" style="display: none; position: absolute; left: 0; top: 54px; width: 340px; background: white; border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); z-index: 1000; padding: 18px;">
-                        <h4 style="font-size: 0.95rem; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 12px; color: var(--text-main); display:flex; justify-content:space-between; align-items:center;">
-                            الإشعارات
-                            <span style="background:#fef2f2; color:#ef4444; font-size:0.7rem; padding:2px 8px; border-radius:20px;">0 جديدة</span>
-                        </h4>
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <div style="font-size: 0.8rem; text-align:center; padding: 20px 0; color:var(--text-muted);">
-                                لا توجد إشعارات جديدة
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @include('partials.topbar-notifications', ['notificationCount' => 0])
+                @include('partials.topbar-user-menu', ['userName' => 'أ. فاطمة سالم', 'userEmail' => 'records@tripolizoo.com'])
             </div>
         </header>
 
@@ -553,6 +519,7 @@
     </main>
 
     @yield('scripts')
+    @include('partials.dashboard-shell-scripts')
     
     <script>
         document.getElementById('sidebarToggle').addEventListener('click', function() {
@@ -569,24 +536,6 @@
                 menu.style.display = 'none';
             }
         }
-
-        function toggleNotifications() {
-            const menu = document.getElementById('notificationMenu');
-            if (menu.style.display === 'none') {
-                menu.style.display = 'block';
-            } else {
-                menu.style.display = 'none';
-            }
-        }
-
-        // Close notifications on clicking outside
-        window.addEventListener('click', function(e) {
-            const btn = document.getElementById('notificationBtn');
-            const menu = document.getElementById('notificationMenu');
-            if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
-                menu.style.display = 'none';
-            }
-        });
     </script>
 </body>
 </html>

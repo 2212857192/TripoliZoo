@@ -29,8 +29,8 @@
     .tabs-container { background: #fff; border-radius: 16px; border: 1px solid var(--border); overflow: hidden; }
     .tabs-header { display: flex; background: #FAFBFC; border-bottom: 1px solid #e2e8f0; padding: 0 1rem; }
     .tab-btn { padding: 16px 24px; border: none; background: transparent; font-family: 'Cairo', sans-serif; font-size: 0.95rem; font-weight: 800; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
-    .tab-btn:hover { color: #0f172a; }
-    .tab-btn.active { color: #1a4a2e; border-bottom-color: #1a4a2e; background: #fff; }
+    .tab-btn:hover { color: var(--green); }
+    .tab-btn.active { color: var(--green); border-bottom-color: var(--green); background: #fff; }
 
     .tab-content { padding: 2rem; display: none; }
     .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }

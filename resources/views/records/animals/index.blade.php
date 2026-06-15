@@ -12,8 +12,17 @@
     .animal-id { font-family:'Courier New',monospace; font-size:0.8rem; background:#f8fafc; padding:3px 8px; border-radius:6px; color:#334155; font-weight:800; display:inline-block; border:1px solid #e2e8f0; }
     .animal-id.monitoring { color:#15803d; background:#f0fdf4; border-color:#bbf7d0; }
 
-    .btn-tbl.edit:hover { color:#16a34a; background:#f0fdf4; border-color:#bbf7d0; }
-    .btn-tbl.pdf:hover { color:#dc2626; background:#fef2f2; border-color:#fecaca; }
+    .animal-cell { display:flex; align-items:center; gap:10px; }
+    .animal-thumb {
+        width:40px; height:40px; border-radius:10px; flex-shrink:0;
+        background:linear-gradient(135deg,#E8F5E9,#C8E6C9);
+        border:1.5px solid #bbf7d0;
+        display:flex; align-items:center; justify-content:center;
+        font-size:1.25rem; overflow:hidden;
+    }
+    .animal-cell-name { font-weight:800; color:#0f172a; line-height:1.3; }
+    .animal-cell-sub { font-size:0.75rem; color:#64748b; font-weight:600; }
+    .source-tag { font-size:0.68rem; font-weight:800; padding:2px 7px; border-radius:6px; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; margin-top:3px; display:inline-block; }
 
     .page-header-actions { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
     .btn-add {
@@ -174,81 +183,171 @@
         <table class="custom-table">
             <thead>
                 <tr>
+                    <th>الحيوان</th>
                     <th>رقم الحيوان</th>
-                    <th>اسم الحيوان</th>
                     <th>النوع</th>
                     <th>المجموعة</th>
                     <th>الجنس</th>
                     <th>العمر</th>
                     <th>تاريخ التسجيل</th>
-                    <th>الإجراءات</th>
+                    <th class="col-actions">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
+                    <td>
+                        <div class="animal-cell">
+                            <div class="animal-thumb">🦁</div>
+                            <div>
+                                <div class="animal-cell-name">سيمبا</div>
+                                <div class="animal-cell-sub">أسد أفريقي</div>
+                            </div>
+                        </div>
+                    </td>
                     <td><span class="animal-id">#ANM-0012</span></td>
-                    <td style="font-weight:700;">سيمبا</td>
                     <td>أسد أفريقي</td>
                     <td>القططية</td>
                     <td>ذكر</td>
                     <td style="color:#64748b; font-size:0.85rem;">8 سنوات</td>
                     <td style="color:#64748b; font-size:0.85rem;">2018-02-14</td>
-                    <td>
-                        <div style="display:flex; gap:6px;">
-                            <a href="/records/animals/ANM-0012" class="btn-tbl btn-tbl-view" title="عرض الملف">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            </a>
-                            <button onclick="openEditModal('ANM-0012','سيمبا')" class="btn-tbl edit" title="تعديل البيانات">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                            </button>
-                            <button onclick="showToast('📄 جاري تصدير PDF...')" class="btn-tbl pdf" title="تصدير PDF">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            </button>
-                        </div>
+                    <td class="col-actions">
+                        <a href="/records/animals/ANM-0012" class="btn-tbl btn-tbl-view" title="عرض التفاصيل">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </a>
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="animal-id monitoring">#ANM-1046</span></td>
-                    <td style="color:#94a3b8; font-style:italic;">—</td>
+                    <td>
+                        <div class="animal-cell">
+                            <div class="animal-thumb">🐒</div>
+                            <div>
+                                <div class="animal-cell-name" style="color:#94a3b8;font-style:italic;">—</div>
+                                <div class="animal-cell-sub">قرد مكاك</div>
+                                <span class="source-tag">من الحجر الصحي</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="animal-id monitoring">#MON-1046</span></td>
                     <td>قرد مكاك</td>
                     <td>القرود</td>
                     <td>أنثى</td>
                     <td style="color:#64748b; font-size:0.85rem;">يومان</td>
                     <td style="color:#64748b; font-size:0.85rem;">2026-06-05</td>
-                    <td>
-                        <div style="display:flex; gap:6px;">
-                            <a href="/records/animals/ANM-1046" class="btn-tbl btn-tbl-view" title="عرض الملف">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            </a>
-                            <button onclick="openEditModal('ANM-1046',null)" class="btn-tbl edit" title="تعديل البيانات">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                            </button>
-                            <button onclick="showToast('📄 جاري تصدير PDF...')" class="btn-tbl pdf" title="تصدير PDF">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            </button>
-                        </div>
+                    <td class="col-actions">
+                        <a href="/records/animals/ANM-1046" class="btn-tbl btn-tbl-view" title="عرض التفاصيل">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </a>
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="animal-id">#ANM-1045</span></td>
-                    <td style="color:#94a3b8; font-style:italic;">—</td>
+                    <td>
+                        <div class="animal-cell">
+                            <div class="animal-thumb">🦌</div>
+                            <div>
+                                <div class="animal-cell-name" style="color:#94a3b8;font-style:italic;">—</div>
+                                <div class="animal-cell-sub">غزال الريم</div>
+                                <span class="source-tag">من الحجر الصحي</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="animal-id">#GZL-1045</span></td>
                     <td>غزال الريم</td>
                     <td>الغزلان</td>
                     <td>ذكر</td>
                     <td style="color:#64748b; font-size:0.85rem;">سنتان و 3 أشهر</td>
                     <td style="color:#64748b; font-size:0.85rem;">2026-06-07</td>
+                    <td class="col-actions">
+                        <a href="/records/animals/ANM-1045" class="btn-tbl btn-tbl-view" title="عرض التفاصيل">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
                     <td>
-                        <div style="display:flex; gap:6px;">
-                            <a href="/records/animals/ANM-1045" class="btn-tbl btn-tbl-view" title="عرض الملف">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            </a>
-                            <button onclick="openEditModal('ANM-1045',null)" class="btn-tbl edit" title="تعديل البيانات">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                            </button>
-                            <button onclick="showToast('📄 جاري تصدير PDF...')" class="btn-tbl pdf" title="تصدير PDF">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            </button>
+                        <div class="animal-cell">
+                            <div class="animal-thumb">🦁</div>
+                            <div>
+                                <div class="animal-cell-name">سلطان</div>
+                                <div class="animal-cell-sub">أسد</div>
+                            </div>
                         </div>
+                    </td>
+                    <td><span class="animal-id">#ANM-0200</span></td>
+                    <td>أسد</td>
+                    <td>القططية</td>
+                    <td>ذكر</td>
+                    <td style="color:#64748b; font-size:0.85rem;">8 سنوات تقريبًا</td>
+                    <td style="color:#64748b; font-size:0.85rem;">2026-06-07</td>
+                    <td class="col-actions">
+                        <a href="/records/animals/ANM-0200" class="btn-tbl btn-tbl-view" title="عرض التفاصيل">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="animal-cell">
+                            <div class="animal-thumb">🦁</div>
+                            <div>
+                                <div class="animal-cell-name" style="color:#94a3b8;font-style:italic;">—</div>
+                                <div class="animal-cell-sub">أسد أفريقي — مولود نافق</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="animal-id">#ANM-0201</span></td>
+                    <td>أسد أفريقي</td>
+                    <td>القططية</td>
+                    <td>أنثى</td>
+                    <td style="color:#64748b; font-size:0.85rem;">—</td>
+                    <td style="color:#64748b; font-size:0.85rem;">2026-06-01</td>
+                    <td class="col-actions">
+                        <a href="/records/animals/ANM-0201" class="btn-tbl btn-tbl-view" title="عرض التفاصيل">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="animal-cell">
+                            <div class="animal-thumb">🐄</div>
+                            <div>
+                                <div class="animal-cell-name" style="color:#94a3b8;font-style:italic;">—</div>
+                                <div class="animal-cell-sub">بقر — ذبح اضطراري</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="animal-id">#ANM-0202</span></td>
+                    <td>بقر</td>
+                    <td>الثدييات الكبيرة</td>
+                    <td>أنثى</td>
+                    <td style="color:#64748b; font-size:0.85rem;">5 سنوات</td>
+                    <td style="color:#64748b; font-size:0.85rem;">2024-03-01</td>
+                    <td class="col-actions">
+                        <a href="/records/animals/ANM-0202" class="btn-tbl btn-tbl-view" title="عرض التفاصيل">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="animal-cell">
+                            <div class="animal-thumb">🦒</div>
+                            <div>
+                                <div class="animal-cell-name" style="color:#94a3b8;font-style:italic;">—</div>
+                                <div class="animal-cell-sub">زرافة — خارج من الحديقة</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="animal-id">#ANM-0203</span></td>
+                    <td>زرافة</td>
+                    <td>العناقيد الكبرى</td>
+                    <td>ذكر</td>
+                    <td style="color:#64748b; font-size:0.85rem;">4 سنوات</td>
+                    <td style="color:#64748b; font-size:0.85rem;">2023-01-15</td>
+                    <td class="col-actions">
+                        <a href="/records/animals/ANM-0203" class="btn-tbl btn-tbl-view" title="عرض التفاصيل">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </a>
                     </td>
                 </tr>
             </tbody>
@@ -271,11 +370,6 @@
 
         <div class="modal-body">
 
-            <div class="notice-yellow">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0; margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                هذه الواجهة للحيوانات الموجودة قبل تشغيل النظام فقط. المواليد والحجر الصحي لها مسارات خاصة.
-            </div>
-
             {{-- Section 1: بيانات أساسية --}}
             <div class="modal-section">
                 <div class="modal-section-title">
@@ -284,8 +378,8 @@
                 </div>
                 <div class="form-grid">
                     <div class="field-group">
-                        <label class="field-label">رقم الحيوان <span class="optional">(يولده النظام)</span></label>
-                        <input type="text" class="form-control generated" value="#ANM-1050" readonly>
+                        <label class="field-label">رقم الحيوان <span class="optional">(يولده النظام حسب المجموعة)</span></label>
+                        <input type="text" class="form-control generated" id="addAnimalId" value="—" readonly>
                     </div>
                     <div class="field-group">
                         <label class="field-label">اسم الحيوان <span class="optional">(اختياري)</span></label>
@@ -297,11 +391,11 @@
                     </div>
                     <div class="field-group">
                         <label class="field-label"><span class="required">*</span> المجموعة</label>
-                        <select class="form-control">
+                        <select class="form-control" id="addGroupSelect" onchange="updateGeneratedId()">
                             <option value="" disabled selected>اختر المجموعة...</option>
-                            <option>القططية</option><option>الطيور</option><option>الزواحف</option>
-                            <option>الغزلان</option><option>القرود</option><option>الثدييات الصغيرة</option>
-                            <option>الثدييات الكبيرة</option><option>الدب واللامة</option>
+                            <option value="القططية">القططية</option><option value="الطيور">الطيور</option><option value="الزواحف">الزواحف</option>
+                            <option value="الغزلان">الغزلان</option><option value="القرود">القرود</option><option value="الثدييات الصغيرة">الثدييات الصغيرة</option>
+                            <option value="الثدييات الكبيرة">الثدييات الكبيرة</option><option value="الدب واللامة">الدب واللامة</option>
                         </select>
                     </div>
                     <div class="field-group">
@@ -427,182 +521,6 @@
     </div>
 </div>
 
-{{-- ═══════════════════════════════════════════════════════════════════ --}}
-{{-- ═══ MODAL: تعديل بيانات الحيوان ═══ --}}
-{{-- ═══════════════════════════════════════════════════════════════════ --}}
-<div class="modal-backdrop" id="editModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <div class="modal-title-wrap">
-                <h3>✏️ تعديل بيانات الحيوان الرسمية</h3>
-                <span>البيانات الأساسية فقط — لا يشمل السجلات الطبية أو القرارات</span>
-            </div>
-            <button class="modal-close" onclick="closeModal('editModal')">✕</button>
-        </div>
-
-        <div class="modal-body">
-
-            <div class="identity-bar" id="editIdentityBar">
-                <div class="avatar" id="editAvatar">🐾</div>
-                <div class="info">
-                    <h4 id="editAnimalName">—</h4>
-                    <p id="editAnimalMeta">—</p>
-                </div>
-                <div class="id-tag" id="editAnimalId">—</div>
-            </div>
-
-            <div class="notice-red">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0; margin-top:1px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                التشخيصات والعلاجات والقرارات الطبية والسجلات الرسمية الناتجة عن المسارات غير قابلة للتعديل من هنا.
-            </div>
-
-            {{-- Section 1 --}}
-            <div class="modal-section">
-                <div class="modal-section-title">
-                    <div class="sec-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-                    البيانات الأساسية
-                </div>
-                <div class="form-grid">
-                    <div class="field-group">
-                        <label class="field-label">اسم الحيوان <span class="optional">(اختياري)</span></label>
-                        <input type="text" class="form-control" id="editName" value="سيمبا">
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label"><span class="required">*</span> النوع</label>
-                        <input type="text" class="form-control" value="أسد أفريقي">
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label"><span class="required">*</span> المجموعة</label>
-                        <select class="form-control">
-                            <option selected>القططية</option><option>الطيور</option><option>الزواحف</option>
-                            <option>الغزلان</option><option>القرود</option><option>الثدييات الصغيرة</option>
-                            <option>الثدييات الكبيرة</option><option>الدب واللامة</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label"><span class="required">*</span> الجنس</label>
-                        <select class="form-control"><option selected>ذكر</option><option>أنثى</option></select>
-                    </div>
-                    <div class="field-group field-span-2">
-                        <label class="field-label">العلامات المميزة <span class="optional">(اختياري)</span></label>
-                        <input type="text" class="form-control" value="وشم على الأذن اليسرى برقم 012">
-                    </div>
-                    <div class="field-group field-span-2">
-                        <label class="field-label">صورة الحيوان <span class="optional">(اختياري)</span></label>
-                        <label class="upload-area" for="editPhoto">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:#94a3b8;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                            <p>استبدال الصورة الحالية (simba_photo.jpg)<br><span style="font-size:0.72rem; color:#94a3b8;">PNG, JPG حتى 5 ميجابايت</span></p>
-                            <input type="file" id="editPhoto" accept="image/*" style="display:none;" onchange="showFileName(this,'editPhotoName')">
-                            <p id="editPhotoName" style="color:#1a4a2e; font-weight:700; margin-top:4px;"></p>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Section 2: العمر --}}
-            <div class="modal-section">
-                <div class="modal-section-title">
-                    <div class="sec-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-                    تاريخ الميلاد أو العمر التقريبي
-                </div>
-                <div class="field-group" style="margin-bottom:1rem;">
-                    <label class="field-label"><span class="required">*</span> طريقة تحديد العمر</label>
-                    <div class="age-toggle">
-                        <button type="button" class="age-toggle-btn active" id="editBtnBirth" onclick="setAge('edit','birth')">📅 تاريخ ميلاد معروف</button>
-                        <button type="button" class="age-toggle-btn" id="editBtnApprox" onclick="setAge('edit','approx')">🔢 عمر تقريبي</button>
-                    </div>
-                </div>
-                <div class="cond-block visible" id="editBlockBirth">
-                    <div class="form-grid">
-                        <div class="field-group">
-                            <label class="field-label"><span class="required">*</span> تاريخ الميلاد</label>
-                            <input type="date" class="form-control" value="2018-02-14">
-                        </div>
-                        <div class="field-group" style="align-self:end;">
-                            <label class="field-label" style="color:#64748b;">العمر المحسوب</label>
-                            <input type="text" class="form-control" value="8 سنوات و 3 أشهر" disabled>
-                        </div>
-                    </div>
-                </div>
-                <div class="cond-block" id="editBlockApprox">
-                    <div class="form-grid col-3">
-                        <div class="field-group"><label class="field-label"><span class="required">*</span> العمر التقريبي</label><input type="number" class="form-control" min="1"></div>
-                        <div class="field-group"><label class="field-label"><span class="required">*</span> الوحدة</label><select class="form-control"><option>أيام</option><option>أشهر</option><option selected>سنوات</option></select></div>
-                        <div class="field-group"><label class="field-label" style="color:#64748b;">العمر الحالي</label><input type="text" class="form-control" disabled placeholder="سيُحسب..."></div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Section 3: الأصل --}}
-            <div class="modal-section">
-                <div class="modal-section-title">
-                    <div class="sec-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg></div>
-                    الأصل والمصدر
-                </div>
-                <div class="form-grid">
-                    <div class="field-group">
-                        <label class="field-label"><span class="required">*</span> أصل الحيوان</label>
-                        <select class="form-control"><option selected>مولود داخل الحديقة</option><option>وارد من خارج الحديقة</option></select>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label"><span class="required">*</span> مصدر الحيوان</label>
-                        <input type="text" class="form-control" value="مولود داخل الحديقة حسب السجلات الورقية">
-                    </div>
-                </div>
-            </div>
-
-            {{-- Section 4: التاريخ السابق --}}
-            <div class="modal-section">
-                <div class="modal-section-title orange">
-                    <div class="sec-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-                    التاريخ السابق <span class="optional">(اختياري)</span>
-                </div>
-                <div class="form-grid">
-                    <div class="field-group field-span-2">
-                        <label class="field-label">ملخص التاريخ السابق</label>
-                        <textarea class="form-control" rows="3">لا توجد سجلات طبية موثقة قبل تشغيل النظام، الحيوان مولود في الحديقة منذ عام 2018.</textarea>
-                    </div>
-                    <div class="field-group field-span-2">
-                        <label class="field-label">مرفق التاريخ السابق</label>
-                        <label class="upload-area" for="editHistory">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:#94a3b8;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                            <p>رفع مرفق جديد أو استبدال الحالي<br><span style="font-size:0.72rem; color:#94a3b8;">PDF, PNG, JPG</span></p>
-                            <input type="file" id="editHistory" accept=".pdf,image/*" style="display:none;" onchange="showFileName(this,'editHistoryName')">
-                            <p id="editHistoryName" style="color:#1a4a2e; font-weight:700; margin-top:4px;"></p>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Readonly chips --}}
-            <div class="readonly-chips-wrap">
-                <div class="readonly-chips-label">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    البيانات غير قابلة للتعديل من هذه الواجهة
-                </div>
-                <div class="chips-row">
-                    <span class="chip">التشخيصات</span>
-                    <span class="chip">العلاجات والجرعات</span>
-                    <span class="chip">القرارات الطبية</span>
-                    <span class="chip">قرار الذبح الاضطراري</span>
-                    <span class="chip">نتائج التشريح</span>
-                    <span class="chip">قرارات الإفراج الصحي</span>
-                    <span class="chip">حالة النفوق</span>
-                    <span class="chip">التوصيات الغذائية</span>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeModal('editModal')">إلغاء</button>
-            <button class="btn-submit" onclick="submitEdit()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                حفظ التعديلات
-            </button>
-        </div>
-    </div>
-</div>
 
 {{-- ═══ SUCCESS DIALOG (add) ═══ --}}
 <div class="dialog-backdrop" id="successAddDialog">
@@ -641,18 +559,26 @@
         el.addEventListener('click', function(e) { if (e.target === this) closeModal(this.id); });
     });
 
-    function openAddModal() { openModal('addModal'); }
+    function openAddModal() { openModal('addModal'); updateGeneratedId(); }
 
-    function openViewModal(id, name) {
-        window.location.href = '/records/animals/' + id;
-    }
+    const groupPrefixes = {
+        'القططية': 'ANM', 'الطيور': 'BRD', 'الزواحف': 'RPT',
+        'الغزلان': 'GZL', 'القرود': 'MON', 'الثدييات الصغيرة': 'SML',
+        'الثدييات الكبيرة': 'LRG', 'الدب واللامة': 'BLA'
+    };
+    const groupCounters = { ANM: 1050, BRD: 201, RPT: 88, GZL: 1046, MON: 1047, SML: 330, LRG: 120, BLA: 45 };
 
-    function openEditModal(id, name) {
-        document.getElementById('editAnimalId').innerText = '#' + id;
-        document.getElementById('editAnimalName').innerText = name || '—';
-        document.getElementById('editAnimalMeta').innerText = 'أسد أفريقي • القططية • ذكر';
-        document.getElementById('editAvatar').innerText = name ? '🦁' : '🐾';
-        openModal('editModal');
+    function updateGeneratedId() {
+        const sel = document.getElementById('addGroupSelect');
+        const input = document.getElementById('addAnimalId');
+        if (!sel || !input) return;
+        const group = sel.value;
+        if (!group || !groupPrefixes[group]) {
+            input.value = '—';
+            return;
+        }
+        const prefix = groupPrefixes[group];
+        input.value = '#' + prefix + '-' + groupCounters[prefix];
     }
 
     // ── Age toggle ──
@@ -685,11 +611,6 @@
     // ── Submit actions ──
     function submitAdd() {
         openDialog('successAddDialog');
-    }
-
-    function submitEdit() {
-        closeModal('editModal');
-        showToast('✅ تم تعديل بيانات الحيوان بنجاح.');
     }
 
     // ── Toast ──

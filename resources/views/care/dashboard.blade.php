@@ -165,6 +165,18 @@
     .badge-approved  { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
     .badge-approved .dot { background: #22c55e; }
 
+    .title-icon {
+        background: #e6f4ea;
+        color: #1a4a2e;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
     /* ═══ ACTION BUTTON ═══ */
     .actions-cell { display: flex; gap: 6px; align-items: center; justify-content: flex-end; }
     .btn-tbl {
@@ -318,7 +330,7 @@
                     <th>النوع</th>
                     <th>الحيوان</th>
                     <th>المجموعة</th>
-                    <th>وصف مختصر</th>
+                    <th>الوصف المختصر</th>
                     <th>التاريخ</th>
                     <th>إجراء</th>
                 </tr>
@@ -335,8 +347,8 @@
                     <td>2026-06-07</td>
                     <td>
                         <div class="actions-cell">
-                            <a href="/care/health" class="btn-tbl" title="عرض التفاصيل">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <a href="/care/health" class="btn-tbl" title="الانتقال للواجهة">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </a>
                         </div>
                     </td>
@@ -352,8 +364,8 @@
                     <td>2026-06-06</td>
                     <td>
                         <div class="actions-cell">
-                            <a href="/care/mortality" class="btn-tbl" title="عرض التفاصيل">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <a href="/care/mortality" class="btn-tbl" title="الانتقال للواجهة">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </a>
                         </div>
                     </td>
@@ -368,8 +380,8 @@
                     <td>2026-06-06</td>
                     <td>
                         <div class="actions-cell">
-                            <a href="/care/notes" class="btn-tbl" title="عرض التفاصيل">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <a href="/care/notes" class="btn-tbl" title="الانتقال للواجهة">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </a>
                         </div>
                     </td>
@@ -385,8 +397,8 @@
                     <td>2026-06-05</td>
                     <td>
                         <div class="actions-cell">
-                            <a href="/care/births" class="btn-tbl" title="عرض التفاصيل">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <a href="/care/births" class="btn-tbl" title="الانتقال للواجهة">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </a>
                         </div>
                     </td>

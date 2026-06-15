@@ -1,6 +1,6 @@
 @extends($__layout ?? 'admin.layout')
 @section('title', 'إضافة موقع جديد على الخريطة | Tripoli Zoo')
-@section('page_title', 'إدارة مواقع الخريطة')
+@section('page_title', 'إدارة الخريطة التفاعلية')
 
 @section('styles')
 <!-- Leaflet CSS -->
@@ -32,23 +32,26 @@
 
     /* Page Hero */
     .page-hero {
-        background: var(--primary-gradient);
+        background: white;
+        border: 1px solid var(--border);
         border-radius: 20px;
         padding: 2rem;
-        color: white;
+        color: var(--text-main);
         margin-bottom: 1.5rem;
-        box-shadow: 0 10px 25px -5px rgba(30, 58, 30, 0.25);
+        box-shadow: var(--card-shadow);
     }
 
     .page-hero h2 {
         font-size: 1.6rem;
         font-weight: 900;
         margin: 0 0 6px;
+        color: #1e3a1e;
     }
 
     .page-hero p {
         font-size: 0.85rem;
-        opacity: 0.85;
+        color: var(--text-muted);
+        font-weight: 600;
         margin: 0;
     }
 
@@ -287,8 +290,8 @@
 
     <!-- Header Hero -->
     <div class="page-hero">
-        <h2>إضافة موقع جديد على الخريطة</h2>
-        <p>تسمح لك هذه اللوحة بإسقاط وتثبيت نقطة جغرافية جديدة لموقع أو مرفق داخل الحديقة.</p>
+        <h2>إدارة الخريطة التفاعلية</h2>
+        <p>إضافة موقع قفص أو موئل حيوان جديد على خريطة الحديقة</p>
     </div>
 
     <!-- Main Container -->
@@ -308,12 +311,9 @@
                     <input type="text" id="name" class="form-input" placeholder="مثال: قفص الزرافة الاستوائية">
                 </div>
                 <div class="form-group">
-                    <label>فئة وتصنيف الموقع <span style="color:#EF4444">*</span></label>
-                    <select id="type" class="form-input">
-                        <option value="enclosure">أقفاص وموائل الحيوانات</option>
-                        <option value="service">الخدمات والمرافق العامة</option>
-                        <option value="dining">المطاعم والمقاهي</option>
-                    </select>
+                    <label>فئة الموقع</label>
+                    <input type="text" class="form-input" value="أقفاص وموائل الحيوانات" readonly style="background:#F1F5F9;cursor:not-allowed;font-weight:700;">
+                    <input type="hidden" id="type" value="enclosure">
                 </div>
             </div>
             

@@ -166,11 +166,17 @@ Route::prefix('director')->group(function () {
 
     Route::prefix('vet')->group(function () {
         Route::get('/quarantine', fn () => directorPage('vet.quarantine'));
+        Route::get('/quarantine/{id}', fn ($id) => directorPage('vet.quarantine.show', compact('id')));
         Route::get('/cases/hospital', fn () => directorPage('vet.cases.hospital'));
+        Route::get('/cases/hospital/{id}', fn ($id) => directorPage('vet.cases.hospital.show', compact('id')));
         Route::get('/cases/field', fn () => directorPage('vet.cases.field'));
+        Route::get('/cases/field/{id}', fn ($id) => directorPage('vet.cases.field.show', compact('id')));
         Route::get('/referrals/treatment', fn () => directorPage('vet.referrals.treatment'));
+        Route::get('/referrals/treatment/{id}', fn ($id) => directorPage('vet.referrals.treatment.show', compact('id')));
         Route::get('/referrals/autopsy', fn () => directorPage('vet.referrals.autopsy'));
+        Route::get('/referrals/autopsy/{id}', fn ($id) => directorPage('vet.referrals.autopsy.show', compact('id')));
         Route::get('/decisions', fn () => directorPage('vet.decisions.index'));
+        Route::get('/decisions/{id}', fn ($id) => directorPage('vet.decisions.show', compact('id')));
     });
 
     Route::prefix('care')->group(function () {
@@ -181,6 +187,7 @@ Route::prefix('director')->group(function () {
         Route::get('/referrals/treatment', fn () => directorPage('care.referrals.treatment'));
         Route::get('/referrals/autopsy', fn () => directorPage('care.referrals.autopsy'));
         Route::get('/decisions', fn () => directorPage('care.decisions.index'));
+        Route::get('/decisions/{id}', fn ($id) => directorPage('care.decisions.show', compact('id')));
     });
 
     Route::prefix('records')->group(function () {

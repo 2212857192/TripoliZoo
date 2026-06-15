@@ -18,56 +18,6 @@
         gap: 1.8rem;
     }
 
-    /* Top Stats Bar */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 1.5rem;
-    }
-
-    .stat-card {
-        background: var(--glass-bg);
-        border: 1px solid var(--glass-border);
-        border-radius: 20px;
-        padding: 1.5rem;
-        box-shadow: var(--card-shadow);
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        transition: all 0.3s;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-3px);
-    }
-
-    .stat-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .stat-icon.green  { background: rgba(45, 90, 39, 0.1); color: #2d5a27; }
-    .stat-icon.orange { background: rgba(232, 101, 26, 0.1); color: #E8651A; }
-    .stat-icon.blue   { background: rgba(14, 165, 233, 0.1); color: #0ea5e9; }
-
-    .stat-info label {
-        display: block;
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        font-weight: 700;
-        margin-bottom: 4px;
-    }
-
-    .stat-info span {
-        font-size: 1.6rem;
-        font-weight: 900;
-        color: var(--text-main);
-    }
-
     /* Controls Panel */
     .control-panel {
         background: var(--glass-bg);
@@ -332,37 +282,6 @@
 @section('content')
 <div class="tickets-container">
 
-    <!-- Metrics -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-icon green">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-            </div>
-            <div class="stat-info">
-                <label>التذاكر النشطة المتاحة</label>
-                <span id="activeCount">3 فئات</span>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon orange">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            </div>
-            <div class="stat-info">
-                <label>إجمالي مبيعات اليوم</label>
-                <span>4,250 د.ل</span>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon blue">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-            </div>
-            <div class="stat-info">
-                <label>الزوار المسجلين اليوم</label>
-                <span>1,240 زائر</span>
-            </div>
-        </div>
-    </div>
-
     <!-- Controls -->
     <div class="control-panel">
         <div class="search-filter-box">
@@ -545,12 +464,6 @@
             btn.className = 'btn-ticket-op toggle-status suspended-btn';
             showToast('✅ تم تفعيل التذكرة ونشرها');
         }
-        updateStats();
-    }
-
-    function updateStats() {
-        const activeCards = document.querySelectorAll('.ticket-card-premium[data-status="active"]').length;
-        document.getElementById('activeCount').textContent = activeCards + ' فئات';
     }
 
     function filterTickets() {

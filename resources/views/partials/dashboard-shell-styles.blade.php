@@ -1,0 +1,277 @@
+<style>
+    /* ── Sidebar: بدون تدرج أخضر ── */
+    .sidebar-header {
+        background: #ffffff;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-header .logo {
+        border-radius: 50%;
+        background: #fff;
+    }
+
+    .sidebar-header .logo img {
+        border-radius: 50%;
+    }
+
+    /* ── Sidebar: أيقونات بدون مربعات ── */
+    .nav-item svg:not(.arrow-icon) {
+        width: 22px;
+        height: 22px;
+        min-width: 22px;
+        padding: 0;
+        border-radius: 0;
+        background: transparent !important;
+        box-sizing: content-box;
+    }
+
+    .nav-item:hover svg:not(.arrow-icon) {
+        background: transparent !important;
+    }
+
+    .nav-item.active svg:not(.arrow-icon) {
+        background: transparent !important;
+        border-radius: 0;
+    }
+
+    .dropdown-toggle svg.arrow-icon {
+        width: 16px;
+        height: 16px;
+        padding: 0;
+        background: transparent !important;
+    }
+
+    /* ── الشريط العلوي ── */
+    .topbar {
+        height: 68px;
+        background: #ffffff;
+        backdrop-filter: none;
+        border-bottom: 1px solid var(--border);
+        box-shadow: none;
+        padding: 0 1.75rem;
+        justify-content: space-between;
+    }
+
+    .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 0;
+    }
+
+    .page-title h1 {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    .page-title .breadcrumb {
+        font-size: 0.72rem;
+        color: #94a3b8;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .page-title .breadcrumb span {
+        color: #94a3b8;
+        font-weight: 600;
+    }
+
+    .topbar-actions {
+        gap: 14px;
+        align-items: center;
+    }
+
+    /* ── زر الإشعارات دائري ── */
+    .action-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        color: #64748b;
+        flex-shrink: 0;
+    }
+
+    .action-btn:hover {
+        background: #f8fafc;
+        color: #334155;
+        border-color: #cbd5e1;
+    }
+
+    .notification-badge {
+        position: absolute;
+        top: 9px;
+        right: 10px;
+        background: #ef4444;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        box-shadow: 0 0 0 2px #fff;
+    }
+
+    .notification-dropdown {
+        position: absolute;
+        left: 0;
+        top: calc(100% + 8px);
+        width: 340px;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        z-index: 1000;
+        padding: 18px;
+    }
+
+    /* ── قائمة المستخدم ── */
+    .topbar-user-menu {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-left: 14px;
+        border-left: 1px solid var(--border);
+    }
+
+    .user-menu-info {
+        text-align: left;
+        line-height: 1.35;
+    }
+
+    .user-menu-name {
+        font-size: 0.88rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .user-menu-email {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #94a3b8;
+    }
+
+    .user-menu-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1.5px solid #e2e8f0;
+        background: #fff;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .user-menu-chevron {
+        width: 28px;
+        height: 28px;
+        border: none;
+        background: transparent;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: all 0.2s;
+        flex-shrink: 0;
+    }
+
+    .user-menu-chevron:hover {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .user-menu-chevron.open {
+        color: #334155;
+    }
+
+    .user-menu-dropdown {
+        display: none;
+        position: absolute;
+        left: 0;
+        top: calc(100% + 10px);
+        min-width: 180px;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        z-index: 1001;
+        overflow: hidden;
+        padding: 6px;
+    }
+
+    .user-menu-dropdown.open {
+        display: block;
+    }
+
+    .user-menu-dropdown a {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #dc2626;
+        transition: background 0.2s;
+    }
+
+    .user-menu-dropdown a:hover {
+        background: #fef2f2;
+    }
+
+    .sidebar-footer {
+        display: none;
+    }
+
+    /* ── تنقل داخل الصفحة (بدل الهيدر) ── */
+    .page-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .page-breadcrumb a {
+        color: #2E7D32;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: color 0.2s;
+    }
+
+    .page-breadcrumb a:hover {
+        color: #1b5e20;
+    }
+
+    .page-breadcrumb .current {
+        color: #0f172a;
+        font-weight: 800;
+    }
+
+    .header-card-stacked {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .header-card-stacked .header-card-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+</style>

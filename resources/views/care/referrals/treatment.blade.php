@@ -5,17 +5,24 @@
 @section('styles')
 <style>
     .top-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.4rem 1.8rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem; }
-    .page-header { display: flex; justify-content: space-between; align-items: center; }
-    .page-header-info h2 { font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin: 0; }
-    .page-header-info p { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin: 4px 0 0; }
 
-    .filter-bar { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; padding-top: 1.2rem; border-top: 1px solid #F1F5F9; }
+    .filter-bar { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
     .search-box { flex: 1; min-width: 250px; position: relative; }
     .search-box input { width: 100%; padding: 10px 40px 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600; outline: none; transition: all 0.2s; }
     .search-box input:focus { border-color: #2E7D32; box-shadow: 0 0 0 3px rgba(46,125,50,0.1); }
     .search-box svg { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
     .filter-select { padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600; color: #334155; outline: none; cursor: pointer; }
     .filter-select:focus { border-color: #2E7D32; }
+
+    .animal-thumb {
+        width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
+        background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+        border: 1.5px solid #bbf7d0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.35rem; overflow: hidden;
+    }
+    .animal-name { font-weight: 800; color: #0f172a; line-height: 1.3; }
+    .reason-cell { font-size: 0.88rem; color: #334155; font-weight: 600; max-width: 220px; line-height: 1.4; }
 
     /* ── Table ── */
     .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 2rem; }
@@ -99,16 +106,10 @@
 @section('content')
 
 <div class="top-card">
-    <div class="page-header">
-        <div class="page-header-info">
-            <h2>🏥 إحالات العلاج</h2>
-            <p>متابعة إحالات العلاج المرسلة إلى قسم المستشفى البيطري.</p>
-        </div>
-    </div>
     <div class="filter-bar">
         <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="بحث برقم الحيوان، نوع الحيوان، رقم الإحالة...">
+            <input type="text" placeholder="بحث برقم الحيوان أو نوعه...">
         </div>
         <select class="filter-select">
             <option value="">كل الحالات</option>
@@ -138,56 +139,59 @@
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>رقم الإحالة</th>
+                    <th>اسم الحيوان</th>
+                    <th>صورة</th>
                     <th>رقم الحيوان</th>
                     <th>نوع الحيوان</th>
                     <th>المجموعة</th>
+                    <th>سبب التحويل للعلاج</th>
                     <th>تاريخ الإحالة</th>
-                    <th>حالة الإحالة</th>
-                    <th>إجراء</th>
+                    <th>الحالة</th>
+                    <th class="col-actions">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
-                {{-- Row 1: Pending --}}
                 <tr>
-                    <td><span class="ref-id">TR-042</span></td>
+                    <td><span class="animal-name">سيمبا</span></td>
+                    <td><div class="animal-thumb">🦁</div></td>
                     <td><span class="animal-id">#ANL-0041-2022</span></td>
                     <td style="font-weight:700;">أسد إفريقي</td>
                     <td>السباع والضواري</td>
+                    <td><span class="reason-cell">جرح عميق في الفخذ الأيمن إثر شجار</span></td>
                     <td>2026-06-07</td>
                     <td><span class="badge badge-pending"><span class="dot"></span>قيد المراجعة</span></td>
-                    <td>
-                        <button onclick="openModal('pending', 'TR-042')" class="btn-tbl view">
+                    <td class="col-actions">
+                        <button onclick="openModal('pending', 'TR-042')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
                 </tr>
-
-                {{-- Row 2: Approved --}}
                 <tr>
-                    <td><span class="ref-id">TR-041</span></td>
+                    <td><span class="animal-name" style="color:#94a3b8; font-style:italic;">—</span></td>
+                    <td><div class="animal-thumb">🐒</div></td>
                     <td><span class="animal-id">#ANL-0182-2023</span></td>
                     <td style="font-weight:700;">قرد المكاك</td>
                     <td>الرئيسيات</td>
+                    <td><span class="reason-cell">خمول شديد وارتفاع في الحرارة</span></td>
                     <td>2026-06-06</td>
                     <td><span class="badge badge-approved"><span class="dot"></span>معتمدة</span></td>
-                    <td>
-                        <button onclick="openModal('approved', 'TR-041')" class="btn-tbl view">
+                    <td class="col-actions">
+                        <button onclick="openModal('approved', 'TR-041')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
                 </tr>
-
-                {{-- Row 3: Rejected --}}
                 <tr>
-                    <td><span class="ref-id">TR-040</span></td>
+                    <td><span class="animal-name">ريم</span></td>
+                    <td><div class="animal-thumb">🦌</div></td>
                     <td><span class="animal-id">#ANL-0120-2024</span></td>
                     <td style="font-weight:700;">غزال الريم</td>
                     <td>العواشب</td>
+                    <td><span class="reason-cell">عرج خفيف في الساق اليسرى الأمامية</span></td>
                     <td>2026-06-05</td>
                     <td><span class="badge badge-rejected"><span class="dot"></span>مرفوضة</span></td>
-                    <td>
-                        <button onclick="openModal('rejected', 'TR-040')" class="btn-tbl view">
+                    <td class="col-actions">
+                        <button onclick="openModal('rejected', 'TR-040')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
@@ -218,10 +222,16 @@
             {{-- Tab 1: بيانات الإحالة --}}
             <div id="mtab-1">
                 <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.5rem; flex-wrap:wrap;">
-                    <span style="font-family:'Courier New',monospace; font-size:0.85rem; background:#f8fafc; color:#334155; border:1px solid #e2e8f0; padding:4px 12px; border-radius:6px; font-weight:800;" id="mRefId">TR-000</span>
-                    <span style="font-size:0.8rem; color:#64748b; font-weight:700;">رقم الإحالة</span>
+                    <div class="animal-thumb" id="mAnimalPhoto" style="width:52px;height:52px;font-size:1.6rem;">🦁</div>
+                    <div style="flex:1;">
+                        <div style="font-size:1rem;font-weight:800;color:#0f172a;" id="mAnimalName">—</div>
+                        <div style="font-size:0.8rem;color:#64748b;font-weight:600;" id="mAnimalSub">—</div>
+                    </div>
                     <span id="mStatusBadge" style="margin-right:auto;"></span>
                 </div>
+
+                <div class="section-label">سبب التحويل للعلاج</div>
+                <div class="content-box" id="mTransferReason" style="margin-bottom:1.5rem;">—</div>
 
                 <div class="info-grid">
                     <div class="info-cell">
@@ -247,10 +257,6 @@
                     <div class="info-cell">
                         <div class="info-cell-label">تاريخ إرسال الإحالة</div>
                         <div class="info-cell-value" id="mDate">—</div>
-                    </div>
-                    <div class="info-cell span-2">
-                        <div class="info-cell-label">مُرسل الإحالة</div>
-                        <div class="info-cell-value" id="mSender">رئيس قسم الرعاية والتغذية</div>
                     </div>
                 </div>
 
@@ -326,7 +332,7 @@
                 </div>
 
                 <div style="margin-top:1rem;">
-                    <div class="info-cell-label" style="margin-bottom:6px;">الملاحظات الإضافية المسجلة</div>
+                    <div class="info-cell-label" style="margin-bottom:6px;">الملاحظات المسجلة عن الحيوان</div>
                     <div class="content-box" id="hNotes">—</div>
                 </div>
             </div>
@@ -349,22 +355,28 @@
 
     const dummyData = {
         'TR-042': {
+            animalName: 'سيمبا', animalEmoji: '🦁',
             animalId: '#ANL-0041-2022', animalType: 'أسد إفريقي', gender: 'ذكر', age: '8 سنوات', group: 'السباع والضواري',
-            date: '2026-06-07', hId: 'HC-1102', hDate: '2026-06-07 / 08:30 ص', hSupervisor: 'خالد منصور',
+            date: '2026-06-07', transferReason: 'جرح عميق في الفخذ الأيمن إثر شجار',
+            hId: 'HC-1102', hDate: '2026-06-07', hSupervisor: 'خالد منصور',
             hDesc: 'جرح عميق في الفخذ الأيمن إثر شجار', hNotes: 'ينزف بشكل متقطع ويرفض الحركة أو الأكل. تم عزله في القفص الداخلي.',
             appDate: '', rejDate: '', rejReason: ''
         },
         'TR-041': {
+            animalName: '', animalEmoji: '🐒',
             animalId: '#ANL-0182-2023', animalType: 'قرد المكاك', gender: 'أنثى', age: '3 سنوات', group: 'الرئيسيات',
-            date: '2026-06-06', hId: 'HC-1101', hDate: '2026-06-06 / 10:15 ص', hSupervisor: 'ياسر الغيثي',
+            date: '2026-06-06', transferReason: 'خمول شديد وارتفاع في الحرارة',
+            hId: 'HC-1101', hDate: '2026-06-06', hSupervisor: 'ياسر الغيثي',
             hDesc: 'خمول شديد وارتفاع في الحرارة', hNotes: 'الحيوان لا يتجاوب مع المؤثرات ورافض تماماً لشرب الماء.',
-            appDate: '2026-06-06 / 11:30 ص', rejDate: '', rejReason: ''
+            appDate: '2026-06-06', rejDate: '', rejReason: ''
         },
         'TR-040': {
+            animalName: 'ريم', animalEmoji: '🦌',
             animalId: '#ANL-0120-2024', animalType: 'غزال الريم', gender: 'ذكر', age: 'سنتان', group: 'العواشب',
-            date: '2026-06-05', hId: 'HC-1100', hDate: '2026-06-05 / 07:00 ص', hSupervisor: 'أحمد الكواري',
+            date: '2026-06-05', transferReason: 'عرج خفيف في الساق اليسرى الأمامية',
+            hId: 'HC-1100', hDate: '2026-06-05', hSupervisor: 'أحمد الكواري',
             hDesc: 'عرج خفيف في الساق اليسرى الأمامية', hNotes: 'العرج يظهر عند الركض فقط، لكنه يمشي ويأكل بشكل طبيعي.',
-            appDate: '', rejDate: '2026-06-05 / 09:00 ص', rejReason: 'الحالة لا تستدعي إحالة علاجية ونقل للمستشفى. يمكن إعطاء مضاد للالتهاب في الحظيرة ومراقبته لـ 48 ساعة بواسطة المشرف.'
+            appDate: '', rejDate: '2026-06-05', rejReason: 'الحالة لا تستدعي إحالة علاجية ونقل للمستشفى. يمكن إعطاء مضاد للالتهاب في الحظيرة ومراقبته لـ 48 ساعة بواسطة المشرف.'
         }
     };
 
@@ -373,8 +385,12 @@
         const d = dummyData[refId];
 
         // Populate basic info
-        document.getElementById('mSubtitle').innerText = d.animalType + ' — ' + d.group;
-        document.getElementById('mRefId').innerText = refId;
+        const displayName = d.animalName || d.animalType;
+        document.getElementById('mSubtitle').innerText = displayName + ' — ' + d.group;
+        document.getElementById('mAnimalPhoto').textContent = d.animalEmoji;
+        document.getElementById('mAnimalName').textContent = displayName;
+        document.getElementById('mAnimalSub').textContent = d.animalId + ' · ' + d.animalType;
+        document.getElementById('mTransferReason').textContent = d.transferReason;
         document.getElementById('mAnimalId').innerText = d.animalId;
         document.getElementById('mAnimalType').innerText = d.animalType;
         document.getElementById('mGender').innerText = d.gender;

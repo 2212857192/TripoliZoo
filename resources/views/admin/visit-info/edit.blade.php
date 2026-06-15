@@ -3,6 +3,7 @@
 @section('page_title', 'تعديل معلومات الزيارة')
 
 @section('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
     :root {
         --glass-bg: rgba(255, 255, 255, 0.85);
@@ -316,9 +317,47 @@
         color: #2d5a27;
     }
 
+    .status-edit-row {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .status-edit-row .form-input { flex: 1; }
+
+    .btn-visibility-toggle {
+        padding: 12px 18px;
+        border-radius: 10px;
+        border: 1.5px solid #86EFAC;
+        background: #F0FDF4;
+        color: #166534;
+        font-family: 'Cairo', sans-serif;
+        font-weight: 800;
+        font-size: 0.82rem;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s;
+        flex-shrink: 0;
+    }
+
+    .btn-visibility-toggle.hidden-state {
+        border-color: #FECACA;
+        background: #FEF2F2;
+        color: #991B1B;
+    }
+
+    #visitMapEdit {
+        height: 260px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        overflow: hidden;
+        z-index: 1;
+    }
+
     @media (max-width: 900px) {
         .visit-container { grid-template-columns: 1fr; }
         .form-row { grid-template-columns: 1fr; }
+        .status-edit-row { flex-direction: column; }
     }
 </style>
 @endsection
@@ -330,10 +369,8 @@
 </a>
 
 <div class="visit-container">
-
-    <!-- Main Panel -->
     <div class="main-panel" style="grid-column: span 2;">
-        
+
         <!-- Status & Announcements Form -->
         <div class="premium-card" style="border-right: 5px solid #eab308; background: rgba(254, 243, 199, 0.2); margin-bottom: 1.8rem;">
             <div class="card-accent-header" style="background: transparent; border-bottom: 1.5px solid var(--border);">
@@ -343,19 +380,79 @@
                 <h3 style="color: #854d0e;">تعديل حالة التشغيل والتنبيهات العاجلة</h3>
             </div>
             <div class="premium-card-body">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>حالة التشغيل العامة للحديقة</label>
-                        <select class="form-input" style="font-weight: 700;">
-                            <option value="open">🟢 مفتوحة بالكامل للزوار</option>
-                            <option value="partial" selected>🟡 مفتوحة جزئياً (توجد أقسام تحت الصيانة)</option>
-                            <option value="closed">🔴 مغلقة مؤقتاً (لأعمال صيانة شاملة أو طوارئ)</option>
-                        </select>
+                <div class="form-group">
+                    <label>نص حالة التشغيل</label>
+                    <div class="status-edit-row">
+                        <input type="text" id="status_text" class="form-input" value="مفتوحة جزئياً — بعض الأقسام تحت الصيانة" style="font-weight:700;">
+                        <button type="button" class="btn-visibility-toggle" id="statusVisToggle" onclick="toggleStatusVisEdit()">👁 ظاهر للزوار</button>
                     </div>
                 </div>
-                <div class="form-group" style="margin-top: 1rem; margin-bottom: 0;">
+                <div class="form-group" style="margin-bottom: 0;">
                     <label>نص التنبيه العاجل (يظهر مباشرة للزوار في التطبيق والواجهة)</label>
                     <textarea class="form-input" rows="2" style="resize: vertical; font-weight: 700; font-family: 'Cairo', sans-serif;">⚠️ نود إحاطة زوارنا الكرام بأن "منطقة الطيور البرية" ومبنى "القبة الفلكية" مغلقان حالياً لأعمال الصيانة الدورية وتحديث المرافق.</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Contacts -->
+        <div class="premium-card" style="margin-bottom: 1.8rem;">
+            <div class="card-accent-header">
+                <div class="icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                </div>
+                <h3>أرقام الطوارئ والأمن</h3>
+            </div>
+            <div class="premium-card-body">
+                <div class="form-row">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>رقم الإسعاف</label>
+                        <input type="text" id="ambulance_phone" class="form-input" value="193" dir="ltr">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>رقم الأمن</label>
+                        <input type="text" id="security_phone" class="form-input" value="091-555-0123" dir="ltr">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zoo Location -->
+        <div class="premium-card" style="margin-bottom: 1.8rem;">
+            <div class="card-accent-header">
+                <div class="icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                </div>
+                <h3>موقع الحديقة على الخريطة</h3>
+            </div>
+            <div class="premium-card-body">
+                <div class="form-group">
+                    <label>عنوان الحديقة</label>
+                    <input type="text" id="zoo_address" class="form-input" value="حديقة حيوانات طرابلس — طريق المطار، طرابلس، ليبيا">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>الموقع على الخريطة (انقر لتحديد النقطة)</label>
+                    <div id="visitMapEdit"></div>
+                    <input type="hidden" id="zoo_lat" value="32.848500">
+                    <input type="hidden" id="zoo_lng" value="13.178500">
+                </div>
+            </div>
+        </div>
+
+        <!-- Entry Instructions -->
+        <div class="premium-card" style="margin-bottom: 1.8rem;">
+            <div class="card-accent-header">
+                <div class="icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                </div>
+                <h3>تعليمات الدخول</h3>
+            </div>
+            <div class="premium-card-body">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>التعليمات المعروضة للزوار</label>
+                    <textarea id="entry_instructions" class="form-input" rows="5" style="resize: vertical; line-height: 1.7;">• يرجى الحضور من البوابة الرئيسية مع التذكرة الإلكترونية أو الورقية.
+• يُمنع إدخال الطعام والمشروبات من خارج الحديقة.
+• يلزم مرافقة الأطفال دون سن 12 سنة في جميع الأوقات.
+• يُرجى الالتزام بالمسارات المحددة وعدم تسلق الأسوار أو الأقفاص.</textarea>
                 </div>
             </div>
         </div>
@@ -415,52 +512,64 @@
             </div>
         </div>
 
-            <!-- Action Buttons at the bottom -->
-            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
-                <a href="/admin/visit-info" class="btn-cancel-visit" style="width: auto; margin: 0; padding: 12px 30px;">
-                    إلغاء التعديلات
-                </a>
-                <button class="btn-submit-visit" onclick="submitForm()" style="width: auto; padding: 12px 30px;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    حفظ ونشر المواعيد
-                </button>
-            </div>
+        <!-- Action Buttons at the bottom -->
+        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+            <a href="/admin/visit-info" class="btn-cancel-visit" style="width: auto; margin: 0; padding: 12px 30px;">
+                إلغاء التعديلات
+            </a>
+            <button class="btn-submit-visit" onclick="submitForm()" style="width: auto; padding: 12px 30px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                حفظ ونشر المعلومات
+            </button>
         </div>
     </div>
-</div>
-
 </div>
 
 <div class="toast" id="toast"></div>
 @endsection
 
 @section('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+    let statusVisEdit = true;
+    let editMap, editMarker;
+
+    function toggleStatusVisEdit() {
+        statusVisEdit = !statusVisEdit;
+        const btn = document.getElementById('statusVisToggle');
+        if (statusVisEdit) {
+            btn.textContent = '👁 ظاهر للزوار';
+            btn.classList.remove('hidden-state');
+        } else {
+            btn.textContent = '🚫 مخفي عن الزوار';
+            btn.classList.add('hidden-state');
+        }
+    }
+
+    function initEditMap() {
+        const lat = parseFloat(document.getElementById('zoo_lat').value);
+        const lng = parseFloat(document.getElementById('zoo_lng').value);
+        const coords = [lat, lng];
+
+        editMap = L.map('visitMapEdit').setView(coords, 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(editMap);
+
+        editMarker = L.marker(coords).addTo(editMap);
+
+        editMap.on('click', function(e) {
+            document.getElementById('zoo_lat').value = e.latlng.lat.toFixed(6);
+            document.getElementById('zoo_lng').value = e.latlng.lng.toFixed(6);
+            editMarker.setLatLng(e.latlng);
+        });
+    }
+
     function showToast(msg) {
         const t = document.getElementById('toast');
         t.textContent = msg;
         t.classList.add('show');
         setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    function removeRule(btn) {
-        const container = document.getElementById('rulesContainer');
-        if (container.children.length > 1) {
-            btn.parentElement.remove();
-        } else {
-            showToast('⚠️ يجب ترك بند واحد على الأقل للسلامة');
-        }
-    }
-
-    function addRuleField() {
-        const container = document.getElementById('rulesContainer');
-        const div = document.createElement('div');
-        div.className = 'rule-input-group';
-        div.innerHTML = `
-            <input type="text" class="form-input rule-item-val" placeholder="اكتب بند السلامة الجديد...">
-            <button type="button" class="btn-remove-rule" onclick="removeRule(this)">&times;</button>
-        `;
-        container.appendChild(div);
     }
 
     function submitForm() {
@@ -469,10 +578,12 @@
         btn.disabled = true;
 
         setTimeout(() => {
-            showToast('✅ تم تحديث معلومات الزيارة بنجاح (محاكاة)');
+            showToast('✅ تم تحديث معلومات الزيارة بنجاح');
             btn.textContent = '✅ تم النشر!';
             setTimeout(() => { window.location.href = '/admin/visit-info'; }, 1200);
         }, 800);
     }
+
+    window.onload = initEditMap;
 </script>
 @endsection

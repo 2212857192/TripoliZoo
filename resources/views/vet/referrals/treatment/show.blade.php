@@ -297,6 +297,8 @@
 </style>
 @endsection
 
+@php $vetBase = ($readOnly ?? false) ? '/director/vet' : '/vet'; @endphp
+
 @section('content')
 {{-- ═══ PAGE HEADER ═══ --}}
 <div class="page-header">
@@ -309,7 +311,7 @@
             <span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>
             قيد المراجعة
         </div>
-        <a href="/vet/referrals/treatment" class="btn-back">
+        <a href="{{ $vetBase }}/referrals/treatment" class="btn-back">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
             رجوع
         </a>

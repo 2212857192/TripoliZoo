@@ -4,638 +4,208 @@
 
 @section('styles')
 <style>
-    /* ── Top Card (Header + Filters) ── */
-    .top-card {
-        background: var(--white);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 1.4rem 1.8rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1.2rem;
-    }
+    .top-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.4rem 1.8rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem; }
 
-    /* ── Page Header ── */
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+    .filter-bar { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+    .search-box { flex: 1; min-width: 250px; position: relative; }
+    .search-box input { width: 100%; padding: 10px 40px 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600; outline: none; transition: all 0.2s; }
+    .search-box input:focus { border-color: #2E7D32; box-shadow: 0 0 0 3px rgba(46,125,50,0.1); }
+    .search-box svg { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+    .filter-select { padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600; color: #334155; outline: none; cursor: pointer; }
+    .filter-select:focus { border-color: #2E7D32; }
 
-    .page-header-info h2 {
-        font-size: 1.4rem;
-        font-weight: 800;
-        color: var(--text-main);
-        margin: 0;
+    .animal-thumb {
+        width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
+        background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+        border: 1.5px solid #bbf7d0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.35rem; overflow: hidden;
     }
+    .animal-name { font-weight: 800; color: #0f172a; line-height: 1.3; }
+    .reason-cell { font-size: 0.88rem; color: #334155; font-weight: 600; max-width: 220px; line-height: 1.4; }
 
-    .page-header-info p {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        font-weight: 600;
-        margin: 4px 0 0;
-    }
+    .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 2rem; }
+    .table-card-header { padding: 1.25rem 1.75rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; background: #FAFBFC; }
+    .table-card-title { display: flex; align-items: center; gap: 12px; font-size: 1.1rem; font-weight: 800; color: #0f172a; }
+    .custom-table { width: 100%; border-collapse: collapse; text-align: right; }
+    .custom-table thead th { background: #F8FAFC; color: var(--text-muted); font-size: 0.8rem; font-weight: 800; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+    .custom-table tbody tr { transition: background 0.15s; }
+    .custom-table tbody tr:hover { background: #FAFBFC; }
+    .custom-table tbody td { padding: 16px 20px; border-bottom: 1px solid #F1F5F9; font-size: 0.92rem; font-weight: 600; color: var(--text-main); vertical-align: middle; }
+    .custom-table tbody tr:last-child td { border-bottom: none; }
 
-    .hero-stats { display: flex; gap: 0.8rem; align-items: center; }
-    .hero-stat {
-        background: #F8FAFC;
-        border: 1px solid #E2E8F0;
-        border-radius: 12px;
-        padding: 8px 14px;
-        text-align: center;
-    }
-    .hero-stat .num { font-size: 1.4rem; font-weight: 900; color: #1E293B; line-height: 1; }
-    .hero-stat .lbl { font-size: 0.65rem; color: #64748B; font-weight: 700; }
+    .badge { padding: 5px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .badge .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .badge-pending  { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+    .badge-pending .dot { background: #f59e0b; }
+    .badge-approved { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .badge-approved .dot { background: #22c55e; }
+    .badge-rejected { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .badge-rejected .dot { background: #ef4444; }
 
-    /* ═══ FILTERS BAR ═══ */
-    .filter-bar {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        flex-wrap: wrap;
-        padding-top: 1.2rem;
-        border-top: 1px solid #F1F5F9;
-    }
-    .search-box {
-        flex: 1;
-        min-width: 250px;
-        position: relative;
-    }
-    .search-box input {
-        width: 100%;
-        padding: 10px 14px 10px 40px;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 10px;
-        font-family: 'Cairo', sans-serif;
-        font-size: 0.85rem;
-        font-weight: 600;
-        outline: none;
-        transition: all 0.2s;
-    }
-    .search-box input:focus {
-        border-color: #2E7D32;
-        box-shadow: 0 0 0 3px rgba(46,125,50,0.1);
-    }
-    .search-box svg {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #94a3b8;
-    }
-    .filter-select {
-        padding: 10px 14px;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 10px;
-        font-family: 'Cairo', sans-serif;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #334155;
-        outline: none;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    .filter-select:focus {
-        border-color: #2E7D32;
-    }
+    .btn-tbl { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 9px; cursor: pointer; text-decoration: none; transition: all 0.2s; border: 1px solid #e2e8f0; background: #f8fafc; color: #475569; }
+    .btn-tbl.view:hover { color: #0284C7; background: #E0F2FE; border-color: #BAE6FD; }
 
-    /* ── Table ── */
-    .table-card {
-        background: var(--white);
-        border-radius: 16px;
-        border: 1px solid var(--border);
-        overflow: hidden;
-        margin-bottom: 2rem;
-    }
-
-    .data-card-header, .table-card-header {
-        padding: 1.25rem 1.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid #f1f5f9;
-        background: #FAFBFC;
-    }
-
-    .data-card-title, .table-card-title {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 1.1rem;
-        font-weight: 800;
-        color: #0f172a;
-    }
-
-    .custom-table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: right;
-    }
-
-    .custom-table thead th {
-        background: #F8FAFC;
-        color: var(--text-muted);
-        font-size: 0.8rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 14px 20px;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .custom-table tbody tr {
-        transition: background 0.15s;
-    }
-
-    .custom-table tbody tr:hover {
-        background: #FAFBFC;
-    }
-
-    .custom-table tbody td {
-        padding: 16px 20px;
-        border-bottom: 1px solid #F1F5F9;
-        font-size: 0.92rem;
-        font-weight: 600;
-        color: var(--text-main);
-        vertical-align: middle;
-    }
-
-    .custom-table tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-    /* ═══ BADGES ═══ */
-    .badge {
-        padding: 6px 12px;
-        border-radius: 999px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        white-space: nowrap;
-    }
-    .badge .dot { width: 6px; height: 6px; border-radius: 50%; }
-
-    .badge-treatment  { background: #eff6ff; color: #2563eb; }
-    .badge-treatment .dot { background: #3b82f6; }
-    .badge-autopsy    { background: #fef2f2; color: #dc2626; }
-    .badge-autopsy .dot { background: #ef4444; }
-    .badge-quarantine { background: #fff7ed; color: #ea580c; }
-    .badge-quarantine .dot { background: #f97316; }
-    .badge-hospital   { background: #f0fdf4; color: #16a34a; }
-    .badge-hospital .dot { background: #22c55e; }
-    .badge-pending   { background: #fef2f2; color: #e11d48; border: 1px solid #fecdd3; }
-    .badge-pending .dot { background: #e11d48; }
-    .badge-review    { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
-    .badge-review .dot { background: #d97706; }
-    .badge-ready     { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
-    .badge-ready .dot { background: #15803d; }
-    .badge-completed { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
-    .badge-completed .dot { background: #15803d; }
-    .badge-none { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
-    .badge-none .dot { background: #94a3b8; }
-    .badge-active   { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
-    .badge-active .dot { background: #22c55e; }
-
-    /* ═══ ACTION BUTTON ═══ */
-    .btn-action, .btn-tbl {
-        display: inline-flex; align-items: center; gap: 6px;
-        padding: 8px 14px; border-radius: 8px;
-        font-family: 'Cairo', sans-serif; font-size: 0.8rem; font-weight: 700;
-        cursor: pointer; text-decoration: none; transition: all 0.2s;
-        border: 1px solid #e2e8f0; white-space: nowrap;
-        background: #ffffff; color: #334155;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .btn-action:hover, .btn-tbl:hover {
-        background: #f8fafc; border-color: #cbd5e1;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .btn-tbl-view { background: #fff; color: #334155; border-color: #e2e8f0; }
-    .btn-tbl-view:hover { background: #f8fafc; border-color: #94a3b8; }
-    .btn-tbl-export { background: #fff; color: #16a34a; border-color: #bbf7d0; }
-    .btn-tbl-export:hover { background: #f0fdf4; border-color: #22c55e; }
-
-    /* Animal ID style */
-    .animal-id {
-        font-family: 'Courier New', monospace;
-        font-size: 0.75rem;
-        background: #f8fafc;
-        padding: 2px 6px;
-        border-radius: 6px;
-        color: #64748b;
-        font-weight: 700;
-        display: inline-block;
-        margin-top: 4px;
-        border: 1px solid #e2e8f0;
-    }
-
-    /* ═══ SIDE PANEL & OTHERS ═══ */
-    .side-panel { display: flex; flex-direction: column; gap: 1.2rem; }
-    .activity-feed { background: #fff; border-radius: 18px; border: 1px solid #e8edf5; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.04); }
-    .activity-item { display: flex; gap: 12px; padding: 1rem 1.2rem; border-bottom: 1px solid #f8fafc; align-items: flex-start; transition: background 0.15s; }
-    .activity-item:last-child { border-bottom: none; }
-    .activity-item:hover { background: #f8faff; }
-    .activity-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
-    .activity-text { flex: 1; font-size: 0.8rem; font-weight: 600; color: #334155; line-height: 1.5; }
-    .activity-time { font-size: 0.7rem; color: #94a3b8; font-weight: 600; white-space: nowrap; margin-top: 2px; }
-
-    /* ═══ QUICK LINKS ═══ */
-    .quick-links { background: #fff; border-radius: 18px; border: 1px solid #e8edf5; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.04); }
-    .quick-link-item { display: flex; align-items: center; gap: 12px; padding: 0.9rem 1.2rem; text-decoration: none; border-bottom: 1px solid #f8fafc; transition: all 0.2s; }
-    .quick-link-item:last-child { border-bottom: none; }
-    .quick-link-item:hover { background: #f0fdf4; padding-right: 1.5rem; }
-    .quick-link-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .quick-link-text { flex: 1; font-size: 0.83rem; font-weight: 700; color: #334155; }
-    .quick-link-arr { color: #cbd5e1; transition: color 0.2s, transform 0.2s; }
-    .quick-link-item:hover .quick-link-arr { color: #1a4a2e; transform: translateX(-4px); }
+    .animal-id { font-family: 'Courier New', monospace; font-size: 0.75rem; background: #f8fafc; padding: 3px 8px; border-radius: 6px; color: #334155; font-weight: 800; display: inline-block; border: 1px solid #e2e8f0; }
 
     /* ═══ MODAL ═══ */
-    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; }
     .modal-backdrop.open { display: flex; }
-    .modal-box { background: #fff; border-radius: 20px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 30px 80px rgba(0,0,0,0.25); animation: modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-    @keyframes modalIn { from { transform: translateY(30px) scale(0.96); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-    .modal-header { padding: 1.4rem 1.6rem; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #0d2818, #1a4a2e); border-radius: 20px 20px 0 0; }
-    .modal-header h3 { font-size: 1.05rem; font-weight: 800; color: #fff; }
-    .modal-close { width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.15); border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; font-weight: 700; transition: background 0.2s; }
-    .modal-close:hover { background: rgba(255,255,255,0.25); }
-    .modal-body { padding: 1.6rem; }
-    .modal-footer { padding: 1rem 1.6rem; border-top: 1px solid #f1f5f9; display: flex; gap: 10px; justify-content: flex-end; }
-    
-    .decision-box { background: #fff; border-radius: 20px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 30px 80px rgba(0,0,0,0.25); animation: modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-    .decision-header { padding: 1.4rem 1.6rem; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #1e3a8a, #3b82f6); border-radius: 20px 20px 0 0; }
-    .decision-header h3 { font-size: 1.05rem; font-weight: 800; color: #fff; }
-    .decision-body { padding: 1.6rem; }
-    .decision-footer { padding: 1rem 1.6rem; border-top: 1px solid #f1f5f9; display: flex; gap: 10px; justify-content: flex-end; }
-    .decision-options { display: flex; flex-direction: column; gap: 10px; }
-    .decision-option { display: flex; align-items: center; gap: 15px; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
-    .decision-option:hover { border-color: #94a3b8; background: #f8fafc; }
-    .decision-option.selected { border-color: #2E7D32; background: #F0FDF4; }
-    .opt-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
-    .opt-title { font-size: 0.95rem; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
-    .opt-desc { font-size: 0.78rem; color: #64748b; font-weight: 600; line-height: 1.4; }
-    .detail-section { margin-bottom: 1.5rem; }
-    .detail-section h4 { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem; padding-bottom: 8px; border-bottom: 2px solid #f1f5f9; }
-    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .detail-item { display: flex; flex-direction: column; gap: 4px; }
-    .detail-item label { font-size: 0.75rem; color: #64748b; font-weight: 700; }
-    .detail-item span { font-size: 0.88rem; color: #0f172a; font-weight: 800; }
-    .vet-note { background: #f8fafc; border-left: 3px solid #3b82f6; padding: 12px 15px; border-radius: 0 8px 8px 0; margin-bottom: 10px; }
-    .note-date { font-size: 0.75rem; color: #64748b; font-weight: 700; margin-bottom: 4px; }
-    .note-text { font-size: 0.85rem; color: #334155; font-weight: 600; line-height: 1.5; }
+    .modal-box { background: #fff; border-radius: 20px; width: 100%; max-width: 720px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 50px rgba(0,0,0,0.15); animation: modalIn 0.3s cubic-bezier(0.4,0,0.2,1); }
+    @keyframes modalIn { from { transform: translateY(24px) scale(0.97); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
 
-    /* ═══ FORM ═══ */
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group.full { grid-column: span 2; }
-    .form-group label { font-size: 0.8rem; font-weight: 800; color: #374151; }
-    .form-group label span.req { color: #ef4444; }
-    .form-input, .form-select, .form-textarea { padding: 9px 12px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600; color: #0f172a; background: #fafbff; transition: border-color 0.2s, box-shadow 0.2s; outline: none; }
-    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: #2d7a47; box-shadow: 0 0 0 3px rgba(45,122,71,0.1); background: #fff; }
-    .form-textarea { resize: vertical; min-height: 80px; }
-    .btn-submit { padding: 10px 24px; background: linear-gradient(135deg, #1a4a2e, #2d7a47); color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(45,122,71,0.3); }
-    .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(45,122,71,0.35); }
-    .btn-cancel { padding: 10px 20px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; }
-    .btn-cancel:hover { background: #e2e8f0; }
+    .modal-header { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 1.2rem 1.5rem 0; display: flex; justify-content: space-between; align-items: flex-end; }
+    .modal-title-wrap { padding-bottom: 0.8rem; }
+    .modal-title-wrap h3 { margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a; }
+    .modal-title-wrap span { font-size: 0.8rem; color: #64748b; font-weight: 600; }
+    .modal-tabs-wrap { display: flex; align-items: center; gap: 20px; }
+    .modal-tabs { display: flex; }
+    .modal-tab { padding: 10px 22px; border: none; background: transparent; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; color: #94a3b8; border-bottom: 3px solid transparent; transition: all 0.2s; }
+    .modal-tab.active { color: #1a4a2e; border-bottom-color: #1a4a2e; }
+    .modal-close { width: 32px; height: 32px; border-radius: 8px; background: #fff; border: 1px solid #e2e8f0; color: #64748b; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; font-weight: 700; transition: all 0.2s; margin-bottom: 10px; }
+    .modal-close:hover { background: #f8fafc; color: #0f172a; }
 
-    /* ═══ CONFIRM MODAL ═══ */
-    .confirm-box, .release-box { background: #fff; border-radius: 18px; width: 100%; max-width: 420px; padding: 2rem; text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,0.2); animation: modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-    .confirm-icon, .release-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.6rem; }
-    .confirm-icon { background: #fff1f2; }
-    .release-icon { background: #f0fdf4; }
-    .confirm-box h3, .release-box h3 { font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
-    .confirm-box p, .release-box p { font-size: 0.83rem; color: #64748b; font-weight: 600; margin-bottom: 1.5rem; line-height: 1.6; }
-    .confirm-actions { display: flex; gap: 10px; justify-content: center; }
-    .btn-confirm-delete, .btn-confirm-slaughter { padding: 9px 22px; background: #e11d48; color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: all 0.2s; }
-    .btn-confirm-delete:hover, .btn-confirm-slaughter:hover { background: #be123c; }
-    .btn-confirm-release { padding: 9px 22px; background: #16a34a; color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: all 0.2s; }
-    .btn-confirm-release:hover { background: #15803d; }
+    .modal-body { padding: 1.5rem; overflow-y: auto; max-height: 65vh; }
 
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #e2e8f0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .info-cell { background: #fff; padding: 12px 16px; }
+    .info-cell.span-2 { grid-column: span 2; }
+    .info-cell-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; margin-bottom: 4px; }
+    .info-cell-value { font-size: 0.9rem; color: #0f172a; font-weight: 800; }
 
-/* ═══ SUMMARY CARD ═══ */
-.summary-card {
-    background: #fff;
-    border: 1px solid #e8edf5;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-}
-.summary-header {
-    padding: 1.5rem 2rem;
-    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-    border-bottom: 1px solid #e8edf5;
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-}
-.animal-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
-    border: 2px solid #2E7D32;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-}
-.animal-info h3 { font-size: 1.2rem; font-weight: 900; color: #0f172a; margin-bottom: 4px; }
-.animal-info p { font-size: 0.8rem; color: #64748b; font-weight: 600; }
-.summary-body { padding: 2rem; }
-.summary-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-}
-.info-item { padding: 0.8rem 0; }
-.info-item-label { font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 4px; }
-.info-item-value { font-size: 0.85rem; font-weight: 700; color: #0f172a; }
+    .content-box { background: #fff; padding: 12px 16px; border-radius: 8px; font-size: 0.9rem; color: #1e293b; font-weight: 600; line-height: 1.6; border: 1px solid #e2e8f0; border-right: 4px solid #3b82f6; margin-bottom: 1rem; }
+    .section-label { font-size: 0.85rem; color: #0f172a; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
 
-/* ═══ REASON CARD ═══ */
-.reason-card {
-    background: #fff;
-    border: 1px solid #e8edf5;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-}
-.reason-header {
-    padding: 1.5rem 2rem;
-    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-    border-bottom: 1px solid #e8edf5;
-}
-.reason-header h3 { font-size: 1.1rem; font-weight: 900; color: #0f172a; }
-.reason-body { padding: 2rem; }
-.reason-section { margin-bottom: 1.5rem; }
-.reason-section:last-child { margin-bottom: 0; }
-.reason-label { font-size: 0.8rem; font-weight: 800; color: #2E7D32; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-.reason-content {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #334155;
-    line-height: 1.7;
-    background: #f8fafc;
-    padding: 1rem 1.4rem;
-    border-radius: 10px;
-    border-left: 3px solid #2E7D32;
-}
+    .status-section { border-radius: 12px; padding: 1.2rem; margin-top: 1.5rem; border: 1px solid transparent; }
+    .status-section-title { font-size: 0.95rem; font-weight: 800; margin-bottom: 1rem; padding-bottom: 10px; border-bottom: 2px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 8px; }
+    .status-pending { background: #f8fafc; border-color: #e2e8f0; text-align: center; color: #475569; font-weight: 700; }
+    .status-approved { background: #f0fdf4; border-color: #bbf7d0; }
+    .status-approved .status-section-title { color: #15803d; }
+    .status-rejected { background: #fef2f2; border-color: #fecaca; }
+    .status-rejected .status-section-title { color: #dc2626; }
+    .status-box { background: #fff; padding: 12px 16px; border-radius: 8px; font-size: 0.9rem; color: #1e293b; font-weight: 700; border: 1px solid rgba(0,0,0,0.05); }
 
-/* ═══ ACTION BUTTONS ═══ */
-.actions-bar {
-    display: flex;
-    gap: 1rem;
-    margin-top: 2rem;
-}
-.btn-action {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    border-radius: 10px;
-    font-family: 'Cairo', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 800;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 1px solid;
-    text-decoration: none;
-}
-.btn-approve {
-    background: #15803d;
-    color: #fff;
-    border-color: #15803d;
-}
-.btn-approve:hover { background: #166534; }
-.btn-reject {
-    background: #e11d48;
-    color: #fff;
-    border-color: #e11d48;
-}
-.btn-reject:hover { background: #be123c; }
+    .modal-footer { background: #fff; border-top: 1px solid #e2e8f0; padding: 1.2rem 1.5rem; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+    .btn-cancel { padding: 10px 20px; background: #fff; color: #475569; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; }
+    .btn-cancel:hover { background: #f8fafc; }
+    .btn-secondary { padding: 10px 20px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+    .btn-secondary:hover { background: #dbeafe; }
+    .btn-approve { padding: 10px 20px; background: #15803d; color: #fff; border: 1px solid #15803d; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-approve:hover { background: #166534; }
+    .btn-reject { padding: 10px 20px; background: #fff; color: #dc2626; border: 1px solid #fecaca; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-reject:hover { background: #fef2f2; }
 
-/* ═══ MODAL ═══ */
-.modal-backdrop {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-.modal-backdrop.active { display: flex; }
-.modal-box {
-    background: #fff;
-    border-radius: 16px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    animation: modalIn 0.3s ease-out;
-}
-@keyframes modalIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.modal-header {
-    padding: 1.5rem 2rem;
-    border-bottom: 1px solid #f1f5f9;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-.modal-header h3 { font-size: 1.1rem; font-weight: 900; color: #0f172a; }
-.modal-close {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #94a3b8;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-.modal-close:hover { color: #64748b; }
-.modal-body { padding: 2rem; }
-.modal-text {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #334155;
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-}
-.modal-textarea {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 10px;
-    font-family: 'Cairo', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #334155;
-    outline: none;
-    transition: all 0.2s;
-    resize: vertical;
-    min-height: 100px;
-}
-.modal-textarea:focus {
-    border-color: #2E7D32;
-    box-shadow: 0 0 0 3px rgba(46,125,50,0.1);
-}
-.modal-footer {
-    padding: 1.5rem 2rem;
-    border-top: 1px solid #f1f5f9;
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-}
-.btn-modal {
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-family: 'Cairo', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 800;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 1px solid;
-}
-.btn-modal-confirm {
-    background: #2E7D32;
-    color: #fff;
-    border-color: #2E7D32;
-}
-.btn-modal-confirm:hover { background: #1B5E20; }
-.btn-modal-cancel {
-    background: #fff;
-    color: #64748b;
-    border-color: #e2e8f0;
-}
-.btn-modal-cancel:hover { background: #f8fafc; }
-
-/* ═══ STATUS BADGES ═══ */
-.badge { padding: 4px 10px; border-radius: 18px; font-size: 0.72rem; font-weight: 800; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
-.badge .dot { width: 5px; height: 5px; border-radius: 50%; }
-.badge-pending { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
-.badge-pending .dot { background: #f59e0b; }
-.badge-approved { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
-.badge-approved .dot { background: #22c55e; }
-.badge-rejected { background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; }
-.badge-rejected .dot { background: #ef4444; }
-
+    .confirm-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); backdrop-filter: blur(4px); z-index: 1100; align-items: center; justify-content: center; }
+    .confirm-backdrop.open { display: flex; }
+    .confirm-box { background: #fff; border-radius: 16px; width: 100%; max-width: 440px; padding: 1.8rem; box-shadow: 0 25px 50px rgba(0,0,0,0.15); }
+    .confirm-box h4 { font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0 0 10px; }
+    .confirm-box p { font-size: 0.88rem; color: #64748b; font-weight: 600; line-height: 1.6; margin-bottom: 1.2rem; }
+    .confirm-textarea { width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 600; resize: vertical; min-height: 90px; outline: none; margin-bottom: 1rem; }
+    .confirm-textarea:focus { border-color: #2E7D32; }
+    .confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .btn-confirm { padding: 10px 20px; background: #15803d; color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; }
+    .btn-confirm-danger { padding: 10px 20px; background: #dc2626; color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; }
 </style>
 @endsection
 
-@section('content')
-{{-- ═══════ HEADER & FILTERS ═══════ --}}
-<div class="top-card">
-    <div class="page-header" style="justify-content: flex-end;">
-        <div class="hero-stats">
-            <div class="hero-stat">
-                <div class="num">3</div>
-                <div class="lbl">قيد المراجعة</div>
-            </div>
-            <div class="hero-stat">
-                <div class="num">2</div>
-                <div class="lbl">معتمدة</div>
-            </div>
-            <div class="hero-stat">
-                <div class="num">1</div>
-                <div class="lbl">مرفوضة</div>
-            </div>
-        </div>
-    </div>
+@php $vetBase = ($readOnly ?? false) ? '/director/vet' : '/vet'; @endphp
 
+@section('content')
+
+<div class="top-card">
     <div class="filter-bar">
         <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="بحث برقم الحيوان، نوع الحيوان، أو رقم الإحالة...">
+            <input type="text" placeholder="بحث برقم الحيوان أو نوعه...">
         </div>
         <select class="filter-select">
-            <option value="">كل المجموعات</option>
-            <option value="big">القطط الكبرى</option>
-            <option value="primates">القرود</option>
-            <option value="herbivores">العناقيد الكبرى</option>
-            <option value="birds">الطيور</option>
+            <option value="">كل الحالات</option>
+            <option>قيد المراجعة</option>
+            <option>معتمدة</option>
+            <option>مرفوضة</option>
         </select>
         <select class="filter-select">
-            <option value="">كل الحالات</option>
-            <option value="pending">قيد المراجعة</option>
-            <option value="approved">معتمدة</option>
-            <option value="rejected">مرفوضة</option>
+            <option value="">كل المجموعات</option>
+            <option>القطط الكبرى</option>
+            <option>القرود</option>
+            <option>العناقيد الكبرى</option>
+            <option>الطيور</option>
         </select>
         <select class="filter-select">
             <option value="">كل التواريخ</option>
-            <option value="today">اليوم</option>
-            <option value="week">هذا الأسبوع</option>
-            <option value="month">هذا الشهر</option>
+            <option>اليوم</option>
+            <option>آخر 7 أيام</option>
+            <option>آخر 30 يوم</option>
         </select>
     </div>
 </div>
 
-{{-- ═══ TABLE ═══ --}}
 <div class="table-card">
     <div class="table-card-header">
-        <div class="table-card-title">إحالات العلاج</div>
+        <div class="table-card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            إحالات العلاج
+        </div>
     </div>
     <div style="overflow-x:auto;">
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>رقم الإحالة</th>
-                    <th>الرقم الرسمي للحيوان</th>
+                    <th>اسم الحيوان</th>
+                    <th>صورة</th>
+                    <th>رقم الحيوان</th>
                     <th>نوع الحيوان</th>
-                    <th>المجموعة الحيوانية</th>
-                    <th>تاريخ الإرسال</th>
+                    <th>المجموعة</th>
                     <th>سبب التحويل للعلاج</th>
-                    <th>حالة الإحالة</th>
-                    <th>الإجراءات</th>
+                    <th>تاريخ الإحالة</th>
+                    <th>الحالة</th>
+                    <th class="col-actions">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
-                {{-- Row 1: Pending --}}
                 <tr>
-                    <td><span style="font-family:'Courier New',monospace;font-size:0.75rem;background:#fffbeb;color:#b45309;padding:3px 8px;border-radius:6px;font-weight:700;">001-2025-TR</span></td>
-                    <td>#ANL-0871</td>
-                    <td>شمبانزي أفريقي</td>
+                    <td><span class="animal-name">كوكو</span></td>
+                    <td><div class="animal-thumb">🐒</div></td>
+                    <td><span class="animal-id">#ANL-0871</span></td>
+                    <td style="font-weight:700;">شمبانزي أفريقي</td>
                     <td>القرود</td>
+                    <td><span class="reason-cell">إصابة بالقدم الأمامية</span></td>
                     <td>2025-05-13</td>
-                    <td>إصابة بالقدم الأمامية</td>
                     <td><span class="badge badge-pending"><span class="dot"></span>قيد المراجعة</span></td>
-                    <td>
-                        <a href="javascript:void(0)" onclick="openReferralModal()" class="btn-tbl btn-tbl-view" style="padding: 8px;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
+                    <td class="col-actions">
+                        <button onclick="openModal('pending', 'TR-001')" class="btn-tbl view" title="عرض التفاصيل">
+                            @include('partials.icon-chevron-view')
+                        </button>
                     </td>
                 </tr>
-                {{-- Row 2: Approved --}}
                 <tr>
-                    <td><span style="font-family:'Courier New',monospace;font-size:0.75rem;background:#f0fdf4;color:#15803d;padding:3px 8px;border-radius:6px;font-weight:700;">002-2025-TR</span></td>
-                    <td>#ANM-154</td>
-                    <td>زرافة نيلية</td>
+                    <td><span class="animal-name" style="color:#94a3b8;font-style:italic;">—</span></td>
+                    <td><div class="animal-thumb">🦒</div></td>
+                    <td><span class="animal-id">#ANM-154</span></td>
+                    <td style="font-weight:700;">زرافة نيلية</td>
                     <td>العناقيد الكبرى</td>
+                    <td><span class="reason-cell">مشاكل هضمية</span></td>
                     <td>2025-05-15</td>
-                    <td>مشاكل هضمية</td>
                     <td><span class="badge badge-approved"><span class="dot"></span>معتمدة</span></td>
-                    <td>
-                        <a href="javascript:void(0)" onclick="openReferralModal()" class="btn-tbl btn-tbl-view" style="padding: 8px;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
+                    <td class="col-actions">
+                        <button onclick="openModal('approved', 'TR-002')" class="btn-tbl view" title="عرض التفاصيل">
+                            @include('partials.icon-chevron-view')
+                        </button>
                     </td>
                 </tr>
-                {{-- Row 3: Rejected --}}
                 <tr>
-                    <td><span style="font-family:'Courier New',monospace;font-size:0.75rem;background:#fff1f2;color:#e11d48;padding:3px 8px;border-radius:6px;font-weight:700;">003-2025-TR</span></td>
-                    <td>#ANM-088</td>
-                    <td>نسر ذهبي</td>
+                    <td><span class="animal-name">صقر</span></td>
+                    <td><div class="animal-thumb">🦅</div></td>
+                    <td><span class="animal-id">#ANM-088</span></td>
+                    <td style="font-weight:700;">نسر ذهبي</td>
                     <td>الطيور</td>
+                    <td><span class="reason-cell">كسر بسيط بالجناح</span></td>
                     <td>2025-05-10</td>
-                    <td>كسر بسيط بالجناح</td>
                     <td><span class="badge badge-rejected"><span class="dot"></span>مرفوضة</span></td>
-                    <td>
-                        <a href="javascript:void(0)" onclick="openReferralModal()" class="btn-tbl btn-tbl-view" style="padding: 8px;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
+                    <td class="col-actions">
+                        <button onclick="openModal('rejected', 'TR-003')" class="btn-tbl view" title="عرض التفاصيل">
+                            @include('partials.icon-chevron-view')
+                        </button>
                     </td>
                 </tr>
             </tbody>
@@ -643,213 +213,317 @@
     </div>
 </div>
 
-{{-- ═══ DETAIL MODAL ═══ --}}
-<div class="modal-backdrop" id="referralDetailModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.7); backdrop-filter:blur(5px); z-index:9999; align-items:center; justify-content:center; padding:2rem;">
-    <div class="modal-box" style="max-width:680px; background:#f1f5f9; overflow:hidden; display:flex; flex-direction:column;">
-
-        <div class="modal-header" style="background:#fff; border-bottom:1px solid #e2e8f0; padding:1.2rem 1.5rem 0; display:flex; justify-content:space-between; align-items:flex-end;">
-            <div style="padding-bottom:0.8rem;">
-                <h3 style="margin:0; font-size:1.1rem; font-weight:800; color:#0f172a;">تفاصيل الإحالة</h3>
-                <span style="font-size:0.8rem; color:#64748b; font-weight:600;">001-2025-TR — شمبانزي أفريقي</span>
+{{-- ═══ DETAIL MODAL (نفس بيانات الرعاية والتغذية) ═══ --}}
+<div class="modal-backdrop" id="referralModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-title-wrap">
+                <h3>تفاصيل إحالة علاج</h3>
+                <span id="mSubtitle">—</span>
             </div>
-            <div style="display:flex; align-items:center; gap:20px;">
-                <div style="display:flex; gap:10px;">
-                    <button id="rtab-btn-animal" onclick="switchTab('animal')" style="padding:10px 18px; border:none; background:transparent; font-family:'Cairo',sans-serif; font-size:0.85rem; font-weight:800; cursor:pointer; color:#1a4a2e; border-bottom:3px solid #1a4a2e;">بيانات الحيوان</button>
-                    <button id="rtab-btn-reason" onclick="switchTab('reason')" style="padding:10px 18px; border:none; background:transparent; font-family:'Cairo',sans-serif; font-size:0.85rem; font-weight:800; cursor:pointer; color:#94a3b8; border-bottom:3px solid transparent;">سبب الإحالة</button>
+            <div class="modal-tabs-wrap">
+                <div class="modal-tabs">
+                    <button class="modal-tab active" id="mtab-btn-1" onclick="switchMTab(1)">بيانات الإحالة</button>
+                    <button class="modal-tab" id="mtab-btn-2" onclick="switchMTab(2)">الحالة الصحية المرتبطة</button>
                 </div>
-                <button onclick="closeReferralModal()" style="width:32px; height:32px; border-radius:8px; background:#f1f5f9; border:none; color:#64748b; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.1rem; font-weight:700; transition:all 0.2s; margin-bottom:10px;">✕</button>
+                <button class="modal-close" onclick="closeModal()">✕</button>
             </div>
         </div>
 
-        <div style="padding:1.5rem; overflow-y:auto; max-height:65vh;">
-            <div id="rtab-animal">
-        <div class="summary-card">
-            <div class="summary-header">
-                <div class="animal-info">
-                    <h3>شمبانزي أفريقي</h3>
-                    <p>001-2025-TR — #ANL-0871</p>
+        <div class="modal-body">
+            <div id="mtab-1">
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.5rem; flex-wrap:wrap;">
+                    <div class="animal-thumb" id="mAnimalPhoto" style="width:52px;height:52px;font-size:1.6rem;">🐒</div>
+                    <div style="flex:1;">
+                        <div style="font-size:1rem;font-weight:800;color:#0f172a;" id="mAnimalName">—</div>
+                        <div style="font-size:0.8rem;color:#64748b;font-weight:600;" id="mAnimalSub">—</div>
+                    </div>
+                    <span id="mStatusBadge"></span>
                 </div>
-            </div>
-            <div class="summary-body">
-                <div class="summary-grid">
-                    <div class="info-item">
-                        <div class="info-item-label">رقم الإحالة</div>
-                        <div class="info-item-value">TR-2025-001</div>
+
+                <div class="section-label">سبب التحويل للعلاج</div>
+                <div class="content-box" id="mTransferReason" style="margin-bottom:1.5rem;">—</div>
+
+                <div class="info-grid">
+                    <div class="info-cell">
+                        <div class="info-cell-label">رقم الحيوان الرسمي</div>
+                        <div class="info-cell-value" style="font-family:'Courier New',monospace;color:#64748b;" id="mAnimalId">—</div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-item-label">رقم الحيوان</div>
-                        <div class="info-item-value">#ANL-0871</div>
+                    <div class="info-cell">
+                        <div class="info-cell-label">نوع الحيوان</div>
+                        <div class="info-cell-value" id="mAnimalType">—</div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-item-label">نوع الحيوان</div>
-                        <div class="info-item-value">شمبانزي أفريقي</div>
+                    <div class="info-cell">
+                        <div class="info-cell-label">الجنس</div>
+                        <div class="info-cell-value" id="mGender">—</div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-item-label">الجنس</div>
-                        <div class="info-item-value">ذكر</div>
+                    <div class="info-cell">
+                        <div class="info-cell-label">العمر</div>
+                        <div class="info-cell-value" id="mAge">—</div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-item-label">العمر</div>
-                        <div class="info-item-value">6 سنوات</div>
+                    <div class="info-cell">
+                        <div class="info-cell-label">المجموعة</div>
+                        <div class="info-cell-value" id="mGroup">—</div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-item-label">المجموعة</div>
-                        <div class="info-item-value">القرود</div>
+                    <div class="info-cell">
+                        <div class="info-cell-label">تاريخ إرسال الإحالة</div>
+                        <div class="info-cell-value" id="mDate">—</div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-item-label">تاريخ الإحالة</div>
-                        <div class="info-item-value">2025-05-13</div>
+                </div>
+
+                <div id="statusPending" class="status-section status-pending" style="display:none;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" style="margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <div>الإحالة بانتظار مراجعة رئيس قسم المستشفى البيطري.</div>
+                </div>
+
+                <div id="statusApproved" class="status-section status-approved" style="display:none;">
+                    <div class="status-section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        تم اعتماد الإحالة
                     </div>
-                    <div class="info-item">
-                        <div class="info-item-label">حالة الإحالة</div>
-                        <div class="info-item-value">
-                            <span class="badge badge-pending"><span class="dot"></span>قيد المراجعة</span>
+                    <div class="info-grid" style="margin-bottom:0;background:transparent;border:none;">
+                        <div class="info-cell" style="background:transparent;padding:0 0 10px 0;">
+                            <div class="info-cell-label">تاريخ الاعتماد</div>
+                            <div class="info-cell-value" id="appDate">—</div>
+                        </div>
+                        <div class="info-cell" style="background:transparent;padding:0 0 10px 0;">
+                            <div class="info-cell-label">الحالة داخل المستشفى</div>
+                            <div class="info-cell-value" style="color:#15803d;">تم فتح حالة علاجية</div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-            </div>
 
-            <div id="rtab-reason" style="display:none;">
-        <div class="reason-card">
-            <div class="reason-header">
-                <h3>سبب الإحالة والملاحظات</h3>
-            </div>
-            <div class="reason-body">
-                <div class="reason-section">
-                    <div class="reason-label">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                        سبب الإحالة
+                <div id="statusRejected" class="status-section status-rejected" style="display:none;">
+                    <div class="status-section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                        تم رفض الإحالة
                     </div>
-                    <div class="reason-content">إصابة في الطرف الأمامي</div>
-                </div>
-                <div class="reason-section">
-                    <div class="reason-label">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        الملاحظات المسجلة قبل التحويل
+                    <div class="info-grid" style="margin-bottom:10px;background:transparent;border:none;">
+                        <div class="info-cell" style="background:transparent;padding:0;">
+                            <div class="info-cell-label">تاريخ الرفض</div>
+                            <div class="info-cell-value" id="rejDate">—</div>
+                        </div>
                     </div>
-                    <div class="reason-content">الحيوان لا يستخدم يده اليسرى، مع وجود جرح واضح</div>
+                    <div>
+                        <div class="info-cell-label" style="margin-bottom:6px;">سبب الرفض</div>
+                        <div class="status-box" id="rejReason">—</div>
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <div id="mtab-2" style="display:none;">
+                <div class="section-label">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    بيانات الحالة الصحية الأصلية
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-cell">
+                        <div class="info-cell-label">رقم الحالة الصحية</div>
+                        <div class="info-cell-value" style="font-family:'Courier New',monospace;" id="hId">—</div>
+                    </div>
+                    <div class="info-cell">
+                        <div class="info-cell-label">تاريخ تسجيل الحالة</div>
+                        <div class="info-cell-value" id="hDate">—</div>
+                    </div>
+                    <div class="info-cell">
+                        <div class="info-cell-label">المشرف المسجل</div>
+                        <div class="info-cell-value" id="hSupervisor">—</div>
+                    </div>
+                    <div class="info-cell">
+                        <div class="info-cell-label">نوع المتابعة</div>
+                        <div class="info-cell-value" style="color:#dc2626;">تحتاج إحالة</div>
+                    </div>
+                    <div class="info-cell span-2">
+                        <div class="info-cell-label">وصف الحالة (من المشرف)</div>
+                        <div class="info-cell-value" id="hDesc" style="font-weight:600;line-height:1.6;">—</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:1rem;">
+                    <div class="info-cell-label" style="margin-bottom:6px;">الملاحظات المسجلة عن الحيوان</div>
+                    <div class="content-box" id="hNotes">—</div>
+                </div>
             </div>
         </div>
 
-{{-- ═══ ACTION BUTTONS ═══ --}}
-<div class="actions-bar" id="pendingActions" style="padding:0 1.5rem 1.5rem; margin-top:0;">
-    <button class="btn-action btn-approve" onclick="showApproveModal()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        اعتماد إحالة علاج
-    </button>
-    <button class="btn-action btn-reject" onclick="showRejectModal()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-        رفض إحالة علاج
-    </button>
-</div>
-
-{{-- ═══ APPROVE MODAL ═══ --}}
-<div class="modal-backdrop" id="approveModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <h3>اعتماد إحالة علاج</h3>
-            <button class="modal-close" onclick="closeModal('approveModal')">&times;</button>
-        </div>
-        <div class="modal-body">
-            <p class="modal-text">سيتم اعتماد الإحالة وإنشاء حالة داخل المستشفى لهذا الحيوان.</p>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-modal btn-modal-cancel" onclick="closeModal('approveModal')">تراجع</button>
-            <button class="btn-modal btn-modal-confirm" onclick="confirmApprove()">تأكيد الاعتماد</button>
-        </div>
+        <div class="modal-footer" id="mFooter"></div>
     </div>
 </div>
 
-{{-- ═══ REJECT MODAL ═══ --}}
-<div class="modal-backdrop" id="rejectModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <h3>رفض إحالة علاج</h3>
-            <button class="modal-close" onclick="closeModal('rejectModal')">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="reason-section">
-                <div class="reason-label">سبب الرفض</div>
-                <textarea class="modal-textarea" id="rejectReason" placeholder="يرجى إدخال سبب الرفض..."></textarea>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-modal btn-modal-cancel" onclick="closeModal('rejectModal')">تراجع</button>
-            <button class="btn-modal btn-modal-confirm" onclick="confirmReject()">تأكيد الرفض</button>
+{{-- تأكيد الاعتماد --}}
+@unless($readOnly ?? false)
+<div class="confirm-backdrop" id="approveConfirm">
+    <div class="confirm-box">
+        <h4>اعتماد إحالة علاج</h4>
+        <p>سيتم اعتماد الإحالة وإنشاء حالة داخل المستشفى لهذا الحيوان.</p>
+        <div class="confirm-actions">
+            <button class="btn-cancel" onclick="closeConfirm('approveConfirm')">تراجع</button>
+            <button class="btn-confirm" onclick="confirmApprove()">تأكيد الاعتماد</button>
         </div>
     </div>
 </div>
+@endunless
 
+{{-- تأكيد الرفض --}}
+@unless($readOnly ?? false)
+<div class="confirm-backdrop" id="rejectConfirm">
+    <div class="confirm-box">
+        <h4>رفض إحالة علاج</h4>
+        <p>يرجى إدخال سبب الرفض قبل المتابعة.</p>
+        <textarea class="confirm-textarea" id="rejectReasonInput" placeholder="سبب الرفض..."></textarea>
+        <div class="confirm-actions">
+            <button class="btn-cancel" onclick="closeConfirm('rejectConfirm')">تراجع</button>
+            <button class="btn-confirm-danger" onclick="confirmReject()">تأكيد الرفض</button>
+        </div>
     </div>
 </div>
-<script>
-function approveReferral(id) {
-    if(confirm('هل أنت متأكد من اعتماد إحالة العلاج ' + id + '؟')) {
-        alert('تم اعتماد الإحالة بنجاح');
-    }
-}
+@endunless
 
-function rejectReferral(id) {
-    const reason = prompt('يرجى إدخال سبب الرفض:');
-    if(reason) {
-        alert('تم رفض الإحالة: ' + reason);
-    }
-}
-
-
-function switchTab(tabName) {
-    document.getElementById('rtab-animal').style.display = 'none';
-    document.getElementById('rtab-reason').style.display = 'none';
-
-    document.getElementById('rtab-btn-animal').style.color = '#94a3b8';
-    document.getElementById('rtab-btn-animal').style.borderBottomColor = 'transparent';
-    document.getElementById('rtab-btn-reason').style.color = '#94a3b8';
-    document.getElementById('rtab-btn-reason').style.borderBottomColor = 'transparent';
-
-    document.getElementById('rtab-' + tabName).style.display = 'block';
-    document.getElementById('rtab-btn-' + tabName).style.color = '#1a4a2e';
-    document.getElementById('rtab-btn-' + tabName).style.borderBottomColor = '#1a4a2e';
-}
-
-function showApproveModal() {
-    document.getElementById('approveModal').classList.add('active');
-}
-
-function showRejectModal() {
-    document.getElementById('rejectModal').classList.add('active');
-}
-
-function closeModal(modalId) {
-    document.getElementById(modalId).classList.remove('active');
-}
-
-function confirmApprove() {
-    closeModal('approveModal');
-    alert('تم اعتماد الإحالة بنجاح');
-    document.getElementById('pendingActions').style.display = 'none';
-}
-
-function confirmReject() {
-    const reason = document.getElementById('rejectReason').value;
-    if(!reason.trim()) {
-        alert('يرجى إدخال سبب الرفض');
-        return;
-    }
-    closeModal('rejectModal');
-    alert('تم رفض الإحالة: ' + reason);
-    document.getElementById('pendingActions').style.display = 'none';
-}
-
-
-
-function openReferralModal() { document.getElementById('referralDetailModal').style.display = 'flex'; }
-function closeReferralModal() { document.getElementById('referralDetailModal').style.display = 'none'; }
-</script>
 @endsection
 
+@section('scripts')
+<script>
+    let currentStatus = '';
+    const isReadOnly = @json($readOnly ?? false);
 
+    function switchMTab(n) {
+        document.getElementById('mtab-1').style.display = n === 1 ? 'block' : 'none';
+        document.getElementById('mtab-2').style.display = n === 2 ? 'block' : 'none';
+        document.getElementById('mtab-btn-1').className = 'modal-tab' + (n === 1 ? ' active' : '');
+        document.getElementById('mtab-btn-2').className = 'modal-tab' + (n === 2 ? ' active' : '');
+    }
+
+    const referralDB = {
+        'TR-001': {
+            animalName: 'كوكو', animalEmoji: '🐒',
+            animalId: '#ANL-0871', animalType: 'شمبانزي أفريقي', gender: 'ذكر', age: '6 سنوات', group: 'القرود',
+            date: '2025-05-13', transferReason: 'إصابة بالقدم الأمامية',
+            hId: 'HC-1102', hDate: '2025-05-13', hSupervisor: 'ياسر الغيثي',
+            hDesc: 'إصابة في الطرف الأمامي مع جرح مفتوح', hNotes: 'الحيوان لا يستخدم يده اليسرى، مع وجود جرح واضح.',
+            appDate: '', rejDate: '', rejReason: '', hospitalCaseId: ''
+        },
+        'TR-002': {
+            animalName: '', animalEmoji: '🦒',
+            animalId: '#ANM-154', animalType: 'زرافة نيلية', gender: 'أنثى', age: '4 سنوات', group: 'العناقيد الكبرى',
+            date: '2025-05-15', transferReason: 'مشاكل هضمية',
+            hId: 'HC-1101', hDate: '2025-05-15', hSupervisor: 'خالد منصور',
+            hDesc: 'خمول ورفض جزئي للطعام', hNotes: 'الحيوان يأكل ببطء ويظهر انتفاخ خفيف.',
+            appDate: '2025-05-16', rejDate: '', rejReason: '', hospitalCaseId: 'HC-2025-002'
+        },
+        'TR-003': {
+            animalName: 'صقر', animalEmoji: '🦅',
+            animalId: '#ANM-088', animalType: 'نسر ذهبي', gender: 'ذكر', age: '3 سنوات', group: 'الطيور',
+            date: '2025-05-10', transferReason: 'كسر بسيط بالجناح',
+            hId: 'HC-1100', hDate: '2025-05-10', hSupervisor: 'أحمد الكواري',
+            hDesc: 'إصابة في الجناح أثناء الطيران داخل الحظيرة', hNotes: 'الجناح مرتخٍ جزئياً مع صعوبة في التوازن.',
+            appDate: '', rejDate: '2025-05-11', rejReason: 'الحالة لا تستدعي إحالة علاجية ونقل للمستشفى. يمكن المتابعة في الحظيرة.'
+        }
+    };
+
+    function openModal(status, refId) {
+        currentStatus = status;
+        switchMTab(1);
+        const d = referralDB[refId];
+        if (!d) return;
+
+        const displayName = d.animalName || d.animalType;
+        document.getElementById('mSubtitle').innerText = displayName + ' — ' + d.group;
+        document.getElementById('mAnimalPhoto').textContent = d.animalEmoji;
+        document.getElementById('mAnimalName').textContent = displayName;
+        document.getElementById('mAnimalSub').textContent = d.animalId + ' · ' + d.animalType;
+        document.getElementById('mTransferReason').textContent = d.transferReason;
+        document.getElementById('mAnimalId').textContent = d.animalId;
+        document.getElementById('mAnimalType').textContent = d.animalType;
+        document.getElementById('mGender').textContent = d.gender;
+        document.getElementById('mAge').textContent = d.age;
+        document.getElementById('mGroup').textContent = d.group;
+        document.getElementById('mDate').textContent = d.date;
+
+        document.getElementById('hId').textContent = d.hId;
+        document.getElementById('hDate').textContent = d.hDate;
+        document.getElementById('hSupervisor').textContent = d.hSupervisor;
+        document.getElementById('hDesc').textContent = d.hDesc;
+        document.getElementById('hNotes').textContent = d.hNotes;
+
+        document.getElementById('statusPending').style.display = 'none';
+        document.getElementById('statusApproved').style.display = 'none';
+        document.getElementById('statusRejected').style.display = 'none';
+
+        const footer = document.getElementById('mFooter');
+        const closeBtn = `<button class="btn-cancel" onclick="closeModal()">إغلاق</button>`;
+
+        if (status === 'pending') {
+            document.getElementById('mStatusBadge').innerHTML = `<span class="badge badge-pending"><span class="dot"></span>قيد المراجعة</span>`;
+            document.getElementById('statusPending').style.display = 'block';
+            if (isReadOnly) {
+                footer.innerHTML = closeBtn;
+            } else {
+                footer.innerHTML = `
+                <button class="btn-reject" onclick="showRejectConfirm()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                    رفض إحالة علاج
+                </button>
+                <button class="btn-approve" onclick="showApproveConfirm()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    اعتماد إحالة علاج
+                </button>
+                ${closeBtn}`;
+            }
+        } else if (status === 'approved') {
+            document.getElementById('mStatusBadge').innerHTML = `<span class="badge badge-approved"><span class="dot"></span>معتمدة</span>`;
+            document.getElementById('appDate').textContent = d.appDate;
+            document.getElementById('statusApproved').style.display = 'block';
+            const hospitalLink = d.hospitalCaseId ? `{{ $vetBase }}/cases/hospital/${d.hospitalCaseId}` : '{{ $vetBase }}/cases/hospital';
+            footer.innerHTML = closeBtn + `
+                <a href="${hospitalLink}" class="btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    عرض الحالة داخل المستشفى
+                </a>`;
+        } else {
+            document.getElementById('mStatusBadge').innerHTML = `<span class="badge badge-rejected"><span class="dot"></span>مرفوضة</span>`;
+            document.getElementById('rejDate').textContent = d.rejDate;
+            document.getElementById('rejReason').textContent = d.rejReason;
+            document.getElementById('statusRejected').style.display = 'block';
+            footer.innerHTML = closeBtn;
+        }
+
+        document.getElementById('referralModal').classList.add('open');
+    }
+
+    function closeModal() {
+        document.getElementById('referralModal').classList.remove('open');
+    }
+
+    function showApproveConfirm() {
+        if (isReadOnly) return;
+        document.getElementById('approveConfirm').classList.add('open');
+    }
+    function showRejectConfirm() {
+        if (isReadOnly) return;
+        document.getElementById('rejectReasonInput').value = '';
+        document.getElementById('rejectConfirm').classList.add('open');
+    }
+    function closeConfirm(id) { document.getElementById(id).classList.remove('open'); }
+
+    function confirmApprove() {
+        closeConfirm('approveConfirm');
+        closeModal();
+        alert('تم اعتماد الإحالة بنجاح');
+    }
+
+    function confirmReject() {
+        const reason = document.getElementById('rejectReasonInput').value.trim();
+        if (!reason) { alert('يرجى إدخال سبب الرفض'); return; }
+        closeConfirm('rejectConfirm');
+        closeModal();
+        alert('تم رفض الإحالة: ' + reason);
+    }
+
+    window.onclick = function(e) {
+        if (e.target === document.getElementById('referralModal')) closeModal();
+        if (e.target === document.getElementById('approveConfirm')) closeConfirm('approveConfirm');
+        if (e.target === document.getElementById('rejectConfirm')) closeConfirm('rejectConfirm');
+    };
+</script>
+@endsection

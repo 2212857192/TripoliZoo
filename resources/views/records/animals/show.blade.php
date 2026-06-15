@@ -4,163 +4,138 @@
 
 @section('styles')
 <style>
-    /* ═══ PAGE HEADER (vet hospital style) ═══ */
-    .page-header {
-        background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 40%, #43A047 100%);
-        border-radius: 20px;
-        padding: 2rem 2.5rem;
-        margin-bottom: 2rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 1rem;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 20px 60px rgba(46, 125, 50, 0.35);
-    }
-    .page-header::before {
-        content: '';
-        position: absolute;
-        top: -80px;
-        left: -80px;
-        width: 280px;
-        height: 280px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.04);
-    }
-    .header-left { position: relative; z-index: 2; }
-    .header-left h2 { font-size: 1.45rem; font-weight: 900; color: #fff; margin: 0 0 5px; }
-    .header-left p  { font-size: 0.85rem; color: rgba(255,255,255,0.65); font-weight: 600; margin: 0; }
-    .header-right { display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap; position: relative; z-index: 2; }
+    /* ═══ CARE STYLE: Breadcrumb ═══ */
+    .breadcrumb { display:flex; align-items:center; gap:8px; margin-bottom:1.5rem; font-size:0.9rem; font-weight:700; color:#64748b; }
+    .breadcrumb a { color:#2E7D32; text-decoration:none; transition:color 0.2s; display:flex; align-items:center; gap:4px; }
+    .breadcrumb a:hover { color:#1b5e20; }
 
-    .case-status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 18px;
-        background: rgba(255,255,255,0.2);
-        border: 1px solid rgba(255,255,255,0.4);
-        border-radius: 30px;
-        font-size: 0.85rem;
-        font-weight: 800;
-        color: #fff;
+    .header-card {
+        background:var(--white); border:1px solid var(--border); border-radius:16px;
+        padding:1.5rem 2rem; margin-bottom:1.5rem;
+        display:flex; justify-content:space-between; align-items:center;
+        box-shadow:0 4px 6px -1px rgba(0,0,0,0.02); flex-wrap:wrap; gap:1rem;
     }
+    .header-info h2 {
+        font-size:1.4rem; font-weight:800; color:#0f172a; margin:0 0 10px 0;
+        display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    }
+
+    .badge { padding:5px 12px; border-radius:999px; font-size:0.8rem; font-weight:700; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+    .badge .dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+    .badge-active    { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; }
+    .badge-active .dot { background:#22c55e; }
+    .badge-dead      { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
+    .badge-dead .dot { background:#ef4444; }
+    .badge-stillborn { background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; }
+    .badge-stillborn .dot { background:#f97316; }
+    .badge-slaughter { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
+    .badge-slaughter .dot { background:#dc2626; }
+    .badge-exited    { background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; }
+    .badge-exited .dot { background:#94a3b8; }
+
     .btn-back {
-        display: inline-flex; align-items: center; gap: 8px;
-        padding: 10px 20px;
-        background: rgba(255,255,255,0.15);
-        color: #fff;
-        border: 1px solid rgba(255,255,255,0.3);
-        border-radius: 12px;
-        font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 800;
-        cursor: pointer; transition: all 0.25s;
-        text-decoration: none;
+        display:inline-flex; align-items:center; gap:8px;
+        padding:10px 20px; background:#f8fafc; color:#475569;
+        border:1.5px solid #e2e8f0; border-radius:10px;
+        font-family:'Cairo',sans-serif; font-size:0.9rem; font-weight:800;
+        cursor:pointer; transition:all 0.2s; text-decoration:none;
     }
-    .btn-back:hover { background: rgba(255,255,255,0.25); }
-    .btn-header {
-        display: inline-flex; align-items: center; gap: 6px;
-        padding: 10px 16px;
-        border-radius: 12px;
-        font-family: 'Cairo', sans-serif; font-size: 0.82rem; font-weight: 800;
-        cursor: pointer; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.35);
-        background: rgba(255,255,255,0.15); color: #fff;
+    .btn-back:hover { background:#f1f5f9; color:#0f172a; }
+    .btn-export {
+        display:inline-flex; align-items:center; gap:8px;
+        padding:10px 20px; background:#2E7D32; color:#fff;
+        border:1.5px solid #2E7D32; border-radius:10px;
+        font-family:'Cairo',sans-serif; font-size:0.9rem; font-weight:800;
+        cursor:pointer; transition:all 0.2s;
     }
-    .btn-header:hover { background: rgba(255,255,255,0.25); }
-    .btn-header.danger {
-        background: rgba(254,226,226,0.2);
-        border-color: rgba(254,202,202,0.5);
-        color: #fff;
+    .btn-export:hover { background:#1B5E20; }
+    .btn-outline {
+        display:inline-flex; align-items:center; gap:8px;
+        padding:10px 20px; background:#fff; color:#475569;
+        border:1.5px solid #e2e8f0; border-radius:10px;
+        font-family:'Cairo',sans-serif; font-size:0.9rem; font-weight:800;
+        cursor:pointer; transition:all 0.2s;
     }
-    .btn-header.danger:hover { background: rgba(254,226,226,0.35); }
+    .btn-outline:hover { background:#f8fafc; color:#0f172a; }
+    .btn-danger-outline {
+        display:inline-flex; align-items:center; gap:8px;
+        padding:10px 20px; background:#fff; color:#dc2626;
+        border:1.5px solid #fecaca; border-radius:10px;
+        font-family:'Cairo',sans-serif; font-size:0.9rem; font-weight:800;
+        cursor:pointer; transition:all 0.2s;
+    }
+    .btn-danger-outline:hover { background:#fef2f2; }
 
-    /* ═══ TABS ═══ */
-    .tabs-container {
-        background: #fff;
-        border-radius: 18px;
-        border: 1px solid #e8edf5;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        margin-bottom: 2rem;
-    }
-    .tabs-header {
-        display: flex;
-        border-bottom: 1px solid #f1f5f9;
-        background: linear-gradient(to left, #fafbff, #fff);
-        overflow-x: auto;
-    }
+    /* ═══ Tabs (autopsy style) ═══ */
+    .tabs-container { background:#fff; border-radius:16px; border:1px solid var(--border); overflow:hidden; }
+    .tabs-header { display:flex; background:#FAFBFC; border-bottom:1px solid #e2e8f0; padding:0 1rem; overflow-x:auto; }
     .tab-btn {
-        flex: 1;
-        min-width: max-content;
-        padding: 1rem 1.2rem;
-        background: none;
-        border: none;
-        font-family: 'Cairo', sans-serif;
-        font-size: 0.88rem;
-        font-weight: 700;
-        color: #64748b;
-        cursor: pointer;
-        transition: all 0.2s;
-        border-bottom: 3px solid transparent;
-        white-space: nowrap;
+        padding:16px 24px; border:none; background:transparent;
+        font-family:'Cairo',sans-serif; font-size:0.95rem; font-weight:800;
+        color:#64748b; cursor:pointer;
+        border-bottom:3px solid transparent; transition:all 0.2s;
+        display:flex; align-items:center; gap:8px; white-space:nowrap;
     }
-    .tab-btn:hover { color: #2E7D32; background: #f8fafc; }
-    .tab-btn.active { color: #2E7D32; border-bottom-color: #2E7D32; background: #f8fafc; }
-    .tab-content { display: none; padding: 2rem; }
-    .tab-content.active { display: block; }
+    .tab-btn:hover { color:var(--green); }
+    .tab-btn.active { color:var(--green); border-bottom-color:var(--green); background:#fff; }
+    .tab-content { padding:2rem; display:none; }
+    .tab-content.active { display:block; animation:fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
 
-    /* ═══ SUMMARY ═══ */
-    .summary-card {
-        background: #fafbff;
-        border: 1px solid #e8edf5;
-        border-radius: 16px;
-        padding: 2rem;
-        margin-bottom: 1.5rem;
+    .summary-layout { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+    @media (max-width:768px) { .summary-layout { grid-template-columns:1fr; } }
+
+    .animal-card {
+        background:#fff; border-radius:12px; padding:1.5rem;
+        border:1px solid #e2e8f0; box-shadow:0 4px 6px rgba(0,0,0,0.02);
+        height:fit-content;
     }
-    .summary-card:last-child { margin-bottom: 0; }
-    .summary-header {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1.5rem;
-        border-bottom: 1px solid #e8edf5;
+    .animal-card-title { font-size:1.1rem; font-weight:800; color:#1e293b; margin-bottom:1.5rem; text-align:center; }
+    .animal-photo-wrap { display:flex; justify-content:center; margin-bottom:1.2rem; }
+    .animal-photo {
+        width:72px; height:72px; border-radius:16px;
+        background:linear-gradient(135deg,#E8F5E9,#C8E6C9);
+        border:2px solid #bbf7d0;
+        display:flex; align-items:center; justify-content:center;
+        font-size:2.2rem; overflow:hidden;
     }
-    .animal-avatar {
-        width: 80px; height: 80px;
-        border-radius: 16px;
-        background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
-        border: 3px solid #2E7D32;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 2.5rem; flex-shrink: 0;
+    .q-row {
+        display:flex; justify-content:space-between; align-items:center;
+        margin-bottom:0.8rem; padding-bottom:0.8rem; border-bottom:1px solid #f1f5f9;
     }
-    .animal-info h3 { font-size: 1.2rem; font-weight: 900; color: #0f172a; margin: 0 0 0.3rem; }
-    .animal-info p  { font-size: 0.85rem; color: #64748b; font-weight: 600; margin: 0; }
-    .summary-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-    }
-    .info-item {
-        background: #fff;
-        border: 1px solid #e8edf5;
-        border-radius: 10px;
-        padding: 1rem;
-    }
-    .info-item.span-2 { grid-column: span 2; }
-    .info-item.span-3 { grid-column: span 3; }
-    .info-item-label { font-size: 0.72rem; font-weight: 800; color: #64748b; margin-bottom: 4px; }
-    .info-item-value { font-size: 0.85rem; font-weight: 700; color: #0f172a; line-height: 1.5; }
-    .info-item-value.mono { font-family: 'Courier New', monospace; }
-    .photo-display {
-        width: 100%; max-width: 200px; height: 160px;
-        border-radius: 12px; background: #fff;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 4rem; border: 2px solid #C8E6C9;
-    }
+    .q-row:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+    .q-label { color:#64748b; font-size:0.9rem; font-weight:700; }
+    .q-value { color:#0f172a; font-size:0.95rem; font-weight:800; text-align:left; }
+
     .section-title {
-        font-size: 0.95rem; font-weight: 800; color: #2E7D32;
-        margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;
+        font-size:1.1rem; font-weight:800; color:#0f172a;
+        margin-bottom:1rem; display:flex; align-items:center; gap:8px;
+    }
+    .status-block { margin-top:1.5rem; }
+    .status-block:first-child { margin-top:0; }
+
+    .field-hint {
+        font-size:0.78rem; color:#64748b; font-weight:600;
+        margin-top:6px; font-style:italic;
+    }
+
+    .id-tag {
+        font-family:'Courier New',monospace; font-size:0.85rem;
+        background:#f1f5f9; padding:4px 10px; border-radius:6px;
+        color:#334155; font-weight:800; display:inline-block; border:1px solid #e2e8f0;
+    }
+
+    .content-box {
+        background:#f8fafc; padding:16px 20px; border-radius:10px;
+        font-size:0.95rem; color:#334155; font-weight:600; line-height:1.7;
+        border:1px solid #e2e8f0;
+    }
+
+    .report-link {
+        display:inline-flex; align-items:center; gap:6px;
+        color:#2563eb; font-size:0.85rem; font-weight:700;
+        padding:8px 14px; background:#eff6ff; border-radius:8px;
+        border:1px solid #bfdbfe; text-decoration:none;
     }
     /* ── Info cards (other tabs) ── */
     .info-card {
@@ -197,12 +172,16 @@
     .info-card-header .sec-icon.blue   { background: #eff6ff; color: #2563eb; }
     .info-card-header .sec-icon.purple { background: #f5f3ff; color: #7c3aed; }
     .info-card-header .sec-icon.red    { background: #fef2f2; color: #dc2626; }
+    .info-card-header .sec-icon.gray   { background: #f1f5f9; color: #64748b; }
 
     .info-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1px;
-        background: #f1f5f9;
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:1px;
+        background:#e2e8f0;
+        border-radius:12px;
+        overflow:hidden;
+        border:1px solid #e2e8f0;
     }
 
     .info-grid.col-3 { grid-template-columns: 1fr 1fr 1fr; }
@@ -210,8 +189,8 @@
     .info-cell { background: #fff; padding: 14px 20px; }
     .info-cell.span-2 { grid-column: span 2; }
     .info-cell.span-3 { grid-column: span 3; }
-    .info-cell-label { font-size: 0.72rem; color: #94a3b8; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .info-cell-value { font-size: 0.92rem; color: #0f172a; font-weight: 800; }
+    .info-cell-label { font-size:0.8rem; color:#64748b; font-weight:800; margin-bottom:6px; }
+    .info-cell-value { font-size:1rem; color:#0f172a; font-weight:800; }
     .info-cell-value.muted { color: #94a3b8; font-style: italic; font-weight: 600; }
     .info-cell-value.mono  { font-family: 'Courier New', monospace; }
 
@@ -332,6 +311,20 @@
     .empty-state svg { opacity: 0.4; margin-bottom: 12px; }
     .empty-state p { font-size: 0.9rem; font-weight: 700; margin: 0; }
 
+    .attachments-notice {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-right: 3px solid #2E7D32;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 1.5rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #334155;
+        line-height: 1.7;
+    }
+    .attachments-notice strong { color: #1a4a2e; font-weight: 800; }
+
     /* ── Dialogs ── */
     .dialog-backdrop { display:none; position:fixed; inset:0; background:rgba(15,23,42,.45); backdrop-filter:blur(3px); z-index:1100; align-items:center; justify-content:center; }
     .dialog-backdrop.open { display:flex; }
@@ -379,37 +372,52 @@
     .toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(20px); background:#0f172a; color:#fff; padding:14px 24px; border-radius:12px; font-family:'Cairo',sans-serif; font-size:0.9rem; font-weight:700; display:flex; align-items:center; gap:10px; box-shadow:0 10px 30px rgba(0,0,0,.25); z-index:2000; opacity:0; transition:all 0.4s cubic-bezier(.34,1.56,.64,1); pointer-events:none; }
     .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
     .toast.green { background:linear-gradient(135deg,#1a4a2e,#2d7a47); }
+
+    .notice-yellow { background:#fefce8; border:1px solid #fef08a; border-right:4px solid #eab308; border-radius:12px; padding:12px 16px; font-size:0.85rem; font-weight:700; color:#713f12; margin-bottom:1.5rem; display:flex; align-items:flex-start; gap:10px; }
+    .notice-blue { background:#eff6ff; border:1px solid #bfdbfe; border-right:4px solid #2563eb; border-radius:12px; padding:12px 16px; font-size:0.85rem; font-weight:700; color:#1e40af; margin-bottom:1.5rem; display:flex; align-items:flex-start; gap:10px; }
 </style>
 @endsection
 
 @section('content')
 
-{{-- ═══ PAGE HEADER ═══ --}}
-<div class="page-header">
-    <div class="header-left">
-        <h2>🐾 #ANM-0012 — ملف الحيوان</h2>
-        <p>أسد أفريقي (سيمبا) — القططية — ذكر — 8 سنوات</p>
-    </div>
-    <div class="header-right">
-        <div class="case-status-badge">
-            <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;"></span>
-            داخل الحديقة
+{{-- ═══ BREADCRUMB ═══ --}}
+<div class="breadcrumb">
+    <a href="/records/animals">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        قائمة الحيوانات
+    </a>
+    <span>/</span>
+    <span style="color:#0f172a;" id="breadAnimal">ملف الحيوان</span>
+</div>
+
+<div class="header-card">
+    <div class="header-info">
+        <h2>
+            ملف الحيوان
+            <span id="headerBadge"></span>
+        </h2>
+        <div style="font-size:0.9rem; color:#64748b; font-weight:700; margin-top:8px;">
+            رقم الحيوان: <span class="id-tag" id="topAnimalId">#ANM-0012</span>
+            <span style="margin:0 8px; color:#cbd5e1;">|</span>
+            <span id="pageSubtitle">سيمبا — أسد أفريقي</span>
         </div>
-        <button type="button" class="btn-header" onclick="openDialog('editDialog')">
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;" id="headerActions">
+        <button type="button" class="btn-outline" id="btnEdit" onclick="openDialog('editDialog')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             تعديل
         </button>
-        <button type="button" class="btn-header" onclick="showToast('📄 جاري تصدير ملف الحيوان PDF...')">
+        <button type="button" class="btn-export" id="btnExport" onclick="showToast('📄 جاري تصدير ملف الحيوان PDF...')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            PDF
+            تصدير PDF
         </button>
-        <button type="button" class="btn-header danger" onclick="openModal('exitModal')">
+        <button type="button" class="btn-danger-outline" id="btnExit" onclick="openModal('exitModal')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             توثيق خروج
         </button>
         <a href="/records/animals" class="btn-back">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-            العودة للقائمة
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            العودة
         </a>
     </div>
 </div>
@@ -417,84 +425,109 @@
 {{-- ═══ TABS ═══ --}}
 <div class="tabs-container">
     <div class="tabs-header">
-        <button type="button" class="tab-btn active" onclick="switchTab('basic', this)">📋 البيانات الأساسية</button>
-        <button type="button" class="tab-btn" onclick="switchTab('origin', this)">🌍 الأصل والتسجيل</button>
-        <button type="button" class="tab-btn" onclick="switchTab('medical', this)">🏥 التاريخ الطبي</button>
-        <button type="button" class="tab-btn" onclick="switchTab('repro', this)">🍼 التاريخ التناسلي</button>
-        <button type="button" class="tab-btn" onclick="switchTab('records', this)">📁 السجلات الرسمية</button>
-        <button type="button" class="tab-btn" onclick="switchTab('attachments', this)">📎 المرفقات</button>
+        <button type="button" class="tab-btn active" onclick="switchTab('basic', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            البيانات الأساسية
+        </button>
+        <button type="button" class="tab-btn" onclick="switchTab('origin', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            الأصل والتسجيل
+        </button>
+        <button type="button" class="tab-btn" onclick="switchTab('medical', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            التاريخ الطبي
+        </button>
+        <button type="button" class="tab-btn" onclick="switchTab('attachments', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            المرفقات والتقارير
+        </button>
     </div>
 
 {{-- TAB 1: البيانات الأساسية --}}
 <div class="tab-content active" id="tab-basic">
 
-    <div class="summary-card">
-        <div class="summary-header">
-            <div class="animal-avatar">🦁</div>
-            <div class="animal-info">
-                <h3>سيمبا — أسد أفريقي</h3>
-                <p>#ANM-0012 — القططية — مسجّل منذ 2018-02-14</p>
-            </div>
-        </div>
-        <div class="summary-grid">
-            <div class="info-item">
-                <div class="info-item-label">رقم الحيوان</div>
-                <div class="info-item-value mono">#ANM-0012</div>
-            </div>
-            <div class="info-item">
-                <div class="info-item-label">اسم الحيوان</div>
-                <div class="info-item-value">سيمبا</div>
-            </div>
-            <div class="info-item">
-                <div class="info-item-label">النوع</div>
-                <div class="info-item-value">أسد أفريقي</div>
-            </div>
-            <div class="info-item">
-                <div class="info-item-label">المجموعة</div>
-                <div class="info-item-value">القططية</div>
-            </div>
-            <div class="info-item">
-                <div class="info-item-label">الجنس</div>
-                <div class="info-item-value">
-                    <span style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;padding:3px 9px;border-radius:6px;font-size:0.72rem;font-weight:700;">ذكر</span>
-                </div>
-            </div>
-            <div class="info-item">
-                <div class="info-item-label">العمر الحالي</div>
-                <div class="info-item-value">8 سنوات و 3 أشهر</div>
-            </div>
-            <div class="info-item">
-                <div class="info-item-label">طريقة تحديد العمر</div>
-                <div class="info-item-value">تاريخ ميلاد معروف</div>
-            </div>
-            <div class="info-item">
-                <div class="info-item-label">تاريخ الميلاد</div>
-                <div class="info-item-value">2018-02-14</div>
-            </div>
-            <div class="info-item">
-                <div class="info-item-label">تاريخ التسجيل</div>
-                <div class="info-item-value">2018-02-14</div>
-            </div>
-            <div class="info-item">
-                <div class="info-item-label">الحالة</div>
-                <div class="info-item-value">
-                    <span style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;padding:4px 10px;border-radius:18px;font-size:0.75rem;font-weight:800;">داخل الحديقة</span>
-                </div>
-            </div>
-            <div class="info-item span-3">
-                <div class="info-item-label">العلامات المميزة</div>
-                <div class="info-item-value">وشم على الأذن اليسرى برقم 012، خدش قديم على الكتف الأيمن</div>
-            </div>
-        </div>
+    <div class="notice-blue" id="quarantineNotice" style="display:none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>هذا الحيوان دخل النظام عبر مسار الحجر الصحي وليس عبر تسجيل السجلات. البيانات المعروضة للعرض فقط.</span>
     </div>
 
-    <div class="summary-card">
-        <div class="section-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            صورة الحيوان
+    <div class="notice-yellow" id="manualNotice" style="display:none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>هذا الحيوان أُدخل يدوياً للحيوانات الموجودة قبل تشغيل النظام. المواليد والحجر الصحي لها مسارات خاصة.</span>
+    </div>
+
+    <div class="summary-layout">
+        <div>
+            <h3 class="section-title">بيانات الحيوان الأساسية</h3>
+            <div class="info-grid" style="margin-bottom:0;">
+                <div class="info-cell">
+                    <div class="info-cell-label">رقم الحيوان</div>
+                    <div class="info-cell-value id-tag" id="fAnimalId">#ANM-0012</div>
+                </div>
+                <div class="info-cell">
+                    <div class="info-cell-label">الاسم</div>
+                    <div class="info-cell-value" id="fAnimalName">سيمبا</div>
+                </div>
+                <div class="info-cell">
+                    <div class="info-cell-label">النوع</div>
+                    <div class="info-cell-value" id="fAnimalType">أسد أفريقي</div>
+                </div>
+                <div class="info-cell">
+                    <div class="info-cell-label">المجموعة</div>
+                    <div class="info-cell-value" id="fGroup">القططية</div>
+                </div>
+                <div class="info-cell">
+                    <div class="info-cell-label">الجنس</div>
+                    <div class="info-cell-value" id="fGender">ذكر</div>
+                </div>
+                <div class="info-cell">
+                    <div class="info-cell-label">العمر</div>
+                    <div class="info-cell-value" id="fAge">8 سنوات تقريبًا</div>
+                </div>
+                <div class="info-cell">
+                    <div class="info-cell-label">تاريخ التسجيل</div>
+                    <div class="info-cell-value" id="fRegDate">2018-02-14</div>
+                </div>
+                <div class="info-cell span-2">
+                    <div class="info-cell-label">العلامات المميزة</div>
+                    <div class="info-cell-value" id="fMarks">ندبة صغيرة على الأذن اليسرى</div>
+                </div>
+            </div>
+
+            <div id="statusCardWrap"></div>
+            <div id="reproSection"></div>
         </div>
-        <div class="photo-display">🦁</div>
-        <p style="font-size:0.78rem; color:#64748b; font-weight:600; margin:8px 0 0;">simba_photo.jpg</p>
+
+        <div class="animal-card">
+            <h4 class="animal-card-title">بيانات الحيوان</h4>
+            <div class="animal-photo-wrap">
+                <div class="animal-photo" id="basicPhoto">🦁</div>
+            </div>
+            <div class="q-row">
+                <span class="q-label">رقم الحيوان</span>
+                <span class="q-value id-tag" id="qAnimalId">#ANM-0012</span>
+            </div>
+            <div class="q-row">
+                <span class="q-label">نوع الحيوان</span>
+                <span class="q-value" id="qAnimalType">أسد أفريقي</span>
+            </div>
+            <div class="q-row" id="qNameRow">
+                <span class="q-label">اسم الحيوان</span>
+                <span class="q-value" id="qAnimalName">سيمبا</span>
+            </div>
+            <div class="q-row">
+                <span class="q-label">الجنس</span>
+                <span class="q-value" id="qGender">ذكر</span>
+            </div>
+            <div class="q-row">
+                <span class="q-label">العمر</span>
+                <span class="q-value" id="qAge">8 سنوات تقريبًا</span>
+            </div>
+            <div class="q-row">
+                <span class="q-label">المجموعة</span>
+                <span class="q-value" id="qGroup">القططية</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -618,8 +651,6 @@
                     <tr>
                         <th>التاريخ</th>
                         <th>العلاج / الإجراء</th>
-                        <th>الجرعة</th>
-                        <th>المدة</th>
                         <th>الطبيب</th>
                         <th>مرتبط بتشخيص</th>
                         <th>المرجع</th>
@@ -629,8 +660,6 @@
                     <tr>
                         <td style="color:#64748b; font-size:0.83rem;">2025-11-10</td>
                         <td style="font-weight:700;">مضاد حيوي أموكسيسيلين</td>
-                        <td>500 ملجم</td>
-                        <td>7 أيام</td>
                         <td>د. أحمد سعيد</td>
                         <td>التهاب في اللثة</td>
                         <td><span class="ref-tag">حالة طبية ميدانية رقم 24</span></td>
@@ -655,9 +684,7 @@
                 <thead>
                     <tr>
                         <th>التاريخ</th>
-                        <th>نوع الجرعة</th>
                         <th>اسم الجرعة</th>
-                        <th>ملاحظات</th>
                         <th>الطبيب</th>
                         <th>المرجع</th>
                     </tr>
@@ -665,9 +692,7 @@
                 <tbody>
                     <tr>
                         <td style="color:#64748b; font-size:0.83rem;">2026-01-15</td>
-                        <td>لقاح</td>
                         <td style="font-weight:700;">لقاح الكُزاز السنوي</td>
-                        <td>جرعة منشطة</td>
                         <td>د. عمر حسن</td>
                         <td><span class="ref-tag">حالة ميدانية رقم 31</span></td>
                     </tr>
@@ -709,211 +734,41 @@
             </table>
         </div>
     </div>
-
-    {{-- 5. التقارير الطبية الرسمية --}}
-    <div class="table-card">
-        <div class="table-card-header">
-            <div class="table-card-title">
-                <div style="width:30px;height:30px;border-radius:8px;background:#fef3c7;color:#d97706;display:flex;align-items:center;justify-content:center;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-                التقارير الطبية الرسمية
-            </div>
-        </div>
-        <div style="overflow-x:auto;">
-            <table class="custom-table">
-                <thead>
-                    <tr>
-                        <th>التاريخ</th>
-                        <th>نوع التقرير</th>
-                        <th>الوصف</th>
-                        <th>الملف</th>
-                        <th>المرجع</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="color:#64748b; font-size:0.83rem;">2025-11-10</td>
-                        <td>تقرير طبي</td>
-                        <td style="font-weight:700;">تقرير تفصيلي عن حالة التهاب اللثة</td>
-                        <td>
-                            <a href="#" class="btn-download" style="margin:0;">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                عرض / تحميل
-                            </a>
-                        </td>
-                        <td><span class="ref-tag">حالة طبية ميدانية رقم 24</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>
 
 {{-- ══════════════════════════════════════════ --}}
-{{-- TAB 4: التاريخ التناسلي --}}
-{{-- ══════════════════════════════════════════ --}}
-<div class="tab-content" id="tab-repro">
-    <div class="table-card">
-        <div class="table-card-header">
-            <div class="table-card-title">
-                <div style="width:30px;height:30px;border-radius:8px;background:#f5f3ff;color:#7c3aed;display:flex;align-items:center;justify-content:center;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                </div>
-                سجل التكاثر والولادات
-            </div>
-        </div>
-        <div style="overflow-x:auto;">
-            <table class="custom-table">
-                <thead>
-                    <tr>
-                        <th>رقم المولود</th>
-                        <th>تاريخ الولادة</th>
-                        <th>النوع</th>
-                        <th>الجنس</th>
-                        <th>علامة التمييز</th>
-                        <th>حالة المولود</th>
-                        <th>السجل المرتبط</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><span class="animal-id">B-014</span></td>
-                        <td style="color:#64748b; font-size:0.83rem;">2026-06-01</td>
-                        <td>أسد أفريقي</td>
-                        <td>أنثى</td>
-                        <td>بقعة بيضاء</td>
-                        <td><span class="badge badge-gray"><span class="dot"></span>قيد المتابعة</span></td>
-                        <td><span class="ref-tag">سجل الولادات</span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="animal-id">B-015</span></td>
-                        <td style="color:#64748b; font-size:0.83rem;">2026-06-01</td>
-                        <td>أسد أفريقي</td>
-                        <td>ذكر</td>
-                        <td>-</td>
-                        <td><span class="badge badge-green"><span class="dot"></span>مكتمل</span></td>
-                        <td><span class="ref-tag">سجل الولادات</span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="animal-id">B-022</span></td>
-                        <td style="color:#64748b; font-size:0.83rem;">2027-02-15</td>
-                        <td>أسد أفريقي</td>
-                        <td>أنثى</td>
-                        <td>-</td>
-                        <td><span class="badge badge-red"><span class="dot"></span>نافق</span></td>
-                        <td><span class="ref-tag">سجل الولادات النافقة</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-{{-- ══════════════════════════════════════════ --}}
-{{-- TAB 5: السجلات الرسمية المرتبطة --}}
-{{-- ══════════════════════════════════════════ --}}
-<div class="tab-content" id="tab-records">
-    <div class="table-card">
-        <div class="table-card-header">
-            <div class="table-card-title">
-                <div style="width:30px;height:30px;border-radius:8px;background:#f8fafc;color:#475569;display:flex;align-items:center;justify-content:center;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-                السجلات الرسمية المرتبطة بالحيوان
-            </div>
-        </div>
-        <div style="overflow-x:auto;">
-            <table class="custom-table">
-                <thead>
-                    <tr>
-                        <th>السجل</th>
-                        <th>التاريخ</th>
-                        <th>نوع الإدخال</th>
-                        <th>المرجع</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><span style="font-weight:700;">سجل الحيوانات الداخلة</span></td>
-                        <td style="color:#64748b; font-size:0.83rem;">2018-02-14</td>
-                        <td>إدخال يدوي بواسطة مسؤول السجلات</td>
-                        <td><span class="ref-tag">ملف الحيوان القديم</span></td>
-                    </tr>
-                    <tr>
-                        <td><span style="font-weight:700;">سجل الولادات</span></td>
-                        <td style="color:#64748b; font-size:0.83rem;">2026-06-01</td>
-                        <td>من مسار ولادة</td>
-                        <td><span class="ref-tag">ولادة رقم 55</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-{{-- ══════════════════════════════════════════ --}}
-{{-- TAB 6: المرفقات والتقارير --}}
-{{-- ══════════════════════════════════════════ --}}
+{{-- TAB: المرفقات والتقارير --}}
 <div class="tab-content" id="tab-attachments">
-    <div class="table-card">
+
+    <div class="attachments-notice">
+        <strong>تبويب عرض فقط.</strong>
+        يعرض المرفقات الرسمية المرتبطة بالحيوان من مسارات النظام الأخرى (التاريخ السابق، التشريح، توثيق الخروج) — دون إمكانية إضافة مرفقات من هنا.
+    </div>
+
+    <div class="empty-state" id="attachmentsEmpty" style="display:none;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        <p>لا توجد مرفقات أو تقارير مرتبطة بهذا الحيوان</p>
+    </div>
+
+    <div class="table-card" id="attachmentsTableWrap">
         <div class="table-card-header">
             <div class="table-card-title">
                 <div style="width:30px;height:30px;border-radius:8px;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                 </div>
-                الملفات والمرفقات الرسمية
+                المرفقات والتقارير الرسمية
             </div>
         </div>
         <div style="overflow-x:auto;">
             <table class="custom-table">
                 <thead>
                     <tr>
-                        <th>اسم الملف / المرفق</th>
-                        <th>نوع المرفق</th>
                         <th>التاريخ</th>
-                        <th>الوصف</th>
+                        <th>نوع المرفق</th>
                         <th>الملف</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td style="font-weight:700;">simba_photo.jpg</td>
-                        <td>صورة</td>
-                        <td style="color:#64748b; font-size:0.83rem;">2018-02-14</td>
-                        <td>صورة الحيوان الرسمية</td>
-                        <td>
-                            <a href="#" class="btn-download" style="margin:0;">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                عرض / تحميل
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight:700;">simba_history_2018.pdf</td>
-                        <td>PDF</td>
-                        <td style="color:#64748b; font-size:0.83rem;">2018-02-14</td>
-                        <td>مرفق التاريخ السابق</td>
-                        <td>
-                            <a href="#" class="btn-download" style="margin:0;">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                عرض / تحميل
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight:700;">medical_report_2025.pdf</td>
-                        <td>تقرير طبي</td>
-                        <td style="color:#64748b; font-size:0.83rem;">2025-11-10</td>
-                        <td>تقرير طبي تفصيلي لالتهاب اللثة</td>
-                        <td>
-                            <a href="#" class="btn-download" style="margin:0;">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                عرض / تحميل
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
+                <tbody id="attachmentsBody"></tbody>
             </table>
         </div>
     </div>
@@ -1028,7 +883,210 @@
 
 @section('scripts')
 <script>
-    // ── Tabs ──
+    const animalId = '{{ $id ?? 'ANM-0012' }}';
+
+    const animalDB = {
+        'ANM-0012': {
+            source: 'records', state: 'active', emoji: '🦁', displayId: '#ANM-0012',
+            name: 'سيمبا', type: 'أسد أفريقي', group: 'القططية', gender: 'ذكر',
+            age: '8 سنوات تقريبًا', regDate: '2018-02-14',
+            marks: 'ندبة صغيرة على الأذن اليسرى',
+            manualEntry: true,
+            historyAttachment: { date: '2018-02-14', fileName: 'simba_history_2018.pdf' },
+            repro: [
+                { id: 'B-014', date: '2026-06-01', type: 'أسد أفريقي', gender: 'أنثى', mark: 'بقعة بيضاء', status: 'قيد المتابعة', statusClass: 'badge-gray', ref: 'سجل الولادات' },
+                { id: 'B-015', date: '2026-06-01', type: 'أسد أفريقي', gender: 'ذكر', mark: '—', status: 'مكتمل', statusClass: 'badge-green', ref: 'سجل الولادات' }
+            ]
+        },
+        'ANM-1046': {
+            source: 'quarantine', state: 'active', emoji: '🐒', displayId: '#MON-1046',
+            name: '—', type: 'قرد مكاك', group: 'القرود', gender: 'أنثى',
+            age: 'يومان', regDate: '2026-06-05', marks: '—', manualEntry: false, repro: null
+        },
+        'ANM-1045': {
+            source: 'quarantine', state: 'active', emoji: '🦌', displayId: '#GZL-1045',
+            name: '—', type: 'غزال الريم', group: 'الغزلان', gender: 'ذكر',
+            age: 'سنتان و 3 أشهر', regDate: '2026-06-07', marks: '—', manualEntry: false, repro: null
+        },
+        'ANM-0200': {
+            source: 'records', state: 'dead', emoji: '🦁', displayId: '#ANM-0200',
+            name: 'سلطان', type: 'أسد', group: 'القططية', gender: 'ذكر',
+            age: '8 سنوات تقريبًا', regDate: '2026-06-07', marks: '—', manualEntry: false, repro: null,
+            mortality: {
+                deathDate: '2027-01-10', cause: 'التهاب حاد أدى إلى النفوق',
+                autopsyReferral: 'نعم', docDate: '2027-01-12',
+                reportFile: 'sultan_autopsy_report.pdf'
+            }
+        },
+        'ANM-0201': {
+            source: 'records', state: 'stillborn', emoji: '🦁', displayId: '#ANM-0201',
+            name: '—', type: 'أسد أفريقي', group: 'القططية', gender: 'أنثى',
+            age: '—', regDate: '2026-06-01', marks: '—', manualEntry: false, repro: null,
+            stillborn: {
+                birthDate: '2026-06-01', deathDate: '2026-06-10',
+                cause: 'ضعف عام بعد الولادة', autopsy: 'لا', docDate: '2026-06-10'
+            }
+        },
+        'ANM-0202': {
+            source: 'records', state: 'slaughter', emoji: '🐄', displayId: '#ANM-0202',
+            name: '—', type: 'بقر', group: 'الثدييات الكبيرة', gender: 'أنثى',
+            age: '5 سنوات', regDate: '2024-03-01', marks: '—', manualEntry: false, repro: null,
+            slaughter: {
+                decisionDate: '2027-02-01', vet: 'د. أحمد', headVet: 'د. منى',
+                notes: '—'
+            }
+        },
+        'ANM-0203': {
+            source: 'records', state: 'exited', emoji: '🦒', displayId: '#ANM-0203',
+            name: '—', type: 'زرافة', group: 'العناقيد الكبرى', gender: 'ذكر',
+            age: '4 سنوات', regDate: '2023-01-15', marks: '—', manualEntry: false, repro: null,
+            exit: {
+                exitDate: '2027-03-15', exitType: 'نقل', recipient: 'جهة خارجية',
+                reason: 'نقل إداري', notes: '—',
+                exitFile: { date: '2027-03-15', fileName: 'giraffe_exit_document.pdf' }
+            }
+        }
+    };
+
+    function infoFieldsGrid(fields) {
+        return `<div class="info-grid">${fields.map(f => {
+            let val = f.value;
+            if (f.hint && f.muted) {
+                val = `<span class="report-link" style="cursor:default;">${f.hint}</span>`;
+            } else if (f.hint) {
+                val = f.value + `<div class="field-hint">${f.hint}</div>`;
+            }
+            return `
+            <div class="info-cell${f.span ? ' span-2' : ''}">
+                <div class="info-cell-label">${f.label}</div>
+                <div class="info-cell-value${f.muted && !f.hint ? ' muted' : ''}">${val}</div>
+            </div>`;
+        }).join('')}</div>`;
+    }
+
+    function renderInfoCard(title, fields) {
+        return `
+            <div class="status-block">
+                <h3 class="section-title">${title}</h3>
+                ${infoFieldsGrid(fields)}
+            </div>`;
+    }
+
+    function renderStatusCard(d) {
+        const wrap = document.getElementById('statusCardWrap');
+        wrap.innerHTML = '';
+
+        if (d.state === 'dead' && d.mortality) {
+            const m = d.mortality;
+            wrap.innerHTML = renderInfoCard('بيانات النفوق', [
+                { label: 'تاريخ النفوق', value: m.deathDate },
+                { label: 'سبب النفوق', value: m.cause, span: true },
+                { label: 'هل تمت الإحالة للتشريح؟', value: m.autopsyReferral },
+                { label: 'تاريخ التوثيق', value: m.docDate },
+                ...(m.autopsyReferral === 'نعم' && m.reportFile ? [{
+                    label: 'تقرير الصفة التشريحية',
+                    value: '—',
+                    hint: 'موجود في تبويب المرفقات والتقارير',
+                    span: true,
+                    muted: true
+                }] : [])
+            ]);
+            return;
+        }
+
+        if (d.state === 'stillborn' && d.stillborn) {
+            const s = d.stillborn;
+            wrap.innerHTML = renderInfoCard('بيانات نفوق المولود', [
+                { label: 'تاريخ الولادة', value: s.birthDate },
+                { label: 'تاريخ النفوق', value: s.deathDate },
+                { label: 'سبب النفوق', value: s.cause, span: true },
+                { label: 'هل تم التشريح؟', value: s.autopsy },
+                { label: 'تاريخ التوثيق', value: s.docDate }
+            ]);
+            return;
+        }
+
+        if (d.state === 'slaughter' && d.slaughter) {
+            const sl = d.slaughter;
+            wrap.innerHTML = renderInfoCard('بيانات الذبح الاضطراري', [
+                { label: 'تاريخ القرار', value: sl.decisionDate },
+                { label: 'الطبيب المسؤول', value: sl.vet },
+                { label: 'رئيس القسم المعتمد', value: sl.headVet },
+                { label: 'ملاحظات القرار', value: sl.notes !== '—' ? sl.notes : '—', hint: sl.notes === '—' ? 'إن وجدت' : null, span: true, muted: sl.notes === '—' }
+            ]);
+            return;
+        }
+
+        if (d.state === 'exited' && d.exit) {
+            const e = d.exit;
+            wrap.innerHTML = renderInfoCard('بيانات الخروج', [
+                { label: 'تاريخ الخروج', value: e.exitDate },
+                { label: 'نوع الخروج', value: e.exitType },
+                { label: 'الجهة المستلمة', value: e.recipient },
+                { label: 'سبب الخروج', value: e.reason, span: true },
+                { label: 'ملاحظات', value: e.notes !== '—' ? e.notes : '—', hint: e.notes === '—' ? 'إن وجدت' : null, span: true, muted: e.notes === '—' }
+            ]);
+        }
+    }
+
+    function buildAttachments(d) {
+        const items = [];
+
+        if (d.historyAttachment) {
+            items.push({
+                date: d.historyAttachment.date || d.regDate,
+                type: 'مرفق تاريخ سابق',
+                fileName: d.historyAttachment.fileName
+            });
+        }
+
+        if (d.state === 'dead' && d.mortality && d.mortality.autopsyReferral === 'نعم' && d.mortality.reportFile) {
+            items.push({
+                date: d.mortality.docDate,
+                type: 'تقرير صفة تشريحية',
+                fileName: d.mortality.reportFile
+            });
+        }
+
+        if (d.state === 'exited' && d.exit && d.exit.exitFile) {
+            items.push({
+                date: d.exit.exitFile.date || d.exit.exitDate,
+                type: 'مرفق خروج',
+                fileName: d.exit.exitFile.fileName
+            });
+        }
+
+        return items.sort((a, b) => a.date.localeCompare(b.date));
+    }
+
+    function renderAttachmentsTab(d) {
+        const items = buildAttachments(d);
+        const emptyEl = document.getElementById('attachmentsEmpty');
+        const tableWrap = document.getElementById('attachmentsTableWrap');
+        const tbody = document.getElementById('attachmentsBody');
+
+        if (!items.length) {
+            emptyEl.style.display = 'block';
+            tableWrap.style.display = 'none';
+            tbody.innerHTML = '';
+            return;
+        }
+
+        emptyEl.style.display = 'none';
+        tableWrap.style.display = '';
+        tbody.innerHTML = items.map(item => `
+            <tr>
+                <td style="color:#64748b; font-size:0.88rem;">${item.date}</td>
+                <td style="font-weight:700;">${item.type}</td>
+                <td>
+                    <a href="#" class="report-link" onclick="return false;" title="${item.fileName}">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        عرض / تحميل
+                    </a>
+                </td>
+            </tr>`).join('');
+    }
+
     function switchTab(tabId, btn) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1036,26 +1094,103 @@
         btn.classList.add('active');
     }
 
-    // ── Dialogs & Modals ──
+    function renderReproSection(repro) {
+        const el = document.getElementById('reproSection');
+        if (!repro || !repro.length) { el.innerHTML = ''; return; }
+        el.innerHTML = `
+            <div class="status-block">
+                <h3 class="section-title">التاريخ التناسلي</h3>
+                <div class="table-card">
+                    <div style="overflow-x:auto;">
+                        <table class="custom-table">
+                        <thead><tr>
+                            <th>رقم المولود</th><th>تاريخ الولادة</th><th>النوع</th><th>الجنس</th>
+                            <th>علامة التمييز</th><th>حالة المولود</th><th>السجل المرتبط</th>
+                        </tr></thead>
+                        <tbody>${repro.map(r => `
+                            <tr>
+                                <td><span class="animal-id">${r.id}</span></td>
+                                <td style="color:#64748b;font-size:0.83rem;">${r.date}</td>
+                                <td>${r.type}</td><td>${r.gender}</td><td>${r.mark}</td>
+                                <td><span class="badge ${r.statusClass}"><span class="dot"></span>${r.status}</span></td>
+                                <td><span class="ref-tag">${r.ref}</span></td>
+                            </tr>`).join('')}</tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    const stateBadges = {
+        active:    '<span class="badge badge-active"><span class="dot"></span>داخل الحديقة</span>',
+        dead:      '<span class="badge badge-dead"><span class="dot"></span>نافق</span>',
+        stillborn: '<span class="badge badge-stillborn"><span class="dot"></span>مولود نافق</span>',
+        slaughter: '<span class="badge badge-slaughter"><span class="dot"></span>ذبح اضطراري</span>',
+        exited:    '<span class="badge badge-exited"><span class="dot"></span>خارج من الحديقة</span>'
+    };
+
+    function loadAnimal() {
+        const d = animalDB[animalId] || animalDB['ANM-0012'];
+        const titleName = d.name !== '—' ? d.name + ' — ' + d.type : d.type;
+
+        document.getElementById('breadAnimal').textContent = 'ملف ' + d.displayId;
+        document.getElementById('topAnimalId').textContent = d.displayId;
+        document.getElementById('pageSubtitle').textContent = titleName;
+        document.getElementById('headerBadge').innerHTML = stateBadges[d.state] || stateBadges.active;
+
+        document.getElementById('basicPhoto').textContent = d.emoji;
+        document.getElementById('qAnimalId').textContent = d.displayId;
+        document.getElementById('qAnimalType').textContent = d.type;
+        document.getElementById('qAnimalName').textContent = d.name;
+        document.getElementById('qGender').textContent = d.gender;
+        document.getElementById('qAge').textContent = d.age;
+        document.getElementById('qGroup').textContent = d.group;
+        if (d.name === '—') {
+            document.getElementById('qAnimalName').style.color = '#94a3b8';
+            document.getElementById('qAnimalName').style.fontStyle = 'italic';
+        }
+
+        document.getElementById('fAnimalId').textContent = d.displayId;
+        document.getElementById('fAnimalName').textContent = d.name;
+        document.getElementById('fAnimalType').textContent = d.type;
+        document.getElementById('fGroup').textContent = d.group;
+        document.getElementById('fGender').textContent = d.gender;
+        document.getElementById('fAge').textContent = d.age;
+        document.getElementById('fRegDate').textContent = d.regDate;
+        document.getElementById('fMarks').textContent = d.marks;
+
+        document.getElementById('quarantineNotice').style.display = d.source === 'quarantine' ? 'flex' : 'none';
+        document.getElementById('manualNotice').style.display = d.manualEntry ? 'flex' : 'none';
+
+        const isQuarantine = d.source === 'quarantine';
+        const isActive = d.state === 'active';
+        document.getElementById('btnEdit').style.display = (isQuarantine || !isActive) ? 'none' : '';
+        document.getElementById('btnExport').style.display = (isQuarantine || !isActive) ? 'none' : '';
+        document.getElementById('btnExit').style.display = (isQuarantine || !isActive) ? 'none' : '';
+
+        renderStatusCard(d);
+        renderReproSection(d.state === 'active' ? d.repro : null);
+        renderAttachmentsTab(d);
+    }
+
     function openDialog(id) { document.getElementById(id).classList.add('open'); }
     function closeDialog(id) { document.getElementById(id).classList.remove('open'); }
     function openModal(id) { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-    
+
     document.querySelectorAll('.dialog-backdrop, .modal-backdrop').forEach(el => {
-        el.addEventListener('click', function(e) { 
-            if (e.target === this) {
-                this.classList.remove('open');
-            }
+        el.addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('open');
         });
     });
 
-    // ── Toast ──
     function showToast(msg) {
         const t = document.getElementById('toastMsg');
         document.getElementById('toastText').innerText = msg;
         t.classList.add('show');
         setTimeout(() => t.classList.remove('show'), 3500);
     }
+
+    window.onload = loadAnimal;
 </script>
 @endsection

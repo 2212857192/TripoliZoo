@@ -1,4 +1,4 @@
-@extends($__layout ?? 'admin.layout')
+﻿@extends($__layout ?? 'admin.layout')
 @section('title', 'إضافة محتوى تعريفي | Tripoli Zoo')
 @section('page_title', 'إضافة محتوى تعريفي جديد')
 
@@ -23,55 +23,6 @@
         transition: color .2s;
     }
     .page-back:hover { color: var(--orange); }
-
-    /* ── Steps bar ── */
-    .steps-bar {
-        display: flex;
-        align-items: center;
-        margin-bottom: 2rem;
-        background: white;
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 1rem 1.5rem;
-        box-shadow: var(--card-shadow);
-    }
-
-    .step-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex: 1;
-    }
-
-    .step-circle {
-        width: 36px; height: 36px;
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: 900; font-size: .9rem;
-        flex-shrink: 0;
-        border: 2px solid var(--border);
-        color: var(--text-muted);
-        background: var(--bg-color);
-        transition: all .3s;
-    }
-
-    .step-item.active .step-circle {
-        background: var(--primary-gradient);
-        border-color: transparent; color: white;
-        box-shadow: 0 4px 12px rgba(45,90,39,.3);
-    }
-    .step-item.done .step-circle {
-        background: #DCFCE7; border-color: #86EFAC; color: #166534;
-    }
-
-    .step-label { font-size: .82rem; font-weight: 700; color: var(--text-muted); }
-    .step-item.active .step-label { color: #1e3a1e; font-weight: 800; }
-    .step-item.done .step-label   { color: #166534; }
-
-    .step-divider {
-        flex: 0 0 40px; height: 2px;
-        background: var(--border); margin: 0 8px; border-radius: 2px;
-    }
 
     /* ── Section card ── */
     .section-card {
@@ -148,19 +99,8 @@
     }
     .animal-preview.show { display: flex; }
 
-    .animal-preview-emoji {
-        width: 50px; height: 50px;
-        background: white; border-radius: 10px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.8rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,.06);
-        flex-shrink: 0;
-    }
     .animal-preview-info h4 {
-        font-size: .95rem; font-weight: 800; color: #1e3a1e; margin: 0 0 2px;
-    }
-    .animal-preview-info p {
-        font-size: .78rem; color: var(--text-muted); font-weight: 600; margin: 0; font-style: italic;
+        font-size: .95rem; font-weight: 800; color: #1e3a1e; margin: 0;
     }
     .preview-badge {
         margin-right: auto;
@@ -189,21 +129,6 @@
         margin-top: 6px; font-size: .78rem; color: var(--text-muted); font-weight: 700;
     }
     .char-count span { color: var(--orange); }
-
-    .writing-tips {
-        background: #FFFBF5;
-        border: 1px solid #FED7AA;
-        border-radius: 10px; padding: 12px 14px; margin-top: 1rem;
-    }
-    .writing-tips p {
-        font-size: .78rem; color: #92400E; font-weight: 700; margin: 0 0 6px;
-        display: flex; align-items: center; gap: 6px;
-    }
-    .writing-tips ul {
-        padding-right: 16px; margin: 0;
-        display: flex; flex-direction: column; gap: 4px;
-    }
-    .writing-tips li { font-size: .76rem; color: #92400E; font-weight: 600; }
 
     /* ── Bottom row ── */
     .bottom-row {
@@ -318,29 +243,6 @@
     العودة إلى قائمة المحتوى التعريفي
 </a>
 
-{{-- ── Steps bar ── --}}
-<div class="steps-bar">
-    <div class="step-item active" id="step1-item">
-        <div class="step-circle" id="step1-circle">1</div>
-        <span class="step-label">اختيار الحيوان</span>
-    </div>
-    <div class="step-divider"></div>
-    <div class="step-item" id="step2-item">
-        <div class="step-circle" id="step2-circle">2</div>
-        <span class="step-label">كتابة الوصف</span>
-    </div>
-    <div class="step-divider"></div>
-    <div class="step-item" id="step3-item">
-        <div class="step-circle" id="step3-circle">3</div>
-        <span class="step-label">إضافة الصورة</span>
-    </div>
-    <div class="step-divider"></div>
-    <div class="step-item" id="step4-item">
-        <div class="step-circle" id="step4-circle">4</div>
-        <span class="step-label">الحفظ والنشر</span>
-    </div>
-</div>
-
 {{-- ── Step 1: Animal ── --}}
 <div class="section-card">
     <div class="section-head">
@@ -365,10 +267,8 @@
         </div>
 
         <div class="animal-preview" id="animalPreview">
-            <div class="animal-preview-emoji" id="previewEmoji">🦁</div>
             <div class="animal-preview-info">
                 <h4 id="previewName">—</h4>
-                <p id="previewSci">—</p>
             </div>
             <span class="preview-badge">✓ تم الاختيار</span>
         </div>
@@ -394,17 +294,6 @@
         ></textarea>
         <div class="char-count">الأحرف: <span id="charCount">0</span> / 600</div>
 
-        <div class="writing-tips">
-            <p>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                نصائح لكتابة وصف جذاب:
-            </p>
-            <ul>
-                <li>ابدأ بمعلومة مثيرة أو حقيقة غريبة عن الحيوان</li>
-                <li>اذكر موطنه الأصلي، طبيعته، وسلوكه الاجتماعي</li>
-                <li>يُفضّل أن يكون الوصف بين 100 و300 حرف لسهولة القراءة</li>
-            </ul>
-        </div>
     </div>
 </div>
 
@@ -415,7 +304,7 @@
     <div class="bottom-card">
         <div class="bottom-card-head">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            <h3>صورة الحيوان <span style="color:var(--text-muted);font-weight:600;font-size:.75rem;">(اختياري)</span></h3>
+            <h3>صورة الحيوان <span style="color:#DC2626;font-weight:800;font-size:.75rem;">*</span></h3>
         </div>
         <div class="bottom-card-body">
             <div class="upload-zone" id="uploadZone">
@@ -458,11 +347,11 @@
 @section('scripts')
 <script>
     const animalData = {
-        '1': { name: 'الأسد الإفريقي',  emoji: '🦁', sci: 'Panthera leo' },
-        '2': { name: 'الفيل الآسيوي',   emoji: '🐘', sci: 'Elephas maximus' },
-        '3': { name: 'النمر البنغالي',  emoji: '🐯', sci: 'Panthera tigris' },
-        '4': { name: 'الزرافة',          emoji: '🦒', sci: 'Giraffa camelopardalis' },
-        '5': { name: 'التمساح النيلي',  emoji: '🐊', sci: 'Crocodylus niloticus' },
+        '1': { name: 'الأسد الإفريقي' },
+        '2': { name: 'الفيل الآسيوي' },
+        '3': { name: 'النمر البنغالي' },
+        '4': { name: 'الزرافة' },
+        '5': { name: 'التمساح النيلي' },
     };
 
     function showToast(msg) {
@@ -477,22 +366,17 @@
         const val = document.getElementById('animalSelect').value;
         const preview = document.getElementById('animalPreview');
         if (val && animalData[val]) {
-            const d = animalData[val];
-            document.getElementById('previewEmoji').textContent = d.emoji;
-            document.getElementById('previewName').textContent  = d.name;
-            document.getElementById('previewSci').textContent   = d.sci;
+            document.getElementById('previewName').textContent = animalData[val].name;
             preview.classList.add('show');
         } else {
             preview.classList.remove('show');
         }
-        updateSteps();
     }
 
     /* ── Description counter ── */
     function onDescInput() {
         const len = document.getElementById('desc').value.length;
         document.getElementById('charCount').textContent = len;
-        updateSteps();
     }
 
     /* ── Image preview ── */
@@ -503,7 +387,6 @@
                 document.getElementById('imgPreview').src = e.target.result;
                 document.getElementById('imgPreviewWrap').classList.add('show');
                 document.getElementById('uploadZone').style.display = 'none';
-                updateSteps();
             };
             reader.readAsDataURL(input.files[0]);
         }
@@ -514,7 +397,6 @@
         document.getElementById('imgPreviewWrap').classList.remove('show');
         document.getElementById('uploadZone').style.display = 'block';
         document.getElementById('imgInput').value = '';
-        updateSteps();
     }
 
     /* ── Drag & drop ── */
@@ -534,33 +416,11 @@
         }
     });
 
-    /* ── Steps updater ── */
-    function updateSteps() {
-        const hasAnimal = !!document.getElementById('animalSelect').value;
-        const hasDesc   = document.getElementById('desc').value.trim().length >= 20;
-        const hasImg    = document.getElementById('imgPreviewWrap').classList.contains('show');
-
-        const doneIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`;
-
-        const steps = [
-            { id: 'step1', done: hasAnimal,            active: !hasAnimal },
-            { id: 'step2', done: hasAnimal && hasDesc,  active: hasAnimal && !hasDesc },
-            { id: 'step3', done: hasDesc && hasImg,     active: hasDesc && !hasImg },
-            { id: 'step4', done: false,                 active: hasAnimal && hasDesc },
-        ];
-
-        steps.forEach((s, i) => {
-            const item   = document.getElementById(s.id + '-item');
-            const circle = document.getElementById(s.id + '-circle');
-            item.className = 'step-item ' + (s.done ? 'done' : s.active ? 'active' : '');
-            circle.innerHTML = s.done ? doneIcon : (i + 1);
-        });
-    }
-
     /* ── Submit ── */
     function submitForm() {
         const animal = document.getElementById('animalSelect').value;
         const desc   = document.getElementById('desc').value.trim();
+        const hasImg = document.getElementById('imgPreviewWrap').classList.contains('show');
 
         if (!animal) {
             showToast('⚠️ يجب اختيار الحيوان أولاً');
@@ -569,6 +429,10 @@
         if (desc.length < 20) {
             showToast('⚠️ يجب كتابة وصف تعريفي (20 حرف على الأقل)');
             document.getElementById('desc').focus();
+            return;
+        }
+        if (!hasImg) {
+            showToast('⚠️ يجب إضافة صورة للحيوان');
             return;
         }
 
@@ -582,7 +446,5 @@
             setTimeout(() => { window.location.href = '/admin/animals'; }, 1200);
         }, 900);
     }
-
-    updateSteps();
 </script>
 @endsection

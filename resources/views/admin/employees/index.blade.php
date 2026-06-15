@@ -495,10 +495,11 @@
         </select>
         <select id="roleFilter" class="filter-select">
             <option value="all">كل الأدوار</option>
-            <option value="مشرف مجموعة">مشرف مجموعة</option>
-            <option value="طبيب بيطري">طبيب بيطري</option>
-            <option value="رئيس وحدة الرعاية">رئيس وحدة الرعاية</option>
-            <option value="وحدة السجلات والتوثيق">وحدة السجلات والتوثيق</option>
+            <option value="مشرف المجموعة">مشرف المجموعة</option>
+            <option value="الطبيب البيطري">الطبيب البيطري</option>
+            <option value="رئيس قسم الرعاية والتغذية">رئيس قسم الرعاية والتغذية</option>
+            <option value="رئيس قسم المستشفى البيطري">رئيس قسم المستشفى البيطري</option>
+            <option value="مسؤول السجلات والتوثيق">مسؤول السجلات والتوثيق</option>
         </select>
     </div>
 </div>
@@ -510,24 +511,22 @@
             <tr>
                 <th>الموظف</th>
                 <th>الدور الوظيفي</th>
-                <th>رقم الهاتف</th>
                 <th>تاريخ الانضمام</th>
                 <th>الحالة</th>
                 <th>الإجراءات</th>
             </tr>
         </thead>
         <tbody id="empTbody">
-            <tr data-status="active" data-role="طبيب بيطري"
+            <tr data-status="active" data-role="الطبيب البيطري"
                 data-name="أحمد سالم" data-email="ahmed@tripolizoo.ly"
-                data-phone="+218 91 123 4567" data-join="2022-03-15" data-color="c1">
+                data-join="2022-03-15" data-color="c1" data-group="مجموعة الثديات الكبرى">
                 <td>
                     <div class="emp-info">
                         <strong>أحمد سالم</strong>
                         <span>ahmed@tripolizoo.ly</span>
                     </div>
                 </td>
-                <td>طبيب بيطري</td>
-                <td dir="ltr" style="text-align:right;">+218 91 123 4567</td>
+                <td>الطبيب البيطري</td>
                 <td>15 مارس 2022</td>
                 <td><span class="badge active">نشط</span></td>
                 <td>
@@ -544,17 +543,16 @@
                     </div>
                 </td>
             </tr>
-            <tr data-status="active" data-role="رئيس وحدة الرعاية"
+            <tr data-status="active" data-role="رئيس قسم الرعاية والتغذية"
                 data-name="سعاد مسعود" data-email="suad@tripolizoo.ly"
-                data-phone="+218 92 987 6543" data-join="2023-01-10" data-color="c2">
+                data-join="2023-01-10" data-color="c2">
                 <td>
                     <div class="emp-info">
                         <strong>سعاد مسعود</strong>
                         <span>suad@tripolizoo.ly</span>
                     </div>
                 </td>
-                <td>رئيس وحدة الرعاية</td>
-                <td dir="ltr" style="text-align:right;">+218 92 987 6543</td>
+                <td>رئيس قسم الرعاية والتغذية</td>
                 <td>10 يناير 2023</td>
                 <td><span class="badge active">نشط</span></td>
                 <td>
@@ -571,17 +569,16 @@
                     </div>
                 </td>
             </tr>
-            <tr data-status="inactive" data-role="وحدة السجلات والتوثيق"
+            <tr data-status="inactive" data-role="مسؤول السجلات والتوثيق"
                 data-name="خالد منصور" data-email="khaled@tripolizoo.ly"
-                data-phone="+218 94 444 5555" data-join="2021-06-20" data-color="c3">
+                data-join="2021-06-20" data-color="c3">
                 <td>
                     <div class="emp-info">
                         <strong>خالد منصور</strong>
                         <span>khaled@tripolizoo.ly</span>
                     </div>
                 </td>
-                <td>وحدة السجلات والتوثيق</td>
-                <td dir="ltr" style="text-align:right;">+218 94 444 5555</td>
+                <td>مسؤول السجلات والتوثيق</td>
                 <td>20 يونيو 2021</td>
                 <td><span class="badge inactive">غير نشط</span></td>
                 <td>
@@ -628,10 +625,6 @@
                     <span id="viewStatus">-</span>
                 </div>
                 <div class="view-field">
-                    <label>رقم الهاتف</label>
-                    <span id="viewPhone" dir="ltr">-</span>
-                </div>
-                <div class="view-field">
                     <label>تاريخ الانضمام</label>
                     <span id="viewJoin">-</span>
                 </div>
@@ -666,20 +659,17 @@
                     <label>الدور الوظيفي</label>
                     <select id="editRole" class="form-input" onchange="toggleEditGroupField()">
                         <option value="">اختر الدور</option>
-                        <option value="مشرف مجموعة">مشرف مجموعة</option>
-                        <option value="طبيب بيطري">طبيب بيطري</option>
-                        <option value="رئيس وحدة الرعاية">رئيس وحدة الرعاية</option>
-                        <option value="وحدة السجلات والتوثيق">وحدة السجلات والتوثيق</option>
+                        <option value="مشرف المجموعة">مشرف المجموعة</option>
+                        <option value="الطبيب البيطري">الطبيب البيطري</option>
+                        <option value="رئيس قسم الرعاية والتغذية">رئيس قسم الرعاية والتغذية</option>
+                        <option value="رئيس قسم المستشفى البيطري">رئيس قسم المستشفى البيطري</option>
+                        <option value="مسؤول السجلات والتوثيق">مسؤول السجلات والتوثيق</option>
                     </select>
                 </div>
             </div>
             <div class="form-group">
                 <label>البريد الإلكتروني</label>
                 <input type="email" id="editEmail" class="form-input" dir="ltr">
-            </div>
-            <div class="form-group">
-                <label>رقم الهاتف</label>
-                <input type="text" id="editPhone" class="form-input" dir="ltr">
             </div>
             <div class="form-group">
                 <label>الحالة</label>
@@ -726,20 +716,17 @@
                     <label>الدور الوظيفي</label>
                     <select id="addRole" class="form-input" onchange="toggleGroupField()">
                         <option value="">اختر الدور</option>
-                        <option value="مشرف مجموعة">مشرف مجموعة</option>
-                        <option value="طبيب بيطري">طبيب بيطري</option>
-                        <option value="رئيس وحدة الرعاية">رئيس وحدة الرعاية</option>
-                        <option value="وحدة السجلات والتوثيق">وحدة السجلات والتوثيق</option>
+                        <option value="مشرف المجموعة">مشرف المجموعة</option>
+                        <option value="الطبيب البيطري">الطبيب البيطري</option>
+                        <option value="رئيس قسم الرعاية والتغذية">رئيس قسم الرعاية والتغذية</option>
+                        <option value="رئيس قسم المستشفى البيطري">رئيس قسم المستشفى البيطري</option>
+                        <option value="مسؤول السجلات والتوثيق">مسؤول السجلات والتوثيق</option>
                     </select>
                 </div>
             </div>
             <div class="form-group">
                 <label>البريد الإلكتروني</label>
                 <input type="email" id="addEmail" class="form-input" dir="ltr" placeholder="name@tripolizoo.ly">
-            </div>
-            <div class="form-group">
-                <label>رقم الهاتف</label>
-                <input type="text" id="addPhone" class="form-input" dir="ltr" placeholder="+218 9X XXX XXXX">
             </div>
             <div class="form-group">
                 <label>الحالة</label>
@@ -781,6 +768,7 @@
         c3: 'linear-gradient(135deg, #0284C7, #01579B)',
         c4: 'linear-gradient(135deg, #7C3AED, #5B21B6)',
     };
+    const ROLES_WITH_GROUP = ['الطبيب البيطري', 'مشرف المجموعة'];
     let currentEditRow = null;
     let colorIndex = 0;
 
@@ -828,8 +816,7 @@
         document.getElementById('viewName').textContent  = r.dataset.name;
         document.getElementById('viewEmail').textContent = r.dataset.email;
         document.getElementById('viewRole').textContent  = r.dataset.role;
-        document.getElementById('viewPhone').textContent = r.dataset.phone;
-        document.getElementById('viewJoin').textContent  = r.dataset.join;
+        document.getElementById('viewJoin').textContent  = r.cells[2].textContent;
 
         // Show group field if applicable
         const groupField = document.getElementById('viewGroupField');
@@ -845,22 +832,17 @@
         document.getElementById('viewStatus').innerHTML =
             `<span class="badge ${isActive ? 'active' : 'inactive'}">${badge.textContent}</span>`;
 
-        const av = document.getElementById('viewAvatar');
-        av.textContent = r.dataset.name[0];
-        av.style.background = avatarGradients[r.dataset.color] || avatarGradients.c1;
-
         openModal('viewModal');
+    }
+
+    function roleNeedsGroup(role) {
+        return ROLES_WITH_GROUP.includes(role);
     }
 
     /* ── Toggle Edit Group Field ── */
     function toggleEditGroupField() {
         const role = document.getElementById('editRole').value;
-        const groupField = document.getElementById('editGroupField');
-        if (role === 'طبيب بيطري' || role === 'مشرف مجموعة') {
-            groupField.style.display = 'block';
-        } else {
-            groupField.style.display = 'none';
-        }
+        document.getElementById('editGroupField').style.display = roleNeedsGroup(role) ? 'block' : 'none';
     }
 
     /* ── Edit ── */
@@ -869,7 +851,6 @@
         const r = currentEditRow;
         document.getElementById('editName').value  = r.dataset.name;
         document.getElementById('editEmail').value = r.dataset.email;
-        document.getElementById('editPhone').value = r.dataset.phone;
         document.getElementById('editRole').value  = r.dataset.role;
         document.getElementById('editStatus').value = r.dataset.status || 'active';
         document.getElementById('editGroup').value = r.dataset.group || '';
@@ -881,17 +862,15 @@
         if (!currentEditRow) return;
         const name  = document.getElementById('editName').value.trim();
         const email = document.getElementById('editEmail').value.trim();
-        const phone = document.getElementById('editPhone').value.trim();
         const role  = document.getElementById('editRole').value;
         const status = document.getElementById('editStatus').value;
         const group = document.getElementById('editGroup').value;
         if (!name || !email || !role) { showToast('⚠️ الاسم والبريد والدور مطلوبة'); return; }
-        if ((role === 'طبيب بيطري' || role === 'مشرف مجموعة') && !group) { showToast('⚠️ يجب اختيار المجموعة لهذا الدور'); return; }
+        if (roleNeedsGroup(role) && !group) { showToast('⚠️ يجب اختيار المجموعة لهذا الدور'); return; }
 
         // Update data attrs
         currentEditRow.dataset.name  = name;
         currentEditRow.dataset.email = email;
-        currentEditRow.dataset.phone = phone;
         currentEditRow.dataset.role  = role;
         currentEditRow.dataset.status = status;
         currentEditRow.dataset.group = group || '';
@@ -899,9 +878,7 @@
         // Update DOM
         currentEditRow.querySelector('.emp-info strong').textContent = name;
         currentEditRow.querySelector('.emp-info span').textContent   = email;
-        currentEditRow.querySelector('.emp-avatar').textContent      = name[0];
         currentEditRow.cells[1].textContent = role;
-        currentEditRow.cells[2].textContent = phone;
 
         // Update status badge
         const badge = currentEditRow.querySelector('.badge');
@@ -932,24 +909,18 @@
     /* ── Toggle Group Field ── */
     function toggleGroupField() {
         const role = document.getElementById('addRole').value;
-        const groupField = document.getElementById('addGroupField');
-        if (role === 'طبيب بيطري' || role === 'مشرف مجموعة') {
-            groupField.style.display = 'block';
-        } else {
-            groupField.style.display = 'none';
-        }
+        document.getElementById('addGroupField').style.display = roleNeedsGroup(role) ? 'block' : 'none';
     }
 
     /* ── Add Employee ── */
     function addEmployee() {
         const name  = document.getElementById('addName').value.trim();
         const email = document.getElementById('addEmail').value.trim();
-        const phone = document.getElementById('addPhone').value.trim();
         const role  = document.getElementById('addRole').value;
         const status = document.getElementById('addStatus').value;
         const group = document.getElementById('addGroup').value;
         if (!name || !email || !role) { showToast('⚠️ الاسم والبريد والدور مطلوبة'); return; }
-        if ((role === 'طبيب بيطري' || role === 'مشرف مجموعة') && !group) { showToast('⚠️ يجب اختيار المجموعة لهذا الدور'); return; }
+        if (roleNeedsGroup(role) && !group) { showToast('⚠️ يجب اختيار المجموعة لهذا الدور'); return; }
 
         const color = avatarColors[colorIndex % avatarColors.length];
         colorIndex++;
@@ -961,7 +932,6 @@
         tr.dataset.role   = role;
         tr.dataset.name   = name;
         tr.dataset.email  = email;
-        tr.dataset.phone  = phone;
         tr.dataset.join   = today;
         tr.dataset.color  = color;
         tr.dataset.group  = group || '';
@@ -977,7 +947,6 @@
                 </div>
             </td>
             <td>${role}</td>
-            <td dir="ltr" style="text-align:right;">${phone}</td>
             <td>${today}</td>
             <td><span class="badge ${status}">${status === 'active' ? 'نشط' : 'غير نشط'}</span></td>
             <td>
@@ -1001,7 +970,7 @@
         document.getElementById('empCount').textContent = count;
 
         // Reset form
-        ['addName','addEmail','addPhone','addStatus','addGroup'].forEach(id => document.getElementById(id).value = '');
+        ['addName','addEmail','addStatus','addGroup'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('addRole').selectedIndex = 0;
         document.getElementById('addGroupField').style.display = 'none';
 

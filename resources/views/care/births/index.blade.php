@@ -5,11 +5,8 @@
 @section('styles')
 <style>
     .top-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.4rem 1.8rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem; }
-    .page-header { display: flex; justify-content: space-between; align-items: center; }
-    .page-header-info h2 { font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin: 0; }
-    .page-header-info p { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin: 4px 0 0; }
 
-    .filter-bar { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; padding-top: 1.2rem; border-top: 1px solid #F1F5F9; }
+    .filter-bar { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
     .search-box { flex: 1; min-width: 250px; position: relative; }
     .search-box input { width: 100%; padding: 10px 40px 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600; outline: none; transition: all 0.2s; }
     .search-box input:focus { border-color: #2E7D32; box-shadow: 0 0 0 3px rgba(46,125,50,0.1); }
@@ -18,8 +15,28 @@
     .filter-select:focus { border-color: #2E7D32; }
 
     .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 2rem; }
-    .table-card-header { padding: 1.25rem 1.75rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; background: #FAFBFC; }
-    .table-card-title { display: flex; align-items: center; gap: 12px; font-size: 1.1rem; font-weight: 800; color: #0f172a; }
+    .table-card-footer {
+        padding: 1.1rem 1.75rem;
+        display: flex; align-items: center; justify-content: flex-end;
+        border-top: 1px solid #f1f5f9; background: #FAFBFC;
+    }
+    .table-pagination {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 0.82rem; font-weight: 700; color: #64748b;
+    }
+    .table-pagination .page-info { margin-left: 4px; white-space: nowrap; }
+    .page-btn {
+        width: 34px; height: 34px; border-radius: 9px;
+        border: 1px solid #e2e8f0; background: #fff; color: #475569;
+        display: inline-flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: all 0.2s; font-family: 'Cairo', sans-serif;
+    }
+    .page-btn:hover:not(:disabled) { border-color: #2E7D32; color: #2E7D32; background: #f0fdf4; }
+    .page-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .page-btn.active {
+        background: linear-gradient(135deg, #1a4a2e, #2d7a47);
+        border-color: transparent; color: #fff;
+    }
     .custom-table { width: 100%; border-collapse: collapse; text-align: right; }
     .custom-table thead th { background: #F8FAFC; color: var(--text-muted); font-size: 0.8rem; font-weight: 800; padding: 14px 20px; border-bottom: 1px solid var(--border); }
     .custom-table tbody tr { transition: background 0.15s; }
@@ -43,32 +60,66 @@
 
     .temp-id, .animal-id { font-family: 'Courier New', monospace; font-size: 0.75rem; background: #f8fafc; padding: 3px 8px; border-radius: 6px; color: #334155; font-weight: 800; display: inline-block; border: 1px solid #e2e8f0; }
 
-    /* ═══ MODAL — VET HOSPITAL STYLE ═══ */
+    /* ═══ MODAL — نفس نافذة تفاصيل الحجر الصحي ═══ */
     .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; }
     .modal-backdrop.open { display: flex; }
-    .modal-box { background: #fff; border-radius: 20px; width: 100%; max-width: 680px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 50px rgba(0,0,0,0.15); animation: modalIn 0.3s cubic-bezier(0.4,0,0.2,1); }
+    #birthModal .modal-box { background: #f8fafc; border-radius: 20px; width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.15); animation: modalIn 0.3s cubic-bezier(0.4,0,0.2,1); }
     @keyframes modalIn { from { transform: translateY(24px) scale(0.97); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-    .modal-header { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 1.2rem 1.5rem 0; display: flex; justify-content: space-between; align-items: flex-end; }
-    .modal-title-wrap { padding-bottom: 0.8rem; }
-    .modal-title-wrap h3 { margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a; }
-    .modal-title-wrap span { font-size: 0.8rem; color: #64748b; font-weight: 600; }
-    .modal-tabs-wrap { display: flex; align-items: center; gap: 20px; }
-    .modal-tabs { display: flex; }
-    .modal-tab { padding: 10px 24px; border: none; background: transparent; font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 800; cursor: pointer; color: #94a3b8; border-bottom: 3px solid transparent; transition: all 0.2s; }
-    .modal-tab.active { color: #1a4a2e; border-bottom-color: #1a4a2e; }
-    .modal-close { width: 32px; height: 32px; border-radius: 8px; background: #fff; border: 1px solid #e2e8f0; color: #64748b; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; font-weight: 700; transition: all 0.2s; margin-bottom: 10px; }
-    .modal-close:hover { background: #f8fafc; color: #0f172a; }
-    .modal-body { padding: 1.5rem; overflow-y: auto; max-height: 65vh; }
 
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #e2e8f0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
-    .info-cell { background: #fff; padding: 12px 16px; }
-    .info-cell-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; margin-bottom: 4px; }
-    .info-cell-value { font-size: 0.9rem; color: #0f172a; font-weight: 800; }
+    #birthModal .modal-header { background: transparent; border-bottom: none; display: flex; justify-content: center; position: relative; padding: 2rem 1.5rem 0; }
+    #birthModal .modal-header h3 { font-size: 1.4rem; font-weight: 800; color: #1e293b; margin: 0; text-align: center; }
+    #birthModal .modal-close {
+        position: absolute; left: 1.5rem; top: 1.5rem;
+        width: 32px; height: 32px; border-radius: 8px; background: #e2e8f0; border: none;
+        color: #64748b; display: flex; align-items: center; justify-content: center;
+        cursor: pointer; font-size: 1.2rem; font-weight: 700; line-height: 1;
+    }
+    #birthModal .modal-close:hover { background: #cbd5e1; color: #0f172a; }
 
-    .content-box { background: #fff; border-right: 4px solid #3b82f6; padding: 12px 16px; border-radius: 8px; font-size: 0.9rem; color: #1e293b; font-weight: 700; line-height: 1.6; border: 1px solid #e2e8f0; border-right-width: 4px; }
-    .section-label { font-size: 0.8rem; color: #64748b; font-weight: 800; margin-bottom: 8px; }
+    #birthModal .modal-tabs-bar { display: flex; justify-content: center; gap: 0; padding: 1rem 2rem 0; }
+    #birthModal .modal-tab {
+        padding: 8px 20px; border: none; background: transparent;
+        font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800;
+        cursor: pointer; color: #94a3b8; border-bottom: 3px solid transparent;
+    }
+    #birthModal .modal-tab.active { color: #16a34a; border-bottom-color: #16a34a; }
 
-    .modal-footer { background: #fff; border-top: 1px solid #e2e8f0; padding: 1.2rem 1.5rem; display: flex; gap: 10px; justify-content: flex-end; }
+    #birthModal .modal-body { padding: 1.5rem 2rem; }
+    #birthModal .q-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 768px) { #birthModal .q-grid { grid-template-columns: 1fr; } }
+
+    #birthModal .q-card {
+        background: #fff; border-radius: 12px; padding: 1.5rem;
+        border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+    #birthModal .q-card-title { font-size: 1.1rem; font-weight: 800; color: #1e293b; margin-bottom: 1.5rem; text-align: center; }
+    #birthModal .q-row {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9;
+    }
+    #birthModal .q-row.sep { margin-bottom: 2rem; }
+    #birthModal .q-label { color: #64748b; font-size: 0.9rem; font-weight: 700; }
+    #birthModal .q-value { color: #0f172a; font-size: 0.95rem; font-weight: 800; }
+    #birthModal .q-notes-list { display: flex; flex-direction: column; gap: 0.8rem; }
+    #birthModal .q-note-item {
+        background: #f8fafc; padding: 12px 14px; border-radius: 8px;
+        font-size: 0.85rem; color: #334155; font-weight: 700; text-align: center; border: 1px solid #f1f5f9;
+    }
+    #birthModal .q-attach-wrap { text-align: center; padding: 2rem 1rem; }
+    #birthModal .q-attach-img {
+        width: 180px; height: 180px; border-radius: 16px; margin: 0 auto;
+        background: linear-gradient(135deg, #E8F5E9, #C8E6C9); border: 2px solid #bbf7d0;
+        display: flex; align-items: center; justify-content: center; font-size: 5rem;
+    }
+
+    #birthModal .modal-footer { background: transparent; border-top: none; padding: 0 2rem 1.5rem; display: flex; gap: 10px; justify-content: flex-end; }
+    #birthModal .btn-action-release { padding: 8px 16px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    #birthModal .btn-action-release:hover { background: #15803d; }
+    #birthModal .btn-action-close { padding: 8px 16px; background: #e11d48; color: #fff; border: none; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    #birthModal .btn-action-close:hover { background: #be123c; }
+    #birthModal .btn-cancel { padding: 8px 16px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    #birthModal .btn-cancel:hover { background: #e2e8f0; }
+
     .btn-submit { padding: 10px 24px; background: linear-gradient(135deg, #1a4a2e, #2d7a47); color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; }
     .btn-submit:hover { transform: translateY(-1px); }
     .btn-submit-red { padding: 10px 24px; background: linear-gradient(135deg, #991b1b, #dc2626); color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
@@ -96,16 +147,10 @@
 @section('content')
 
 <div class="top-card">
-    <div class="page-header">
-        <div class="page-header-info">
-            <h2>🍼 الولادات الجديدة</h2>
-            <p>متابعة المواليد الجدد خلال فترة الرعاية الأولية قبل اعتمادهم رسمياً بالنظام.</p>
-        </div>
-    </div>
     <div class="filter-bar">
         <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="بحث بنوع الحيوان، رقم الأم، أو معرف المولود...">
+            <input type="text" placeholder="بحث برقم الحيوان أو نوعه أو رقم الأم...">
         </div>
         <select class="filter-select">
             <option value="">كل المجموعات</option>
@@ -114,75 +159,56 @@
             <option>العواشب</option>
             <option>الطيور</option>
         </select>
-        <select class="filter-select">
-            <option value="">كل الحالات</option>
-            <option>قيد المتابعة</option>
-            <option>اكتملت المتابعة</option>
-        </select>
         <input type="date" class="filter-select">
     </div>
 </div>
 
 <div class="table-card">
-    <div class="table-card-header">
-        <div class="table-card-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            قائمة المواليد
-        </div>
-    </div>
     <div style="overflow-x:auto;">
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>معرف المولود</th>
-                    <th>نوع الحيوان</th>
+                    <th>رقم الحيوان</th>
                     <th>المجموعة</th>
-                    <th>رقم الأم</th>
                     <th>تاريخ الولادة</th>
                     <th>الأيام المتبقية</th>
                     <th>الحالة</th>
-                    <th>إجراء</th>
+                    <th>الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><span class="temp-id">NB-26-001</span></td>
-                    <td style="font-weight:700;">أسد إفريقي</td>
+                    <td><span class="animal-id">NB-26-001</span></td>
                     <td>السباع</td>
-                    <td><span class="animal-id">#ANL-0041-2022</span></td>
                     <td>2026-05-23</td>
                     <td><span class="days-danger">يوم واحد ⚠️</span></td>
                     <td><span class="badge badge-status-monitoring"><span class="dot"></span>قيد المتابعة</span></td>
                     <td>
-                        <button onclick="openModal('monitoring','NB-26-001','أسد إفريقي','السباع','#ANL-0041-2022','2026-05-23 / 04:30 ص','طبيعية','1.4 كجم','غير محدد','يوم واحد','المولود بصحة جيدة ونشط ويرضع بشكل طبيعي.')" class="btn-tbl view">
+                        <button onclick="openModal('monitoring','NB-26-001','🦁','أسد إفريقي','السباع','#ANL-0041-2022','2026-05-23','يوم واحد','قيد المتابعة','خالد منصور','—','1.4 كجم','المولود بصحة جيدة ونشط ويرضع بشكل طبيعي.')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="temp-id">NB-26-002</span></td>
-                    <td style="font-weight:700;">قرد المكاك</td>
+                    <td><span class="animal-id">NB-26-002</span></td>
                     <td>الرئيسيات</td>
-                    <td><span class="animal-id">#ANL-0182-2023</span></td>
                     <td>2026-06-03</td>
                     <td><span class="days-ok">11 يوماً</span></td>
                     <td><span class="badge badge-status-monitoring"><span class="dot"></span>قيد المتابعة</span></td>
                     <td>
-                        <button onclick="openModal('monitoring','NB-26-002','قرد المكاك','الرئيسيات','#ANL-0182-2023','2026-06-03 / 09:15 ص','طبيعية','0.6 كجم','أنثى','11 يوماً','يتم إرضاع المولود بشكل طبيعي، حيوي ونشط.')" class="btn-tbl view">
+                        <button onclick="openModal('monitoring','NB-26-002','🐒','قرد المكاك','الرئيسيات','#ANL-0182-2023','2026-06-03','11 يوماً','قيد المتابعة','ياسر الغيثي','كدمة على الرسغ الأيسر','0.6 كجم','يتم إرضاع المولود بشكل طبيعي، حيوي ونشط.')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="temp-id">NB-26-003</span></td>
-                    <td style="font-weight:700;">غزال الريم</td>
+                    <td><span class="animal-id">NB-26-003</span></td>
                     <td>العواشب</td>
-                    <td><span class="animal-id">#ANL-0120-2024</span></td>
                     <td>2026-05-15</td>
                     <td><span style="color:#94a3b8;">—</span></td>
                     <td><span class="badge badge-status-completed"><span class="dot"></span>اكتملت المتابعة</span></td>
                     <td>
-                        <button onclick="openModal('completed','NB-26-003','غزال الريم','العواشب','#ANL-0120-2024','2026-05-15 / 11:00 ص','طبيعية','3.2 كجم','ذكر','—','تمت المتابعة بنجاح وتم اعتماده كحيوان دائم.')" class="btn-tbl view">
+                        <button onclick="openModal('completed','NB-26-003','🦌','غزال الريم','العواشب','#ANL-0120-2024','2026-05-15','—','اكتملت المتابعة','أحمد الكواري','عرج واضح في الساق','3.2 كجم','تمت المتابعة بنجاح وتم اعتماده كحيوان دائم.')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
@@ -190,74 +216,96 @@
             </tbody>
         </table>
     </div>
+    <div class="table-card-footer">
+        <div class="table-pagination">
+            <button class="page-btn" disabled title="السابق">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn" title="التالي" disabled>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <span class="page-info">صفحة 1 من 1 — 3 مواليد</span>
+        </div>
+    </div>
 </div>
 
 {{-- ═══ MODAL ═══ --}}
 <div class="modal-backdrop" id="birthModal">
     <div class="modal-box">
         <div class="modal-header">
-            <div class="modal-title-wrap">
-                <h3>تفاصيل المولود</h3>
-                <span id="bSubtitle">—</span>
-            </div>
-            <div class="modal-tabs-wrap">
-                <div class="modal-tabs">
-                    <button class="modal-tab active" id="btab-btn-1" onclick="switchBTab(1)">بيانات المولود</button>
-                    <button class="modal-tab" id="btab-btn-2" onclick="switchBTab(2)">الملاحظات</button>
-                </div>
-                <button class="modal-close" onclick="closeModal()">✕</button>
-            </div>
+            <h3>تفاصيل الولادة — <span id="modalBirthId">NB-26-001</span></h3>
+            <button type="button" class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+
+        <div class="modal-tabs-bar">
+            <button class="modal-tab active" id="btab-btn-1" onclick="switchBTab(1)">بيانات المولود</button>
+            <button class="modal-tab" id="btab-btn-2" onclick="switchBTab(2)">المرفقات</button>
         </div>
 
         <div class="modal-body">
-            {{-- Tab 1 --}}
             <div id="btab-1">
-                <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.5rem;">
-                    <span style="font-family:'Courier New',monospace; font-size:0.85rem; background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; padding:4px 12px; border-radius:6px; font-weight:700;" id="bTempId">NB-26-001</span>
-                    <span style="font-size:0.8rem; color:#64748b; font-weight:700;">معرف المولود المؤقت</span>
-                    <span id="bStatusBadge" style="margin-right:auto;"></span>
-                </div>
-                <div class="info-grid">
-                    <div class="info-cell">
-                        <div class="info-cell-label">نوع الحيوان</div>
-                        <div class="info-cell-value" id="bAnimalType">—</div>
+                <div class="q-grid">
+                    <div class="q-card">
+                        <h4 class="q-card-title">بيانات المولود</h4>
+
+                        <div class="q-row">
+                            <span class="q-label">رقم الحيوان</span>
+                            <span class="q-value" id="bAnimalId">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">نوع الحيوان</span>
+                            <span class="q-value" id="bAnimalType">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">المجموعة</span>
+                            <span class="q-value" id="bGroup">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">رقم الأم</span>
+                            <span class="q-value" id="bMother">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">تاريخ الولادة</span>
+                            <span class="q-value" id="bDate">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">الأيام المتبقية</span>
+                            <span class="q-value" id="bDays">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">الحالة</span>
+                            <span class="q-value" id="bStatus">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">المشرف</span>
+                            <span class="q-value" id="bSupervisor">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">العلامة المميزة</span>
+                            <span class="q-value" id="bMark">—</span>
+                        </div>
+                        <div class="q-row" style="border-bottom:none; margin-bottom:0; padding-bottom:0;">
+                            <span class="q-label">الوزن</span>
+                            <span class="q-value" id="bWeight">—</span>
+                        </div>
                     </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">المجموعة</div>
-                        <div class="info-cell-value" id="bGroup">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">رقم الأم</div>
-                        <div class="info-cell-value" style="font-family:'Courier New',monospace; color:#64748b;" id="bMother">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">تاريخ ووقت الولادة</div>
-                        <div class="info-cell-value" id="bDate">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">طبيعة الولادة</div>
-                        <div class="info-cell-value" id="bType">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">الوزن الأولي</div>
-                        <div class="info-cell-value" id="bWeight">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">الجنس</div>
-                        <div class="info-cell-value" id="bGender">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">الأيام المتبقية</div>
-                        <div class="info-cell-value" id="bDays">—</div>
+
+                    <div class="q-card" style="flex-grow:1;">
+                        <h4 class="q-card-title">الملاحظات</h4>
+                        <div class="q-notes-list">
+                            <div class="q-note-item" id="bNotes">—</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Tab 2 --}}
             <div id="btab-2" style="display:none;">
-                <div style="margin-bottom:1.2rem;">
-                    <div class="section-label">ملاحظات فترة المتابعة</div>
-                    <div class="content-box" id="bNotes">—</div>
+                <div class="q-card">
+                    <h4 class="q-card-title">المرفقات</h4>
+                    <div class="q-attach-wrap">
+                        <div class="q-attach-img" id="bAttachmentImg">🦁</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -271,14 +319,14 @@
     <div class="dialog-box">
         <div class="dialog-body">
             <div class="dialog-icon-wrap" style="background:#f0fdf4;">✅</div>
-            <h4>تأكيد إنهاء فترة المتابعة</h4>
-            <p>هل أنت متأكد من إنهاء فترة المتابعة واعتماد المولود رسمياً كحيوان دائم؟<br>يُرجى بعد ذلك تسجيله في <strong>إدارة الحيوانات</strong> ليحصل على رقمه الرسمي.</p>
+            <h4>تأكيد انتهاء فترة المتابعة</h4>
+            <p>هل أنت متأكد من انتهاء فترة المتابعة واعتماد المولود رسمياً كحيوان دائم؟<br>يُرجى بعد ذلك تسجيله في <strong>إدارة الحيوانات</strong> ليحصل على رقمه الرسمي.</p>
         </div>
         <div class="dialog-footer">
             <button class="btn-cancel" onclick="closeDialog('confirmFinishDialog')">إلغاء</button>
             <button class="btn-submit" onclick="confirmFinish()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                نعم، اعتماد كحيوان
+                نعم، انتهت فترة المتابعة
             </button>
         </div>
     </div>
@@ -289,14 +337,14 @@
     <div class="dialog-box">
         <div class="dialog-body">
             <div class="dialog-icon-wrap" style="background:#fff1f2;">🏥</div>
-            <h4>تأكيد إحالة كحالة صحية</h4>
-            <p>هل أنت متأكد من إحالة هذا المولود كحالة صحية تستدعي تدخل المستشفى البيطري؟<br>سيتم إنشاء حالة صحية وطلب استدعاء الطبيب فوراً.</p>
+            <h4>تأكيد تحويل كحالة صحية</h4>
+            <p>هل أنت متأكد من تحويل هذا المولود كحالة صحية تستدعي تدخل المستشفى البيطري؟<br>سيتم إنشاء حالة صحية وطلب استدعاء الطبيب فوراً.</p>
         </div>
         <div class="dialog-footer">
             <button class="btn-cancel" onclick="closeDialog('confirmHealthReferDialog')">إلغاء</button>
             <button class="btn-submit-red" onclick="confirmHealthRefer()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
-                نعم، إحالة كحالة صحية
+                نعم، تحويل كحالة صحية
             </button>
         </div>
     </div>
@@ -319,41 +367,30 @@
         document.getElementById('btab-btn-2').className = 'modal-tab' + (n === 2 ? ' active' : '');
     }
 
-    function openModal(state, tempId, animalType, group, mother, date, btype, weight, gender, days, notes) {
+    function openModal(state, animalId, emoji, animalType, group, mother, date, days, status, supervisor, mark, weight, notes) {
         switchBTab(1);
 
-        document.getElementById('bSubtitle').innerText = animalType + ' — ' + group;
-        document.getElementById('bTempId').innerText = tempId;
-        document.getElementById('bAnimalType').innerText = animalType;
-        document.getElementById('bGroup').innerText = group;
-        document.getElementById('bMother').innerText = mother;
-        document.getElementById('bDate').innerText = date;
-        document.getElementById('bType').innerText = btype;
-        document.getElementById('bWeight').innerText = weight;
-        document.getElementById('bGender').innerText = gender;
-        document.getElementById('bDays').innerText = days;
-        document.getElementById('bNotes').innerText = notes;
-
-        const stMap = {
-            'monitoring': 'background:#eff6ff;color:#2563eb;',
-            'completed':  'background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;'
-        };
-        const stLabel = state === 'completed' ? 'اكتملت المتابعة' : 'قيد المتابعة';
-        document.getElementById('bStatusBadge').innerHTML = `<span style="padding:4px 10px;border-radius:999px;font-size:0.75rem;font-weight:800;${stMap[state]||''}">${stLabel}</span>`;
+        document.getElementById('modalBirthId').textContent = animalId;
+        document.getElementById('bAnimalId').textContent = animalId;
+        document.getElementById('bAnimalType').textContent = animalType;
+        document.getElementById('bGroup').textContent = group;
+        document.getElementById('bMother').textContent = mother;
+        document.getElementById('bDate').textContent = date;
+        document.getElementById('bDays').textContent = days;
+        document.getElementById('bStatus').textContent = status;
+        document.getElementById('bSupervisor').textContent = supervisor;
+        document.getElementById('bMark').textContent = mark;
+        document.getElementById('bWeight').textContent = weight;
+        document.getElementById('bNotes').textContent = notes;
+        document.getElementById('bAttachmentImg').textContent = emoji;
 
         const footer = document.getElementById('bFooter');
         const closeBtn = `<button class="btn-cancel" onclick="closeModal()">إغلاق</button>`;
 
         if (state === 'monitoring') {
             footer.innerHTML = closeBtn +
-                `<button class="btn-submit-red" onclick="referHealth()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:6px;"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
-                    إحالة كحالة صحية
-                </button>
-                <button class="btn-submit" onclick="finishMonitoring()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:6px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    إنهاء المتابعة واعتماد كحيوان
-                </button>`;
+                `<button class="btn-action-close" onclick="referHealth()">تحويل كحالة صحية</button>
+                <button class="btn-action-release" onclick="finishMonitoring()">انتهت فترة المتابعة</button>`;
         } else {
             footer.innerHTML = closeBtn;
         }

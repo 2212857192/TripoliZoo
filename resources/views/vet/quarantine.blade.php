@@ -95,6 +95,8 @@
 </style>
 @endsection
 
+@php $vetBase = ($readOnly ?? false) ? '/director/vet' : '/vet'; @endphp
+
 @section('content')
 
 {{-- ═══ TABS CARD ═══ --}}
@@ -105,10 +107,12 @@
         <button class="seg-tab" onclick="switchTab(event,'tab-failed')">لم تجتز الحجر</button>
     </div>
     
+    @unless($readOnly ?? false)
     <button class="btn-add" onclick="openAddModal()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         إضافة للحجر
     </button>
+    @endunless
 </div>
 
 {{-- ═══ FILTER CARD ═══ --}}
@@ -116,7 +120,7 @@
     <div style="display: flex; gap: 15px; width: 100%; max-width: 800px;">
         <div style="flex: 1; position: relative;">
             <svg style="position: absolute; right: 12px; top: 11px; color: #94a3b8;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="البحث بنوع الحيوان..." style="width: 100%; padding: 10px 35px 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 600; outline: none; color: #0f172a;">
+            <input type="text" placeholder="بحث برقم الحيوان أو نوعه..." style="width: 100%; padding: 10px 35px 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 600; outline: none; color: #0f172a;">
         </div>
     </div>
 </div>
@@ -132,48 +136,52 @@
                 <thead>
                     <tr>
                         <th>رقم الحجر</th>
+                        <th>اسم الحيوان</th>
                         <th>الطبيب المسؤول</th>
-                        <th>الحيوان</th>
+                        <th>نوع الحيوان</th>
                         <th>المجموعة</th>
                         <th>تاريخ الدخول</th>
-                        <th>الحالة</th>
                         <th>الإجراءات</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><span class="case-id case-id-open">QR-2026-015</span></td>
+                        <td style="font-weight:800;">فهد</td>
                         <td>د. أسامة الورفلي</td>
                         <td>فهد آسيوي</td>
                         <td>القطط الكبرى</td>
                         <td>2026-06-01</td>
-                        <td><span class="badge badge-followup"><span class="dot"></span>قيد المتابعة</span></td>
                         <td>
                             <div style="display:flex; gap:6px; justify-content:center;">
                                 <a href="javascript:void(0)" onclick="openModal('QR-2026-015', 'followup')" class="btn-tbl view" title="عرض التفاصيل">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    @include('partials.icon-chevron-view')
                                 </a>
+                                @unless($readOnly ?? false)
                                 <a href="javascript:void(0)" onclick="openEditModal('QR-2026-015')" class="btn-tbl edit" title="تعديل">
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                 </a>
+                                @endunless
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td><span class="case-id case-id-open">QR-2026-016</span></td>
+                        <td style="color:#94a3b8; font-weight:600;">—</td>
                         <td>د. خالد العربي</td>
                         <td>قرد البابون</td>
                         <td>القرود</td>
                         <td>2026-05-28</td>
-                        <td><span class="badge badge-followup"><span class="dot"></span>قيد المتابعة</span></td>
                         <td>
                             <div style="display:flex; gap:6px; justify-content:center;">
                                 <a href="javascript:void(0)" onclick="openModal('QR-2026-016', 'followup')" class="btn-tbl view" title="عرض التفاصيل">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    @include('partials.icon-chevron-view')
                                 </a>
+                                @unless($readOnly ?? false)
                                 <a href="javascript:void(0)" onclick="openEditModal('QR-2026-016')" class="btn-tbl edit" title="تعديل">
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                 </a>
+                                @endunless
                             </div>
                         </td>
                     </tr>
@@ -194,51 +202,55 @@
                 <thead>
                     <tr>
                         <th>رقم الحجر</th>
+                        <th>اسم الحيوان</th>
                         <th>الطبيب المسؤول</th>
-                        <th>الحيوان</th>
+                        <th>نوع الحيوان</th>
                         <th>المجموعة</th>
                         <th>تاريخ الدخول</th>
                         <th>تاريخ الإفراج</th>
-                        <th>الحالة</th>
                         <th>الإجراءات</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><span class="case-id case-id-closed">QR-2026-010</span></td>
+                        <td style="font-weight:800;">زُزُو</td>
                         <td>د. فاطمة الزهراء</td>
                         <td>زرافة</td>
                         <td>العناقيد الكبرى</td>
                         <td>2026-05-10</td>
                         <td>2026-05-24</td>
-                        <td><span class="badge badge-cleared"><span class="dot"></span>تم الإفراج الصحي</span></td>
                         <td>
                             <div style="display:flex; gap:6px; justify-content:center;">
                                 <a href="javascript:void(0)" onclick="openModal('QR-2026-010', 'cleared')" class="btn-tbl view" title="عرض التفاصيل">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    @include('partials.icon-chevron-view')
                                 </a>
+                                @unless($readOnly ?? false)
                                 <a href="javascript:void(0)" onclick="openEditModal('QR-2026-010')" class="btn-tbl edit" title="تعديل">
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                 </a>
+                                @endunless
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td><span class="case-id case-id-closed">QR-2026-009</span></td>
+                        <td style="color:#94a3b8; font-weight:600;">—</td>
                         <td>د. أسامة الورفلي</td>
                         <td>نعامة</td>
                         <td>الطيور</td>
                         <td>2026-05-01</td>
                         <td>2026-05-15</td>
-                        <td><span class="badge badge-cleared"><span class="dot"></span>تم الإفراج الصحي</span></td>
                         <td>
                             <div style="display:flex; gap:6px; justify-content:center;">
                                 <a href="javascript:void(0)" onclick="openModal('QR-2026-009', 'cleared')" class="btn-tbl view" title="عرض التفاصيل">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    @include('partials.icon-chevron-view')
                                 </a>
+                                @unless($readOnly ?? false)
                                 <a href="javascript:void(0)" onclick="openEditModal('QR-2026-009')" class="btn-tbl edit" title="تعديل">
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                 </a>
+                                @endunless
                             </div>
                         </td>
                     </tr>
@@ -259,32 +271,34 @@
                 <thead>
                     <tr>
                         <th>رقم الحجر</th>
+                        <th>اسم الحيوان</th>
                         <th>الطبيب المسؤول</th>
-                        <th>الحيوان</th>
+                        <th>نوع الحيوان</th>
                         <th>المجموعة</th>
                         <th>تاريخ الدخول</th>
                         <th>تاريخ الإغلاق</th>
-                        <th>الحالة</th>
                         <th>الإجراءات</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><span class="case-id case-id-closed">QR-2026-012</span></td>
+                        <td style="font-weight:800;">سيمبا</td>
                         <td>د. خالد العربي</td>
                         <td>أسد إفريقي</td>
                         <td>القطط الكبرى</td>
                         <td>2026-05-12</td>
                         <td>2026-05-18</td>
-                        <td><span class="badge badge-failed"><span class="dot"></span>لم تجتز الحجر (نقل للمستشفى)</span></td>
                         <td>
                             <div style="display:flex; gap:6px; justify-content:center;">
                                 <a href="javascript:void(0)" onclick="openModal('QR-2026-012', 'failed')" class="btn-tbl view" title="عرض التفاصيل">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    @include('partials.icon-chevron-view')
                                 </a>
+                                @unless($readOnly ?? false)
                                 <a href="javascript:void(0)" onclick="openEditModal('QR-2026-012')" class="btn-tbl edit" title="تعديل">
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                 </a>
+                                @endunless
                             </div>
                         </td>
                     </tr>
@@ -314,39 +328,43 @@
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9;">
                         <span style="color: #64748b; font-size: 0.9rem; font-weight: 700;">نوع الحيوان</span>
-                        <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;">أسد ماراث أفريقي</span>
+                        <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;" id="mdl_type">—</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9;">
+                    <div id="mdl_nameRow" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9;">
                         <span style="color: #64748b; font-size: 0.9rem; font-weight: 700;">اسم الحيوان</span>
-                        <span style="color: #475569; font-size: 0.9rem; font-weight: 700; font-style: italic;">لم يُسمَّ بعد</span>
+                        <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;" id="mdl_animalName">—</span>
+                    </div>
+                    <div id="mdl_markRow" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9;">
+                        <span style="color: #64748b; font-size: 0.9rem; font-weight: 700;">العلامة المميزة</span>
+                        <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;" id="mdl_mark">—</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9;">
                         <span style="color: #64748b; font-size: 0.9rem; font-weight: 700;">الجنس</span>
-                        <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;">ذكر</span>
+                        <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;" id="mdl_gender">—</span>
                     </div>
                     
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9;">
                         <span style="color: #64748b; font-size: 0.9rem; font-weight: 700;">المجموعة الحيوانية</span>
-                        <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;">القططية</span>
+                        <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;" id="mdl_group">—</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9;">
                         <span style="color: #64748b; font-size: 0.9rem; font-weight: 700;">المصدر</span>
-                        <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;">استيراد من جنوب أفريقيا</span>
+                        <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;" id="mdl_source">—</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9;">
                         <span style="color: #64748b; font-size: 0.9rem; font-weight: 700;">الطبيب المسؤول</span>
-                        <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;">د. أسامة الورفلي</span>
+                        <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;" id="mdl_vet">—</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9;">
                         <span style="color: #64748b; font-size: 0.9rem; font-weight: 700;">تاريخ دخول الحجر</span>
-                        <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;">2025-05-01</span>
+                        <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;" id="mdl_entryDate">—</span>
                     </div>
 
                     
                     <div style="margin-top: 1rem;">
                         <span style="color: #64748b; font-size: 0.85rem; font-weight: 700; display: block; text-align: center; margin-bottom: 0.5rem;">ملاحظات أولية</span>
-                        <div style="background: #f8fafc; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.9rem; font-weight: 700; color: #334155;">
-                            حيوان شاب سليم ظاهرياً
+                        <div style="background: #f8fafc; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.9rem; font-weight: 700; color: #334155;" id="mdl_initialNotes">
+                            —
                         </div>
                     </div>
                 </div>
@@ -409,13 +427,20 @@
                     <input type="text" class="form-input" placeholder="مثال: أسد إفريقي، نسر ذهبي...">
                 </div>
                 <div class="form-group">
+                    <label>اسم الحيوان (اختياري)</label>
+                    <input type="text" class="form-input" placeholder="مثال: سيمبا، لولو...">
+                </div>
+                <div class="form-group">
                     <label>الجنس <span class="req">*</span></label>
                     <select class="form-select">
                         <option value="" disabled selected>اختر الجنس...</option>
                         <option>ذكر</option>
                         <option>أنثى</option>
-                        <option>غير محدد</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label>العلامة المميزة (اختياري)</label>
+                    <input type="text" class="form-input" placeholder="مثال: أذن يمين مقطوعة جزئياً...">
                 </div>
                 <div class="form-group">
                     <label>العمر</label>
@@ -434,8 +459,8 @@
                     <input type="file" class="form-input" accept="image/*" style="padding: 6px;">
                 </div>
                 <div class="form-group full">
-                    <label>ملاحظات أولية (اختياري)</label>
-                    <textarea class="form-textarea" placeholder="أدخل أي ملاحظات حول صحة الحيوان عند دخول الحجر..."></textarea>
+                    <label>ملاحظات أولية <span class="req">*</span></label>
+                    <textarea class="form-textarea" placeholder="أدخل ملاحظات حول صحة الحيوان عند دخول الحجر..." required></textarea>
                 </div>
             </div>
         </div>
@@ -457,35 +482,42 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label>نوع الحيوان <span class="req">*</span></label>
-                    <input type="text" class="form-input" value="فهد آسيوي">
+                    <input type="text" class="form-input" id="edit_type" value="فهد آسيوي">
+                </div>
+                <div class="form-group">
+                    <label>اسم الحيوان (اختياري)</label>
+                    <input type="text" class="form-input" id="edit_animalName" placeholder="مثال: فهد...">
                 </div>
                 <div class="form-group">
                     <label>الجنس <span class="req">*</span></label>
-                    <select class="form-select">
+                    <select class="form-select" id="edit_gender">
                         <option value="ذكر" selected>ذكر</option>
                         <option value="أنثى">أنثى</option>
-                        <option value="غير محدد">غير محدد</option>
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>العلامة المميزة (اختياري)</label>
+                    <input type="text" class="form-input" id="edit_mark" placeholder="مثال: بقعة بيضاء على الجبهة...">
+                </div>
+                <div class="form-group">
                     <label>العمر</label>
-                    <input type="text" class="form-input" value="3 سنوات">
+                    <input type="text" class="form-input" id="edit_age" value="3 سنوات">
                 </div>
                 <div class="form-group">
                     <label>مصدر الحيوان / جهة الإحضار <span class="req">*</span></label>
-                    <input type="text" class="form-input" value="مركز الحياة البرية">
+                    <input type="text" class="form-input" id="edit_source" value="مركز الحياة البرية">
                 </div>
                 <div class="form-group">
                     <label>تاريخ الدخول للحجر <span class="req">*</span></label>
-                    <input type="date" class="form-input" value="2026-06-01">
+                    <input type="date" class="form-input" id="edit_entryDate" value="2026-06-01">
                 </div>
                 <div class="form-group">
                     <label>تحديث صورة الحيوان</label>
                     <input type="file" class="form-input" accept="image/*" style="padding: 6px;">
                 </div>
                 <div class="form-group full">
-                    <label>تحديث الملاحظات الأولية</label>
-                    <textarea class="form-textarea">الحيوان بحالة جيدة عموماً، يحتاج مراقبة في أول أسبوع.</textarea>
+                    <label>الملاحظات الأولية <span class="req">*</span></label>
+                    <textarea class="form-textarea" id="edit_initialNotes" required>الحيوان بحالة جيدة عموماً، يحتاج مراقبة في أول أسبوع.</textarea>
                 </div>
             </div>
         </div>
@@ -536,6 +568,44 @@
 
 @section('scripts')
 <script>
+const quarantineDB = {
+    'QR-2026-015': {
+        type: 'فهد آسيوي', animalName: 'فهد', mark: 'بقعة سوداء على الجبهة',
+        gender: 'ذكر', group: 'القطط الكبرى', source: 'مركز الحياة البرية',
+        vet: 'د. أسامة الورفلي', entryDate: '2026-06-01',
+        initialNotes: 'الحيوان بحالة جيدة عموماً، يحتاج مراقبة في أول أسبوع.',
+        age: '3 سنوات'
+    },
+    'QR-2026-016': {
+        type: 'قرد البابون', animalName: '', mark: '',
+        gender: 'أنثى', group: 'القرود', source: 'استيراد',
+        vet: 'د. خالد العربي', entryDate: '2026-05-28',
+        initialNotes: 'حيوان نشيط، لا أعراض ظاهرة.',
+        age: '4 سنوات'
+    },
+    'QR-2026-010': {
+        type: 'زرافة', animalName: 'زُزُو', mark: 'ندبة صغيرة على الرقبة',
+        gender: 'أنثى', group: 'العناقيد الكبرى', source: 'تبادل حيوانات',
+        vet: 'د. فاطمة الزهراء', entryDate: '2026-05-10',
+        initialNotes: 'سليمة ظاهرياً عند الدخول.',
+        age: '5 سنوات'
+    },
+    'QR-2026-009': {
+        type: 'نعامة', animalName: '', mark: '',
+        gender: 'ذكر', group: 'الطيور', source: 'محلي',
+        vet: 'د. أسامة الورفلي', entryDate: '2026-05-01',
+        initialNotes: 'فحص أولي طبيعي.',
+        age: 'سنتان'
+    },
+    'QR-2026-012': {
+        type: 'أسد إفريقي', animalName: 'سيمبا', mark: 'أذن يسرى مشقوقة',
+        gender: 'ذكر', group: 'القطط الكبرى', source: 'استيراد',
+        vet: 'د. خالد العربي', entryDate: '2026-05-12',
+        initialNotes: 'ظهور أعراض تنفسية، نُقل للمستشفى.',
+        age: '6 سنوات'
+    }
+};
+
 function switchTab(evt, tabId) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.seg-tab').forEach(b => b.classList.remove('active'));
@@ -543,9 +613,37 @@ function switchTab(evt, tabId) {
     evt.currentTarget.classList.add('active');
 }
 
+function populateDetailModal(d) {
+    document.getElementById('mdl_type').textContent = d.type;
+    document.getElementById('mdl_gender').textContent = d.gender;
+    document.getElementById('mdl_group').textContent = d.group;
+    document.getElementById('mdl_source').textContent = d.source;
+    document.getElementById('mdl_vet').textContent = d.vet;
+    document.getElementById('mdl_entryDate').textContent = d.entryDate;
+    document.getElementById('mdl_initialNotes').textContent = d.initialNotes;
+
+    const nameRow = document.getElementById('mdl_nameRow');
+    const markRow = document.getElementById('mdl_markRow');
+    if (d.animalName) {
+        document.getElementById('mdl_animalName').textContent = d.animalName;
+        nameRow.style.display = 'flex';
+    } else {
+        nameRow.style.display = 'none';
+    }
+    if (d.mark) {
+        document.getElementById('mdl_mark').textContent = d.mark;
+        markRow.style.display = 'flex';
+    } else {
+        markRow.style.display = 'none';
+    }
+}
+
 function openModal(caseId, tabType) {
     document.getElementById('modalCaseId').textContent = caseId;
     document.getElementById('mdl_id').textContent = caseId;
+
+    const d = quarantineDB[caseId];
+    if (d) populateDetailModal(d);
     
     const footer = document.getElementById('modalFooterActions');
     
@@ -578,6 +676,17 @@ function closeAddModal() {
 
 function openEditModal(caseId) {
     document.getElementById('editModalCaseId').textContent = caseId;
+    const d = quarantineDB[caseId];
+    if (d) {
+        document.getElementById('edit_type').value = d.type;
+        document.getElementById('edit_animalName').value = d.animalName || '';
+        document.getElementById('edit_mark').value = d.mark || '';
+        document.getElementById('edit_gender').value = d.gender;
+        document.getElementById('edit_age').value = d.age || '';
+        document.getElementById('edit_source').value = d.source;
+        document.getElementById('edit_entryDate').value = d.entryDate;
+        document.getElementById('edit_initialNotes').value = d.initialNotes;
+    }
     document.getElementById('editModal').classList.add('open');
 }
 

@@ -3,6 +3,7 @@
 @section('page_title', 'إدارة معلومات الزيارة')
 
 @section('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
     :root {
         --glass-bg: rgba(255, 255, 255, 0.85);
@@ -296,6 +297,54 @@
     .status-pill.maintenance { background: #FEF3C7; color: #92400E; }
     .status-pill.closed { background: #FEE2E2; color: #991B1B; }
 
+    .status-text-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .status-text-value {
+        flex: 1;
+        min-width: 200px;
+        font-size: 1rem;
+        font-weight: 800;
+        color: #854d0e;
+    }
+
+    .btn-visibility {
+        padding: 8px 16px;
+        border-radius: 10px;
+        border: 1.5px solid var(--border);
+        background: white;
+        font-family: 'Cairo', sans-serif;
+        font-weight: 800;
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+
+    .btn-visibility.visible { color: #166534; border-color: #86EFAC; background: #F0FDF4; }
+    .btn-visibility.hidden  { color: #991B1B; border-color: #FECACA; background: #FEF2F2; }
+
+    #visitMap {
+        height: 260px;
+        border-radius: 14px;
+        border: 1.5px solid var(--border);
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .entry-instructions {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-main);
+        line-height: 1.8;
+        margin: 0;
+        white-space: pre-line;
+    }
+
     @media (max-width: 900px) {
         .visit-container { grid-template-columns: 1fr; }
         .visit-hero { grid-column: span 1; }
@@ -320,12 +369,12 @@
                     <h3 style="color: #854d0e;">حالة التشغيل والتنبيهات النشطة للزوار</h3>
                 </div>
                 <div class="premium-card-body" style="padding-top: 0.5rem;">
-                    <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center;">
+                    <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: stretch;">
                         <div class="grid-cell" style="flex: 1; min-width: 250px; background: white; border: 1.5px solid #fef08a;">
-                            <label style="color: #854d0e;">حالة الحديقة العامة</label>
-                            <div style="display: inline-flex; align-items: center; gap: 8px; margin-top: 4px;">
-                                <span class="facility-dot" style="background: #eab308; width: 10px; height: 10px; border-radius: 50%;"></span>
-                                <span style="font-size: 1.1rem; color: #854d0e; font-weight: 800;">مفتوحة جزئياً (توجد أقسام تحت الصيانة)</span>
+                            <label style="color: #854d0e;">حالة التشغيل</label>
+                            <div class="status-text-row" style="margin-top: 8px;">
+                                <span class="status-text-value" id="statusText">مفتوحة جزئياً — بعض الأقسام تحت الصيانة</span>
+                                <button type="button" class="btn-visibility visible" id="statusVisBtn" onclick="toggleStatusVisibility()">👁 ظاهر للزوار</button>
                             </div>
                         </div>
                         <div class="grid-cell" style="flex: 2; min-width: 300px; background: white; border: 1.5px solid #fef08a;">
@@ -335,6 +384,61 @@
                             </span>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contacts -->
+            <div class="premium-card">
+                <div class="card-accent-header">
+                    <div class="icon-wrapper">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </div>
+                    <h3>أرقام الطوارئ والأمن</h3>
+                </div>
+                <div class="premium-card-body">
+                    <div class="premium-grid">
+                        <div class="grid-cell">
+                            <label>رقم الإسعاف</label>
+                            <span dir="ltr">193</span>
+                        </div>
+                        <div class="grid-cell">
+                            <label>رقم الأمن</label>
+                            <span dir="ltr">091-555-0123</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zoo Location Map -->
+            <div class="premium-card">
+                <div class="card-accent-header">
+                    <div class="icon-wrapper">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    </div>
+                    <h3>موقع الحديقة على الخريطة</h3>
+                </div>
+                <div class="premium-card-body">
+                    <div class="grid-cell" style="margin-bottom: 1rem;">
+                        <label>العنوان</label>
+                        <span>حديقة حيوانات طرابلس — طريق المطار، طرابلس، ليبيا</span>
+                    </div>
+                    <div id="visitMap"></div>
+                </div>
+            </div>
+
+            <!-- Entry Instructions -->
+            <div class="premium-card">
+                <div class="card-accent-header">
+                    <div class="icon-wrapper">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                    </div>
+                    <h3>تعليمات الدخول</h3>
+                </div>
+                <div class="premium-card-body">
+                    <p class="entry-instructions">• يرجى الحضور من البوابة الرئيسية مع التذكرة الإلكترونية أو الورقية.
+• يُمنع إدخال الطعام والمشروبات من خارج الحديقة.
+• يلزم مرافقة الأطفال دون سن 12 سنة في جميع الأوقات.
+• يُرجى الالتزام بالمسارات المحددة وعدم تسلق الأسوار أو الأقفاص.</p>
                 </div>
             </div>
 
@@ -372,7 +476,7 @@
             <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
                 <a href="/admin/visit-info/edit" class="btn-luxury-action" style="width: auto; padding: 12px 30px;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                    تعديل مواعيد العمل
+                    تعديل معلومات الزيارة
                 </a>
             </div>
 
@@ -380,4 +484,33 @@
     </div>
 
 </div>
+@endsection
+
+@section('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    let statusVisible = true;
+
+    function toggleStatusVisibility() {
+        statusVisible = !statusVisible;
+        const btn = document.getElementById('statusVisBtn');
+        if (statusVisible) {
+            btn.textContent = '👁 ظاهر للزوار';
+            btn.className = 'btn-visibility visible';
+        } else {
+            btn.textContent = '🚫 مخفي عن الزوار';
+            btn.className = 'btn-visibility hidden';
+        }
+    }
+
+    window.onload = function() {
+        const zooCoords = [32.8485, 13.1785];
+        const map = L.map('visitMap').setView(zooCoords, 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+        L.marker(zooCoords).addTo(map)
+            .bindPopup('حديقة حيوانات طرابلس').openPopup();
+    };
+</script>
 @endsection

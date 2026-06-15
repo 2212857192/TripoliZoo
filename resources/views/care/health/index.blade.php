@@ -15,13 +15,8 @@
         flex-direction: column;
         gap: 1.2rem;
     }
-    .page-header { display: flex; justify-content: space-between; align-items: center; }
-    .page-header-info h2 { font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin: 0; }
-    .page-header-info p { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin: 4px 0 0; }
-
     .filter-bar {
         display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;
-        padding-top: 1.2rem; border-top: 1px solid #F1F5F9;
     }
     .search-box { flex: 1; min-width: 250px; position: relative; }
     .search-box input {
@@ -39,10 +34,40 @@
     }
     .filter-select:focus { border-color: #2E7D32; }
 
+    .table-card-footer {
+        padding: 1.1rem 1.75rem;
+        display: flex; align-items: center; justify-content: flex-end;
+        border-top: 1px solid #f1f5f9; background: #FAFBFC;
+    }
+    .table-pagination {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 0.82rem; font-weight: 700; color: #64748b;
+    }
+    .table-pagination .page-info { margin-left: 4px; white-space: nowrap; }
+    .page-btn {
+        width: 34px; height: 34px; border-radius: 9px;
+        border: 1px solid #e2e8f0; background: #fff; color: #475569;
+        display: inline-flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: all 0.2s; font-family: 'Cairo', sans-serif;
+    }
+    .page-btn:hover:not(:disabled) { border-color: #2E7D32; color: #2E7D32; background: #f0fdf4; }
+    .page-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .page-btn.active {
+        background: linear-gradient(135deg, #1a4a2e, #2d7a47);
+        border-color: transparent; color: #fff;
+    }
+
     /* ── Table ── */
     .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 2rem; }
-    .table-card-header { padding: 1.25rem 1.75rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; background: #FAFBFC; }
-    .table-card-title { display: flex; align-items: center; gap: 12px; font-size: 1.1rem; font-weight: 800; color: #0f172a; }
+    .animal-thumb {
+        width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
+        background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+        border: 1.5px solid #bbf7d0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.35rem; overflow: hidden;
+    }
+    .animal-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .animal-name { font-weight: 800; color: #0f172a; line-height: 1.3; }
     .custom-table { width: 100%; border-collapse: collapse; text-align: right; }
     .custom-table thead th { background: #F8FAFC; color: var(--text-muted); font-size: 0.8rem; font-weight: 800; letter-spacing: 0.5px; padding: 14px 20px; border-bottom: 1px solid var(--border); }
     .custom-table tbody tr { transition: background 0.15s; }
@@ -70,47 +95,72 @@
 
     .case-id, .animal-id { font-family: 'Courier New', monospace; font-size: 0.75rem; background: #f8fafc; padding: 3px 8px; border-radius: 6px; color: #334155; font-weight: 800; display: inline-block; border: 1px solid #e2e8f0; }
 
-    /* ═══ MODAL — VET HOSPITAL STYLE ═══ */
+    /* ═══ MODAL — نفس نافذة تفاصيل الحجر الصحي ═══ */
     .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; }
     .modal-backdrop.open { display: flex; }
-    .modal-box { background: #fff; border-radius: 20px; width: 100%; max-width: 680px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 50px rgba(0,0,0,0.15); animation: modalIn 0.3s cubic-bezier(0.4,0,0.2,1); }
+    #caseModal .modal-box { background: #f8fafc; border-radius: 20px; width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.15); animation: modalIn 0.3s cubic-bezier(0.4,0,0.2,1); }
     @keyframes modalIn { from { transform: translateY(24px) scale(0.97); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
 
-    /* Modal Header (white bg with tabs) */
-    .modal-header { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 1.2rem 1.5rem 0; display: flex; justify-content: space-between; align-items: flex-end; }
-    .modal-title-wrap { padding-bottom: 0.8rem; }
-    .modal-title-wrap h3 { margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a; }
-    .modal-title-wrap span { font-size: 0.8rem; color: #64748b; font-weight: 600; }
-    .modal-tabs-wrap { display: flex; align-items: center; gap: 20px; }
-    .modal-tabs { display: flex; gap: 0; }
-    .modal-tab { padding: 10px 24px; border: none; background: transparent; font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 800; cursor: pointer; color: #94a3b8; border-bottom: 3px solid transparent; transition: all 0.2s; }
-    .modal-tab.active { color: #1a4a2e; border-bottom-color: #1a4a2e; }
-    .modal-close { width: 32px; height: 32px; border-radius: 8px; background: #fff; border: 1px solid #e2e8f0; color: #64748b; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; font-weight: 700; transition: all 0.2s; margin-bottom: 10px; }
-    .modal-close:hover { background: #f8fafc; color: #0f172a; }
+    #caseModal .modal-header { background: transparent; border-bottom: none; display: flex; justify-content: center; position: relative; padding: 2rem 1.5rem 0; }
+    #caseModal .modal-header h3 { font-size: 1.4rem; font-weight: 800; color: #1e293b; margin: 0; text-align: center; }
+    #caseModal .modal-close {
+        position: absolute; left: 1.5rem; top: 1.5rem;
+        width: 32px; height: 32px; border-radius: 8px; background: #e2e8f0; border: none;
+        color: #64748b; display: flex; align-items: center; justify-content: center;
+        cursor: pointer; font-size: 1.2rem; font-weight: 700; line-height: 1;
+    }
+    #caseModal .modal-close:hover { background: #cbd5e1; color: #0f172a; }
 
-    /* Modal Body */
-    .modal-body { padding: 1.5rem; overflow-y: auto; max-height: 65vh; }
+    #caseModal .modal-tabs-bar { display: flex; justify-content: center; gap: 0; padding: 1rem 2rem 0; }
+    #caseModal .modal-tab {
+        padding: 8px 20px; border: none; background: transparent;
+        font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800;
+        cursor: pointer; color: #94a3b8; border-bottom: 3px solid transparent;
+    }
+    #caseModal .modal-tab.active { color: #16a34a; border-bottom-color: #16a34a; }
 
-    /* Info Grid - vet hospital style */
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #e2e8f0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
-    .info-cell { background: #fff; padding: 12px 16px; }
-    .info-cell.span-2 { grid-column: span 2; }
-    .info-cell-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; margin-bottom: 4px; }
-    .info-cell-value { font-size: 0.9rem; color: #0f172a; font-weight: 800; }
+    #caseModal .modal-body { padding: 1.5rem 2rem; }
+    #caseModal .q-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 768px) { #caseModal .q-grid { grid-template-columns: 1fr; } }
 
-    /* Content box with border */
-    .content-box { background: #fff; border-right: 4px solid #3b82f6; padding: 12px 16px; border-radius: 8px; font-size: 0.9rem; color: #1e293b; font-weight: 700; line-height: 1.6; border: 1px solid #e2e8f0; border-right-width: 4px; }
-    .content-box.warning { border-right-color: #f59e0b; }
-    .section-label { font-size: 0.8rem; color: #64748b; font-weight: 800; margin-bottom: 8px; }
+    #caseModal .q-card {
+        background: #fff; border-radius: 12px; padding: 1.5rem;
+        border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+    #caseModal .q-card-title { font-size: 1.1rem; font-weight: 800; color: #1e293b; margin-bottom: 1.5rem; text-align: center; }
+    #caseModal .q-row {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9;
+    }
+    #caseModal .q-row.sep { margin-bottom: 2rem; }
+    #caseModal .q-label { color: #64748b; font-size: 0.9rem; font-weight: 700; }
+    #caseModal .q-value { color: #0f172a; font-size: 0.95rem; font-weight: 800; }
+    #caseModal .q-value.muted { color: #475569; font-weight: 700; font-style: italic; }
+    #caseModal .q-note-label { color: #64748b; font-size: 0.85rem; font-weight: 700; display: block; text-align: center; margin-bottom: 0.5rem; }
+    #caseModal .q-note-box {
+        background: #f8fafc; padding: 10px; border-radius: 8px; text-align: center;
+        font-size: 0.9rem; font-weight: 700; color: #334155;
+    }
+    #caseModal .q-col { display: flex; flex-direction: column; gap: 1.5rem; }
+    #caseModal .q-notes-list { display: flex; flex-direction: column; gap: 0.8rem; }
+    #caseModal .q-note-item {
+        background: #f8fafc; padding: 12px 14px; border-radius: 8px;
+        font-size: 0.85rem; color: #334155; font-weight: 700; text-align: center; border: 1px solid #f1f5f9;
+    }
+    #caseModal .q-attach-wrap { text-align: center; padding: 2rem 1rem; }
+    #caseModal .q-attach-img {
+        width: 180px; height: 180px; border-radius: 16px; margin: 0 auto;
+        background: linear-gradient(135deg, #E8F5E9, #C8E6C9); border: 2px solid #bbf7d0;
+        display: flex; align-items: center; justify-content: center; font-size: 5rem;
+    }
 
-    /* Modal Footer */
-    .modal-footer { background: #fff; border-top: 1px solid #e2e8f0; padding: 1.2rem 1.5rem; display: flex; gap: 10px; justify-content: flex-end; }
-    .btn-submit { padding: 10px 24px; background: linear-gradient(135deg, #1a4a2e, #2d7a47); color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(45,122,71,0.3); }
-    .btn-submit:hover { transform: translateY(-1px); }
-    .btn-submit-red { padding: 10px 24px; background: linear-gradient(135deg, #991b1b, #dc2626); color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(220,38,38,0.25); }
-    .btn-submit-red:hover { transform: translateY(-1px); }
-    .btn-cancel { padding: 10px 20px; background: #fff; color: #475569; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; }
-    .btn-cancel:hover { background: #f8fafc; }
+    #caseModal .modal-footer { background: transparent; border-top: none; padding: 0 2rem 1.5rem; display: flex; gap: 10px; justify-content: flex-end; }
+    #caseModal .btn-action-release { padding: 8px 16px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    #caseModal .btn-action-release:hover { background: #15803d; }
+    #caseModal .btn-action-close { padding: 8px 16px; background: #e11d48; color: #fff; border: none; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    #caseModal .btn-action-close:hover { background: #be123c; }
+    #caseModal .btn-cancel { padding: 8px 16px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    #caseModal .btn-cancel:hover { background: #e2e8f0; }
 
 /* ── Sub-dialog modals ── */
 .dialog-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.45); backdrop-filter: blur(3px); z-index: 1100; align-items: center; justify-content: center; }
@@ -131,18 +181,12 @@
 
 @section('content')
 
-{{-- ═══════ HEADER & FILTERS ═══════ --}}
+{{-- ═══════ FILTERS ═══════ --}}
 <div class="top-card">
-    <div class="page-header">
-        <div class="page-header-info">
-            <h2>🩺 الحالات الصحية</h2>
-            <p>مراجعة الحالات الصحية المسجلة من مشرفي المجموعات واتخاذ الإجراء المناسب عند الحاجة.</p>
-        </div>
-    </div>
     <div class="filter-bar">
         <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="بحث برقم الحيوان، نوع الحيوان، اسم المشرف...">
+            <input type="text" placeholder="بحث برقم الحيوان أو نوع الحيوان...">
         </div>
         <select class="filter-select">
             <option value="">كل المجموعات</option>
@@ -156,96 +200,77 @@
             <option>تحتاج إحالة</option>
             <option>لا تحتاج إحالة</option>
         </select>
-        <select class="filter-select">
-            <option value="">كل الحالات</option>
-            <option>جديدة</option>
-            <option>تمت المراجعة</option>
-            <option>محالة للعلاج</option>
-        </select>
         <input type="date" class="filter-select">
     </div>
 </div>
 
 {{-- ═══ TABLE ═══ --}}
 <div class="table-card">
-    <div class="table-card-header">
-        <div class="table-card-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-            قائمة الحالات
-        </div>
-    </div>
     <div style="overflow-x:auto;">
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>رقم الحالة</th>
-                    <th>الرقم الرسمي للحيوان</th>
+                    <th>اسم الحيوان</th>
+                    <th>صورة الحيوان</th>
+                    <th>رقم الحيوان</th>
                     <th>نوع الحيوان</th>
-                    <th>المجموعة</th>
-                    <th>تاريخ الحالة</th>
-                    <th>المشرف</th>
-                    <th>نوع المتابعة</th>
-                    <th>حالة الحالة</th>
+                    <th>الحالة</th>
                     <th>الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><span class="case-id">HC-2026-001</span></td>
+                    <td><span class="animal-name">سيمبا</span></td>
+                    <td>
+                        <div class="animal-thumb">🦁</div>
+                    </td>
                     <td><span class="animal-id">#ANL-0041-2026</span></td>
                     <td style="font-weight:700;">أسد إفريقي</td>
-                    <td>السباع</td>
-                    <td>2026-06-07</td>
-                    <td>خالد منصور</td>
-                    <td><span class="badge badge-need-referral"><span class="dot"></span>تحتاج إحالة</span></td>
                     <td><span class="badge badge-status-new"><span class="dot"></span>جديدة</span></td>
                     <td>
-                        <button onclick="openModal('new_urgent','أسد إفريقي','السباع','خالد منصور','2026-06-07','تحتاج إحالة','جديدة','الحيوان يرفض تناول الطعام، جرح عميق بالقدم الأمامية.','تنظيف الجرح مبدئياً — يتطلب تدخلاً جراحياً.')" class="btn-tbl view" title="عرض التفاصيل">
+                        <button onclick="openModal('new_urgent','HC-2026-001','سيمبا','#ANL-0041-2026','🦁','أسد إفريقي','السباع','جرح عميق بالقدم الأمامية اليمنى','خالد منصور','2026-06-07','تحتاج إحالة','جديدة','الحيوان يرفض تناول الطعام، جرح عميق بالقدم الأمامية.','تنظيف الجرح مبدئياً — يتطلب تدخلاً جراحياً.')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="case-id">HC-2026-002</span></td>
+                    <td><span class="animal-name" style="color:#94a3b8; font-style:italic;">—</span></td>
+                    <td>
+                        <div class="animal-thumb">🐒</div>
+                    </td>
                     <td><span class="animal-id">#ANL-0182-2025</span></td>
                     <td style="font-weight:700;">قرد المكاك</td>
-                    <td>الرئيسيات</td>
-                    <td>2026-06-06</td>
-                    <td>ياسر الغيثي</td>
-                    <td><span class="badge badge-no-referral"><span class="dot"></span>لا تحتاج إحالة</span></td>
                     <td><span class="badge badge-status-new"><span class="dot"></span>جديدة</span></td>
                     <td>
-                        <button onclick="openModal('new_normal','قرد المكاك','الرئيسيات','ياسر الغيثي','2026-06-06','لا تحتاج إحالة','جديدة','كدمة بسيطة على الرسغ من احتكاك السياج.','المنطقة المصابة نظيفة ولا توجد عدوى.')" class="btn-tbl view" title="عرض التفاصيل">
+                        <button onclick="openModal('new_normal','HC-2026-002',null,'#ANL-0182-2025','🐒','قرد المكاك','الرئيسيات','كدمة على الرسغ الأيسر','ياسر الغيثي','2026-06-06','لا تحتاج إحالة','جديدة','كدمة بسيطة على الرسغ من احتكاك السياج.','المنطقة المصابة نظيفة ولا توجد عدوى.')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="case-id">HC-2026-003</span></td>
+                    <td><span class="animal-name">نعيمة</span></td>
+                    <td>
+                        <div class="animal-thumb">🦩</div>
+                    </td>
                     <td><span class="animal-id">#ANL-0091-2024</span></td>
                     <td style="font-weight:700;">نعامة إفريقية</td>
-                    <td>الطيور</td>
-                    <td>2026-06-05</td>
-                    <td>سالم عبدالله</td>
-                    <td><span class="badge badge-no-referral"><span class="dot"></span>لا تحتاج إحالة</span></td>
                     <td><span class="badge badge-status-reviewed"><span class="dot"></span>تمت المراجعة</span></td>
                     <td>
-                        <button onclick="openModal('reviewed','نعامة إفريقية','الطيور','سالم عبدالله','2026-06-05','لا تحتاج إحالة','تمت المراجعة','انخفاض طفيف في كمية الغذاء المتناول.','تمت المراجعة — لا إجراء مطلوب.')" class="btn-tbl view" title="عرض التفاصيل">
+                        <button onclick="openModal('reviewed','HC-2026-003','نعيمة','#ANL-0091-2024','🦩','نعامة إفريقية','الطيور','ريش مفقود من الجناح الأيسر','سالم عبدالله','2026-06-05','لا تحتاج إحالة','تمت المراجعة','انخفاض طفيف في كمية الغذاء المتناول.','تمت المراجعة — لا إجراء مطلوب.')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
                 </tr>
                 <tr>
-                    <td><span class="case-id">HC-2026-004</span></td>
+                    <td><span class="animal-name">ريم</span></td>
+                    <td>
+                        <div class="animal-thumb">🦌</div>
+                    </td>
                     <td><span class="animal-id">#ANL-0120-2026</span></td>
                     <td style="font-weight:700;">غزال الريم</td>
-                    <td>العواشب</td>
-                    <td>2026-06-04</td>
-                    <td>أحمد الكواري</td>
-                    <td><span class="badge badge-need-referral"><span class="dot"></span>تحتاج إحالة</span></td>
                     <td><span class="badge badge-status-referred"><span class="dot"></span>محالة للعلاج</span></td>
                     <td>
-                        <button onclick="openModal('referred','غزال الريم','العواشب','أحمد الكواري','2026-06-04','تحتاج إحالة','محالة للعلاج','كسر مشتبه في الساق الأمامية اليمنى.','تم توثيق الإحالة وإرسالها للمستشفى.')" class="btn-tbl view" title="عرض التفاصيل">
+                        <button onclick="openModal('referred','HC-2026-004','ريم','#ANL-0120-2026','🦌','غزال الريم','العواشب','عرج واضح في الساق الأمامية اليمنى','أحمد الكواري','2026-06-04','تحتاج إحالة','محالة للعلاج','كسر مشتبه في الساق الأمامية اليمنى.','تم توثيق الإحالة وإرسالها للمستشفى.')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
@@ -253,100 +278,108 @@
             </tbody>
         </table>
     </div>
+    <div class="table-card-footer">
+        <div class="table-pagination">
+            <button class="page-btn" disabled title="السابق">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn" title="التالي">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <span class="page-info">صفحة 1 من 2 — 4 حالات</span>
+        </div>
+    </div>
 </div>
 
 {{-- ═══ MODAL ═══ --}}
 <div class="modal-backdrop" id="caseModal">
     <div class="modal-box">
-
-        {{-- Header --}}
         <div class="modal-header">
-            <div class="modal-title-wrap">
-                <h3>تفاصيل الحالة الصحية</h3>
-                <span id="mSubtitle">—</span>
-            </div>
-            <div class="modal-tabs-wrap">
-                <div class="modal-tabs">
-                    <button class="modal-tab active" id="htab-btn-1" onclick="switchHTab(1)">بيانات الحالة</button>
-                    <button class="modal-tab" id="htab-btn-2" onclick="switchHTab(2)">الملاحظات والمرفقات</button>
-                </div>
-                <button class="modal-close" onclick="closeModal()">✕</button>
-            </div>
+            <h3>تفاصيل الحالة الصحية — <span id="modalCaseId">HC-2026-001</span></h3>
+            <button type="button" class="modal-close" onclick="closeModal()">✕</button>
         </div>
 
-        {{-- Body --}}
+        <div class="modal-tabs-bar">
+            <button class="modal-tab active" id="htab-btn-1" onclick="switchHTab(1)">بيانات الحالة</button>
+            <button class="modal-tab" id="htab-btn-2" onclick="switchHTab(2)">المرفقات</button>
+        </div>
+
         <div class="modal-body">
-
-            {{-- Tab 1: بيانات الحالة --}}
             <div id="htab-1">
-                {{-- Case ID row --}}
-                <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.5rem;">
-                    <span style="font-family:'Courier New',monospace; font-size:0.85rem; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:4px 12px; border-radius:6px; font-weight:700;" id="mCaseId">HC-2026-001</span>
-                    <span style="font-size:0.8rem; color:#64748b; font-weight:700;">رقم الحالة</span>
-                    <span id="mFollowUpBadge" style="margin-right:auto;"></span>
-                    <span id="mStatusBadge"></span>
-                </div>
+                <div class="q-grid">
+                    <div class="q-card">
+                        <h4 class="q-card-title">بيانات الحيوان</h4>
 
-                {{-- Info Grid --}}
-                <div class="info-grid">
-                    <div class="info-cell">
-                        <div class="info-cell-label">نوع الحيوان</div>
-                        <div class="info-cell-value" id="mAnimalType">—</div>
+                        <div class="q-row">
+                            <span class="q-label">رقم الحيوان</span>
+                            <span class="q-value" id="mAnimalId">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">نوع الحيوان</span>
+                            <span class="q-value" id="mAnimalType">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">اسم الحيوان</span>
+                            <span class="q-value" id="mAnimalName">—</span>
+                        </div>
+                        <div class="q-row sep">
+                            <span class="q-label">الجنس</span>
+                            <span class="q-value" id="mGender">ذكر</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">العلامة المميزة</span>
+                            <span class="q-value" id="mMark">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">المجموعة الحيوانية</span>
+                            <span class="q-value" id="mGroup">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">المشرف</span>
+                            <span class="q-value" id="mSupervisor">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">تاريخ التسجيل</span>
+                            <span class="q-value" id="mDate">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">نوع المتابعة</span>
+                            <span class="q-value" id="mFollowUpVal">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">الحالة</span>
+                            <span class="q-value" id="mStatusVal">—</span>
+                        </div>
                     </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">المجموعة</div>
-                        <div class="info-cell-value" id="mGroup">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">الجنس</div>
-                        <div class="info-cell-value">ذكر</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">العمر</div>
-                        <div class="info-cell-value">6 سنوات</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">تاريخ الحالة</div>
-                        <div class="info-cell-value" id="mDate">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">المشرف</div>
-                        <div class="info-cell-value" id="mSupervisor">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">نوع المتابعة</div>
-                        <div class="info-cell-value" id="mFollowUpVal">—</div>
-                    </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">حالة الحالة</div>
-                        <div class="info-cell-value" id="mStatusVal">—</div>
-                    </div>
-                </div>
 
-                <div style="margin-bottom:1.2rem;">
-                    <div class="section-label">وصف الحالة الصحية</div>
-                    <div class="content-box warning" id="mDesc">—</div>
-                </div>
-            </div>
+                    <div class="q-col">
+                        <div class="q-card">
+                            <h4 class="q-card-title">وصف الحالة الصحية</h4>
+                            <div class="q-note-box" id="mDesc">—</div>
+                        </div>
 
-            {{-- Tab 2: الملاحظات والمرفقات --}}
-            <div id="htab-2" style="display:none;">
-                <div style="margin-bottom:1.2rem;">
-                    <div class="section-label">الملاحظات المسجلة عن الحيوان</div>
-                    <div class="content-box" id="mNotes">—</div>
-                </div>
-                <div style="margin-top:1.5rem;">
-                    <div class="section-label">المرفقات</div>
-                    <div style="display:flex; gap:10px; margin-top:8px;">
-                        <div style="width:80px; height:80px; background:#e2e8f0; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#94a3b8;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        <div class="q-card" style="flex-grow:1;">
+                            <h4 class="q-card-title">الملاحظات المسجلة عن الحيوان</h4>
+                            <div class="q-notes-list" id="mNotesList">
+                                <div class="q-note-item" id="mNotes">—</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div id="htab-2" style="display:none;">
+                <div class="q-card">
+                    <h4 class="q-card-title">المرفقات</h4>
+                    <div class="q-attach-wrap">
+                        <div class="q-attach-img" id="mAttachmentImg">🦁</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        {{-- Footer --}}
         <div class="modal-footer" id="mFooter"></div>
     </div>
 </div>
@@ -407,57 +440,35 @@
         currentHTab = n;
     }
 
-    function openModal(state, animalType, group, supervisor, date, followUp, status, desc, notes) {
-        // Reset tabs
+    function openModal(state, caseId, animalName, animalId, animalEmoji, animalType, group, mark, supervisor, date, followUp, status, desc, notes) {
         switchHTab(1);
 
-        // Fill data
-        document.getElementById('mSubtitle').innerText = animalType + ' — ' + group;
-        document.getElementById('mAnimalType').innerText = animalType;
-        document.getElementById('mGroup').innerText = group;
-        document.getElementById('mSupervisor').innerText = supervisor;
-        document.getElementById('mDate').innerText = date;
-        document.getElementById('mFollowUpVal').innerText = followUp;
-        document.getElementById('mFollowUpVal').style.color = followUp === 'تحتاج إحالة' ? '#e11d48' : '#475569';
-        document.getElementById('mStatusVal').innerText = status;
-        document.getElementById('mDesc').innerText = desc;
-        document.getElementById('mNotes').innerText = notes;
+        document.getElementById('modalCaseId').textContent = caseId;
+        document.getElementById('mAnimalId').textContent = animalId;
+        document.getElementById('mAnimalType').textContent = animalType;
+        document.getElementById('mAnimalName').innerHTML = animalName
+            ? animalName
+            : '<span class="q-value muted">لم يُسمَّ بعد</span>';
+        document.getElementById('mMark').textContent = mark;
+        document.getElementById('mGroup').textContent = group;
+        document.getElementById('mSupervisor').textContent = supervisor;
+        document.getElementById('mDate').textContent = date;
+        document.getElementById('mFollowUpVal').textContent = followUp;
+        document.getElementById('mStatusVal').textContent = status;
+        document.getElementById('mDesc').textContent = desc;
+        document.getElementById('mNotes').textContent = date + ': ' + notes;
+        document.getElementById('mAttachmentImg').textContent = animalEmoji;
 
-        // Badges
-        const fuColor = followUp === 'تحتاج إحالة'
-            ? 'background:#fff1f2;color:#e11d48;border:1px solid #fecdd3;'
-            : 'background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;';
-        document.getElementById('mFollowUpBadge').innerHTML = `<span style="padding:4px 10px;border-radius:999px;font-size:0.75rem;font-weight:800;${fuColor}">${followUp}</span>`;
-
-        const stColors = {
-            'جديدة':         'background:#eff6ff;color:#2563eb;',
-            'تمت المراجعة':  'background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;',
-            'محالة للعلاج':  'background:#fffbeb;color:#d97706;border:1px solid #fde68a;'
-        };
-        document.getElementById('mStatusBadge').innerHTML = `<span style="padding:4px 10px;border-radius:999px;font-size:0.75rem;font-weight:800;${stColors[status]||''}">${status}</span>`;
-
-        // Footer buttons
         const footer = document.getElementById('mFooter');
-        footer.innerHTML = '';
-
         const closeBtn = `<button class="btn-cancel" onclick="closeModal()">إغلاق</button>`;
 
         if (state === 'new_urgent' || state === 'new_normal') {
             footer.innerHTML = closeBtn +
-                `<button class="btn-submit" onclick="markReviewed()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:6px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    تحديد كمراجعة
-                </button>
-                <button class="btn-submit-red" onclick="referTreatment()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:6px;"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
-                    إحالة للعلاج
-                </button>`;
+                `<button class="btn-action-close" onclick="referTreatment()">إحالة للعلاج</button>
+                <button class="btn-action-release" onclick="markReviewed()">تحديد كمراجعة</button>`;
         } else if (state === 'referred') {
             footer.innerHTML = closeBtn +
-                `<a href="/care/referrals/treatment" class="btn-submit" style="text-decoration:none;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:6px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    عرض إحالة العلاج
-                </a>`;
+                `<a href="/care/referrals/treatment" class="btn-action-release" style="text-decoration:none;display:inline-flex;align-items:center;">عرض إحالة العلاج</a>`;
         } else {
             footer.innerHTML = closeBtn;
         }

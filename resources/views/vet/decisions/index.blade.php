@@ -317,6 +317,8 @@
 </style>
 @endsection
 
+@php $vetBase = ($readOnly ?? false) ? '/director/vet' : '/vet'; @endphp
+
 @section('content')
 {{-- ═══════ HEADER & FILTERS ═══════ --}}
 <div class="top-card">
@@ -389,7 +391,7 @@
                     <th>مصدر القرار</th>
                     <th>تاريخ القرار</th>
                     <th>حالة الاستلام</th>
-                    <th>الإجراءات</th>
+                    <th class="col-actions">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
@@ -402,10 +404,9 @@
                     <td>حجر صحي</td>
                     <td>2025-05-13</td>
                     <td><span class="badge badge-pending"><span class="dot"></span>بانتظار الاستلام</span></td>
-                    <td>
-                        <a href="/vet/decisions/1" class="btn-tbl btn-tbl-view">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            التفاصيل
+                    <td class="col-actions">
+                        <a href="{{ $vetBase }}/decisions/1" class="btn-tbl view" title="عرض التفاصيل">
+                            @include('partials.icon-chevron-view')
                         </a>
                     </td>
                 </tr>
@@ -418,10 +419,9 @@
                     <td>حجر صحي</td>
                     <td>2025-05-15</td>
                     <td><span class="badge badge-completed"><span class="dot"></span>تم الاستلام</span></td>
-                    <td>
-                        <a href="/vet/decisions/2" class="btn-tbl btn-tbl-view">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            التفاصيل
+                    <td class="col-actions">
+                        <a href="{{ $vetBase }}/decisions/2" class="btn-tbl view" title="عرض التفاصيل">
+                            @include('partials.icon-chevron-view')
                         </a>
                     </td>
                 </tr>
@@ -434,10 +434,9 @@
                     <td>حالة داخل المستشفى</td>
                     <td>2025-05-10</td>
                     <td><span class="badge badge-completed"><span class="dot"></span>تم الاستلام</span></td>
-                    <td>
-                        <a href="/vet/decisions/3" class="btn-tbl btn-tbl-view">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            التفاصيل
+                    <td class="col-actions">
+                        <a href="{{ $vetBase }}/decisions/3" class="btn-tbl view" title="عرض التفاصيل">
+                            @include('partials.icon-chevron-view')
                         </a>
                     </td>
                 </tr>
@@ -450,10 +449,9 @@
                     <td>حالة داخل المستشفى</td>
                     <td>2025-05-08</td>
                     <td><span class="badge badge-none"><span class="dot"></span>لا يتطلب استلام</span></td>
-                    <td>
-                        <a href="/vet/decisions/4" class="btn-tbl btn-tbl-view">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            التفاصيل
+                    <td class="col-actions">
+                        <a href="{{ $vetBase }}/decisions/4" class="btn-tbl view" title="عرض التفاصيل">
+                            @include('partials.icon-chevron-view')
                         </a>
                     </td>
                 </tr>

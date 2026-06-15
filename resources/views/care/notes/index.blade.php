@@ -5,17 +5,18 @@
 @section('styles')
 <style>
     .top-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.4rem 1.8rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem; }
-    .page-header { display: flex; justify-content: space-between; align-items: center; }
-    .page-header-info h2 { font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin: 0; }
-    .page-header-info p { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin: 4px 0 0; }
 
-    .filter-bar { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; padding-top: 1.2rem; border-top: 1px solid #F1F5F9; }
-    .search-box { flex: 1; min-width: 250px; position: relative; }
-    .search-box input { width: 100%; padding: 10px 40px 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600; outline: none; transition: all 0.2s; }
-    .search-box input:focus { border-color: #2E7D32; box-shadow: 0 0 0 3px rgba(46,125,50,0.1); }
-    .search-box svg { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+    .filter-bar { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
     .filter-select { padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600; color: #334155; outline: none; cursor: pointer; }
     .filter-select:focus { border-color: #2E7D32; }
+
+    .segmented-tabs { display: inline-flex; background: #f1f5f9; padding: 5px; border-radius: 10px; gap: 4px; }
+    .seg-tab { background: transparent; border: none; padding: 9px 24px; border-radius: 7px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 800; color: #64748b; cursor: pointer; transition: all 0.2s; }
+    .seg-tab:hover { color: #1a4a2e; }
+    .seg-tab.active { background: #fff; color: #1a4a2e; box-shadow: 0 2px 4px rgba(0,0,0,0.07); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
     /* ── Cards Grid ── */
     .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
@@ -35,12 +36,7 @@
     
     .note-card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 1rem; margin-top: auto; }
 
-    /* ── Segmented Tabs ── */
-    .tabs-card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:0.8rem 1.2rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; }
-    .segmented-tabs { display: inline-flex; background: #f1f5f9; padding: 5px; border-radius: 10px; gap: 4px; }
-    .seg-tab { background: transparent; border: none; padding: 9px 24px; border-radius: 7px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 800; color: #64748b; cursor: pointer; transition: all 0.2s; }
-    .seg-tab:hover { color: #1a4a2e; }
-    .seg-tab.active { background: #fff; color: #1a4a2e; box-shadow: 0 2px 4px rgba(0,0,0,0.07); }
+    /* ── Segmented Tabs (moved to top card) ── */
 
     /* ═══ BADGES ═══ */
     .badge { padding: 5px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
@@ -61,40 +57,64 @@
 
     .note-id { font-family: 'Courier New', monospace; font-size: 0.75rem; background: #f8fafc; padding: 3px 8px; border-radius: 6px; color: #334155; font-weight: 800; display: inline-block; border: 1px solid #e2e8f0; }
 
-    /* ═══ MODAL — VET HOSPITAL STYLE ═══ */
+    /* ═══ MODAL — نفس نافذة تفاصيل الحجر الصحي ═══ */
     .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; }
     .modal-backdrop.open { display: flex; }
-    .modal-box { background: #fff; border-radius: 20px; width: 100%; max-width: 680px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 50px rgba(0,0,0,0.15); animation: modalIn 0.3s cubic-bezier(0.4,0,0.2,1); }
+    #noteModal .modal-box { background: #f8fafc; border-radius: 20px; width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.15); animation: modalIn 0.3s cubic-bezier(0.4,0,0.2,1); }
     @keyframes modalIn { from { transform: translateY(24px) scale(0.97); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
 
-    .modal-header { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 1.2rem 1.5rem 0; display: flex; justify-content: space-between; align-items: flex-end; }
-    .modal-title-wrap { padding-bottom: 0.8rem; }
-    .modal-title-wrap h3 { margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a; }
-    .modal-title-wrap span { font-size: 0.8rem; color: #64748b; font-weight: 600; }
-    .modal-tabs-wrap { display: flex; align-items: center; gap: 20px; }
-    .modal-tabs { display: flex; }
-    .modal-tab { padding: 10px 22px; border: none; background: transparent; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; color: #94a3b8; border-bottom: 3px solid transparent; transition: all 0.2s; }
-    .modal-tab.active { color: #1a4a2e; border-bottom-color: #1a4a2e; }
-    .modal-close { width: 32px; height: 32px; border-radius: 8px; background: #fff; border: 1px solid #e2e8f0; color: #64748b; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; font-weight: 700; transition: all 0.2s; margin-bottom: 10px; }
-    .modal-close:hover { background: #f8fafc; color: #0f172a; }
+    #noteModal .modal-header { background: transparent; border-bottom: none; display: flex; justify-content: center; position: relative; padding: 2rem 1.5rem 0; }
+    #noteModal .modal-header h3 { font-size: 1.4rem; font-weight: 800; color: #1e293b; margin: 0; text-align: center; }
+    #noteModal .modal-close {
+        position: absolute; left: 1.5rem; top: 1.5rem;
+        width: 32px; height: 32px; border-radius: 8px; background: #e2e8f0; border: none;
+        color: #64748b; display: flex; align-items: center; justify-content: center;
+        cursor: pointer; font-size: 1.2rem; font-weight: 700; line-height: 1;
+    }
+    #noteModal .modal-close:hover { background: #cbd5e1; color: #0f172a; }
 
-    .modal-body { padding: 1.5rem; overflow-y: auto; max-height: 65vh; }
+    #noteModal .modal-tabs-bar { display: flex; justify-content: center; gap: 0; padding: 1rem 2rem 0; }
+    #noteModal .modal-tab {
+        padding: 8px 20px; border: none; background: transparent;
+        font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800;
+        cursor: pointer; color: #94a3b8; border-bottom: 3px solid transparent;
+    }
+    #noteModal .modal-tab.active { color: #16a34a; border-bottom-color: #16a34a; }
 
-    /* Info grid */
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #e2e8f0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
-    .info-cell { background: #fff; padding: 12px 16px; }
-    .info-cell.span-2 { grid-column: span 2; }
-    .info-cell-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; margin-bottom: 4px; }
-    .info-cell-value { font-size: 0.9rem; color: #0f172a; font-weight: 800; }
+    #noteModal .modal-body { padding: 1.5rem 2rem; }
+    #noteModal .q-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 768px) { #noteModal .q-grid { grid-template-columns: 1fr; } }
 
-    .content-box { background: #fff; padding: 16px; border-radius: 8px; font-size: 0.95rem; color: #1e293b; font-weight: 600; line-height: 1.7; border: 1px solid #e2e8f0; border-right: 4px solid #64748b; margin-bottom: 1rem; }
-    .content-box.nutrition { border-right-color: #d97706; }
-    .content-box.general { border-right-color: #3b82f6; }
-    .section-label { font-size: 0.8rem; color: #64748b; font-weight: 800; margin-bottom: 8px; }
+    #noteModal .q-card {
+        background: #fff; border-radius: 12px; padding: 1.5rem;
+        border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+    #noteModal .q-card-title { font-size: 1.1rem; font-weight: 800; color: #1e293b; margin-bottom: 1.5rem; text-align: center; }
+    #noteModal .q-row {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9;
+    }
+    #noteModal .q-label { color: #64748b; font-size: 0.9rem; font-weight: 700; }
+    #noteModal .q-value { color: #0f172a; font-size: 0.95rem; font-weight: 800; }
+    #noteModal .q-note-box {
+        background: #f8fafc; padding: 12px 14px; border-radius: 8px; text-align: center;
+        font-size: 0.85rem; font-weight: 700; color: #334155; border: 1px solid #f1f5f9; line-height: 1.7;
+    }
+    #noteModal .q-attach-wrap { text-align: center; padding: 2rem 1rem; }
+    #noteModal .q-attach-empty {
+        width: 180px; height: 180px; border-radius: 16px; margin: 0 auto;
+        background: #f8fafc; border: 2px dashed #e2e8f0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.9rem; font-weight: 700; color: #94a3b8;
+    }
 
-    /* Modal Footer */
-    .modal-footer { background: #fff; border-top: 1px solid #e2e8f0; padding: 1.2rem 1.5rem; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
-    .btn-submit { padding: 10px 24px; background: linear-gradient(135deg, #1a4a2e, #2d7a47); color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(45,122,71,0.3); display: inline-flex; align-items: center; gap: 6px; }
+    #noteModal .modal-footer { background: transparent; border-top: none; padding: 0 2rem 1.5rem; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+    #noteModal .btn-action-release { padding: 8px 16px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    #noteModal .btn-action-release:hover { background: #15803d; }
+    #noteModal .btn-cancel { padding: 8px 16px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    #noteModal .btn-cancel:hover { background: #e2e8f0; }
+
+    .btn-submit { padding: 10px 24px; background: linear-gradient(135deg, #1a4a2e, #2d7a47); color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
     .btn-submit:hover { transform: translateY(-1px); }
     .btn-cancel { padding: 10px 20px; background: #fff; color: #475569; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; }
     .btn-cancel:hover { background: #f8fafc; }
@@ -118,19 +138,13 @@
 
 @section('content')
 
-{{-- ═══════ HEADER & FILTERS ═══════ --}}
+{{-- ═══════ FILTERS ═══════ --}}
 <div class="top-card">
-    <div class="page-header">
-        <div class="page-header-info">
-            <h2>📋 الملاحظات التشغيلية</h2>
-            <p>متابعة الملاحظات التشغيلية المسجلة من مشرفي المجموعات.</p>
-        </div>
+    <div class="segmented-tabs">
+        <button class="seg-tab active" onclick="switchTab(event, 'tab-new')">جديدة</button>
+        <button class="seg-tab" onclick="switchTab(event, 'tab-reviewed')">تمت المراجعة</button>
     </div>
     <div class="filter-bar">
-        <div class="search-box">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="بحث باسم المشرف، نص الملاحظة...">
-        </div>
         <select class="filter-select">
             <option value="">نوع الملاحظة</option>
             <option>تغذية</option>
@@ -147,14 +161,8 @@
     </div>
 </div>
 
-<div class="tabs-card">
-    <div class="segmented-tabs">
-        <button class="seg-tab active">جديدة</button>
-        <button class="seg-tab">تمت المراجعة</button>
-    </div>
-</div>
-
-{{-- ═══ CARDS GRID ═══ --}}
+{{-- ═══ TAB: جديدة ═══ --}}
+<div id="tab-new" class="tab-content active">
 <div class="notes-grid">
     {{-- Card 1: New / Nutrition --}}
     <div class="note-card type-nutrition" onclick="openModal('new', 'nutrition', 'NT-0842', 'السباع والضواري', 'خالد منصور', '2026-06-07 / 08:30 ص', 'الأسد الإفريقي (ANL-0041) لم يكمل وجبته لليوم الثاني على التوالي. يترك حوالي 30% من اللحم المقدم له. لا توجد عليه علامات خمول واضحة لكن شهيته منخفضة.')">
@@ -199,8 +207,12 @@
             <span style="font-size:0.8rem; color:#475569; font-weight:800;">الرئيسيات</span>
         </div>
     </div>
+</div>
+</div>
 
-    {{-- Card 3: Reviewed / Nutrition --}}
+{{-- ═══ TAB: تمت المراجعة ═══ --}}
+<div id="tab-reviewed" class="tab-content">
+<div class="notes-grid">
     <div class="note-card type-nutrition" onclick="openModal('reviewed', 'nutrition', 'NT-0830', 'الطيور', 'سالم عبدالله', '2026-06-06 / 10:00 ص', 'المورد تأخر في تسليم وجبة الأسماك اليومية. قمنا باستخدام الاحتياطي الموجود في المبردات وهو يكفي لليوم فقط.')">
         <div class="note-card-header">
             <span class="note-card-id">NT-0830</span>
@@ -244,69 +256,70 @@
         </div>
     </div>
 </div>
+</div>
 
 {{-- ═══ MODAL ═══ --}}
 <div class="modal-backdrop" id="noteModal">
     <div class="modal-box">
-
-        {{-- Header --}}
         <div class="modal-header">
-            <div class="modal-title-wrap">
-                <h3>تفاصيل الملاحظة</h3>
-                <span id="nSubtitle">—</span>
-            </div>
-            <div class="modal-tabs-wrap">
-                <div class="modal-tabs">
-                    <button class="modal-tab active" id="ntab-btn-1" onclick="switchNTab(1)">تفاصيل الملاحظة</button>
-                    <button class="modal-tab" id="ntab-btn-2" onclick="switchNTab(2)">المرفقات</button>
-                </div>
-                <button class="modal-close" onclick="closeModal()">✕</button>
-            </div>
+            <h3>تفاصيل الملاحظة — <span id="modalNoteId">NT-0842</span></h3>
+            <button type="button" class="modal-close" onclick="closeModal()">✕</button>
         </div>
 
-        {{-- Body --}}
+        <div class="modal-tabs-bar">
+            <button class="modal-tab active" id="ntab-btn-1" onclick="switchNTab(1)">بيانات الملاحظة</button>
+            <button class="modal-tab" id="ntab-btn-2" onclick="switchNTab(2)">المرفقات</button>
+        </div>
+
         <div class="modal-body">
-            {{-- Tab 1: تفاصيل --}}
             <div id="ntab-1">
-                <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.5rem; flex-wrap:wrap;">
-                    <span style="font-family:'Courier New',monospace; font-size:0.85rem; background:#f8fafc; color:#334155; border:1px solid #e2e8f0; padding:4px 12px; border-radius:6px; font-weight:800;" id="nNoteId">NT-0000</span>
-                    <span id="nTypeBadge"></span>
-                    <span id="nStatusBadge" style="margin-right:auto;"></span>
-                </div>
+                <div class="q-grid">
+                    <div class="q-card">
+                        <h4 class="q-card-title">بيانات الملاحظة</h4>
 
-                <div class="info-grid">
-                    <div class="info-cell">
-                        <div class="info-cell-label">المجموعة</div>
-                        <div class="info-cell-value" id="nGroup">—</div>
+                        <div class="q-row">
+                            <span class="q-label">رقم الملاحظة</span>
+                            <span class="q-value" id="nNoteId">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">نوع الملاحظة</span>
+                            <span class="q-value" id="nType">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">المجموعة</span>
+                            <span class="q-value" id="nGroup">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">المشرف</span>
+                            <span class="q-value" id="nSupervisor">—</span>
+                        </div>
+                        <div class="q-row">
+                            <span class="q-label">تاريخ الملاحظة</span>
+                            <span class="q-value" id="nDate">—</span>
+                        </div>
+                        <div class="q-row" style="border-bottom:none; margin-bottom:0; padding-bottom:0;">
+                            <span class="q-label">الحالة</span>
+                            <span class="q-value" id="nStatus">—</span>
+                        </div>
                     </div>
-                    <div class="info-cell">
-                        <div class="info-cell-label">المشرف المسجل</div>
-                        <div class="info-cell-value" id="nSupervisor">—</div>
-                    </div>
-                    <div class="info-cell span-2">
-                        <div class="info-cell-label">تاريخ الملاحظة</div>
-                        <div class="info-cell-value" id="nDate">—</div>
-                    </div>
-                </div>
 
-                <div>
-                    <div class="section-label">النص الكامل للملاحظة</div>
-                    <div class="content-box" id="nContent">—</div>
+                    <div class="q-card" style="flex-grow:1;">
+                        <h4 class="q-card-title">نص الملاحظة</h4>
+                        <div class="q-note-box" id="nContent">—</div>
+                    </div>
                 </div>
             </div>
 
-            {{-- Tab 2: المرفقات --}}
             <div id="ntab-2" style="display:none;">
-                <div class="section-label">المرفقات المسجلة</div>
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                    <div style="width:100px; height:100px; background:#f1f5f9; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#94a3b8; border:1px solid #e2e8f0; font-size:0.8rem; font-weight:700;">
-                        لا توجد مرفقات
+                <div class="q-card">
+                    <h4 class="q-card-title">المرفقات</h4>
+                    <div class="q-attach-wrap">
+                        <div class="q-attach-empty">لا توجد مرفقات</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Footer --}}
         <div class="modal-footer" id="nFooter"></div>
     </div>
 </div>
@@ -339,6 +352,13 @@
 
 @section('scripts')
 <script>
+    function switchTab(e, tabId) {
+        document.querySelectorAll('.seg-tab').forEach(t => t.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+    }
+
     function switchNTab(n) {
         document.getElementById('ntab-1').style.display = n === 1 ? 'block' : 'none';
         document.getElementById('ntab-2').style.display = n === 2 ? 'block' : 'none';
@@ -348,42 +368,25 @@
 
     function openModal(status, type, noteId, group, supervisor, date, content) {
         switchNTab(1);
-        
-        document.getElementById('nSubtitle').innerText = supervisor + ' — ' + group;
-        document.getElementById('nNoteId').innerText = noteId;
-        document.getElementById('nGroup').innerText = group;
-        document.getElementById('nSupervisor').innerText = supervisor;
-        document.getElementById('nDate').innerText = date;
-        
-        const contentBox = document.getElementById('nContent');
-        contentBox.innerText = content;
-        
-        // Type Badge
-        if(type === 'nutrition') {
-            document.getElementById('nTypeBadge').innerHTML = `<span class="badge badge-type-nutrition" style="font-size:0.8rem; padding:4px 10px;"><span class="dot"></span>تغذية</span>`;
-            contentBox.className = 'content-box nutrition';
-        } else {
-            document.getElementById('nTypeBadge').innerHTML = `<span class="badge badge-type-general" style="font-size:0.8rem; padding:4px 10px;"><span class="dot"></span>ملاحظة عامة</span>`;
-            contentBox.className = 'content-box general';
-        }
 
-        // Status Badge
-        if(status === 'new') {
-            document.getElementById('nStatusBadge').innerHTML = `<span class="badge badge-new" style="font-size:0.8rem; padding:4px 10px;"><span class="dot"></span>جديدة</span>`;
-        } else {
-            document.getElementById('nStatusBadge').innerHTML = `<span class="badge badge-reviewed" style="font-size:0.8rem; padding:4px 10px;"><span class="dot"></span>تمت المراجعة</span>`;
-        }
+        const typeLabel = type === 'nutrition' ? 'تغذية' : 'ملاحظة عامة';
+        const statusLabel = status === 'new' ? 'جديدة' : 'تمت المراجعة';
 
-        // Footer Actions
+        document.getElementById('modalNoteId').textContent = noteId;
+        document.getElementById('nNoteId').textContent = noteId;
+        document.getElementById('nType').textContent = typeLabel;
+        document.getElementById('nGroup').textContent = group;
+        document.getElementById('nSupervisor').textContent = supervisor;
+        document.getElementById('nDate').textContent = date;
+        document.getElementById('nStatus').textContent = statusLabel;
+        document.getElementById('nContent').textContent = content;
+
         const footer = document.getElementById('nFooter');
         const closeBtn = `<button class="btn-cancel" onclick="closeModal()">إغلاق</button>`;
-        
-        if(status === 'new') {
-            footer.innerHTML = closeBtn + 
-                `<button class="btn-submit" onclick="markReviewed()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    تحديد كمراجعة
-                </button>`;
+
+        if (status === 'new') {
+            footer.innerHTML = closeBtn +
+                `<button class="btn-action-release" onclick="markReviewed()">تحديد كمراجعة</button>`;
         } else {
             footer.innerHTML = closeBtn;
         }

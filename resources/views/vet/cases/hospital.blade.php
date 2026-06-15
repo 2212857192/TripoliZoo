@@ -21,7 +21,7 @@
         height: 40px;
         border-radius: 12px;
         background: #e6f4ea;
-        color: #1a4a2e;
+        color: #2E7D32;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -50,28 +50,32 @@
     .btn-refresh:hover { background: #f8fafc; }
 
     /* ══ Segmented Tabs ══ */
-    .tabs-card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:0.8rem 1.2rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; }
+    .tabs-card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:0.8rem 1.2rem; margin-bottom:1.5rem; display:flex; align-items:center; flex-wrap:wrap; gap:12px; }
     .segmented-tabs {
         display: inline-flex;
+        flex-wrap: wrap;
         background: #f1f5f9;
         padding: 5px;
         border-radius: 10px;
-        gap: 4px;
+        gap: 6px;
+        max-width: 100%;
     }
     .seg-tab {
         background: transparent;
         border: none;
-        padding: 9px 24px;
+        padding: 9px 18px;
         border-radius: 7px;
         font-family: 'Cairo', sans-serif;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
         font-weight: 800;
         color: #64748b;
         cursor: pointer;
         transition: all 0.2s;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
-    .seg-tab:hover { color: #1a4a2e; }
-    .seg-tab.active { background: #fff; color: #1a4a2e; box-shadow: 0 2px 4px rgba(0,0,0,0.07); }
+    .seg-tab:hover { color: #2E7D32; }
+    .seg-tab.active { background: #fff; color: #2E7D32; box-shadow: 0 2px 4px rgba(0,0,0,0.07); }
     .tab-content { display: none; }
     .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -207,8 +211,17 @@
     .badge-slaughter .dot { background: #ef4444; }
     .badge-watch { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
     .badge-watch .dot { background: #f59e0b; }
-    .badge-critical { background: #fef2f2; color: #e11d48; border: 1px solid #fecdd3; }
-    .badge-critical .dot { background: #ef4444; }
+    .badge-no-response { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .badge-no-response .dot { background: #ef4444; }
+
+    .animal-thumb {
+        width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
+        background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+        border: 1.5px solid #bbf7d0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.35rem; overflow: hidden;
+    }
+    .animal-name { font-weight: 800; color: #0f172a; line-height: 1.3; }
 
     /* ═══ ACTION BUTTON (Icon Only) ═══ */
     .btn-tbl {
@@ -257,7 +270,7 @@
     .quick-link-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .quick-link-text { flex: 1; font-size: 0.83rem; font-weight: 700; color: #334155; }
     .quick-link-arr { color: #cbd5e1; transition: color 0.2s, transform 0.2s; }
-    .quick-link-item:hover .quick-link-arr { color: #1a4a2e; transform: translateX(-4px); }
+    .quick-link-item:hover .quick-link-arr { color: #2E7D32; transform: translateX(-4px); }
 
     /* ═══ MODAL ═══ */
     .modal-backdrop { display:none; position:fixed; inset:0; background:rgba(15,23,42,0.55); backdrop-filter:blur(5px); z-index:1000; align-items:center; justify-content:center; }
@@ -302,7 +315,7 @@
     .form-input, .form-select, .form-textarea { padding: 9px 12px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600; color: #0f172a; background: #fafbff; transition: border-color 0.2s, box-shadow 0.2s; outline: none; }
     .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: #2d7a47; box-shadow: 0 0 0 3px rgba(45,122,71,0.1); background: #fff; }
     .form-textarea { resize: vertical; min-height: 80px; }
-    .btn-submit { padding: 10px 24px; background: linear-gradient(135deg, #1a4a2e, #2d7a47); color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(45,122,71,0.3); }
+    .btn-submit { padding: 10px 24px; background: linear-gradient(135deg, #2E7D32, #2d7a47); color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(45,122,71,0.3); }
     .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(45,122,71,0.35); }
     .btn-cancel { padding: 10px 20px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; }
     .btn-cancel:hover { background: #e2e8f0; }
@@ -351,6 +364,8 @@
 </style>
 @endsection
 
+@php $vetBase = ($readOnly ?? false) ? '/director/vet' : '/vet'; @endphp
+
 @section('content')
 
 {{-- ═══ TABS CARD ═══ --}}
@@ -367,7 +382,7 @@
     <div style="display: flex; gap: 15px; width: 100%;">
         <div style="flex: 2; position: relative;">
             <svg style="position: absolute; right: 12px; top: 11px; color: #94a3b8;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="البحث باسم الحيوان أو رقم الحالة..." style="width: 100%; padding: 10px 35px 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 600; outline: none; color: #0f172a;">
+            <input type="text" placeholder="بحث برقم الحيوان أو نوعه..." style="width: 100%; padding: 10px 35px 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 600; outline: none; color: #0f172a;">
         </div>
         <select style="flex: 1; padding: 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; color: #475569; font-weight: 600; outline: none;">
             <option>جميع المجموعات</option>
@@ -377,10 +392,16 @@
             <option>الرئيسيات</option>
         </select>
         <select style="flex: 1; padding: 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; color: #475569; font-weight: 600; outline: none;">
-            <option>جميع الأطباء</option>
-            <option>د. خالد العربي</option>
-            <option>د. فاطمة الزهراء</option>
-            <option>د. أسامة الورفلي</option>
+            <option>جميع التواريخ</option>
+            <option>اليوم</option>
+            <option>آخر 7 أيام</option>
+            <option>آخر 30 يوم</option>
+        </select>
+        <select id="statusFilter" style="flex: 1; padding: 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; color: #475569; font-weight: 600; outline: none;">
+            <option value="">جميع الحالات</option>
+            <option>جاهز للخروج</option>
+            <option>قيد العلاج</option>
+            <option>لا يستجيب للعلاج</option>
         </select>
     </div>
 </div>
@@ -395,61 +416,61 @@
             <table class="custom-table">
                 <thead>
                     <tr>
-                        <th>رقم الحالة</th>
-                        <th>رقم الحيوان الرسمي</th>
-                        <th>الحيوان</th>
+                        <th>اسم الحيوان</th>
+                        <th>صورة</th>
+                        <th>رقم الحيوان</th>
+                        <th>نوع الحيوان</th>
                         <th>المجموعة</th>
                         <th>تاريخ الدخول</th>
-                        <th>المسؤول الطبي</th>
                         <th>الحالة</th>
                         <th>الإجراءات</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><span class="animal-id">HC-2025-001</span></td>
-                        <td>#ANM-101</td>
-                        <td>أسد إفريقي (سيمبا)</td>
+                        <td><span class="animal-name">سيمبا</span></td>
+                        <td><div class="animal-thumb">🦁</div></td>
+                        <td><span class="animal-id">#ANM-101</span></td>
+                        <td>أسد إفريقي</td>
                         <td>القطط الكبرى</td>
                         <td>2026-05-30</td>
-                        <td>د. خالد العربي</td>
                         <td><span class="badge badge-ready"><span class="dot"></span>جاهز للخروج</span></td>
                         <td>
                             <div style="display:flex; gap:6px; justify-content: center;">
-                                <a href="/vet/cases/hospital/show" class="btn-tbl view" title="عرض">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <a href="{{ $vetBase }}/cases/hospital/HC-2025-001" class="btn-tbl view" title="عرض">
+                                    @include('partials.icon-chevron-view')
                                 </a>
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <td><span class="animal-id">HC-2025-002</span></td>
-                        <td>#ANM-154</td>
-                        <td>زرافة نيلية (جميلة)</td>
+                        <td><span class="animal-name">جميلة</span></td>
+                        <td><div class="animal-thumb">🦒</div></td>
+                        <td><span class="animal-id">#ANM-154</span></td>
+                        <td>زرافة نيلية</td>
                         <td>العناقيد الكبرى</td>
                         <td>2026-06-02</td>
-                        <td>د. فاطمة الزهراء</td>
                         <td><span class="badge badge-watch"><span class="dot"></span>قيد العلاج</span></td>
                         <td>
                             <div style="display:flex; gap:6px; justify-content: center;">
-                                <a href="/vet/cases/hospital/show" class="btn-tbl view" title="عرض">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <a href="{{ $vetBase }}/cases/hospital/HC-2025-002" class="btn-tbl view" title="عرض">
+                                    @include('partials.icon-chevron-view')
                                 </a>
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <td><span class="animal-id">HC-2025-003</span></td>
-                        <td>#ANM-088</td>
+                        <td style="color:#94a3b8;font-weight:600;">—</td>
+                        <td><div class="animal-thumb">🦅</div></td>
+                        <td><span class="animal-id">#ANM-088</span></td>
                         <td>نسر ذهبي</td>
                         <td>الطيور</td>
                         <td>2026-05-29</td>
-                        <td>د. خالد العربي</td>
-                        <td><span class="badge badge-critical"><span class="dot"></span>نقاهة حرجة</span></td>
+                        <td><span class="badge badge-no-response"><span class="dot"></span>لا يستجيب للعلاج</span></td>
                         <td>
                             <div style="display:flex; gap:6px; justify-content: center;">
-                                <a href="/vet/cases/hospital/show" class="btn-tbl view" title="عرض">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <a href="{{ $vetBase }}/cases/hospital/HC-2025-003" class="btn-tbl view" title="عرض">
+                                    @include('partials.icon-chevron-view')
                                 </a>
                             </div>
                         </td>
@@ -470,8 +491,9 @@
             <table class="custom-table">
                 <thead>
                     <tr>
-                        <th>رقم الحالة</th>
-                        <th>الحيوان</th>
+                        <th>اسم الحيوان</th>
+                        <th>صورة</th>
+                        <th>نوع الحيوان</th>
                         <th>المجموعة</th>
                         <th>تاريخ قرار الخروج</th>
                         <th>الحالة</th>
@@ -480,29 +502,31 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><span class="animal-id">HC-2025-004</span></td>
+                        <td style="color:#94a3b8;font-weight:600;">—</td>
+                        <td><div class="animal-thumb">🦌</div></td>
                         <td>غزال الدوركاس</td>
                         <td>العناقيد الكبرى</td>
                         <td>2026-06-05</td>
                         <td><span class="badge badge-handover"><span class="dot"></span>بانتظار الاستلام</span></td>
                         <td>
                             <div style="display:flex; gap:6px; justify-content: center;">
-                                <a href="/vet/cases/hospital/show" class="btn-tbl view" title="متابعة">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <a href="{{ $vetBase }}/cases/hospital/HC-2025-004" class="btn-tbl view" title="متابعة">
+                                    @include('partials.icon-chevron-view')
                                 </a>
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <td><span class="animal-id">HC-2025-005</span></td>
+                        <td style="color:#94a3b8;font-weight:600;">—</td>
+                        <td><div class="animal-thumb">🐆</div></td>
                         <td>فهد إفريقي</td>
                         <td>القطط الكبرى</td>
                         <td>2026-06-04</td>
                         <td><span class="badge badge-unavailable"><span class="dot"></span>تعذر الاستلام مؤقتًا</span></td>
                         <td>
                             <div style="display:flex; gap:6px; justify-content: center;">
-                                <a href="/vet/cases/hospital/show" class="btn-tbl view" title="متابعة">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <a href="{{ $vetBase }}/cases/hospital/HC-2025-005" class="btn-tbl view" title="متابعة">
+                                    @include('partials.icon-chevron-view')
                                 </a>
                             </div>
                         </td>
@@ -523,8 +547,9 @@
             <table class="custom-table">
                 <thead>
                     <tr>
-                        <th>رقم الحالة</th>
-                        <th>الحيوان</th>
+                        <th>اسم الحيوان</th>
+                        <th>صورة</th>
+                        <th>نوع الحيوان</th>
                         <th>تاريخ الدخول</th>
                         <th>تاريخ الانتهاء</th>
                         <th>النتيجة / الحالة</th>
@@ -533,29 +558,31 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><span class="animal-id">HC-2025-006</span></td>
-                        <td>شمبانزي (بونغو)</td>
+                        <td><span class="animal-name">بونغو</span></td>
+                        <td><div class="animal-thumb">🐒</div></td>
+                        <td>شمبانزي</td>
                         <td>2026-05-10</td>
                         <td>2026-05-20</td>
-                        <td><span class="badge badge-received"><span class="dot"></span>خرج بعد العلاج وتم الاستلام</span></td>
+                        <td><span class="badge badge-received"><span class="dot"></span>خروج بعد العلاج</span></td>
                         <td>
                             <div style="display:flex; gap:6px; justify-content: center;">
-                                <a href="/vet/cases/hospital/show" class="btn-tbl view" title="عرض التفاصيل">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <a href="{{ $vetBase }}/cases/hospital/HC-2025-006" class="btn-tbl view" title="عرض التفاصيل">
+                                    @include('partials.icon-chevron-view')
                                 </a>
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <td><span class="animal-id">HC-2025-007</span></td>
+                        <td style="color:#94a3b8;font-weight:600;">—</td>
+                        <td><div class="animal-thumb">🦌</div></td>
                         <td>مها أبو حراب</td>
                         <td>2026-05-25</td>
                         <td>2026-05-27</td>
                         <td><span class="badge badge-slaughter"><span class="dot"></span>ذبح اضطراري</span></td>
                         <td>
                             <div style="display:flex; gap:6px; justify-content: center;">
-                                <a href="/vet/cases/hospital/show" class="btn-tbl view" title="عرض التفاصيل">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <a href="{{ $vetBase }}/cases/hospital/HC-2025-007" class="btn-tbl view" title="عرض التفاصيل">
+                                    @include('partials.icon-chevron-view')
                                 </a>
                             </div>
                         </td>
@@ -582,7 +609,7 @@
             {{-- الجانب الأيسر: التبويبات وزر الإغلاق في أقصى اليسار --}}
             <div style="display:flex; align-items:center; gap:20px;">
                 <div style="display:flex; gap:10px;">
-                    <button id="dtab-btn-1" onclick="switchDTab(1)" style="padding:10px 24px; border:none; background:transparent; font-family:'Cairo',sans-serif; font-size:0.9rem; font-weight:800; cursor:pointer; color:#1a4a2e; border-bottom:3px solid #1a4a2e;">ملخص الحالة</button>
+                    <button id="dtab-btn-1" onclick="switchDTab(1)" style="padding:10px 24px; border:none; background:transparent; font-family:'Cairo',sans-serif; font-size:0.9rem; font-weight:800; cursor:pointer; color:#2E7D32; border-bottom:3px solid #2E7D32;">ملخص الحالة</button>
                     <button id="dtab-btn-2" onclick="switchDTab(2)" style="padding:10px 24px; border:none; background:transparent; font-family:'Cairo',sans-serif; font-size:0.9rem; font-weight:800; cursor:pointer; color:#94a3b8; border-bottom:3px solid transparent;">المتابعة الطبية</button>
                 </div>
                 <button onclick="closeModal('detailModal')" style="width:32px; height:32px; border-radius:8px; background:#f1f5f9; border:none; color:#64748b; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.1rem; font-weight:700; transition:all 0.2s; margin-bottom:10px;">✕</button>
@@ -716,8 +743,8 @@ function switchDTab(tabNum) {
     
     // Activate selected
     document.getElementById('dtab-' + tabNum).style.display = 'block';
-    document.getElementById('dtab-btn-' + tabNum).style.color = '#1a4a2e';
-    document.getElementById('dtab-btn-' + tabNum).style.borderBottomColor = '#1a4a2e';
+    document.getElementById('dtab-btn-' + tabNum).style.color = '#2E7D32';
+    document.getElementById('dtab-btn-' + tabNum).style.borderBottomColor = '#2E7D32';
 }
 </script>
 
@@ -802,6 +829,22 @@ function switchTab(evt, tabId) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
     evt.currentTarget.classList.add('active');
+    updateStatusFilter(tabId);
+}
+
+const statusByTab = {
+    'active-cases': ['جاهز للخروج', 'قيد العلاج', 'لا يستجيب للعلاج'],
+    'pending-handover': ['بانتظار الاستلام', 'تعذر الاستلام مؤقتًا'],
+    'completed-cases': ['خروج بعد العلاج', 'ذبح اضطراري']
+};
+
+function updateStatusFilter(tabId) {
+    const sel = document.getElementById('statusFilter');
+    if (!sel) return;
+    const opts = statusByTab[tabId] || statusByTab['active-cases'];
+    sel.innerHTML = '<option value="">جميع الحالات</option>' +
+        opts.map(o => '<option>' + o + '</option>').join('');
+    sel.value = '';
 }
 document.querySelectorAll('.modal-backdrop').forEach(function(backdrop) {
     backdrop.addEventListener('click', function(e) {

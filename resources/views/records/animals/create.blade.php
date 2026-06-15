@@ -327,14 +327,6 @@
     </a>
 </div>
 
-<div class="form-notice">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0; margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    <div>
-        <strong>ملاحظة:</strong> هذه الواجهة مخصصة فقط لإضافة الحيوانات الموجودة قبل تشغيل النظام أو الحيوانات الرسمية غير المدخلة سابقًا.
-        لإضافة حيوان إلى الحجر الصحي، أو تسجيل مولود جديد، أو تسجيل نفوق — استخدم الأقسام المخصصة لها.
-    </div>
-</div>
-
 <form id="addAnimalForm" onsubmit="return false;">
 
     {{-- ══════════════════ SECTION 1: BASIC DATA ══════════════════ --}}
@@ -353,8 +345,8 @@
 
                 {{-- Animal ID (Auto-generated) --}}
                 <div class="field-group">
-                    <label class="field-label">رقم الحيوان <span class="optional">(يولده النظام تلقائيًا)</span></label>
-                    <input type="text" class="form-control generated" value="#ANM-1050" readonly>
+                    <label class="field-label">رقم الحيوان <span class="optional">(يولده النظام حسب المجموعة)</span></label>
+                    <input type="text" class="form-control generated" id="addAnimalId" value="—" readonly>
                 </div>
 
                 {{-- Animal Name --}}
@@ -372,16 +364,16 @@
                 {{-- Group --}}
                 <div class="field-group">
                     <label class="field-label"><span class="required">*</span> المجموعة</label>
-                    <select class="form-control">
+                    <select class="form-control" id="addGroupSelect" onchange="updateGeneratedId()">
                         <option value="" disabled selected>اختر المجموعة...</option>
-                        <option>القططية</option>
-                        <option>الطيور</option>
-                        <option>الزواحف</option>
-                        <option>الغزلان</option>
-                        <option>القرود</option>
-                        <option>الثدييات الصغيرة</option>
-                        <option>الثدييات الكبيرة</option>
-                        <option>الدب واللامة</option>
+                        <option value="القططية">القططية</option>
+                        <option value="الطيور">الطيور</option>
+                        <option value="الزواحف">الزواحف</option>
+                        <option value="الغزلان">الغزلان</option>
+                        <option value="القرود">القرود</option>
+                        <option value="الثدييات الصغيرة">الثدييات الصغيرة</option>
+                        <option value="الثدييات الكبيرة">الثدييات الكبيرة</option>
+                        <option value="الدب واللامة">الدب واللامة</option>
                     </select>
                 </div>
 
@@ -605,6 +597,22 @@
 
     // Initialize
     setAgeMethod('birthdate');
+
+    const groupPrefixes = {
+        'القططية': 'ANM', 'الطيور': 'BRD', 'الزواحف': 'RPT',
+        'الغزلان': 'GZL', 'القرود': 'MON', 'الثدييات الصغيرة': 'SML',
+        'الثدييات الكبيرة': 'LRG', 'الدب واللامة': 'BLA'
+    };
+    const groupCounters = { ANM: 1050, BRD: 201, RPT: 88, GZL: 1046, MON: 1047, SML: 330, LRG: 120, BLA: 45 };
+
+    function updateGeneratedId() {
+        const sel = document.getElementById('addGroupSelect');
+        const input = document.getElementById('addAnimalId');
+        const group = sel.value;
+        if (!group || !groupPrefixes[group]) { input.value = '—'; return; }
+        const prefix = groupPrefixes[group];
+        input.value = '#' + prefix + '-' + groupCounters[prefix];
+    }
 
     // ── File Upload Name Display ──
     function showFileName(input, targetId) {

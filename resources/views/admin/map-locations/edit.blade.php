@@ -1,14 +1,12 @@
 @extends($__layout ?? 'admin.layout')
 @section('title', 'تعديل بيانات الموقع | Tripoli Zoo')
-@section('page_title', 'إدارة مواقع الخريطة')
+@section('page_title', 'إدارة الخريطة التفاعلية')
 
 @php
 // Static demo map locations data
 $locations = [
     '1' => ['name' => 'قفص الأسد الأفريقي', 'type' => 'enclosure', 'code' => 'L-01', 'lat' => '32.849200', 'lng' => '13.178200', 'desc' => 'موقع قفص الأسد الأفريقي يقع في الممر الشمالي الشرقي للحديقة بالقرب من بيت الفيل.', 'active' => true],
     '2' => ['name' => 'بحيرة الفيل الأسيوي', 'type' => 'enclosure', 'code' => 'E-04', 'lat' => '32.848000', 'lng' => '13.180000', 'desc' => 'الموائل المخصصة للفيل الآسيوي شاملة البحيرة الصناعية ومناطق الاستحمام الطبيعية.', 'active' => true],
-    '3' => ['name' => 'البوابة الرئيسية', 'type' => 'service', 'code' => 'EN-01', 'lat' => '32.846500', 'lng' => '13.178800', 'desc' => 'المدخل والمخرج الرئيسي للزوار يحتوي على شباك التذاكر الموحد ومركز التفتيش.', 'active' => true],
-    '4' => ['name' => 'مطعم الواحة الأخضر', 'type' => 'dining', 'code' => 'DN-03', 'lat' => '32.848500', 'lng' => '13.176500', 'desc' => 'منطقة مطاعم عائلية ومقاهي لتقديم الوجبات السريعة والمشروبات الباردة للزوار.', 'active' => true],
 ];
 $location = $locations[$id] ?? $locations['1'];
 @endphp
@@ -43,23 +41,26 @@ $location = $locations[$id] ?? $locations['1'];
 
     /* Page Hero */
     .page-hero {
-        background: var(--primary-gradient);
+        background: white;
+        border: 1px solid var(--border);
         border-radius: 20px;
         padding: 2rem;
-        color: white;
+        color: var(--text-main);
         margin-bottom: 1.5rem;
-        box-shadow: 0 10px 25px -5px rgba(30, 58, 30, 0.25);
+        box-shadow: var(--card-shadow);
     }
 
     .page-hero h2 {
         font-size: 1.6rem;
         font-weight: 900;
         margin: 0 0 6px;
+        color: #1e3a1e;
     }
 
     .page-hero p {
         font-size: 0.85rem;
-        opacity: 0.85;
+        color: var(--text-muted);
+        font-weight: 600;
         margin: 0;
     }
 
@@ -298,8 +299,8 @@ $location = $locations[$id] ?? $locations['1'];
 
     <!-- Header Hero -->
     <div class="page-hero">
-        <h2>تعديل بيانات موقع الخريطة</h2>
-        <p>قم بتعديل الإحداثيات، التصنيفات، أو الأوصاف للموقع المحدد على الخريطة التفاعلية.</p>
+        <h2>إدارة الخريطة التفاعلية</h2>
+        <p>تعديل موقع قفص أو موئل حيوان مسجّل على خريطة الحديقة</p>
     </div>
 
     <!-- Main Container -->
@@ -319,12 +320,9 @@ $location = $locations[$id] ?? $locations['1'];
                     <input type="text" id="name" class="form-input" value="{{ $location['name'] }}">
                 </div>
                 <div class="form-group">
-                    <label>فئة وتصنيف الموقع <span style="color:#EF4444">*</span></label>
-                    <select id="type" class="form-input">
-                        <option value="enclosure" {{ $location['type'] === 'enclosure' ? 'selected' : '' }}>أقفاص وموائل الحيوانات</option>
-                        <option value="service" {{ $location['type'] === 'service' ? 'selected' : '' }}>الخدمات والمرافق العامة</option>
-                        <option value="dining" {{ $location['type'] === 'dining' ? 'selected' : '' }}>المطاعم والمقاهي</option>
-                    </select>
+                    <label>فئة الموقع</label>
+                    <input type="text" class="form-input" value="أقفاص وموائل الحيوانات" readonly style="background:#F1F5F9;cursor:not-allowed;font-weight:700;">
+                    <input type="hidden" id="type" value="enclosure">
                 </div>
             </div>
             

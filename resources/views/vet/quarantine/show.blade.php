@@ -253,6 +253,8 @@
 </style>
 @endsection
 
+@php $vetBase = ($readOnly ?? false) ? '/director/vet' : '/vet'; @endphp
+
 @section('content')
 {{-- ═══ PAGE HEADER ═══ --}}
 <div class="page-header">
@@ -261,7 +263,7 @@
         <p>معلومات متكاملة عن الحيوان الخاضع للحجر الصحي الوقائي</p>
     </div>
     <div class="header-right">
-        <a href="/vet/quarantine" class="btn-back">
+        <a href="{{ $vetBase }}/quarantine" class="btn-back">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
             العودة للحجر الصحي
         </a>

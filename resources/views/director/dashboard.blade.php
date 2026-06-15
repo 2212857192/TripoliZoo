@@ -1,6 +1,6 @@
 @extends('director.layout')
-@section('title', 'لوحة التحكم | مدير الحديقة')
-@section('page_title', 'لوحة التحكم')
+@section('title', 'لوحة المتابعة | مدير الحديقة')
+@section('page_title', 'لوحة المتابعة')
 
 @section('styles')
 @include('director.partials.read-only-styles')
@@ -11,12 +11,8 @@
 <div class="top-card">
     <div class="page-header">
         <div class="page-header-info">
-            <h2>لوحة تحكم مدير الحديقة</h2>
-            <p>متابعة وتحليل — عرض فقط بدون صلاحيات تنفيذ</p>
-        </div>
-        <div class="status-pill">
-            <span class="pulse-dot"></span>
-            عرض فقط
+            <h2>لوحة متابعة الحديقة</h2>
+            <p>نظرة شاملة على الحيوانات والزيارات والعمليات اليومية</p>
         </div>
     </div>
 </div>
@@ -45,6 +41,12 @@
     </div>
 
     <div class="stats-grid-8">
+        <div class="stat-card" style="cursor:default;">
+            <div class="stat-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+            <div class="stat-num">126</div>
+            <div class="stat-label">الزوار المتوقعون اليوم</div>
+            <div class="stat-sub muted">تقدير من التذاكر والحجوزات</div>
+        </div>
         <a href="/director/records/animals" class="stat-card">
             <div class="stat-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
             <div class="stat-num">248</div>
@@ -111,7 +113,7 @@
 {{-- ═══ تبويب 2: الزيارات والتذاكر ═══ --}}
 <div id="tab-visits" class="dash-tab-content">
 
-    <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:1.5rem;">
+    <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom:1.5rem;">
         <a href="/director/admin/tickets" class="stat-card">
             <div class="stat-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
             <div class="stat-num">126</div>
@@ -122,11 +124,6 @@
             <div class="stat-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
             <div class="stat-num">1,260</div>
             <div class="stat-label">إيرادات اليوم (د.ل)</div>
-        </div>
-        <div class="stat-card" style="cursor:default;">
-            <div class="stat-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-            <div class="stat-num">126</div>
-            <div class="stat-label">الزوار المتوقعون اليوم</div>
         </div>
     </div>
 

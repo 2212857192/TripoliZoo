@@ -7,22 +7,6 @@
     <span class="nav-item-text">نظرة عامة</span>
 </a>
 
-<div class="nav-label">الإدارة والزوار</div>
-<div class="nav-dropdown {{ request()->is('director/admin*') ? 'open' : '' }}">
-    <button class="nav-item dropdown-toggle" onclick="toggleDropdown(this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <span class="nav-item-text">الإدارة والزوار</span>
-        <svg class="arrow-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
-    </button>
-    <div class="dropdown-menu" style="{{ request()->is('director/admin*') ? 'display: flex;' : 'display: none;' }}">
-        <a href="{{ $dp }}/admin/employees" class="nav-item {{ request()->is('director/admin/employees') ? 'active' : '' }}"><span style="font-size:0.8rem;color:#64748b;">•</span><span class="nav-item-text">حسابات الموظفين</span></a>
-        <a href="{{ $dp }}/admin/animals" class="nav-item {{ request()->is('director/admin/animals*') ? 'active' : '' }}"><span style="font-size:0.8rem;color:#64748b;">•</span><span class="nav-item-text">المحتوى التعريفي</span></a>
-        <a href="{{ $dp }}/admin/map-locations" class="nav-item {{ request()->is('director/admin/map-locations*') ? 'active' : '' }}"><span style="font-size:0.8rem;color:#64748b;">•</span><span class="nav-item-text">خريطة الحديقة</span></a>
-        <a href="{{ $dp }}/admin/tickets" class="nav-item {{ request()->is('director/admin/tickets*') ? 'active' : '' }}"><span style="font-size:0.8rem;color:#64748b;">•</span><span class="nav-item-text">إدارة التذاكر</span></a>
-        <a href="{{ $dp }}/admin/visit-info" class="nav-item {{ request()->is('director/admin/visit-info*') ? 'active' : '' }}"><span style="font-size:0.8rem;color:#64748b;">•</span><span class="nav-item-text">معلومات الزيارة</span></a>
-    </div>
-</div>
-
 <div class="nav-label">المستشفى البيطري</div>
 <div class="nav-dropdown {{ request()->is('director/vet*') ? 'open' : '' }}">
     <button class="nav-item dropdown-toggle" onclick="toggleDropdown(this)">

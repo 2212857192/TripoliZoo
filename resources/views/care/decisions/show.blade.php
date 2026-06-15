@@ -4,11 +4,7 @@
 
 @section('styles')
 <style>
-    .breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 1.5rem; font-size: 0.9rem; font-weight: 700; color: #64748b; }
-    .breadcrumb a { color: #2E7D32; text-decoration: none; transition: color 0.2s; display: flex; align-items: center; gap: 4px; }
-    .breadcrumb a:hover { color: #1b5e20; }
-
-    .header-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+    .header-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
     .header-info h2 { font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0 0 10px 0; display: flex; align-items: center; gap: 12px; }
     
     /* ═══ BADGES ═══ */
@@ -33,8 +29,8 @@
     .tabs-container { background: #fff; border-radius: 16px; border: 1px solid var(--border); overflow: hidden; }
     .tabs-header { display: flex; background: #FAFBFC; border-bottom: 1px solid #e2e8f0; padding: 0 1rem; }
     .tab-btn { padding: 16px 24px; border: none; background: transparent; font-family: 'Cairo', sans-serif; font-size: 0.95rem; font-weight: 800; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
-    .tab-btn:hover { color: #0f172a; }
-    .tab-btn.active { color: #1a4a2e; border-bottom-color: #1a4a2e; background: #fff; }
+    .tab-btn:hover { color: var(--green); }
+    .tab-btn.active { color: var(--green); border-bottom-color: var(--green); background: #fff; }
 
     .tab-content { padding: 2rem; display: none; }
     .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
@@ -51,35 +47,42 @@
     .section-title { font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
 
     .id-tag { font-family: 'Courier New', monospace; font-size: 0.85rem; background: #f1f5f9; padding: 4px 10px; border-radius: 6px; color: #334155; font-weight: 800; display: inline-block; border: 1px solid #e2e8f0; }
+
+    .animal-avatar { width: 56px; height: 56px; border-radius: 14px; background: #f1f5f9; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
 </style>
 @endsection
 
+@php $careBase = ($readOnly ?? false) ? '/director/care' : '/care'; @endphp
+
 @section('content')
 
-<div class="breadcrumb">
-    <a href="{{ route('care.decisions.index') }}">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-        القرارات الطبية
-    </a>
-    <span>/</span>
-    <span style="color:#0f172a;" id="breadId">تفاصيل القرار {{ $id }}</span>
-</div>
-
-<div class="header-card">
-    <div class="header-info">
-        <h2>
-            تفاصيل قرار طبي
-            <span id="headerBadge"></span>
-        </h2>
-        <div style="font-size:0.9rem; color:#64748b; font-weight:700; margin-top:8px;">
-            رقم القرار: <span class="id-tag" id="topId">{{ $id }}</span>
+<div class="header-card header-card-stacked">
+    <nav class="page-breadcrumb">
+        <a href="{{ $careBase }}/decisions">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            القرارات الطبية
+        </a>
+        <span>/</span>
+        <span class="current" id="breadId">تفاصيل القرار {{ $id }}</span>
+    </nav>
+    <div class="header-card-row">
+        <div class="header-info">
+            <h2>
+                تفاصيل قرار طبي
+                <span id="headerBadge"></span>
+            </h2>
+            <div style="font-size:0.9rem; color:#64748b; font-weight:700; margin-top:8px;">
+                رقم القرار: <span class="id-tag" id="topId">{{ $id }}</span>
+            </div>
         </div>
-    </div>
-    <div>
-        <button class="btn-export" onclick="alert('جاري تصدير النموذج بتنسيق PDF...')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            تصدير نموذج قرار طبي
-        </button>
+        @unless($readOnly ?? false)
+        <div id="exportBtnWrap">
+            <button class="btn-export" onclick="alert('جاري تصدير النموذج بتنسيق PDF...')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                تصدير نموذج قرار طبي
+            </button>
+        </div>
+        @endunless
     </div>
 </div>
 
@@ -132,7 +135,11 @@
                 <div class="content-box" id="dReason">—</div>
             </div>
             <div>
-                <div class="info-cell-label">ملاحظات إضافية</div>
+                <div class="info-cell-label">العلاجات</div>
+                <div class="content-box" id="dTreatments">—</div>
+            </div>
+            <div>
+                <div class="info-cell-label">ملاحظة</div>
                 <div class="content-box" id="dNotes">—</div>
             </div>
         </div>
@@ -143,8 +150,22 @@
         <h3 class="section-title">بيانات الحيوان المرتبط بالقرار</h3>
         <div class="info-grid">
             <div class="info-cell">
+                <div class="info-cell-label">اسم الحيوان</div>
+                <div class="info-cell-value" id="aName">—</div>
+            </div>
+            <div class="info-cell">
+                <div class="info-cell-label">صورة</div>
+                <div class="info-cell-value">
+                    <div class="animal-avatar" id="aImage">—</div>
+                </div>
+            </div>
+            <div class="info-cell">
                 <div class="info-cell-label" id="aIdLabel">رقم الحيوان</div>
                 <div class="info-cell-value id-tag" id="aId">—</div>
+            </div>
+            <div class="info-cell">
+                <div class="info-cell-label">العلامة المميزة</div>
+                <div class="info-cell-value" id="aMark">—</div>
             </div>
             <div class="info-cell">
                 <div class="info-cell-label">المجموعة المرتبطة</div>
@@ -212,27 +233,39 @@
     const dummyDB = {
         'MD-801': { // Discharge, Pending
             type: 'discharge', typeText: 'خروج بعد العلاج', source: 'حالة داخل المستشفى', date: '2026-06-07', issuer: 'د. محمود (رئيس المستشفى)',
-            reason: 'استقرار الحالة الصحية للحيوان وزوال الأعراض. جاهز للعودة للمجموعة.', notes: 'يُفضل إبقاء الحيوان بعيداً عن التجمعات الكبيرة لأول يومين.',
-            aId: '#ANL-0041-2022', aIsQuarantine: false, aType: 'أسد إفريقي', aGender: 'ذكر', aAge: '8 سنوات', aGroup: 'السباع والضواري',
-            rStatus: 'pending', rSupervisor: 'خالد منصور', rTaskDate: '2026-06-07 / 08:30 ص', rActionDate: '', rFailedReason: ''
+            reason: 'استقرار الحالة الصحية للحيوان وزوال الأعراض. جاهز للعودة للمجموعة.',
+            treatments: 'مضادات حيوية (أموكسيسيلين) لمدة 7 أيام، مسكنات (ميلوكسيكام)، مغلفات موضعية للجرح.',
+            notes: 'يُفضل إبقاء الحيوان بعيداً عن التجمعات الكبيرة لأول يومين.',
+            animalName: 'سيمبا', animalEmoji: '🦁', mark: 'أذن يمين مقطوعة جزئياً',
+            aId: '#ANL-0041-2022', aType: 'أسد إفريقي', aGender: 'ذكر', aAge: '8 سنوات', aGroup: 'السباع والضواري',
+            rStatus: 'pending', rSupervisor: 'خالد منصور', rTaskDate: '2026-06-07', rActionDate: '', rFailedReason: ''
         },
         'MD-800': { // Release, Received
             type: 'release', typeText: 'إفراج صحي', source: 'حجر صحي', date: '2026-06-06', issuer: 'د. محمود (رئيس المستشفى)',
-            reason: 'اجتياز فترة الحجر الصحي المقررة (30 يوم) بنجاح. خلو تام من الأمراض المعدية.', notes: 'لا توجد أي توصيات خاصة. الحيوان سليم.',
-            aId: '#Q-0182-2026', aIsQuarantine: true, aType: 'قرد المكاك', aGender: 'أنثى', aAge: '3 سنوات', aGroup: 'الرئيسيات',
-            rStatus: 'received', rSupervisor: 'ياسر الغيثي', rTaskDate: '2026-06-06 / 10:00 ص', rActionDate: '2026-06-06 / 11:15 ص', rFailedReason: ''
+            reason: 'اجتياز فترة الحجر الصحي المقررة (30 يوم) بنجاح. خلو تام من الأمراض المعدية.',
+            treatments: 'فحوصات دورية، عزل وقائي، مراقبة سلوكية يومية دون علاج دوائي.',
+            notes: 'لا توجد أي توصيات خاصة. الحيوان سليم.',
+            animalName: 'لولو', animalEmoji: '🐒', mark: 'ندبة صغيرة على الذيل',
+            aId: '#Q-0182-2026', aType: 'قرد المكاك', aGender: 'أنثى', aAge: '3 سنوات', aGroup: 'الرئيسيات',
+            rStatus: 'received', rSupervisor: 'ياسر الغيثي', rTaskDate: '2026-06-06', rActionDate: '2026-06-06', rFailedReason: ''
         },
         'MD-799': { // Slaughter, None
             type: 'slaughter', typeText: 'ذبح اضطراري', source: 'حالة داخل المستشفى', date: '2026-06-05', issuer: 'د. محمود (رئيس المستشفى)',
-            reason: 'كسر مضاعف في الساق الأمامية غير قابل للشفاء أو التجبير. تدهور حاد في حالة الحيوان.', notes: 'تم تنفيذ الإجراء وفق المعايير الطبية المعتمدة للقتل الرحيم.',
-            aId: '#ANL-0120-2024', aIsQuarantine: false, aType: 'غزال الريم', aGender: 'ذكر', aAge: 'سنتان', aGroup: 'العواشب',
+            reason: 'كسر مضاعف في الساق الأمامية غير قابل للشفاء أو التجبير. تدهور حاد في حالة الحيوان.',
+            treatments: 'مسكنات قوية (بوتورفانول)، تخدير موضعي، محاولات تجبير فاشلة.',
+            notes: 'تم تنفيذ الإجراء وفق المعايير الطبية المعتمدة للقتل الرحيم.',
+            animalName: 'ريم', animalEmoji: '🦌', mark: 'بقعة بيضاء على الجبهة',
+            aId: '#ANL-0120-2024', aType: 'غزال الريم', aGender: 'ذكر', aAge: 'سنتان', aGroup: 'العواشب',
             rStatus: 'none', rSupervisor: '', rTaskDate: '', rActionDate: '', rFailedReason: ''
         },
         'MD-795': { // Discharge, Failed
             type: 'discharge', typeText: 'خروج بعد العلاج', source: 'حالة داخل المستشفى', date: '2026-06-04', issuer: 'د. صالح (طبيب معالج)',
-            reason: 'التئام الجرح بشكل كامل بعد الخياطة والمضادات الحيوية.', notes: 'يرجى التأكد من نظافة الحظيرة لمنع التلوث.',
-            aId: '#ANL-0250-2025', aIsQuarantine: false, aType: 'نسر أسمر', aGender: 'ذكر', aAge: '4 سنوات', aGroup: 'الطيور',
-            rStatus: 'failed', rSupervisor: 'سالم عبدالله', rTaskDate: '2026-06-04 / 09:00 ص', rActionDate: '2026-06-04 / 02:00 م', rFailedReason: 'لا يوجد قفص عزل متاح حالياً لاستقباله كما طُلب في التعليمات. سيتم تجهيز قفص غداً واستلامه.'
+            reason: 'التئام الجرح بشكل كامل بعد الخياطة والمضادات الحيوية.',
+            treatments: 'خياطة جراحية، مضادات حيوية (سيفترياكسون) لمدة 5 أيام، مغلفات يومية.',
+            notes: 'يرجى التأكد من نظافة الحظيرة لمنع التلوث.',
+            animalName: 'صقر', animalEmoji: '🦅', mark: 'جناح أيسر مُصلح سابقاً',
+            aId: '#ANL-0250-2025', aType: 'نسر أسمر', aGender: 'ذكر', aAge: '4 سنوات', aGroup: 'الطيور',
+            rStatus: 'failed', rSupervisor: 'سالم عبدالله', rTaskDate: '2026-06-04', rActionDate: '2026-06-04', rFailedReason: 'لا يوجد قفص عزل متاح حالياً لاستقباله كما طُلب في التعليمات. سيتم تجهيز قفص غداً واستلامه.'
         }
     };
 
@@ -254,17 +287,31 @@
         if(d.type === 'release') hBadge.innerHTML = `<span class="badge type-release"><span class="dot"></span>إفراج صحي</span>`;
         if(d.type === 'slaughter') hBadge.innerHTML = `<span class="badge type-slaughter"><span class="dot"></span>ذبح اضطراري</span>`;
 
+        // Hide export for خروج بعد العلاج
+        const exportWrap = document.getElementById('exportBtnWrap');
+        if (d.type === 'discharge' && exportWrap) {
+            exportWrap.style.display = 'none';
+        }
+
         // Tab 1: Decision
         document.getElementById('dType').innerText = d.typeText;
         document.getElementById('dSource').innerText = d.source;
         document.getElementById('dDate').innerText = d.date;
         document.getElementById('dIssuer').innerText = d.issuer;
         document.getElementById('dReason').innerText = d.reason;
+        document.getElementById('dTreatments').innerText = d.treatments;
         document.getElementById('dNotes').innerText = d.notes;
 
         // Tab 2: Animal
+        document.getElementById('aName').innerText = d.animalName || '—';
+        document.getElementById('aImage').innerText = d.animalEmoji || '—';
         document.getElementById('aId').innerText = d.aId;
-        document.getElementById('aIdLabel').innerText = d.aIsQuarantine ? 'رقم الحجر الصحي' : 'الرقم الرسمي للحيوان';
+        if (d.type === 'release') {
+            document.getElementById('aIdLabel').innerText = 'رقم الحيوان في الحجر';
+        } else {
+            document.getElementById('aIdLabel').innerText = 'رقم الحيوان';
+        }
+        document.getElementById('aMark').innerText = d.mark || '—';
         document.getElementById('aType').innerText = d.aType;
         document.getElementById('aGender').innerText = d.aGender;
         document.getElementById('aAge').innerText = d.aAge;

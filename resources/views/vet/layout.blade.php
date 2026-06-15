@@ -424,7 +424,74 @@
         }
 
     </style>
+    @include('partials.dashboard-shell-styles')
     @yield('styles')
+    <style>
+        /* ── Tabs — أخضر موحد ── */
+        .content-area .tab-btn:hover,
+        .content-area .modal-tab:hover {
+            color: var(--green);
+        }
+
+        .content-area .tab-btn.active,
+        .content-area .modal-tab.active {
+            color: var(--green) !important;
+            border-bottom-color: var(--green) !important;
+            background: rgba(46, 125, 50, 0.06);
+        }
+
+        .content-area .seg-tab:hover {
+            color: var(--green);
+        }
+
+        .content-area .seg-tab.active {
+            color: var(--green) !important;
+            background: var(--green-light) !important;
+            box-shadow: 0 2px 6px rgba(46, 125, 50, 0.12);
+        }
+
+        /* ── أزرار الإجراءات في الجداول ── */
+        .content-area .custom-table .col-actions {
+            text-align: center;
+            width: 72px;
+            white-space: nowrap;
+        }
+        .content-area .btn-tbl,
+        .content-area button.btn-tbl,
+        .content-area a.btn-tbl {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            border-radius: 9px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #475569;
+            font-family: 'Cairo', sans-serif;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+            line-height: 1;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        .content-area .btn-tbl:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+            color: #0f172a;
+        }
+        .content-area .btn-tbl.view:hover {
+            color: #0284C7;
+            background: #E0F2FE;
+            border-color: #BAE6FD;
+        }
+    </style>
 </head>
 <body>
 
@@ -507,54 +574,26 @@
     <main class="main-content">
         <!-- Top Navbar -->
         <header class="topbar">
-            <div class="topbar-right">
-                <div style="display:flex; align-items:center; justify-content:center; width:42px; height:42px; background:var(--green-light); color:var(--green); border-radius:12px;">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                </div>
-                <div class="page-title">
-                    <h1>@yield('page_title', 'لوحة التحكم')</h1>
-                    <div class="breadcrumb">
-                        المستشفى البيطري <span>/</span> @yield('page_title', 'لوحة التحكم')
-                    </div>
-                </div>
-            </div>
-            
+            @include('partials.topbar-page-info', ['sectionLabel' => 'المستشفى البيطري', 'defaultTitle' => 'لوحة التحكم'])
             <div class="topbar-actions">
-                <div style="display: flex; align-items: center; gap: 10px; padding-left: 15px; border-left: 1px solid var(--border);">
-                    <div style="text-align: left;">
-                        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-main); line-height: 1;">د. أسامة الورفلي</div>
-                        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">طبيب بيطري</span>
-                    </div>
-                    <div style="width:38px; height:38px; border-radius:10px; background:#f1f5f9; color:#1e293b; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1rem;">د.أ</div>
-                </div>
-                
-                <!-- Notification Dropdown -->
-                <div class="notification-dropdown-wrapper" style="position: relative;">
-                    <button class="action-btn" id="notificationBtn" onclick="toggleNotifications()" style="position: relative;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                        <span class="notification-badge" style="position: absolute; top: 8px; right: 8px; background: var(--orange); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 0 2px var(--white);"></span>
-                    </button>
-                    <div class="notification-dropdown" id="notificationMenu" style="display: none; position: absolute; left: 0; top: 54px; width: 340px; background: white; border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); z-index: 1000; padding: 18px;">
-                        <h4 style="font-size: 0.95rem; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 12px; color: var(--text-main); display:flex; justify-content:space-between; align-items:center;">
-                            الإشعارات
-                            <span style="background:#fef2f2; color:#ef4444; font-size:0.7rem; padding:2px 8px; border-radius:20px;">3 جديدة</span>
-                        </h4>
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <div style="font-size: 0.8rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px;">
-                                <p style="font-weight: 700; margin-bottom: 4px; color: var(--text-main);">⚠️ إحالة علاج جديدة للفهد (صخر)</p>
-                                <a href="/vet/referrals/treatment" style="color: var(--green); text-decoration: none; font-weight: 800;">عرض الطلب ←</a>
-                            </div>
-                            <div style="font-size: 0.8rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px;">
-                                <p style="font-weight: 700; margin-bottom: 4px; color: var(--text-main);">🦁 الأسد سيمبا جاهز للإفراج الطبي</p>
-                                <a href="/vet/cases/hospital" style="color: var(--green); text-decoration: none; font-weight: 800;">مراجعة الحالات ←</a>
-                            </div>
-                            <div style="font-size: 0.8rem;">
-                                <p style="font-weight: 700; margin-bottom: 4px; color: var(--text-main);">💀 طائرة العقاب بانتظار توثيق التشريح</p>
-                                <a href="/vet/referrals/autopsy" style="color: var(--green); text-decoration: none; font-weight: 800;">الذهاب للتشريح ←</a>
-                            </div>
+                @include('partials.topbar-notifications', [
+                    'notificationCount' => 3,
+                    'notificationBody' => '
+                        <div style="font-size:0.8rem;border-bottom:1px solid #f1f5f9;padding-bottom:6px;">
+                            <p style="font-weight:700;margin-bottom:4px;color:var(--text-main);">⚠️ إحالة علاج جديدة للفهد (صخر)</p>
+                            <a href="/vet/referrals/treatment" style="color:var(--green);text-decoration:none;font-weight:800;">عرض الطلب ←</a>
                         </div>
-                    </div>
-                </div>
+                        <div style="font-size:0.8rem;border-bottom:1px solid #f1f5f9;padding-bottom:6px;">
+                            <p style="font-weight:700;margin-bottom:4px;color:var(--text-main);">🦁 الأسد سيمبا جاهز للإفراج الطبي</p>
+                            <a href="/vet/cases/hospital" style="color:var(--green);text-decoration:none;font-weight:800;">مراجعة الحالات ←</a>
+                        </div>
+                        <div style="font-size:0.8rem;">
+                            <p style="font-weight:700;margin-bottom:4px;color:var(--text-main);">💀 طائر العقاب بانتظار توثيق التشريح</p>
+                            <a href="/vet/referrals/autopsy" style="color:var(--green);text-decoration:none;font-weight:800;">الذهاب للتشريح ←</a>
+                        </div>
+                    ',
+                ])
+                @include('partials.topbar-user-menu', ['userName' => 'د. أسامة الورفلي', 'userEmail' => 'vet@tripolizoo.com'])
             </div>
         </header>
 
@@ -565,6 +604,7 @@
     </main>
 
     @yield('scripts')
+    @include('partials.dashboard-shell-scripts')
     
     <script>
         document.getElementById('sidebarToggle').addEventListener('click', function() {
@@ -581,24 +621,6 @@
                 menu.style.display = 'none';
             }
         }
-
-        function toggleNotifications() {
-            const menu = document.getElementById('notificationMenu');
-            if (menu.style.display === 'none') {
-                menu.style.display = 'block';
-            } else {
-                menu.style.display = 'none';
-            }
-        }
-
-        // Close notifications on clicking outside
-        window.addEventListener('click', function(e) {
-            const btn = document.getElementById('notificationBtn');
-            const menu = document.getElementById('notificationMenu');
-            if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
-                menu.style.display = 'none';
-            }
-        });
     </script>
 </body>
 </html>

@@ -5,17 +5,24 @@
 @section('styles')
 <style>
     .top-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.4rem 1.8rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem; }
-    .page-header { display: flex; justify-content: space-between; align-items: center; }
-    .page-header-info h2 { font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin: 0; }
-    .page-header-info p { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin: 4px 0 0; }
 
-    .filter-bar { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; padding-top: 1.2rem; border-top: 1px solid #F1F5F9; }
+    .filter-bar { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
     .search-box { flex: 1; min-width: 250px; position: relative; }
     .search-box input { width: 100%; padding: 10px 40px 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600; outline: none; transition: all 0.2s; }
     .search-box input:focus { border-color: #2E7D32; box-shadow: 0 0 0 3px rgba(46,125,50,0.1); }
     .search-box svg { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
     .filter-select { padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600; color: #334155; outline: none; cursor: pointer; }
     .filter-select:focus { border-color: #2E7D32; }
+
+    .animal-thumb {
+        width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
+        background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+        border: 1.5px solid #bbf7d0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.35rem; overflow: hidden;
+    }
+    .animal-name { font-weight: 800; color: #0f172a; line-height: 1.3; }
+    .reason-cell { font-size: 0.88rem; color: #334155; font-weight: 600; max-width: 220px; line-height: 1.4; }
 
     /* ── Table ── */
     .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 2rem; }
@@ -91,16 +98,10 @@
 @section('content')
 
 <div class="top-card">
-    <div class="page-header">
-        <div class="page-header-info">
-            <h2>🔬 إحالات التشريح</h2>
-            <p>متابعة إحالات التشريح المرسلة إلى قسم المستشفى البيطري ونتائجها.</p>
-        </div>
-    </div>
     <div class="filter-bar">
         <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="بحث برقم الحيوان، نوع الحيوان، رقم الإحالة...">
+            <input type="text" placeholder="بحث برقم الحيوان أو نوعه...">
         </div>
         <select class="filter-select">
             <option value="">كل الحالات</option>
@@ -129,56 +130,59 @@
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>رقم الإحالة</th>
+                    <th>اسم الحيوان</th>
+                    <th>صورة</th>
                     <th>رقم الحيوان</th>
                     <th>نوع الحيوان</th>
                     <th>المجموعة</th>
+                    <th>سبب التحويل للتشريح</th>
                     <th>تاريخ الإحالة</th>
-                    <th>حالة الإحالة</th>
-                    <th>إجراء</th>
+                    <th>الحالة</th>
+                    <th class="col-actions">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
-                {{-- Row 1: Pending --}}
                 <tr>
-                    <td><span class="ref-id">AR-105</span></td>
+                    <td><span class="animal-name">ريم</span></td>
+                    <td><div class="animal-thumb">🦌</div></td>
                     <td><span class="animal-id">#ANL-0120-2026</span></td>
                     <td style="font-weight:700;">غزال الريم</td>
                     <td>العواشب</td>
+                    <td><span class="reason-cell">وفاة بدون سبب ظاهر</span></td>
                     <td>2026-06-03</td>
                     <td><span class="badge badge-pending"><span class="dot"></span>بانتظار التوثيق</span></td>
-                    <td>
-                        <button onclick="openModal('pending', 'AR-105')" class="btn-tbl view">
+                    <td class="col-actions">
+                        <button onclick="openModal('pending', 'AR-105')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
                 </tr>
-
-                {{-- Row 2: Documented --}}
                 <tr>
-                    <td><span class="ref-id">AR-104</span></td>
+                    <td><span class="animal-name">فهد</span></td>
+                    <td><div class="animal-thumb">🐆</div></td>
                     <td><span class="animal-id">#ANL-0305-2024</span></td>
                     <td style="font-weight:700;">فهد أفريقي</td>
                     <td>السباع والضواري</td>
+                    <td><span class="reason-cell">وفاة مفاجئة — إحالة للتشريح</span></td>
                     <td>2026-05-28</td>
                     <td><span class="badge badge-documented"><span class="dot"></span>موثقة</span></td>
-                    <td>
-                        <button onclick="openModal('documented', 'AR-104')" class="btn-tbl view">
+                    <td class="col-actions">
+                        <button onclick="openModal('documented', 'AR-104')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
                 </tr>
-                
-                {{-- Row 3: Documented with custom reason --}}
                 <tr>
-                    <td><span class="ref-id">AR-103</span></td>
+                    <td><span class="animal-name">صقر</span></td>
+                    <td><div class="animal-thumb">🦅</div></td>
                     <td><span class="animal-id">#ANL-0099-2022</span></td>
                     <td style="font-weight:700;">نسر أسمر</td>
                     <td>الطيور</td>
+                    <td><span class="reason-cell">اشتباه في مرض — رغم كسر العنق</span></td>
                     <td>2026-05-15</td>
                     <td><span class="badge badge-documented"><span class="dot"></span>موثقة</span></td>
-                    <td>
-                        <button onclick="openModal('documented_custom', 'AR-103')" class="btn-tbl view">
+                    <td class="col-actions">
+                        <button onclick="openModal('documented_custom', 'AR-103')" class="btn-tbl view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </td>
@@ -198,7 +202,7 @@
             </div>
             <div class="modal-tabs-wrap">
                 <div class="modal-tabs">
-                    <button class="modal-tab active" id="mtab-btn-1" onclick="switchMTab(1)">بيانات الحيوان والإحالة</button>
+                    <button class="modal-tab active" id="mtab-btn-1" onclick="switchMTab(1)">بيانات الحيوان</button>
                     <button class="modal-tab" id="mtab-btn-2" onclick="switchMTab(2)">بيانات النفوق قبل التشريح</button>
                 </div>
                 <button class="modal-close" onclick="closeModal()">✕</button>
@@ -209,19 +213,25 @@
             {{-- Tab 1: بيانات الإحالة والحيوان + النتيجة --}}
             <div id="mtab-1">
                 <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.5rem; flex-wrap:wrap;">
-                    <span style="font-family:'Courier New',monospace; font-size:0.85rem; background:#f8fafc; color:#334155; border:1px solid #e2e8f0; padding:4px 12px; border-radius:6px; font-weight:800;" id="mRefId">AR-000</span>
-                    <span style="font-size:0.8rem; color:#64748b; font-weight:700;">رقم الإحالة</span>
-                    <span id="mStatusBadge" style="margin-right:auto;"></span>
+                    <div class="animal-thumb" id="mAnimalPhoto" style="width:52px;height:52px;font-size:1.6rem;">🦌</div>
+                    <div style="flex:1;">
+                        <div style="font-size:1rem;font-weight:800;color:#0f172a;" id="mAnimalName">—</div>
+                        <div style="font-size:0.8rem;color:#64748b;font-weight:600;" id="mAnimalSub">—</div>
+                    </div>
+                    <span id="mStatusBadge"></span>
                 </div>
+
+                <div class="section-label">سبب التحويل للتشريح</div>
+                <div class="content-box" id="mTransferReason" style="margin-bottom:1.5rem;">—</div>
 
                 <div class="info-grid">
                     <div class="info-cell">
-                        <div class="info-cell-label">رقم الحيوان الرسمي</div>
-                        <div class="info-cell-value" style="font-family:'Courier New',monospace; color:#64748b;" id="mAnimalId">—</div>
-                    </div>
-                    <div class="info-cell">
                         <div class="info-cell-label">رقم حالة النفوق المرتبطة</div>
                         <div class="info-cell-value" style="font-family:'Courier New',monospace;" id="mMortalityId">—</div>
+                    </div>
+                    <div class="info-cell">
+                        <div class="info-cell-label">رقم الحيوان</div>
+                        <div class="info-cell-value" style="font-family:'Courier New',monospace; color:#64748b;" id="mAnimalId">—</div>
                     </div>
                     <div class="info-cell">
                         <div class="info-cell-label">نوع الحيوان</div>
@@ -240,16 +250,8 @@
                         <div class="info-cell-value" id="mAge">—</div>
                     </div>
                     <div class="info-cell">
-                        <div class="info-cell-label">تاريخ النفوق</div>
-                        <div class="info-cell-value" id="mDeathDate">—</div>
-                    </div>
-                    <div class="info-cell">
                         <div class="info-cell-label">تاريخ الإحالة</div>
                         <div class="info-cell-value" id="mRefDate">—</div>
-                    </div>
-                    <div class="info-cell span-2">
-                        <div class="info-cell-label">المشرف المسجل</div>
-                        <div class="info-cell-value" id="mSupervisor">—</div>
                     </div>
                 </div>
 
@@ -300,6 +302,14 @@
                 </div>
                 
                 <div class="info-grid">
+                    <div class="info-cell">
+                        <div class="info-cell-label">تاريخ النفوق</div>
+                        <div class="info-cell-value" id="mDeathDate">—</div>
+                    </div>
+                    <div class="info-cell">
+                        <div class="info-cell-label">المشرف المسجل</div>
+                        <div class="info-cell-value" id="mSupervisor">—</div>
+                    </div>
                     <div class="info-cell span-2">
                         <div class="info-cell-label">سبب النفوق (من المشرف)</div>
                         <div class="info-cell-value" id="hCause">—</div>
@@ -333,24 +343,27 @@
     }
 
     const dummyData = {
-        'AR-105': { // Pending (Unknown Cause)
+        'AR-105': {
+            animalName: 'ريم', animalEmoji: '🦌',
             animalId: '#ANL-0120-2026', mortalityId: 'MC-2026-004', animalType: 'غزال الريم', gender: 'ذكر', age: '2 سنوات', group: 'العواشب',
-            deathDate: '2026-06-03', refDate: '2026-06-03', supervisor: 'أحمد الكواري',
+            deathDate: '2026-06-03', refDate: '2026-06-03', transferReason: 'وفاة بدون سبب ظاهر', supervisor: 'أحمد الكواري',
             hCause: 'غير ظاهر', hNotes: 'وجد ميتاً بدون سبب ظاهر في الحظيرة.',
             hCustomReason: '',
             finalCause: '', docDate: '', docBy: '', docNotes: ''
         },
-        'AR-104': { // Documented (Unknown Cause initially)
+        'AR-104': {
+            animalName: 'فهد', animalEmoji: '🐆',
             animalId: '#ANL-0305-2024', mortalityId: 'MC-2026-005', animalType: 'فهد أفريقي', gender: 'ذكر', age: '11 سنوات', group: 'السباع والضواري',
-            deathDate: '2026-05-28', refDate: '2026-05-28', supervisor: 'عمر الفاسي',
+            deathDate: '2026-05-28', refDate: '2026-05-28', transferReason: 'وفاة مفاجئة — إحالة للتشريح', supervisor: 'عمر الفاسي',
             hCause: 'غير ظاهر', hNotes: 'وفاة مفاجئة بلا أعراض سابقة. أُحيل للتشريح لمعرفة السبب.',
             hCustomReason: '',
             finalCause: 'فشل كلوي حاد مصحوب بعدوى بكتيرية', docDate: '2026-06-02', docBy: 'د. محمود (رئيس المستشفى البيطري)',
             docNotes: 'تم الكشف عن التهاب حاد في الكليتين مع تضخم في الطحال. النتائج تؤكد وفاة طبيعية لا علاقة لها بأي مسبب خارجي.'
         },
-        'AR-103': { // Documented (Custom Reason despite visible cause)
+        'AR-103': {
+            animalName: 'صقر', animalEmoji: '🦅',
             animalId: '#ANL-0099-2022', mortalityId: 'MC-2026-010', animalType: 'نسر أسمر', gender: 'ذكر', age: '4 سنوات', group: 'الطيور',
-            deathDate: '2026-05-15', refDate: '2026-05-15', supervisor: 'سالم عبدالله',
+            deathDate: '2026-05-15', refDate: '2026-05-15', transferReason: 'اشتباه في مرض — رغم كسر العنق', supervisor: 'سالم عبدالله',
             hCause: 'كسر في العنق', hNotes: 'سقط من ارتفاع وتوفي. تم تسجيل كسر واضح في العنق.',
             hCustomReason: 'الاشتباه في مرض (ضعف في العظام أو تسمم قد يكون سبب السقوط)',
             finalCause: 'تسمم بمادة كيميائية (مبيد حشري)', docDate: '2026-05-18', docBy: 'د. محمود (رئيس المستشفى البيطري)',
@@ -363,19 +376,23 @@
         const d = dummyData[refId];
 
         // Populate Tab 1 (Animal & Referral data)
-        document.getElementById('mSubtitle').innerText = d.animalType + ' — ' + d.group;
-        document.getElementById('mRefId').innerText = refId;
+        const displayName = d.animalName || d.animalType;
+        document.getElementById('mSubtitle').innerText = displayName + ' — ' + d.group;
+        document.getElementById('mAnimalPhoto').textContent = d.animalEmoji;
+        document.getElementById('mAnimalName').textContent = displayName;
+        document.getElementById('mAnimalSub').textContent = d.animalId + ' · ' + d.animalType;
+        document.getElementById('mTransferReason').textContent = d.transferReason;
         document.getElementById('mAnimalId').innerText = d.animalId;
         document.getElementById('mMortalityId').innerText = d.mortalityId;
         document.getElementById('mAnimalType').innerText = d.animalType;
         document.getElementById('mGender').innerText = d.gender;
         document.getElementById('mAge').innerText = d.age;
         document.getElementById('mGroup').innerText = d.group;
-        document.getElementById('mDeathDate').innerText = d.deathDate;
         document.getElementById('mRefDate').innerText = d.refDate;
-        document.getElementById('mSupervisor').innerText = d.supervisor;
 
         // Populate Tab 2 (Pre-Autopsy Data)
+        document.getElementById('mDeathDate').innerText = d.deathDate;
+        document.getElementById('mSupervisor').innerText = d.supervisor;
         const causeEl = document.getElementById('hCause');
         if (d.hCause === 'غير ظاهر') {
             causeEl.innerHTML = '<span style="color:#94a3b8; font-style:italic;">غير ظاهر</span>';

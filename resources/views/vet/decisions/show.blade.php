@@ -140,6 +140,8 @@
 </style>
 @endsection
 
+@php $vetBase = ($readOnly ?? false) ? '/director/vet' : '/vet'; @endphp
+
 @section('content')
 {{-- ═══ PAGE HEADER ═══ --}}
 <div class="page-header">
@@ -152,11 +154,13 @@
             <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;"></span>
             إفراج صحي
         </div>
+        @unless($readOnly ?? false)
         <button class="btn-action btn-export" style="padding: 10px 20px; font-size: 0.85rem;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             تصدير نموذج قرار طبي
         </button>
-        <a href="/vet/decisions" class="btn-back">
+        @endunless
+        <a href="{{ $vetBase }}/decisions" class="btn-back">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
             رجوع
         </a>

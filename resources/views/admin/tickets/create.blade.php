@@ -316,19 +316,6 @@
                     <label>الفئة المستهدفة بالدخول</label>
                     <input type="text" id="target" class="form-input" placeholder="مثال: العائلات (4 أفراد معاً)">
                 </div>
-                <div class="form-group">
-                    <label>الخدمات والمزايا المشمولة</label>
-                    <select id="benefits" class="form-input">
-                        <option>الدخول العام للحديقة</option>
-                        <option>الدخول العام + جولة بالقطار الداخلي</option>
-                        <option>دخول كامل شامل الجولات وألعاب المغامرات</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label>شروط أو قيود إضافية (اختياري)</label>
-                <input type="text" id="rules" class="form-input" placeholder="مثال: صالحة في العطلات الرسمية ونهاية الأسبوع فقط">
             </div>
 
             <!-- Divider -->
