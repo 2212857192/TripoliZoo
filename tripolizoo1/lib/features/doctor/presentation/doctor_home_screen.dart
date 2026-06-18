@@ -3,10 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:tripolizoo/features/doctor/doctor_cases/presentation/medical_cases_provider.dart';
+import 'package:tripolizoo/features/doctor/data/doctor_dashboard_api_repository.dart';
 import 'package:tripolizoo/features/doctor/doctor_quarantine/presentation/quarantine_provider.dart';
+import 'package:tripolizoo/features/doctor/presentation/doctor_dashboard_provider.dart';
 import 'package:tripolizoo/features/doctor/shared/doctor_form_launcher.dart';
 import 'package:tripolizoo/features/doctor/shared/doctor_ui.dart';
+import 'package:tripolizoo/features/visitor/visitor_auth/presentation/auth_provider.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
 
 class DoctorHomeScreen extends StatefulWidget {
@@ -20,6 +22,8 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _fadeController;
   late final Animation<double> _fadeAnimation;
+  final _scrollController = ScrollController();
+  bool _headerScrolled = false;
 
   @override
   void initState() {
@@ -33,11 +37,35 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
       curve: Curves.easeOut,
     );
     _fadeController.forward();
+    _scrollController.addListener(_handleScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
+  }
+
+  void _handleScroll() {
+    final isScrolled = _scrollController.offset > 24;
+    if (isScrolled != _headerScrolled) {
+      setState(() => _headerScrolled = isScrolled);
+    }
+  }
+
+  Future<void> _refresh() async {
+    await Future.wait([
+      context.read<DoctorDashboardProvider>().load(),
+      context.read<QuarantineProvider>().load(),
+    ]);
+  }
+
+  String _firstName(String fullName) {
+    final trimmed = fullName.trim();
+    if (trimmed.isEmpty) return 'طبيب';
+    return trimmed.split(RegExp(r'\s+')).first;
   }
 
   @override
   void dispose() {
     _fadeController.dispose();
+    _scrollController.removeListener(_handleScroll);
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -45,103 +73,127 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
   Widget build(BuildContext context) {
     final bottomPad = MediaQuery.of(context).padding.bottom;
 
-    const doctorName = 'أحمد';
-    final casesProvider = context.watch<MedicalCasesProvider>();
+    final dashboard = context.watch<DoctorDashboardProvider>();
+    final authUser = context.watch<AuthProvider>().user;
+    final doctorName = _firstName(
+      dashboard.data?.doctorName ?? authUser?.name ?? 'طبيب',
+    );
+    final groupName = dashboard.data?.groupName ?? authUser?.assignedGroup;
     final quarantineProvider = context.watch<QuarantineProvider>();
-    final activeReports = 1;
-    final activeFieldCases = casesProvider.activeFieldCount;
-    final hospitalCases = casesProvider.activeHospitalCount;
-    final quarantineCases = quarantineProvider.activeCount;
+    final quarantineCases = dashboard.data != null
+        ? dashboard.quarantineActiveCount
+        : quarantineProvider.activeCount;
+    final unreadNotifications = dashboard.unreadNotifications;
+    final alerts = dashboard.alerts;
+    final dashboardError = dashboard.errorMessage;
 
-    return Scaffold(
-      backgroundColor: DoctorUi.background,
-      body: FadeTransition(
-        opacity: _fadeAnimation,
-        child: SafeArea(
-          top: false,
-          bottom: false,
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // ─── Header Section — White Elegant Design ───
-                _buildHeader(context, doctorName),
-                const SizedBox(height: 20),
-
-                // ─── Body content ───
-                Padding(
-                  padding: EdgeInsets.fromLTRB(16, 0, 16, bottomPad + 96),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // ─── Overview Section ───
-                      _buildOverviewSection(
-                        context,
-                        reports: activeReports,
-                        fieldCases: activeFieldCases,
-                        hospitalCases: hospitalCases,
-                        quarantine: quarantineCases,
-                      ),
-                      const SizedBox(height: 20),
-
-                      // ─── Quick Actions Section ───
-                      _buildQuickActionsSection(context),
-                      const SizedBox(height: 20),
-
-                      // ─── Alerts Section ───
-                      _buildAlertsSection(context),
-                    ],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark,
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: DoctorUi.background,
+          body: FadeTransition(
+            opacity: _fadeAnimation,
+            child: SafeArea(
+              top: false,
+              bottom: false,
+              child: RefreshIndicator(
+                onRefresh: _refresh,
+                color: AppColors.primary,
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
                   ),
-                ),
-              ],
+                  slivers: [
+                  // ─── Header Section ───
+                  SliverToBoxAdapter(
+                    child: _buildTopHeader(
+                      context,
+                      doctorName,
+                      groupName,
+                      unreadNotifications,
+                    ),
+                  ),
+                  
+                  // ─── Body Content ───
+                  SliverPadding(
+                    padding: EdgeInsets.fromLTRB(16, 16, 16, bottomPad + 96),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        if (dashboardError != null) ...[
+                          _ErrorBanner(message: dashboardError),
+                          const SizedBox(height: 12),
+                        ],
+                        _buildOverviewSection(
+                          context,
+                          notifications: unreadNotifications,
+                          quarantine: quarantineCases,
+                          fieldCases: dashboard.activeFieldCasesCount,
+                          hospitalCases: dashboard.activeHospitalCasesCount,
+                        ),
+                        const SizedBox(height: 20),
+
+                        // ─── Quick Actions Section ───
+                        _buildQuickActionsSection(context),
+                        const SizedBox(height: 20),
+
+                        // ─── Alerts Section ───
+                        _buildAlertsSection(context, alerts),
+                      ]),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
+    ),
     );
   }
 
   // ─────────────────────────────────────────────
-  // Renders the Light Modern Header
+  // Renders the Clean Premium Header
   // ─────────────────────────────────────────────
-  Widget _buildHeader(BuildContext context, String name) {
+  Widget _buildTopHeader(
+    BuildContext context,
+    String name,
+    String? groupName,
+    int unreadNotifications,
+  ) {
     final topPad = MediaQuery.of(context).padding.top;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
       child: Container(
-        padding: EdgeInsets.fromLTRB(16, topPad + 16, 16, 18),
+        padding: EdgeInsets.fromLTRB(16, topPad + 16, 16, 20),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: const BorderRadius.vertical(
-            bottom: Radius.circular(28),
+            bottom: Radius.circular(32),
           ),
-          border: Border.all(
-            color: DoctorUi.border,
-            width: 1.5,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF1A3521).withValues(alpha: 0.03),
-              blurRadius: 18,
-              offset: const Offset(0, 8),
+          border: Border(
+            bottom: BorderSide(
+              color: DoctorUi.border,
+              width: 1.5,
             ),
-          ],
+          ),
+          boxShadow: DoctorUi.cardShadow,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Avatar with initials
             Container(
-              width: 46,
-              height: 46,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
                 gradient: AppColors.primaryGradient,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.25),
+                    color: AppColors.primary.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
@@ -152,7 +204,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                   name.isNotEmpty ? name[0] : 'أ',
                   style: GoogleFonts.cairo(
                     color: Colors.white,
-                    fontSize: 19,
+                    fontSize: 20,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -189,7 +241,9 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                       ),
                     ),
                     child: Text(
-                      'القطاع الطبي والرعاية الصحية',
+                      groupName != null && groupName.isNotEmpty
+                          ? 'طبيب مجموعة $groupName'
+                          : 'القطاع الطبي والرعاية الصحية',
                       style: GoogleFonts.cairo(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
@@ -203,19 +257,20 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
             ),
             const SizedBox(width: 12),
             // Notification bell
-            _buildNotificationBell(context),
+            _buildNotificationBell(context, unreadNotifications),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNotificationBell(BuildContext context) {
+  Widget _buildNotificationBell(BuildContext context, int unreadCount) {
     return GestureDetector(
-      onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('قريبًا: شاشة الإشعارات الطبية')),
-        );
+      onTap: () async {
+        await context.push('/doctor/notifications');
+        if (context.mounted) {
+          context.read<DoctorDashboardProvider>().load();
+        }
       },
       child: Stack(
         clipBehavior: Clip.none,
@@ -224,12 +279,19 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: const Color(0xFFF4F7F4),
+              color: Colors.white.withValues(alpha: 0.6),
               shape: BoxShape.circle,
               border: Border.all(
-                color: DoctorUi.border,
+                color: Colors.white.withValues(alpha: 0.9),
                 width: 1.2,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF142E1B).withValues(alpha: 0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
             child: const Icon(
               Icons.notifications_outlined,
@@ -237,32 +299,34 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
               size: 20,
             ),
           ),
-          Positioned(
-            top: -1,
-            left: -1,
-            child: Container(
-              width: 15,
-              height: 15,
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.white,
-                  width: 2,
-                ),
-              ),
-              child: Center(
-                child: Container(
-                  width: 5,
-                  height: 5,
-                  decoration: const BoxDecoration(
+          if (unreadCount > 0)
+            Positioned(
+              top: -1,
+              left: -1,
+              child: Container(
+                width: 16,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: AppColors.accent,
+                  shape: BoxShape.circle,
+                  border: Border.all(
                     color: Colors.white,
-                    shape: BoxShape.circle,
+                    width: 2,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    unreadCount > 9 ? '9+' : '$unreadCount',
+                    style: GoogleFonts.cairo(
+                      color: Colors.white,
+                      fontSize: 8,
+                      fontWeight: FontWeight.w900,
+                      height: 1,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -273,10 +337,10 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
   // ─────────────────────────────────────────────
   Widget _buildOverviewSection(
     BuildContext context, {
-    required int reports,
+    required int notifications,
+    required int quarantine,
     required int fieldCases,
     required int hospitalCases,
-    required int quarantine,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -298,25 +362,16 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
             childAspectRatio: 1.35,
             children: [
               _StatTile(
-                count: reports,
-                title: 'البلاغات الصحية',
-                subtitle: 'بلاغات جديدة للمراجعة',
-                icon: Icons.assignment_outlined,
-                onTap: () => context.go('/doctor/reports'),
-              ),
-              _StatTile(
-                count: fieldCases,
-                title: 'الحالات الميدانية',
-                subtitle: 'حالات نشطة قيد المتابعة',
-                icon: Icons.medical_services_outlined,
-                onTap: () => context.go('/doctor/cases'),
-              ),
-              _StatTile(
-                count: hospitalCases,
-                title: 'حالات المستشفى',
-                subtitle: 'حالات داخل المستشفى',
-                icon: Icons.local_hospital_outlined,
-                onTap: () => context.go('/doctor/cases'),
+                count: notifications,
+                title: 'إشعارات الحجر',
+                subtitle: 'تنبيهات غير مقروءة',
+                icon: Icons.notifications_active_outlined,
+                onTap: () async {
+                  await context.push('/doctor/notifications');
+                  if (context.mounted) {
+                    context.read<DoctorDashboardProvider>().load();
+                  }
+                },
               ),
               _StatTile(
                 count: quarantine,
@@ -324,6 +379,20 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                 subtitle: 'حيوانات تحت الملاحظة',
                 icon: Icons.security_outlined,
                 onTap: () => context.go('/doctor/quarantine'),
+              ),
+              _StatTile(
+                count: fieldCases,
+                title: 'الحالات الميدانية',
+                subtitle: 'حالات نشطة في المجموعة',
+                icon: Icons.medical_services_outlined,
+                onTap: () => context.go('/doctor/cases'),
+              ),
+              _StatTile(
+                count: hospitalCases,
+                title: 'حالات المستشفى',
+                subtitle: 'حالات قيد المتابعة',
+                icon: Icons.local_hospital_outlined,
+                onTap: () => context.go('/doctor/cases'),
               ),
             ],
           ),
@@ -347,36 +416,49 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
             title: 'إجراءات سريعة',
           ),
           const SizedBox(height: 16),
-          // الزر الرئيسي لفتح حالة طبية ميدانية
-          Material(
-            color: AppColors.primary,
-            borderRadius: BorderRadius.circular(14),
-            child: InkWell(
-              onTap: () => _openFieldCaseForm(context),
-              borderRadius: BorderRadius.circular(14),
-              splashColor: Colors.white.withValues(alpha: 0.15),
-              highlightColor: Colors.white.withValues(alpha: 0.05),
-              child: Container(
-                height: 52,
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.add_circle_outline_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'فتح حالة طبية ميدانية',
-                      style: GoogleFonts.cairo(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w800,
+          // الزر الرئيسي لفتح حالة طبية ميدانية بتصميم متدرج وظلال
+          Container(
+            decoration: BoxDecoration(
+              gradient: AppColors.primaryGradient,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.25),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(16),
+              child: InkWell(
+                onTap: () => _openFieldCaseForm(context),
+                borderRadius: BorderRadius.circular(16),
+                splashColor: Colors.white.withValues(alpha: 0.15),
+                highlightColor: Colors.white.withValues(alpha: 0.05),
+                child: Container(
+                  height: 52,
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.add_circle_outline_rounded,
                         color: Colors.white,
+                        size: 20,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      Text(
+                        'فتح حالة طبية ميدانية',
+                        style: GoogleFonts.cairo(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -389,7 +471,10 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
   // ─────────────────────────────────────────────
   // Renders the Alerts Section
   // ─────────────────────────────────────────────
-  Widget _buildAlertsSection(BuildContext context) {
+  Widget _buildAlertsSection(
+    BuildContext context,
+    List<DoctorDashboardAlert> alerts,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: DoctorUi.cardDecoration(),
@@ -401,23 +486,32 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
             title: 'تنبيهات تحتاج متابعة',
           ),
           const SizedBox(height: 14),
-
-          // تنبيه 1: عاجل (تنبيه باللون الأحمر الفاتح الخفيف)
-          _AlertTile(
-            title: 'بلاغ صحي جديد عن الحيوان رقم A-102',
-            subtitle: 'أُسند إليك للتشخيص والمتابعة الطبية الفورية.',
-            isUrgent: true,
-            onTap: () => context.go('/doctor/reports'),
-          ),
-          const SizedBox(height: 10),
-
-          // تنبيه 2: عادي
-          _AlertTile(
-            title: 'حالة داخل المستشفى تحتاج متابعة عاجلة',
-            subtitle: 'النمر البنغالي - قفص رقم 4 - فحص دوري مجدول اليوم.',
-            isUrgent: false,
-            onTap: () => context.go('/doctor/cases'),
-          ),
+          if (alerts.isEmpty)
+            Text(
+              'لا توجد تنبيهات جديدة',
+              style: GoogleFonts.cairo(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+                color: DoctorUi.muted,
+              ),
+            )
+          else
+            ...alerts.expand((alert) sync* {
+              yield _AlertTile(
+                title: alert.title,
+                subtitle: alert.subtitle,
+                isUrgent: alert.urgent,
+                onTap: () {
+                  final caseNumber = alert.caseNumber;
+                  if (caseNumber != null && caseNumber.isNotEmpty) {
+                    context.go('/doctor/quarantine/$caseNumber');
+                  } else {
+                    context.go('/doctor/quarantine');
+                  }
+                },
+              );
+              yield const SizedBox(height: 10);
+            }),
         ],
       ),
     );
@@ -428,6 +522,43 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
     if (!context.mounted || caseId == null) return;
     showDoctorSuccessSnackBar(context, message: 'تم فتح الحالة بنجاح');
     context.push('/doctor/cases/$caseId');
+  }
+}
+
+// ─────────────────────────────────────────────
+// Error banner
+// ─────────────────────────────────────────────
+class _ErrorBanner extends StatelessWidget {
+  const _ErrorBanner({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF5F5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFFFE3E3)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline, color: Color(0xFFDC2626), size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: GoogleFonts.cairo(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF991B1B),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -453,18 +584,19 @@ class _StatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF4F7F4),
-        borderRadius: BorderRadius.circular(16),
+        color: const Color(0xFFF8FAF8),
+        borderRadius: BorderRadius.circular(DoctorUi.cardRadiusSm),
         border: Border.all(
-          color: const Color(0xFFE2EBE3),
+          color: DoctorUi.border,
           width: 1.2,
         ),
+        boxShadow: DoctorUi.softShadow,
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DoctorUi.cardRadiusSm),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -549,35 +681,36 @@ class _AlertTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = isUrgent ? const Color(0xFFFFF5F5) : const Color(0xFFF4F7F4);
-    final borderColor = isUrgent ? const Color(0xFFFFE3E3) : const Color(0xFFE2EBE3);
+    final bgColor = isUrgent ? const Color(0xFFFFF6F6) : Colors.white;
+    final borderColor = isUrgent ? const Color(0xFFFEE2E2) : DoctorUi.border;
     final accentColor = isUrgent ? Colors.red.shade700 : AppColors.primary;
 
     return Container(
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DoctorUi.cardRadiusSm),
         border: Border.all(color: borderColor, width: 1.2),
+        boxShadow: DoctorUi.softShadow,
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DoctorUi.cardRadiusSm),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             child: Row(
               children: [
                 // Indicator point
                 Container(
-                  width: 6,
-                  height: 6,
+                  width: 8,
+                  height: 8,
                   decoration: BoxDecoration(
                     color: accentColor,
                     shape: BoxShape.circle,
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -585,17 +718,17 @@ class _AlertTile extends StatelessWidget {
                       Text(
                         title,
                         style: GoogleFonts.cairo(
-                          fontSize: 12.5,
+                          fontSize: 13,
                           fontWeight: FontWeight.w800,
                           color: DoctorUi.textPrimary,
                           height: 1.2,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 3),
                       Text(
                         subtitle,
                         style: GoogleFonts.cairo(
-                          fontSize: 10.5,
+                          fontSize: 11,
                           fontWeight: FontWeight.w600,
                           color: DoctorUi.muted,
                           height: 1.2,

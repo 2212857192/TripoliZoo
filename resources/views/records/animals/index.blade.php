@@ -1,6 +1,6 @@
 @extends($__layout ?? 'records.layout')
-@section('title', 'قائمة الحيوانات | السجلات والتوثيق')
-@section('page_title', 'قائمة الحيوانات داخل الحديقة')
+@section('title', 'الحيوانات داخل الحديقة | السجلات والتوثيق')
+@section('page_title', 'الحيوانات داخل الحديقة')
 
 @section('styles')
 @include('records.logs.partials.vet-log-styles')
@@ -12,153 +12,37 @@
     .animal-id { font-family:'Courier New',monospace; font-size:0.8rem; background:#f8fafc; padding:3px 8px; border-radius:6px; color:#334155; font-weight:800; display:inline-block; border:1px solid #e2e8f0; }
     .animal-id.monitoring { color:#15803d; background:#f0fdf4; border-color:#bbf7d0; }
     .source-tag { font-size:0.68rem; font-weight:800; padding:2px 7px; border-radius:6px; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; margin-top:3px; display:inline-block; }
-
-    .page-header-actions { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-    .btn-add {
-        display:inline-flex; align-items:center; gap:8px;
-        padding:8px 16px; background:#16a34a; border:none; border-radius:8px;
-        font-family:'Cairo',sans-serif; font-size:0.9rem; font-weight:800; color:#fff;
-        cursor:pointer; transition:all 0.2s; box-shadow:0 2px 4px rgba(22,163,74,0.2);
-    }
-    .btn-add:hover { background:#15803d; box-shadow:0 4px 8px rgba(22,163,74,0.3); }
-
-    /* ── MODAL – VET HOSPITAL STYLE ── */
-    .modal-backdrop { display:none; position:fixed; inset:0; background:rgba(15,23,42,.55); backdrop-filter:blur(5px); z-index:1000; align-items:center; justify-content:center; }
-    .modal-backdrop.open { display:flex; }
-    .modal-box { background:#fff; border-radius:20px; width:100%; max-width:720px; max-height:92vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 25px 50px rgba(0,0,0,.15); animation:modalIn 0.3s cubic-bezier(.4,0,.2,1); }
-    @keyframes modalIn { from { transform:translateY(24px) scale(.97); opacity:0; } to { transform:translateY(0) scale(1); opacity:1; } }
-
-    .modal-header { background:#fff; border-bottom:1px solid #e2e8f0; padding:1.2rem 1.5rem 0; display:flex; justify-content:space-between; align-items:flex-end; }
-    .modal-title-wrap { padding-bottom:.8rem; }
-    .modal-title-wrap h3 { margin:0; font-size:1.1rem; font-weight:800; color:#0f172a; }
-    .modal-title-wrap span { font-size:0.8rem; color:#64748b; font-weight:600; }
-    .modal-close { width:32px; height:32px; border-radius:8px; background:#fff; border:1px solid #e2e8f0; color:#64748b; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.1rem; font-weight:700; transition:all 0.2s; margin-bottom:10px; }
-    .modal-close:hover { background:#f8fafc; color:#0f172a; }
-
-    .modal-body { padding:1.5rem; overflow-y:auto; max-height:68vh; }
-
-    /* Form inside modal */
-    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
-    .form-grid.col-3 { grid-template-columns:1fr 1fr 1fr; }
-    .field-span-2 { grid-column:span 2; }
-    .field-group { display:flex; flex-direction:column; gap:6px; }
-    .field-label { font-size:0.82rem; font-weight:800; color:#0f172a; }
-    .required { color:#ef4444; }
-    .optional { font-size:0.72rem; font-weight:600; color:#94a3b8; margin-right:3px; }
-    .form-control { padding:10px 12px; border:1.5px solid #e2e8f0; border-radius:10px; font-family:'Cairo',sans-serif; font-size:0.88rem; font-weight:600; color:#0f172a; outline:none; background:#fff; transition:all 0.2s; width:100%; }
-    .form-control:focus { border-color:#1a4a2e; box-shadow:0 0 0 3px rgba(26,74,46,.1); }
-    .form-control:disabled { background:#f8fafc; color:#64748b; cursor:default; }
-    .form-control.generated { background:#f0fdf4; color:#16a34a; font-weight:800; font-family:'Courier New',monospace; letter-spacing:1px; border-color:#bbf7d0; }
-    textarea.form-control { resize:vertical; min-height:90px; }
-
-    /* Section divider inside modal */
-    .modal-section { margin-bottom:1.5rem; }
-    .modal-section-title { display:flex; align-items:center; gap:8px; font-size:0.88rem; font-weight:800; color:#0f172a; margin-bottom:1rem; padding-bottom:8px; border-bottom:2px solid #f1f5f9; }
-    .modal-section-title .sec-icon { width:30px; height:30px; border-radius:8px; background:#e6f4ea; color:#1a4a2e; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .modal-section-title.orange .sec-icon { background:#fef3c7; color:#d97706; }
-
-    /* Age Toggle */
-    .age-toggle { display:flex; border:1.5px solid #e2e8f0; border-radius:10px; overflow:hidden; }
-    .age-toggle-btn { flex:1; padding:9px 12px; text-align:center; cursor:pointer; font-family:'Cairo',sans-serif; font-size:0.82rem; font-weight:700; color:#64748b; background:#f8fafc; border:none; border-left:1px solid #e2e8f0; transition:all 0.2s; }
-    .age-toggle-btn:last-child { border-left:none; }
-    .age-toggle-btn.active { background:#1a4a2e; color:#fff; }
-
-    .cond-block { display:none; flex-direction:column; gap:1rem; margin-top:1rem; }
-    .cond-block.visible { display:flex; }
-
-    /* Upload */
-    .upload-area { border:2px dashed #e2e8f0; border-radius:10px; padding:18px; text-align:center; cursor:pointer; transition:all 0.2s; background:#fafbfc; }
-    .upload-area:hover { border-color:#1a4a2e; background:#f0fdf4; }
-    .upload-area p { font-size:0.8rem; color:#64748b; font-weight:600; margin:6px 0 0; }
-
-    /* Notice */
-    .notice-yellow { background:#fefce8; border:1px solid #fef08a; border-right:3px solid #eab308; border-radius:10px; padding:10px 14px; font-size:0.82rem; font-weight:700; color:#713f12; margin-bottom:1.2rem; display:flex; gap:8px; }
-    .notice-red { background:#fef2f2; border:1px solid #fecaca; border-right:3px solid #ef4444; border-radius:10px; padding:10px 14px; font-size:0.82rem; font-weight:700; color:#7f1d1d; margin-bottom:1.2rem; display:flex; gap:8px; }
-
-    /* Readonly chips */
-    .readonly-chips-wrap { background:#f8fafc; border:1.5px dashed #e2e8f0; border-radius:12px; padding:1rem 1.2rem; }
-    .readonly-chips-label { font-size:0.75rem; font-weight:800; color:#94a3b8; margin-bottom:8px; display:flex; align-items:center; gap:5px; }
-    .chips-row { display:flex; flex-wrap:wrap; gap:6px; }
-    .chip { background:#fff; border:1px solid #e2e8f0; border-radius:7px; padding:4px 10px; font-size:0.75rem; font-weight:700; color:#94a3b8; }
-
-    /* Identity bar (edit modal) */
-    .identity-bar { background:linear-gradient(135deg,#1a4a2e,#2d7a47); border-radius:12px; padding:1rem 1.2rem; display:flex; align-items:center; gap:14px; color:#fff; margin-bottom:1.2rem; }
-    .identity-bar .avatar { width:46px; height:46px; border-radius:12px; background:rgba(255,255,255,.15); display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; }
-    .identity-bar .info h4 { font-size:1rem; font-weight:800; margin:0 0 2px; }
-    .identity-bar .info p { font-size:0.78rem; opacity:.8; font-weight:600; margin:0; }
-    .identity-bar .id-tag { margin-right:auto; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.2); border-radius:8px; padding:6px 12px; font-size:0.82rem; font-weight:900; font-family:'Courier New',monospace; }
-
-    /* Modal footer */
-    .modal-footer { background:#fff; border-top:1px solid #e2e8f0; padding:1.2rem 1.5rem; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; }
-    .btn-submit { padding:10px 24px; background:linear-gradient(135deg,#1a4a2e,#2d7a47); color:#fff; border:none; border-radius:10px; font-family:'Cairo',sans-serif; font-size:0.88rem; font-weight:800; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 12px rgba(45,122,71,.3); display:inline-flex; align-items:center; gap:6px; }
-    .btn-submit:hover { transform:translateY(-1px); }
-    .btn-cancel { padding:10px 20px; background:#fff; color:#475569; border:1px solid #e2e8f0; border-radius:10px; font-family:'Cairo',sans-serif; font-size:0.88rem; font-weight:800; cursor:pointer; transition:all 0.2s; }
-    .btn-cancel:hover { background:#f8fafc; }
-
-    /* Sub-dialogs */
-    .dialog-backdrop { display:none; position:fixed; inset:0; background:rgba(15,23,42,.45); backdrop-filter:blur(3px); z-index:1100; align-items:center; justify-content:center; }
-    .dialog-backdrop.open { display:flex; }
-    .dialog-box { background:#fff; border-radius:18px; width:100%; max-width:460px; box-shadow:0 30px 80px rgba(0,0,0,.2); animation:modalIn 0.25s cubic-bezier(.34,1.56,.64,1); overflow:hidden; }
-    .dialog-icon-wrap { width:62px; height:62px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:1.8rem; }
-    .dialog-body { padding:2rem 2rem 1.5rem; text-align:center; }
-    .dialog-body h4 { font-size:1.1rem; font-weight:800; color:#0f172a; margin-bottom:8px; }
-    .dialog-body p { font-size:0.85rem; color:#64748b; font-weight:600; line-height:1.6; margin-bottom:0; }
-    .dialog-footer { padding:1rem 1.5rem; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; gap:10px; justify-content:center; }
-
-    /* Toast */
-    .toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(20px); background:#0f172a; color:#fff; padding:14px 24px; border-radius:12px; font-family:'Cairo',sans-serif; font-size:0.9rem; font-weight:700; display:flex; align-items:center; gap:10px; box-shadow:0 10px 30px rgba(0,0,0,.25); z-index:2000; opacity:0; transition:all 0.4s cubic-bezier(.34,1.56,.64,1); pointer-events:none; }
-    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-    .toast.green { background:linear-gradient(135deg,#1a4a2e,#2d7a47); }
 </style>
 @endsection
 
 @section('content')
 
 {{-- ═══════ HEADER & FILTERS ═══════ --}}
+@php
+    $portalBase = $portalBase ?? '/records';
+    $filters = $filters ?? ['q' => '', 'group' => ''];
+@endphp
+
 <div class="top-card">
-    <div class="page-header">
-        <div class="page-header-info">
-            <h2>🐾 قائمة الحيوانات داخل الحديقة</h2>
-            <p>عرض الحيوانات الموجودة داخل الحديقة فعليًا وغير الخارجة نهائيًا.</p>
-        </div>
-        <div class="page-header-actions">
-            <div class="hero-stats">
-                <div class="hero-stat">
-                    <div class="num">342</div>
-                    <div class="lbl">حيوان مسجّل</div>
-                </div>
-                <div class="hero-stat">
-                    <div class="num">3</div>
-                    <div class="lbl">قيد المتابعة</div>
-                </div>
-            </div>
-            <button type="button" class="btn-add" onclick="openAddModal()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                إضافة حيوان
-            </button>
-        </div>
-    </div>
-
-
-    <div class="filter-bar">
+    <form method="GET" action="{{ $portalBase }}/animals" class="filter-bar" id="animalsFilterForm">
         <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="بحث برقم الحيوان، الاسم، أو النوع...">
+            <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="بحث برقم الحيوان، الاسم، أو النوع...">
         </div>
-        <select class="filter-select">
-                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
+        <select class="filter-select" name="group" onchange="this.form.submit()">
+            @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات', 'selected' => $filters['group']])
         </select>
         <div class="legend-wrap">
             <span class="legend-dot"></span>
             <span class="legend-text">المواليد قيد المتابعة</span>
         </div>
-    </div>
+    </form>
 </div>
 
 {{-- ═══ TABLE ═══ --}}
 <div class="table-card">
     <div class="table-card-header">
-        <div class="table-card-title">الحيوانات المسجلة</div>
+        <div class="table-card-title">الحيوانات داخل الحديقة فعلياً</div>
     </div>
     <div style="overflow-x:auto;">
         <table class="custom-table">
@@ -174,363 +58,42 @@
                 </tr>
             </thead>
             <tbody>
+                @forelse($animals ?? [] as $animal)
+                @php
+                    $isMonitoring = $animal->status === \App\Enums\AnimalStatus::UnderBirthFollowUp->value;
+                    $sourceTag = match (true) {
+                        $animal->source === 'records' => 'إدخال يدوي',
+                        $animal->status === \App\Enums\AnimalStatus::UnderBirthFollowUp->value => 'مولود قيد المتابعة',
+                        $animal->source === 'quarantine' => 'وارد رسمياً',
+                        default => null,
+                    };
+                @endphp
                 <tr>
-                    @include('partials.animal-table-cell', ['name' => 'سيمبا', 'emoji' => '🦁', 'animalId' => '#ANM-0012', 'sub' => 'أسد أفريقي'])
-                    <td>أسد أفريقي</td>
-                    <td>القططية</td>
-                    <td>ذكر</td>
-                    <td style="color:#64748b; font-size:0.85rem;">8 سنوات</td>
-                    <td style="color:#64748b; font-size:0.85rem;">2018-02-14</td>
+                    @include('partials.animal-table-cell', [
+                        'name' => $animal->name,
+                        'image' => $animal->displayPhotoUrl(),
+                        'animalId' => '#'.$animal->code,
+                        'sourceTag' => $sourceTag,
+                    ])
+                    <td style="font-weight:700;">{{ $animal->species }}</td>
+                    <td>{{ $animal->group }}</td>
+                    <td>{{ $animal->gender }}</td>
+                    <td style="color:#64748b; font-size:0.85rem;">{{ $animal->formattedAge() }}</td>
+                    <td style="color:#64748b; font-size:0.85rem;">{{ $animal->registered_at?->format('Y-m-d') ?? '—' }}</td>
                     <td class="col-actions">
-                        <a href="/records/animals/ANM-0012" class="btn-tbl btn-tbl-view" title="عرض التفاصيل">
+                        <a href="{{ $portalBase }}/animals/{{ $animal->code }}" class="btn-tbl btn-tbl-view" title="عرض التفاصيل">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </a>
                     </td>
                 </tr>
+                @empty
                 <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => '#MON-1046', 'sub' => 'قرد مكاك', 'sourceTag' => 'من الحجر الصحي'])
-                    <td>قرد مكاك</td>
-                    <td>القرود</td>
-                    <td>أنثى</td>
-                    <td style="color:#64748b; font-size:0.85rem;">يومان</td>
-                    <td style="color:#64748b; font-size:0.85rem;">2026-06-05</td>
-                    <td class="col-actions">
-                        <a href="/records/animals/ANM-1046" class="btn-tbl btn-tbl-view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
+                    <td colspan="7" style="text-align:center;color:#94a3b8;font-weight:700;padding:2rem;">لا توجد حيوانات مسجّلة حالياً</td>
                 </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🦌', 'animalId' => '#GZL-1045', 'sub' => 'غزال الريم', 'sourceTag' => 'من الحجر الصحي'])
-                    <td>غزال الريم</td>
-                    <td>الغزلان</td>
-                    <td>ذكر</td>
-                    <td style="color:#64748b; font-size:0.85rem;">سنتان و 3 أشهر</td>
-                    <td style="color:#64748b; font-size:0.85rem;">2026-06-07</td>
-                    <td class="col-actions">
-                        <a href="/records/animals/ANM-1045" class="btn-tbl btn-tbl-view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['name' => 'سلطان', 'emoji' => '🦁', 'animalId' => '#ANM-0200', 'sub' => 'أسد'])
-                    <td>أسد</td>
-                    <td>القططية</td>
-                    <td>ذكر</td>
-                    <td style="color:#64748b; font-size:0.85rem;">8 سنوات تقريبًا</td>
-                    <td style="color:#64748b; font-size:0.85rem;">2026-06-07</td>
-                    <td class="col-actions">
-                        <a href="/records/animals/ANM-0200" class="btn-tbl btn-tbl-view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🦁', 'animalId' => '#ANM-0201', 'sub' => 'أسد أفريقي — مولود نافق'])
-                    <td>أسد أفريقي</td>
-                    <td>القططية</td>
-                    <td>أنثى</td>
-                    <td style="color:#64748b; font-size:0.85rem;">—</td>
-                    <td style="color:#64748b; font-size:0.85rem;">2026-06-01</td>
-                    <td class="col-actions">
-                        <a href="/records/animals/ANM-0201" class="btn-tbl btn-tbl-view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🐄', 'animalId' => '#ANM-0202', 'sub' => 'بقر — ذبح اضطراري'])
-                    <td>بقر</td>
-                    <td>الثدييات الكبيرة</td>
-                    <td>أنثى</td>
-                    <td style="color:#64748b; font-size:0.85rem;">5 سنوات</td>
-                    <td style="color:#64748b; font-size:0.85rem;">2024-03-01</td>
-                    <td class="col-actions">
-                        <a href="/records/animals/ANM-0202" class="btn-tbl btn-tbl-view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🦒', 'animalId' => '#ANM-0203', 'sub' => 'زرافة — خارج من الحديقة'])
-                    <td>زرافة</td>
-                    <td>الثدييات الكبيرة</td>
-                    <td>ذكر</td>
-                    <td style="color:#64748b; font-size:0.85rem;">4 سنوات</td>
-                    <td style="color:#64748b; font-size:0.85rem;">2023-01-15</td>
-                    <td class="col-actions">
-                        <a href="/records/animals/ANM-0203" class="btn-tbl btn-tbl-view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
-                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
 </div>
 
-{{-- ═══════════════════════════════════════════════════════════════════ --}}
-{{-- ═══ MODAL: إضافة حيوان ═══ --}}
-{{-- ═══════════════════════════════════════════════════════════════════ --}}
-<div class="modal-backdrop" id="addModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <div class="modal-title-wrap">
-                <h3>➕ إضافة حيوان داخل الحديقة</h3>
-                <span>بيانات حيوان موجود فعليًا ولم يكن مسجلًا في النظام</span>
-            </div>
-            <button class="modal-close" onclick="closeModal('addModal')">✕</button>
-        </div>
-
-        <div class="modal-body">
-
-            {{-- Section 1: بيانات أساسية --}}
-            <div class="modal-section">
-                <div class="modal-section-title">
-                    <div class="sec-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-                    البيانات الأساسية
-                </div>
-                <div class="form-grid">
-                    <div class="field-group">
-                        <label class="field-label">رقم الحيوان <span class="optional">(يولده النظام حسب المجموعة)</span></label>
-                        <input type="text" class="form-control generated" id="addAnimalId" value="—" readonly>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">اسم الحيوان <span class="optional">(اختياري)</span></label>
-                        <input type="text" class="form-control" placeholder="مثال: سيمبا، صخر...">
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label"><span class="required">*</span> النوع</label>
-                        <input type="text" class="form-control" placeholder="مثال: أسد أفريقي، غزال الريم...">
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label"><span class="required">*</span> المجموعة</label>
-                        <select class="form-control" id="addGroupSelect" onchange="updateGeneratedId()">
-                            @include('partials.animal-group-options', ['prompt' => 'اختر المجموعة...', 'withValues' => true])
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label"><span class="required">*</span> الجنس</label>
-                        <select class="form-control">
-                            <option value="" disabled selected>اختر الجنس...</option>
-                            <option>ذكر</option><option>أنثى</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">العلامات المميزة <span class="optional">(اختياري)</span></label>
-                        <input type="text" class="form-control" placeholder="مثال: ندبة، وشم، لون مميز...">
-                    </div>
-                    <div class="field-group field-span-2">
-                        <label class="field-label">صورة الحيوان <span class="optional">(اختياري)</span></label>
-                        <label class="upload-area" for="addPhoto">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:#94a3b8;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                            <p>اضغط لرفع صورة الحيوان<br><span style="font-size:0.72rem; color:#94a3b8;">PNG, JPG حتى 5 ميجابايت</span></p>
-                            <input type="file" id="addPhoto" accept="image/*" style="display:none;" onchange="showFileName(this,'addPhotoName')">
-                            <p id="addPhotoName" style="color:#1a4a2e; font-weight:700; margin-top:4px;"></p>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Section 2: بيانات العمر --}}
-            <div class="modal-section">
-                <div class="modal-section-title">
-                    <div class="sec-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-                    بيانات العمر
-                </div>
-                <div class="field-group" style="margin-bottom:1rem;">
-                    <label class="field-label"><span class="required">*</span> طريقة تحديد العمر</label>
-                    <div class="age-toggle">
-                        <button type="button" class="age-toggle-btn active" id="addBtnBirth" onclick="setAge('add','birth')">📅 تاريخ ميلاد معروف</button>
-                        <button type="button" class="age-toggle-btn" id="addBtnApprox" onclick="setAge('add','approx')">🔢 عمر تقريبي</button>
-                    </div>
-                </div>
-                <div class="cond-block visible" id="addBlockBirth">
-                    <div class="form-grid">
-                        <div class="field-group">
-                            <label class="field-label"><span class="required">*</span> تاريخ الميلاد</label>
-                            <input type="date" class="form-control">
-                        </div>
-                        <div class="field-group" style="align-self:end;">
-                            <label class="field-label" style="color:#64748b;">العمر المحسوب</label>
-                            <input type="text" class="form-control" placeholder="سيُحسب تلقائياً..." disabled>
-                        </div>
-                    </div>
-                </div>
-                <div class="cond-block" id="addBlockApprox">
-                    <div class="form-grid col-3">
-                        <div class="field-group">
-                            <label class="field-label"><span class="required">*</span> العمر التقريبي</label>
-                            <input type="number" class="form-control" placeholder="مثال: 4" min="1">
-                        </div>
-                        <div class="field-group">
-                            <label class="field-label"><span class="required">*</span> الوحدة</label>
-                            <select class="form-control"><option>أيام</option><option>أشهر</option><option selected>سنوات</option></select>
-                        </div>
-                        <div class="field-group">
-                            <label class="field-label" style="color:#64748b;">العمر الحالي</label>
-                            <input type="text" class="form-control" placeholder="سيُحسب تلقائياً..." disabled>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Section 3: الأصل والمصدر --}}
-            <div class="modal-section">
-                <div class="modal-section-title">
-                    <div class="sec-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
-                    الأصل والمصدر
-                </div>
-                <div class="form-grid">
-                    <div class="field-group">
-                        <label class="field-label"><span class="required">*</span> أصل الحيوان</label>
-                        <select class="form-control">
-                            <option value="" disabled selected>اختر الأصل...</option>
-                            <option>مولود داخل الحديقة</option>
-                            <option>وارد من خارج الحديقة</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label"><span class="required">*</span> مصدر الحيوان</label>
-                        <input type="text" class="form-control" placeholder="مثال: مولود في الحديقة حسب السجلات الورقية...">
-                    </div>
-                </div>
-            </div>
-
-            {{-- Section 4: التاريخ السابق --}}
-            <div class="modal-section">
-                <div class="modal-section-title orange">
-                    <div class="sec-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-                    التاريخ السابق قبل تشغيل النظام <span class="optional">(اختياري)</span>
-                </div>
-                <div class="form-grid">
-                    <div class="field-group field-span-2">
-                        <label class="field-label">ملخص التاريخ السابق</label>
-                        <textarea class="form-control" rows="3" placeholder="أهم التشخيصات أو العلاجات أو الجرعات القديمة إن وجدت..."></textarea>
-                    </div>
-                    <div class="field-group field-span-2">
-                        <label class="field-label">مرفق التاريخ السابق <span class="optional">(PDF أو صورة)</span></label>
-                        <label class="upload-area" for="addHistory">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:#94a3b8;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                            <p>ارفع ملف من السجل الورقي القديم<br><span style="font-size:0.72rem; color:#94a3b8;">PDF, PNG, JPG حتى 10 ميجابايت</span></p>
-                            <input type="file" id="addHistory" accept=".pdf,image/*" style="display:none;" onchange="showFileName(this,'addHistoryName')">
-                            <p id="addHistoryName" style="color:#1a4a2e; font-weight:700; margin-top:4px;"></p>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeModal('addModal')">إلغاء</button>
-            <button class="btn-submit" onclick="submitAdd()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                حفظ وإنشاء الملف
-            </button>
-        </div>
-    </div>
-</div>
-
-
-{{-- ═══ SUCCESS DIALOG (add) ═══ --}}
-<div class="dialog-backdrop" id="successAddDialog">
-    <div class="dialog-box">
-        <div class="dialog-body">
-            <div class="dialog-icon-wrap" style="background:#f0fdf4;">✅</div>
-            <h4>تمت إضافة الحيوان بنجاح!</h4>
-            <p>تم إنشاء ملف الحيوان الرسمي وإضافته إلى قائمة الحيوانات داخل الحديقة.</p>
-        </div>
-        <div class="dialog-footer">
-            <button class="btn-cancel" onclick="closeDialog('successAddDialog'); closeModal('addModal');">قائمة الحيوانات</button>
-            <button class="btn-submit" onclick="window.location.href='/records/animals/1050'">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                عرض ملف الحيوان
-            </button>
-        </div>
-    </div>
-</div>
-
-{{-- ═══ TOAST ═══ --}}
-<div class="toast green" id="toastMsg">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-    <span id="toastText">تمت العملية بنجاح</span>
-</div>
-
-@endsection
-
-@section('scripts')
-<script>
-    // ── Modal open/close ──
-    function openModal(id) { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-    // Close on backdrop click
-    document.querySelectorAll('.modal-backdrop').forEach(el => {
-        el.addEventListener('click', function(e) { if (e.target === this) closeModal(this.id); });
-    });
-
-    function openAddModal() { openModal('addModal'); updateGeneratedId(); }
-
-    const groupPrefixes = {
-        'القططية': 'ANM', 'الطيور': 'BRD', 'الزواحف': 'RPT',
-        'القرود': 'MON', 'الغزلان': 'GZL', 'الثدييات الكبيرة': 'LRG',
-        'الثدييات الصغيرة': 'SML', 'الدب واللامة': 'BLA'
-    };
-    const groupCounters = { ANM: 1050, BRD: 201, RPT: 88, GZL: 1046, MON: 1047, SML: 330, LRG: 120, BLA: 45 };
-
-    function updateGeneratedId() {
-        const sel = document.getElementById('addGroupSelect');
-        const input = document.getElementById('addAnimalId');
-        if (!sel || !input) return;
-        const group = sel.value;
-        if (!group || !groupPrefixes[group]) {
-            input.value = '—';
-            return;
-        }
-        const prefix = groupPrefixes[group];
-        input.value = '#' + prefix + '-' + groupCounters[prefix];
-    }
-
-    // ── Age toggle ──
-    function setAge(prefix, method) {
-        ['Birth','Approx'].forEach(m => {
-            document.getElementById(prefix + 'Btn' + m).classList.remove('active');
-            const block = document.getElementById(prefix + 'Block' + m);
-            block.classList.remove('visible');
-            block.style.display = 'none';
-        });
-        document.getElementById(prefix + 'Btn' + (method === 'birth' ? 'Birth' : 'Approx')).classList.add('active');
-        const active = document.getElementById(prefix + 'Block' + (method === 'birth' ? 'Birth' : 'Approx'));
-        active.classList.add('visible');
-        active.style.display = 'flex';
-    }
-
-    // ── File name ──
-    function showFileName(input, targetId) {
-        const t = document.getElementById(targetId);
-        if (input.files && input.files[0]) t.innerText = '📎 ' + input.files[0].name;
-    }
-
-    // ── Dialog ──
-    function openDialog(id) { document.getElementById(id).classList.add('open'); }
-    function closeDialog(id) { document.getElementById(id).classList.remove('open'); }
-    document.querySelectorAll('.dialog-backdrop').forEach(el => {
-        el.addEventListener('click', function(e) { if (e.target === this) closeDialog(this.id); });
-    });
-
-    // ── Submit actions ──
-    function submitAdd() {
-        openDialog('successAddDialog');
-    }
-
-    // ── Toast ──
-    function showToast(msg) {
-        const t = document.getElementById('toastMsg');
-        document.getElementById('toastText').innerText = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3500);
-    }
-</script>
 @endsection

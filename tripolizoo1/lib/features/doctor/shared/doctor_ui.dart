@@ -5,33 +5,33 @@ import 'package:tripolizoo/shared/constants/app_colors.dart';
 /// نظام تصميم احترافي لواجهة الطبيب — متطابق مع هوية المشرف الجديدة.
 abstract final class DoctorUi {
   // Palette
-  static const Color background   = Color(0xFFF4F7F4); // رمادي مخضر هادئ وراقي
+  static const Color background   = Color(0xFFF4F7F5); // رمادي مخضر هادئ وراقٍ جداً
   static const Color card         = Color(0xFFFFFFFF);
-  static const Color border       = Color(0xFFE2EBE3); // حدود بلون أخضر المريمية الخفيف
-  static const Color borderStrong = Color(0xFFC8D5CB);
-  static const Color muted        = Color(0xFF6E8272); // نصوص ثانوية هادئة
-  static const Color mutedDark    = Color(0xFF4A5C50);
+  static const Color border       = Color(0xFFE4EDE5); // حدود بلون أخضر المريمية الخفيف والراقي
+  static const Color borderStrong = Color(0xFFC2D3C5);
+  static const Color muted        = Color(0xFF6B7E6F); // نصوص ثانوية هادئة
+  static const Color mutedDark    = Color(0xFF455749);
 
   // Typography
-  static const Color textPrimary   = Color(0xFF142E1B); // أخضر غاباتي داكن جداً
-  static const Color textSecondary = Color(0xFF354B3B);
+  static const Color textPrimary   = Color(0xFF152A1A); // أخضر غاباتي داكن جداً وراقٍ
+  static const Color textSecondary = Color(0xFF3A4F40);
 
-  static const double cardRadius   = 20;
-  static const double cardRadiusSm = 12;
+  static const double cardRadius   = 24;
+  static const double cardRadiusSm = 16;
 
   // Shadows
   static List<BoxShadow> get cardShadow => [
         BoxShadow(
-          color: const Color(0xFF1A3521).withValues(alpha: 0.04),
-          blurRadius: 16,
-          offset: const Offset(0, 6),
+          color: const Color(0xFF142E1B).withValues(alpha: 0.05),
+          blurRadius: 20,
+          offset: const Offset(0, 8),
         ),
       ];
 
   static List<BoxShadow> get softShadow => [
         BoxShadow(
-          color: const Color(0xFF1A3521).withValues(alpha: 0.03),
-          blurRadius: 10,
+          color: const Color(0xFF142E1B).withValues(alpha: 0.03),
+          blurRadius: 12,
           offset: const Offset(0, 4),
         ),
       ];

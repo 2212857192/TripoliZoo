@@ -322,27 +322,6 @@
 @section('content')
 {{-- ═══════ HEADER & FILTERS ═══════ --}}
 <div class="top-card">
-    <div class="page-header">
-        <div class="page-header-info">
-            <h2>📋 القرارات الطبية</h2>
-            <p>عرض القرارات الطبية الصادرة ومتابعة حالتها وتصدير نماذجها عند الحاجة</p>
-        </div>
-        <div class="hero-stats">
-            <div class="hero-stat">
-                <div class="num">3</div>
-                <div class="lbl">إفراج صحي</div>
-            </div>
-            <div class="hero-stat">
-                <div class="num">2</div>
-                <div class="lbl">خروج بعد العلاج</div>
-            </div>
-            <div class="hero-stat">
-                <div class="num">1</div>
-                <div class="lbl">ذبح اضطراري</div>
-            </div>
-        </div>
-    </div>
-
     <div class="filter-bar">
         <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -390,66 +369,18 @@
                 </tr>
             </thead>
             <tbody>
-                {{-- Row 1: Health Release --}}
-                <tr>
-                    <td><span style="font-family:'Courier New',monospace;font-size:0.75rem;background:#f0fdf4;color:#15803d;padding:3px 8px;border-radius:6px;font-weight:700;">001-2025-MD</span></td>
-                    <td>إفراج صحي</td>
-                    @include('partials.animal-table-cell', ['name' => 'صقر', 'emoji' => '🦅', 'animalId' => '#ANM-009'])
-                    <td>نسر ذهبي</td>
-                    <td>حجر صحي</td>
-                    <td>2025-05-13</td>
-                    <td><span class="badge badge-pending"><span class="dot"></span>بانتظار الاستلام</span></td>
-                    <td class="col-actions">
-                        <a href="{{ $vetBase }}/decisions/1" class="btn-tbl view" title="عرض التفاصيل">
-                            @include('partials.icon-eye-view')
-                        </a>
-                    </td>
-                </tr>
-                {{-- Row 2: Health Release --}}
-                <tr>
-                    <td><span style="font-family:'Courier New',monospace;font-size:0.75rem;background:#f0fdf4;color:#15803d;padding:3px 8px;border-radius:6px;font-weight:700;">002-2025-MD</span></td>
-                    <td>إفراج صحي</td>
-                    @include('partials.animal-table-cell', ['name' => 'كوكو', 'emoji' => '🐒', 'animalId' => '#ANL-0871'])
-                    <td>شمبانزي أفريقي</td>
-                    <td>حجر صحي</td>
-                    <td>2025-05-15</td>
-                    <td><span class="badge badge-completed"><span class="dot"></span>تم الاستلام</span></td>
-                    <td class="col-actions">
-                        <a href="{{ $vetBase }}/decisions/2" class="btn-tbl view" title="عرض التفاصيل">
-                            @include('partials.icon-eye-view')
-                        </a>
-                    </td>
-                </tr>
-                {{-- Row 3: Discharge After Treatment --}}
-                <tr>
-                    <td><span style="font-family:'Courier New',monospace;font-size:0.75rem;background:#dbeafe;color:#1d4ed8;padding:3px 8px;border-radius:6px;font-weight:700;">003-2025-MD</span></td>
-                    <td>خروج بعد العلاج</td>
-                    @include('partials.animal-table-cell', ['name' => 'جميلة', 'emoji' => '🦒', 'animalId' => '#ANM-154'])
-                    <td>زرافة نيلية</td>
-                    <td>حالة داخل المستشفى</td>
-                    <td>2025-05-10</td>
-                    <td><span class="badge badge-completed"><span class="dot"></span>تم الاستلام</span></td>
-                    <td class="col-actions">
-                        <a href="{{ $vetBase }}/decisions/3" class="btn-tbl view" title="عرض التفاصيل">
-                            @include('partials.icon-eye-view')
-                        </a>
-                    </td>
-                </tr>
-                {{-- Row 4: Emergency Slaughter --}}
-                <tr>
-                    <td><span style="font-family:'Courier New',monospace;font-size:0.75rem;background:#fee2e2;color:#dc2626;padding:3px 8px;border-radius:6px;font-weight:700;">004-2025-MD</span></td>
-                    <td>ذبح اضطراري</td>
-                    @include('partials.animal-table-cell', ['emoji' => '🦁', 'animalId' => '#ANM-201'])
-                    <td>أسد أفريقي</td>
-                    <td>حالة داخل المستشفى</td>
-                    <td>2025-05-08</td>
-                    <td><span class="badge badge-none"><span class="dot"></span>لا يتطلب استلام</span></td>
-                    <td class="col-actions">
-                        <a href="{{ $vetBase }}/decisions/4" class="btn-tbl view" title="عرض التفاصيل">
-                            @include('partials.icon-eye-view')
-                        </a>
-                    </td>
-                </tr>
+                @if(($decisions ?? collect())->isNotEmpty())
+                    @include('partials.vet-medical-decisions-rows', [
+                        'decisions' => $decisions,
+                        'decisionsShowRoute' => $decisionsShowRoute ?? 'vet.decisions.show',
+                    ])
+                @else
+                    <tr>
+                        <td colspan="8" style="text-align:center;padding:2rem;color:#64748b;font-weight:700;">
+                            لا توجد قرارات طبية مسجّلة بعد
+                        </td>
+                    </tr>
+                @endif
             </tbody>
         </table>
     </div>

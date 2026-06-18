@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:tripolizoo/features/visitor/visitor_auth/presentation/auth_provider.dart';
 import 'package:tripolizoo/features/visitor/visitor_profile/presentation/profile_screen.dart';
+import 'package:tripolizoo/features/visitor/visitor_tickets/data/ticket_repository.dart';
 import 'package:tripolizoo/features/visitor/visitor_tickets/presentation/ticket_cart_provider.dart';
 import 'package:tripolizoo/shared/providers/locale_provider.dart';
 
@@ -224,8 +225,10 @@ void main() {
     await tester.runAsync(
       () => authProvider.login('visitor@example.com', '123456'),
     );
-    final ticketCart = TicketCartProvider();
-    final ticket = ticketCart.purchase().single;
+    final ticketCart = TicketCartProvider(repository: MockTicketRepository());
+    await ticketCart.loadTypes();
+    ticketCart.increment('adult_ly');
+    final ticket = (await ticketCart.purchaseCash()).single;
     await tester.pumpWidget(
       buildProfile(
         ticketCart: ticketCart,

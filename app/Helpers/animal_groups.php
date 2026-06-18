@@ -30,14 +30,21 @@ if (! function_exists('animal_group_prefixes')) {
     function animal_group_prefixes(): array
     {
         return [
-            'القططية' => 'ANM',
-            'الطيور' => 'BRD',
-            'الزواحف' => 'RPT',
-            'القرود' => 'MON',
-            'الغزلان' => 'GZL',
-            'الثدييات الكبيرة' => 'LRG',
-            'الثدييات الصغيرة' => 'SML',
-            'الدب واللامة' => 'BLA',
+            'القططية' => 'C',
+            'الطيور' => 'B',
+            'الزواحف' => 'R',
+            'القرود' => 'M',
+            'الغزلان' => 'G',
+            'الثدييات الكبيرة' => 'L',
+            'الثدييات الصغيرة' => 'S',
+            'الدب واللامة' => 'D',
         ];
+    }
+}
+
+if (! function_exists('quarantine_code_prefix')) {
+    function quarantine_code_prefix(): string
+    {
+        return 'Q';
     }
 }

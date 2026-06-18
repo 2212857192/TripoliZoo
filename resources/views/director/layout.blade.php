@@ -448,12 +448,6 @@
         <nav class="sidebar-nav">
             @include('director.partials.sidebar-nav')
         </nav>
-
-        <div class="sidebar-footer">
-            <div style="padding: 1.2rem; border-top: 1px solid #e2e8f0;">
-                @include('partials.portal-logout')
-            </div>
-        </div>
     </aside>
 
     <!-- Main Content -->
@@ -473,6 +467,8 @@
             @yield('content')
         </div>
     </main>
+
+    @stack('modals')
 
     @yield('scripts')
     @include('director.partials.read-only-guard')

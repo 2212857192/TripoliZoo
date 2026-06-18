@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
+use App\Support\PublicUrl;
 
 class AnimalProfile extends Model
 {
@@ -31,6 +33,21 @@ class AnimalProfile extends Model
         return $this->belongsTo(Animal::class);
     }
 
+    /**
+     * محتوى تعريفي لحيوان مسجّل رسمياً داخل الحديقة.
+     */
+    public function scopeListed(Builder $query): Builder
+    {
+        return $query->whereHas('animal', fn (Builder $animalQuery) => $animalQuery->insideZooOfficially());
+    }
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return static::listed()
+            ->where($field ?? $this->getRouteKeyName(), $value)
+            ->first();
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -51,9 +68,40 @@ class AnimalProfile extends Model
         return [
             'profile_id' => $this->id,
             'animal_code' => $this->animal?->code,
-            'name' => $this->animal?->species,
-            'sci' => $this->scientific_name,
+            'name' => $this->visitorDisplayName(),
+            'sci' => $this->visitorSubtitle(),
             'zoo' => 'حديقة حيوان طرابلس',
         ];
+    }
+
+    public function visitorDisplayName(): string
+    {
+        return $this->animal?->name ?: $this->animal?->species ?: 'حيوان';
+    }
+
+    /** النص الذي يظهر تحت اسم الحيوان في تطبيق الزائر — يُجلب من بيانات الحيوان المختار. */
+    public function visitorSubtitle(): string
+    {
+        $animal = $this->animal;
+
+        if (! $animal) {
+            return '';
+        }
+
+        if ($animal->name) {
+            return $animal->species ?? '';
+        }
+
+        return $animal->group ?? '';
+    }
+
+    public function visitorQrUrl(): string
+    {
+        return PublicUrl::absolute(route('visitor.animal', $this, absolute: false));
+    }
+
+    public function qrScanPayload(): string
+    {
+        return $this->visitorQrUrl();
     }
 }

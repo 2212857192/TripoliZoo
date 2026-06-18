@@ -129,7 +129,7 @@
             <thead>
                 <tr>
                     <th>الحيوان</th>
-                    <th>نوع الحيوان</th>
+                    <th>النوع</th>
                     <th>المجموعة</th>
                     <th>تاريخ الإحالة</th>
                     <th>الحالة</th>
@@ -235,9 +235,6 @@
                             <h3 class="section-title" style="margin-bottom:0;">معلومات الإحالة</h3>
                             <span id="mStatusBadge"></span>
                         </div>
-
-                        <div class="section-label">سبب التحويل للتشريح</div>
-                        <div class="content-box" id="mTransferReason" style="margin-bottom:1rem;">—</div>
 
                         <div class="info-grid" style="margin-bottom:0;">
                             <div class="info-cell">
@@ -377,7 +374,6 @@
         document.getElementById('mAnimalPhoto').textContent = d.animalEmoji;
         document.getElementById('mAnimalName').textContent = displayName;
         document.getElementById('mAnimalSub').textContent = d.animalId + ' · ' + d.animalType;
-        document.getElementById('mTransferReason').textContent = d.transferReason;
         document.getElementById('mAnimalId').innerText = d.animalId;
         document.getElementById('mMortalityId').innerText = d.mortalityId;
         document.getElementById('mAnimalType').innerText = d.animalType;

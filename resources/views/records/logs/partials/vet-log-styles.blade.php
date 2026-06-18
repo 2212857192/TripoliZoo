@@ -194,6 +194,8 @@
     .badge .dot { width: 6px; height: 6px; border-radius: 50%; }
     .badge-completed { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
     .badge-completed .dot { background: #15803d; }
+    .badge-pending { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+    .badge-pending .dot { background: #d97706; }
     .badge-none { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
     .badge-none .dot { background: #94a3b8; }
 

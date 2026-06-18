@@ -11,8 +11,13 @@ import 'package:tripolizoo/features/supervisor/supervisor_group_followup/present
 import 'package:tripolizoo/features/supervisor/supervisor_health_reports/presentation/health_reports_provider.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_notifications/presentation/supervisor_notifications_provider.dart';
 import 'package:tripolizoo/features/doctor/doctor_cases/presentation/medical_cases_provider.dart';
+import 'package:tripolizoo/features/doctor/doctor_notifications/presentation/doctor_notifications_provider.dart';
+import 'package:tripolizoo/features/doctor/presentation/doctor_dashboard_provider.dart';
 import 'package:tripolizoo/features/doctor/doctor_quarantine/presentation/quarantine_provider.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_home/presentation/supervisor_dashboard_provider.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_receiving_tasks/presentation/receiving_tasks_provider.dart';
+import 'package:tripolizoo/shared/constants/app_constants.dart';
+import 'package:tripolizoo/shared/push/push_notification_service.dart';
 
 class TripoliZooApp extends StatefulWidget {
   const TripoliZooApp({super.key});
@@ -30,7 +35,15 @@ class _TripoliZooAppState extends State<TripoliZooApp> {
     super.initState();
     _authProvider = AuthProvider();
     _router = createRouter(_authProvider);
-    _authProvider.bootstrap();
+    PushNotificationService.attachRouter(_router);
+    _authProvider.bootstrap().then((_) {
+      PushNotificationService.handlePendingRoute();
+      final user = _authProvider.user;
+      PushNotificationService.syncTokenForLoggedInUser(
+        isDoctor: user?.role == 'doctor',
+        isSupervisor: user?.role == 'supervisor',
+      );
+    });
   }
 
   @override
@@ -47,6 +60,9 @@ class _TripoliZooAppState extends State<TripoliZooApp> {
             create: (_) => SupervisorNotificationsProvider()),
         ChangeNotifierProvider(create: (_) => MedicalCasesProvider()),
         ChangeNotifierProvider(create: (_) => QuarantineProvider()),
+        ChangeNotifierProvider(create: (_) => DoctorDashboardProvider()),
+        ChangeNotifierProvider(create: (_) => DoctorNotificationsProvider()),
+        ChangeNotifierProvider(create: (_) => SupervisorDashboardProvider()),
       ],
       child: Consumer<LocaleProvider>(
         builder: (context, localeProvider, child) {
@@ -62,7 +78,7 @@ class _TripoliZooAppState extends State<TripoliZooApp> {
 
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,
-            title: 'Tripoli Zoo',
+            title: AppConstants.appName,
             theme: AppTheme.light,
             routerConfig: _router,
             locale: appLocale,

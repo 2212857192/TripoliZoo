@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'fcm' => [
+        'project_id' => env('FCM_PROJECT_ID', 'tripolizoo'),
+        'credentials' => ($path = env('FCM_CREDENTIALS'))
+            ? (is_file($path) ? $path : base_path($path))
+            : null,
+    ],
+
 ];

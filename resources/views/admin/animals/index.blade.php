@@ -189,98 +189,6 @@
     .btn-act.vis-btn:hover      { color: #7C3AED; background: #EDE9FE; border-color: #DDD6FE; }
     .btn-act.qr-btn:hover       { color: #059669; background: #D1FAE5; border-color: #A7F3D0; }
 
-    /* QR Modal */
-    .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(15,23,42,0.55);
-        backdrop-filter: blur(5px);
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.25s;
-    }
-
-    .modal-overlay.show { opacity: 1; visibility: visible; }
-
-    .modal-box {
-        background: var(--white);
-        width: 100%;
-        max-width: 380px;
-        border-radius: 20px;
-        box-shadow: 0 25px 60px rgba(0,0,0,0.18);
-        transform: translateY(24px) scale(0.97);
-        transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-        overflow: hidden;
-    }
-
-    .modal-overlay.show .modal-box { transform: translateY(0) scale(1); }
-
-    .modal-head {
-        padding: 1.2rem 1.6rem;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #FAFBFC;
-    }
-
-    .modal-head h3 { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin: 0; }
-
-    .btn-close-x {
-        width: 30px; height: 30px;
-        background: var(--border); border: none; border-radius: 8px;
-        font-size: 1.1rem; cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-        color: var(--text-muted); transition: all 0.2s;
-    }
-
-    .btn-close-x:hover { background: #E2E8F0; }
-
-    .qr-container {
-        text-align: center;
-        padding: 1.5rem;
-    }
-
-    .qr-container h4 { font-size: 1rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
-    .qr-container p  { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.5rem; }
-
-    #qrCanvas {
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 12px;
-        background: white;
-        margin-bottom: 1.2rem;
-    }
-
-    .qr-actions { display: flex; gap: 10px; justify-content: center; }
-
-    .btn-qr-dl {
-        padding: 9px 18px;
-        background: var(--green);
-        color: white; border: none;
-        border-radius: 8px;
-        font-family: 'Cairo', sans-serif;
-        font-weight: 700; cursor: pointer;
-        display: inline-flex; align-items: center; gap: 6px;
-        transition: all 0.2s;
-    }
-
-    .btn-qr-dl:hover { background: #1B5E20; }
-
-    .btn-cancel {
-        padding: 9px 16px;
-        background: var(--bg-color); color: var(--text-muted);
-        border: 1.5px solid var(--border); border-radius: 8px;
-        font-family: 'Cairo', sans-serif; font-weight: 700; cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .btn-cancel:hover { background: #E2E8F0; }
-
     .empty-state {
         text-align: center; padding: 4rem 2rem;
         color: var(--text-muted); display: none;
@@ -307,34 +215,62 @@
 
 @section('content')
 
+@php
+    $readOnly = $readOnly ?? false;
+    $stats = $stats ?? ['total' => 0, 'visible' => 0, 'hidden' => 0];
+    $filters = $filters ?? ['q' => '', 'visibility' => '', 'group' => ''];
+@endphp
+
+@if(session('success'))
+<div class="notice-blue" style="margin-bottom:1rem;padding:12px 16px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;color:#1D4ED8;font-weight:700;">{{ session('success') }}</div>
+@endif
+
 <!-- Top Card -->
 <div class="top-card">
     <div class="top-row">
         <div>
             <h2>المحتوى التعريفي للحيوانات</h2>
-            <p>إجمالي <strong id="animalCount">{{ $profiles->count() }}</strong> محتوى تعريفي مسجل</p>
+            <p>
+                إجمالي <strong>{{ $stats['total'] }}</strong> محتوى —
+                <span style="color:#166534;">{{ $stats['visible'] }} ظاهر</span> —
+                <span style="color:#991B1B;">{{ $stats['hidden'] }} مخفي</span>
+            </p>
         </div>
+        @unless($readOnly)
         <a href="{{ route('admin.animals.create') }}" class="btn-add">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             إضافة محتوى جديد
         </a>
+        @endunless
     </div>
-    <div class="filter-bar">
+    <form method="GET" action="{{ route('admin.animals.index') }}" class="filter-bar" id="animalsFilterForm">
         <div class="search-box">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" id="searchInput" placeholder="ابحث باسم الحيوان المعرّف...">
+            <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="ابحث بالاسم، النوع، الرمز، أو الاسم العلمي...">
         </div>
-    </div>
+        <select class="filter-select" name="visibility" onchange="this.form.submit()" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-weight:700;">
+            <option value="" @selected($filters['visibility'] === '')>كل الحالات</option>
+            <option value="visible" @selected($filters['visibility'] === 'visible')>ظاهر للزوار</option>
+            <option value="hidden" @selected($filters['visibility'] === 'hidden')>مخفي</option>
+        </select>
+        <select class="filter-select" name="group" onchange="this.form.submit()" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-weight:700;">
+            @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات', 'selected' => $filters['group']])
+        </select>
+        <button type="submit" style="padding:10px 18px;border:none;border-radius:10px;background:var(--green);color:#fff;font-family:'Cairo',sans-serif;font-weight:800;cursor:pointer;">بحث</button>
+    </form>
 </div>
 
 <!-- Animals Grid -->
 <div class="animals-grid" id="animalsGrid">
     @foreach($profiles as $profile)
     @php
-        $animalName = $profile->animal?->species ?? '—';
-        $sci = $profile->scientific_name ?? '';
-        $code = $profile->display_code ?? $profile->animal?->code ?? '—';
+        $animal = $profile->animal;
+        $animalName = $animal?->name ?: $animal?->species ?? '—';
+        $sci = $profile->visitorSubtitle();
+        $code = $profile->display_code ?? $animal?->code ?? '—';
         $img = $profile->imageUrl();
+        $group = $animal?->group ?? '—';
+        $mapLocation = $profile->mapLocations->first();
     @endphp
     <div class="animal-card" data-vis="{{ $profile->is_visible ? 'visible' : 'hidden' }}" data-name="{{ $animalName }}">
         <div class="animal-img-wrap">
@@ -348,11 +284,18 @@
             <h3 class="animal-name">{{ $animalName }}</h3>
             @if($sci)<p class="animal-sci">{{ $sci }}</p>@endif
             <p class="animal-desc-preview">{{ Str::limit($profile->description, 120) }}</p>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+                <span style="font-size:.72rem;font-weight:800;padding:3px 8px;border-radius:6px;background:#F8FAFC;border:1px solid #E2E8F0;color:#64748B;">{{ $group }}</span>
+                @if($mapLocation)
+                <span style="font-size:.72rem;font-weight:800;padding:3px 8px;border-radius:6px;background:#ECFDF5;border:1px solid #BBF7D0;color:#166534;">{{ $mapLocation->name }}</span>
+                @endif
+            </div>
             <div class="animal-actions">
                 <a href="{{ route('admin.animals.show', $profile) }}" class="btn-act view-btn">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                     عرض
                 </a>
+                @unless($readOnly)
                 <a href="{{ route('admin.animals.edit', $profile) }}" class="btn-act edit-btn">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                     تعديل
@@ -365,7 +308,25 @@
                         {{ $profile->is_visible ? 'إخفاء' : 'إظهار' }}
                     </button>
                 </form>
-                <button type="button" class="btn-act qr-btn" onclick="openQR(@json($animalName), @json($sci), @json($code), @json(route('visitor.animal', $profile)))">
+                @endunless
+                @php
+                    $qrButtonData = [
+                        'name' => $animalName,
+                        'subtitle' => $sci,
+                        'code' => $code,
+                        'group' => $group !== '—' ? $group : '',
+                        'image' => $img,
+                        'scanUrl' => $profile->visitorQrUrl(),
+                        'publicUrl' => config('app.visitor_public_url') ?: '',
+                        'qrImageUrl' => route('admin.animals.qr', $profile, absolute: false),
+                        'payload' => $profile->qrPayload(),
+                    ];
+                @endphp
+                <button
+                    type="button"
+                    class="btn-act qr-btn js-animal-qr-trigger"
+                    data-qr='@json($qrButtonData)'
+                >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                     QR
                 </button>
@@ -375,93 +336,17 @@
     @endforeach
 </div>
 
-<div class="empty-state" id="emptyState">
+<div class="empty-state" id="emptyState" @if(($profiles ?? collect())->isNotEmpty()) style="display:none;" @endif>
     <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21.5 12H16c-.7 2-2 3-4 3s-3.3-1-4-3H2.5"/></svg>
     <h3>لا توجد نتائج</h3>
     <p>جرب تعديل معايير البحث</p>
 </div>
 
-<!-- QR Modal -->
-<div class="modal-overlay" id="qrModal">
-    <div class="modal-box">
-        <div class="modal-head">
-            <h3>رمز QR التعريفي</h3>
-            <button class="btn-close-x" onclick="document.getElementById('qrModal').classList.remove('show')">&times;</button>
-        </div>
-        <div class="qr-container">
-            <h4 id="qrName">-</h4>
-            <p id="qrCode">-</p>
-            <canvas id="qrCanvas" width="200" height="200"></canvas>
-            <div class="qr-actions">
-                <button class="btn-qr-dl" onclick="downloadQR()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    تحميل
-                </button>
-                <button class="btn-cancel" onclick="document.getElementById('qrModal').classList.remove('show')">إغلاق</button>
-            </div>
-        </div>
-    </div>
-</div>
+@include('partials.admin-animal-qr-modal')
 
 <div class="toast" id="toast"></div>
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-<script>
-    let currentQRName = '';
-
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2800);
-    }
-
-    /* Filter */
-    function filterAnimals() {
-        const q   = document.getElementById('searchInput').value.trim().toLowerCase();
-        const cards = document.querySelectorAll('.animal-card');
-        let count = 0;
-
-        cards.forEach(card => {
-            const okQ   = !q || card.dataset.name.toLowerCase().includes(q);
-            card.style.display = okQ ? '' : 'none';
-            if (okQ) count++;
-        });
-
-        document.getElementById('emptyState').style.display = count === 0 ? 'block' : 'none';
-    }
-
-    document.getElementById('searchInput').addEventListener('input', filterAnimals);
-
-    /* Toggle visibility - server-side via form */
-
-    /* QR */
-    function openQR(name, sci, code, url) {
-        currentQRName = name;
-        document.getElementById('qrName').textContent = name;
-        document.getElementById('qrCode').textContent = 'رمز: ' + code + (sci ? ' | ' + sci : '');
-
-        QRCode.toCanvas(document.getElementById('qrCanvas'),
-            url || JSON.stringify({ name, scientific: sci, code, zoo: 'حديقة حيوان طرابلس' }),
-            { width: 200, margin: 1, color: { dark: '#1E293B', light: '#FFFFFF' } }
-        );
-        document.getElementById('qrModal').classList.add('show');
-    }
-
-    function downloadQR() {
-        const canvas = document.getElementById('qrCanvas');
-        const link   = document.createElement('a');
-        link.download = 'QR-' + currentQRName + '.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        showToast('⬇️ تم تحميل رمز QR');
-    }
-
-    document.getElementById('qrModal').addEventListener('click', e => {
-        if (e.target === document.getElementById('qrModal'))
-            document.getElementById('qrModal').classList.remove('show');
-    });
-</script>
+@include('partials.admin-animal-qr-scripts')
 @endsection

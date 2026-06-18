@@ -11,9 +11,11 @@
     .header-card {
         background: #fff; border: 1px solid var(--border); border-radius: 16px;
         padding: 1.5rem 2rem; margin-bottom: 1.5rem;
-        display: flex; justify-content: space-between; align-items: center;
+        display: flex; justify-content: space-between; align-items: center; gap: 12px;
+        flex-wrap: wrap;
         box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
     }
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .header-info h2 {
         font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0;
         display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
@@ -118,15 +120,59 @@
 
     .follow-card {
         background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-        padding: 1.2rem 1.4rem; margin-bottom: 1rem;
+        margin-bottom: 0.75rem;
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        overflow: hidden;
+        transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .follow-card-header {
-        display: flex; justify-content: space-between; align-items: center;
-        margin-bottom: 1rem; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9;
+    .follow-card.is-open {
+        border-color: #bbf7d0;
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.08);
     }
-    .follow-vet { font-size: 0.9rem; font-weight: 800; color: #0f172a; }
-    .follow-date { font-size: 0.75rem; color: #94a3b8; font-weight: 700; }
+    .follow-card-toggle {
+        width: 100%;
+        border: none;
+        background: #FAFBFC;
+        padding: 1rem 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        cursor: pointer;
+        text-align: right;
+        font-family: 'Cairo', sans-serif;
+    }
+    .follow-card-toggle:hover { background: #f4f7f4; }
+    .follow-card.is-open .follow-card-toggle { background: #f0fdf4; border-bottom: 1px solid #e2e8f0; }
+    .follow-card-main { flex: 1; min-width: 0; }
+    .follow-card-top {
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        margin-bottom: 6px;
+    }
+    .follow-vet { font-size: 0.92rem; font-weight: 800; color: #0f172a; }
+    .follow-date { font-size: 0.75rem; color: #94a3b8; font-weight: 700; white-space: nowrap; }
+    .follow-card-preview {
+        font-size: 0.84rem; color: #64748b; font-weight: 600; line-height: 1.5;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .follow-card-chevron {
+        width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+        background: #fff; border: 1px solid #e2e8f0; color: #64748b;
+        display: flex; align-items: center; justify-content: center;
+        transition: transform 0.2s, background 0.2s, color 0.2s;
+    }
+    .follow-card.is-open .follow-card-chevron {
+        transform: rotate(180deg);
+        background: #e6f4ea;
+        color: #2E7D32;
+        border-color: #bbf7d0;
+    }
+    .follow-card-body {
+        display: none;
+        padding: 1.1rem 1.2rem 1.2rem;
+        animation: fadeIn 0.25s ease;
+    }
+    .follow-card.is-open .follow-card-body { display: block; }
     .follow-field { margin-bottom: 1rem; }
     .follow-field:last-child { margin-bottom: 0; }
     .follow-field-label { font-size: 0.75rem; color: #64748b; font-weight: 800; margin-bottom: 6px; }
@@ -139,6 +185,169 @@
     .nutrition-block { margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0; }
     .nutrition-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 0.5rem; }
     @media (max-width: 600px) { .nutrition-grid { grid-template-columns: 1fr; } }
+
+    .follow-status-wrap { background: transparent !important; border: none !important; padding: 0 !important; }
+    .follow-status-badge {
+        padding: 5px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 700;
+        display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+    }
+    .follow-status-badge .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .follow-status-ready { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .follow-status-ready .dot { background: #22c55e; }
+    .follow-status-watch { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+    .follow-status-watch .dot { background: #f59e0b; }
+    .follow-status-no-response { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .follow-status-no-response .dot { background: #ef4444; }
+
+    .decision-panel {
+        margin-top: 1.5rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+        padding: 1.25rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .decision-panel-title { font-size: 1rem; font-weight: 800; color: #1e293b; margin-bottom: 1rem; }
+    .treatment-list {
+        margin: 0; padding: 12px 14px 12px 0; list-style: disc;
+        background: #f8fafc; border-radius: 8px; border: 1px solid #f1f5f9;
+    }
+    .treatment-list li {
+        margin: 0 1.4rem 0.5rem 0; font-size: 0.88rem; color: #1e293b;
+        font-weight: 700; line-height: 1.6;
+    }
+    .treatment-list li:last-child { margin-bottom: 0; }
+
+    .action-bar {
+        margin-top: 1.5rem;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 1.2rem 1.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+    .action-bar-title {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+    .action-bar-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .btn-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #2E7D32, #2d7a47);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(45,122,71,0.3);
+        text-decoration: none;
+    }
+    .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(45,122,71,0.35); }
+    .btn-submit-red {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #be123c, #e11d48);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(225,29,72,0.25);
+    }
+    .btn-submit-red:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(225,29,72,0.3); }
+    .btn-decision {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #c2410c, #ea580c);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(234,88,12,0.25);
+    }
+    .btn-decision:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(234,88,12,0.3); }
+
+    .modal-backdrop {
+        display: none; position: fixed; inset: 0;
+        background: rgba(15,23,42,0.55); backdrop-filter: blur(5px);
+        z-index: 1000; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .decision-box {
+        background: #fff; border-radius: 20px; width: 100%; max-width: 520px;
+        max-height: 90vh; overflow-y: auto;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        animation: fadeIn 0.25s ease;
+    }
+    .decision-header {
+        padding: 1.2rem 1.5rem; border-bottom: 1px solid #e2e8f0;
+        display: flex; align-items: center; justify-content: space-between;
+        background: #F8FAFC; border-radius: 20px 20px 0 0;
+    }
+    .decision-header h3 { font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0; }
+    .modal-close {
+        width: 32px; height: 32px; border-radius: 8px; background: #e2e8f0; border: none;
+        color: #64748b; display: flex; align-items: center; justify-content: center;
+        cursor: pointer; font-size: 1.1rem; font-weight: 700;
+    }
+    .decision-body { padding: 1.4rem 1.5rem; }
+    .decision-footer {
+        padding: 1.1rem 1.5rem; border-top: 1px solid #e2e8f0;
+        display: flex; gap: 10px; justify-content: flex-end; background: #F8FAFC;
+        border-radius: 0 0 20px 20px;
+    }
+    .decision-options { display: flex; flex-direction: column; gap: 10px; }
+    .decision-option {
+        display: flex; align-items: center; gap: 14px; padding: 1rem;
+        border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;
+    }
+    .decision-option:hover { border-color: #94a3b8; background: #f8fafc; }
+    .decision-option.selected { border-color: #2E7D32; background: #F0FDF4; }
+    .opt-icon {
+        width: 44px; height: 44px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0;
+    }
+    .opt-title { font-size: 0.95rem; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+    .opt-desc { font-size: 0.78rem; color: #64748b; font-weight: 600; line-height: 1.45; }
+    .decision-hint {
+        background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px;
+        padding: 10px 12px; font-size: 0.82rem; color: #1d4ed8; font-weight: 700;
+        margin-bottom: 1rem; line-height: 1.5;
+    }
+    .decision-note {
+        width: 100%; padding: 10px 12px; border: 1.5px solid #e2e8f0; border-radius: 10px;
+        font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600;
+        resize: vertical; min-height: 72px; outline: none; margin-top: 1rem;
+    }
+    .btn-cancel {
+        padding: 10px 18px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;
+        border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem;
+        font-weight: 800; cursor: pointer;
+    }
 </style>
 @endsection
 
@@ -162,10 +371,18 @@
             <span id="headerBadge"></span>
         </h2>
     </div>
-    <a href="{{ $vetBase }}/cases/hospital" class="btn-back">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-        العودة
-    </a>
+    <div class="header-actions">
+        @if($canIssueDecision ?? false)
+        <button type="button" class="btn-decision" onclick="openDecisionModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            إصدار قرار طبي
+        </button>
+        @endif
+        <a href="{{ $vetBase }}/cases/hospital" class="btn-back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            العودة
+        </a>
+    </div>
 </div>
 
 <div class="tabs-container">
@@ -190,50 +407,67 @@
         </div>
 
         <div class="summary-layout">
+            <div class="animal-card">
+                <h4 class="animal-card-title">ملخص الحالة</h4>
+                <div class="q-row">
+                    <span class="q-label">رقم الحيوان</span>
+                    <span class="q-value id-tag" id="sAnimalId">—</span>
+                </div>
+                <div class="q-row">
+                    <span class="q-label">نوع الحيوان</span>
+                    <span class="q-value" id="sAnimalType">—</span>
+                </div>
+                <div class="q-row" id="sNameRow" style="display:none;">
+                    <span class="q-label">اسم الحيوان</span>
+                    <span class="q-value" id="sAnimalName">—</span>
+                </div>
+                <div class="q-row" id="sMarkRow" style="display:none;">
+                    <span class="q-label">العلامة المميزة</span>
+                    <span class="q-value" id="sMark">—</span>
+                </div>
+                <div class="q-row">
+                    <span class="q-label">الجنس</span>
+                    <span class="q-value" id="sGender">—</span>
+                </div>
+                <div class="q-row">
+                    <span class="q-label">العمر</span>
+                    <span class="q-value" id="sAge">—</span>
+                </div>
+                <div class="q-row">
+                    <span class="q-label">المجموعة</span>
+                    <span class="q-value" id="sGroup">—</span>
+                </div>
+                <div class="q-row">
+                    <span class="q-label">تاريخ دخول المستشفى</span>
+                    <span class="q-value" id="sAdmissionDate">—</span>
+                </div>
+                <div class="q-row" id="sDischargeDateRow" style="display:none;">
+                    <span class="q-label">تاريخ الخروج</span>
+                    <span class="q-value" id="sDischargeDate">—</span>
+                </div>
+            </div>
+
             <div>
-                <div class="animal-card">
-                    <h4 class="animal-card-title">ملخص الحالة</h4>
-                    <div class="q-row">
-                        <span class="q-label">رقم الحيوان</span>
-                        <span class="q-value id-tag" id="sAnimalId">—</span>
-                    </div>
-                    <div class="q-row">
-                        <span class="q-label">نوع الحيوان</span>
-                        <span class="q-value" id="sAnimalType">—</span>
-                    </div>
-                    <div class="q-row" id="sNameRow" style="display:none;">
-                        <span class="q-label">اسم الحيوان</span>
-                        <span class="q-value" id="sAnimalName">—</span>
-                    </div>
-                    <div class="q-row" id="sMarkRow" style="display:none;">
-                        <span class="q-label">العلامة المميزة</span>
-                        <span class="q-value" id="sMark">—</span>
-                    </div>
-                    <div class="q-row">
-                        <span class="q-label">الجنس</span>
-                        <span class="q-value" id="sGender">—</span>
-                    </div>
-                    <div class="q-row">
-                        <span class="q-label">العمر</span>
-                        <span class="q-value" id="sAge">—</span>
-                    </div>
-                    <div class="q-row">
-                        <span class="q-label">المجموعة</span>
-                        <span class="q-value" id="sGroup">—</span>
-                    </div>
-                    <div class="q-row">
-                        <span class="q-label">تاريخ دخول المستشفى</span>
-                        <span class="q-value" id="sAdmissionDate">—</span>
-                    </div>
-                    <div class="q-row" id="sDischargeDateRow" style="display:none;">
-                        <span class="q-label">تاريخ الخروج</span>
-                        <span class="q-value" id="sDischargeDate">—</span>
-                    </div>
+                <div class="notes-panel">
+                    <div class="notes-panel-title">الملاحظات المسجلة عن الحيوان</div>
+                    <div class="notes-panel-body" id="sNotes">—</div>
                 </div>
 
-            <div class="notes-panel">
-                <div class="notes-panel-title">الملاحظات المسجلة عن الحيوان</div>
-                <div class="notes-panel-body" id="sNotes">—</div>
+                <div class="decision-panel" id="decisionPanel" style="display:none;">
+                    <div class="decision-panel-title">بيانات القرار الطبي</div>
+                    <div class="q-row">
+                        <span class="q-label">نوع القرار</span>
+                        <span class="q-value" id="sDecisionType">—</span>
+                    </div>
+                    <div class="q-row">
+                        <span class="q-label">تاريخ القرار</span>
+                        <span class="q-value" id="sDecisionDate">—</span>
+                    </div>
+                    <div class="q-row" style="flex-direction:column; align-items:stretch; gap:8px;">
+                        <span class="q-label">العلاجات المسجلة خلال فترة الإقامة</span>
+                        <ul class="treatment-list" id="sDecisionTreatments"></ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -244,11 +478,91 @@
     </div>
 </div>
 
+@if($canIssueDecision ?? false)
+<div class="modal-backdrop" id="decisionModal">
+    <div class="decision-box">
+        <div class="decision-header">
+            <h3>إصدار قرار طبي — {{ $hospitalCase->animal?->name ?: $hospitalCase->animal?->species }}</h3>
+            <button type="button" class="modal-close" onclick="closeDecisionModal()">✕</button>
+        </div>
+        <form method="POST" action="{{ $vetBase }}/cases/hospital/{{ $hospitalCase->case_number }}/issue-decision" id="decisionForm" onsubmit="return confirmDecisionSubmit(event)">
+            @csrf
+            <input type="hidden" name="decision" id="decisionInput" value="{{ $recommendedDecision ?? 'discharge' }}">
+            <div class="decision-body">
+                @if($recommendedDecision)
+                <div class="decision-hint" id="decisionHint">
+                    توصية الطبيب: {{ $recommendedDecision === 'discharge' ? 'جاهز للخروج' : 'لا يستجيب للعلاج' }} — يمكنك اختيار أي قرار تراه مناسباً.
+                </div>
+                @endif
+                <p style="font-size:0.83rem; color:#64748b; font-weight:600; margin:0 0 1rem; line-height:1.6;">
+                    اختر القرار الطبي النهائي للحالة. لن يُفرض عليك قرار محدد.
+                </p>
+                <div class="decision-options">
+                    <div class="decision-option" data-decision="discharge" onclick="selectDecisionOption(this)">
+                        <div class="opt-icon" style="background:#f0fdf4;">🏠</div>
+                        <div>
+                            <div class="opt-title">خروج بعد العلاج</div>
+                            <div class="opt-desc">الحيوان تعافى وجاهز للعودة إلى موقعه في الحديقة</div>
+                        </div>
+                    </div>
+                    <div class="decision-option" data-decision="slaughter" onclick="selectDecisionOption(this)">
+                        <div class="opt-icon" style="background:#fef2f2;">⚠️</div>
+                        <div>
+                            <div class="opt-title">ذبح اضطراري</div>
+                            <div class="opt-desc">الحالة تستدعي الذبح الاضطراري وفق الإجراءات الطبية</div>
+                        </div>
+                    </div>
+                </div>
+                <textarea name="note" class="decision-note" placeholder="ملاحظة القرار (اختياري)"></textarea>
+            </div>
+            <div class="decision-footer">
+                <button type="button" class="btn-cancel" onclick="closeDecisionModal()">إلغاء</button>
+                <button type="submit" class="btn-submit">تأكيد القرار</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
+
 @endsection
 
 @section('scripts')
 <script>
     const caseId = '{{ $id ?? 'HC-2025-001' }}';
+    const serverCase = @json($caseData ?? null);
+    const recommendedDecision = @json($recommendedDecision ?? 'discharge');
+
+    function openDecisionModal() {
+        document.getElementById('decisionModal')?.classList.add('open');
+        const initial = recommendedDecision || 'discharge';
+        document.getElementById('decisionInput').value = initial;
+        document.querySelectorAll('.decision-option').forEach(option => {
+            option.classList.toggle('selected', option.dataset.decision === initial);
+        });
+    }
+
+    function closeDecisionModal() {
+        document.getElementById('decisionModal')?.classList.remove('open');
+    }
+
+    function selectDecisionOption(el) {
+        document.querySelectorAll('.decision-option').forEach(option => option.classList.remove('selected'));
+        el.classList.add('selected');
+        document.getElementById('decisionInput').value = el.dataset.decision;
+    }
+
+    function confirmDecisionSubmit(event) {
+        const decision = document.getElementById('decisionInput').value;
+        const labels = {
+            discharge: 'خروج بعد العلاج',
+            slaughter: 'ذبح اضطراري',
+        };
+        return confirm('تأكيد القرار: ' + (labels[decision] || decision) + '؟');
+    }
+
+    document.getElementById('decisionModal')?.addEventListener('click', function (e) {
+        if (e.target === this) closeDecisionModal();
+    });
 
     const hospitalDB = {
         'HC-2025-001': {
@@ -265,13 +579,15 @@
                     diagnosis: 'التئام الجرح بنسبة 90%. الحالة مستقرة وجاهزة للخروج.',
                     treatment: 'إيقاف المضاد الحيوي. متابعة الجرح موضعياً فقط.',
                     note: 'يُوصى بإعادة الحيوان إلى حظيرته خلال 48 ساعة.',
-                    nutrition: { text: 'لحم مطبوخ جيداً مع مكملات فيتامين', start: '2026-06-06', end: '2026-06-12', note: 'تجنب الأطعمة النيئة' }
+                    nutrition: { text: 'لحم مطبوخ جيداً مع مكملات فيتامين', start: '2026-06-06', end: '2026-06-12' },
+                    status: 'جاهز للخروج', statusClass: 'follow-status-ready'
                 },
                 {
                     date: '2026-05-30 — 02:00 م', vet: 'د. فاطمة الزهراء',
                     diagnosis: 'جرح عميق في اليد اليسرى مفتوح مع عدوى بسيطة.',
                     treatment: 'تنظيف الجرح، ضمادات يومية، مضاد حيوي واسع الطيف.',
-                    note: 'بدء العلاج داخل المستشفى.', nutrition: null
+                    note: 'بدء العلاج داخل المستشفى.', nutrition: null,
+                    status: 'قيد العلاج', statusClass: 'follow-status-watch'
                 }
             ]
         },
@@ -284,7 +600,7 @@
             animalEmoji: '🦒', gender: 'أنثى', age: '4 سنوات', group: 'الغزلان',
             admissionDate: '2026-06-02', dischargeDate: '',
             followUps: [
-                { date: '2026-06-04', vet: 'د. فاطمة الزهراء', diagnosis: 'تحسن طفيف في الشهية.', treatment: 'مكملات غذائية ومسكنات.', note: '', nutrition: null }
+                { date: '2026-06-04', vet: 'د. فاطمة الزهراء', diagnosis: 'تحسن طفيف في الشهية.', treatment: 'مكملات غذائية ومسكنات.', note: '', nutrition: null, status: 'قيد العلاج', statusClass: 'follow-status-watch' }
             ]
         },
         'HC-2025-003': {
@@ -296,7 +612,7 @@
             animalEmoji: '🦅', gender: 'ذكر', age: '3 سنوات', group: 'الطيور',
             admissionDate: '2026-05-29', dischargeDate: '',
             followUps: [
-                { date: '2026-06-03', vet: 'د. خالد العربي', diagnosis: 'لا تحسن ملحوظ.', treatment: 'تعديل الجرعة العلاجية.', note: 'مراجعة خلال 48 ساعة.', nutrition: null }
+                { date: '2026-06-03', vet: 'د. خالد العربي', diagnosis: 'لا تحسن ملحوظ.', treatment: 'تعديل الجرعة العلاجية.', note: 'مراجعة خلال 48 ساعة.', nutrition: null, status: 'لا يستجيب للعلاج', statusClass: 'follow-status-no-response' }
             ]
         },
         'HC-2025-006': {
@@ -307,11 +623,58 @@
             animalId: '#ANM-042', animalType: 'شمبانزي', animalName: 'بونغو', mark: '',
             animalEmoji: '🐒', gender: 'ذكر', age: '8 سنوات', group: 'القرود',
             admissionDate: '2026-05-10', dischargeDate: '2026-05-20',
+            decisionType: 'خروج بعد العلاج',
             followUps: [
-                { date: '2026-05-20', vet: 'د. خالد العربي', diagnosis: 'شفاء تام.', treatment: 'إيقاف العلاج.', note: 'خروج بعد العلاج.', nutrition: null }
+                { date: '2026-05-20', vet: 'د. خالد العربي', diagnosis: 'شفاء تام.', treatment: 'إيقاف العلاج.', note: 'خروج بعد العلاج.', nutrition: null, status: 'جاهز للخروج', statusClass: 'follow-status-ready' },
+                { date: '2026-05-15', vet: 'د. خالد العربي', diagnosis: 'تحسن في الأعراض المعوية.', treatment: 'مضاد حيوي ومحاليل وريدية.', note: '', nutrition: null, status: 'قيد العلاج', statusClass: 'follow-status-watch' },
+                { date: '2026-05-10', vet: 'د. فاطمة الزهراء', diagnosis: 'التهاب معوي حاد.', treatment: 'عزل، سوائل وريدية، مضاد للقيء.', note: 'بدء العلاج داخل المستشفى.', nutrition: null, status: 'قيد العلاج', statusClass: 'follow-status-watch' }
+            ]
+        },
+        'HC-2025-007': {
+            statusClass: 'status-slaughter', statusText: 'ذبح اضطراري',
+            vet: 'د. فاطمة الزهراء',
+            reason: 'إصابة خطيرة في الحوض مع عدوى متقدمة.',
+            notes: 'صدر قرار الذبح الاضطراري بعد فشل الاستجابة للعلاج.',
+            animalId: '#ANM-042', animalType: 'مها أبو حراب', animalName: '', mark: '',
+            animalEmoji: '🦌', gender: 'أنثى', age: '5 سنوات', group: 'الغزلان',
+            admissionDate: '2026-05-25', dischargeDate: '2026-05-27',
+            decisionType: 'ذبح اضطراري',
+            followUps: [
+                { date: '2026-05-27', vet: 'د. فاطمة الزهراء', diagnosis: 'تدهور الحالة ولا استجابة للعلاج.', treatment: 'مسكنات قوية ومحاليل داعمة.', note: 'توصية بالذبح الاضطراري.', nutrition: null, status: 'لا يستجيب للعلاج', statusClass: 'follow-status-no-response' },
+                { date: '2026-05-26', vet: 'د. فاطمة الزهراء', diagnosis: 'عدوى موضعية متقدمة.', treatment: 'مضاد حيوي واسع الطيف وضمادات يومية.', note: '', nutrition: null, status: 'قيد العلاج', statusClass: 'follow-status-watch' }
             ]
         }
     };
+
+    function collectTreatments(followUps) {
+        const seen = new Set();
+        const list = [];
+        (followUps || []).forEach(f => {
+            const treatment = (f.treatment || '').trim();
+            if (treatment && !seen.has(treatment)) {
+                seen.add(treatment);
+                list.push(treatment);
+            }
+        });
+        return list;
+    }
+
+    function renderDecisionPanel(d) {
+        const panel = document.getElementById('decisionPanel');
+        const treatments = collectTreatments(d.followUps);
+
+        if (!d.dischargeDate || !treatments.length) {
+            panel.style.display = 'none';
+            return;
+        }
+
+        document.getElementById('sDecisionType').textContent = d.decisionType || d.statusText || '—';
+        document.getElementById('sDecisionDate').textContent = d.dischargeDate;
+        document.getElementById('sDecisionTreatments').innerHTML = treatments
+            .map(t => `<li>${t}</li>`)
+            .join('');
+        panel.style.display = 'block';
+    }
 
     function switchTab(n, btn) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -320,71 +683,118 @@
         btn.classList.add('active');
     }
 
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function toggleFollowCard(button) {
+        const card = button.closest('.follow-card');
+        if (!card) return;
+
+        const isOpen = card.classList.contains('is-open');
+        document.querySelectorAll('#followList .follow-card.is-open').forEach(item => {
+            item.classList.remove('is-open');
+            item.querySelector('.follow-card-toggle')?.setAttribute('aria-expanded', 'false');
+        });
+
+        if (!isOpen) {
+            card.classList.add('is-open');
+            button.setAttribute('aria-expanded', 'true');
+        }
+    }
+
     function renderFollowUps(list) {
         const container = document.getElementById('followList');
         if (!list || !list.length) {
             container.innerHTML = '<p style="color:#64748b;font-weight:700;text-align:center;padding:2rem;">لا توجد متابعات مسجلة.</p>';
             return;
         }
-        container.innerHTML = list.map(f => {
+        container.innerHTML = list.map((f, index) => {
             let nutritionHtml = '';
             if (f.nutrition) {
                 nutritionHtml = `
                     <div class="nutrition-block">
                         <div class="follow-field">
                             <div class="follow-field-label">التوصيات الغذائية العلاجية</div>
-                            <div class="follow-field-value">${f.nutrition.text}</div>
+                            <div class="follow-field-value">${escapeHtml(f.nutrition.text)}</div>
                         </div>
                         <div class="nutrition-grid">
                             <div class="follow-field">
                                 <div class="follow-field-label">تاريخ البداية</div>
-                                <div class="follow-field-value">${f.nutrition.start}</div>
+                                <div class="follow-field-value">${escapeHtml(f.nutrition.start)}</div>
                             </div>
                             <div class="follow-field">
                                 <div class="follow-field-label">تاريخ النهاية</div>
-                                <div class="follow-field-value">${f.nutrition.end}</div>
+                                <div class="follow-field-value">${escapeHtml(f.nutrition.end)}</div>
                             </div>
                         </div>
-                        ${f.nutrition.note ? `
-                        <div class="follow-field" style="margin-top:10px;">
-                            <div class="follow-field-label">ملاحظة التوصية</div>
-                            <div class="follow-field-value">${f.nutrition.note}</div>
-                        </div>` : ''}
                     </div>`;
             }
+
+            const preview = f.diagnosis || f.treatment || 'متابعة طبية';
+            const openClass = index === 0 ? ' is-open' : '';
+            const statusHtml = f.status ? `
+                <div class="follow-field">
+                    <div class="follow-field-label">الحالة</div>
+                    <div class="follow-field-value follow-status-wrap">
+                        <span class="follow-status-badge ${f.statusClass || ''}"><span class="dot"></span>${escapeHtml(f.status)}</span>
+                    </div>
+                </div>` : '';
+
             return `
-                <div class="follow-card">
-                    <div class="follow-card-header">
-                        <div>
-                            <div class="follow-vet">${f.vet}</div>
-                            <div class="follow-date">${f.date}</div>
+                <div class="follow-card${openClass}">
+                    <button
+                        type="button"
+                        class="follow-card-toggle"
+                        aria-expanded="${index === 0 ? 'true' : 'false'}"
+                        onclick="toggleFollowCard(this)"
+                    >
+                        <div class="follow-card-main">
+                            <div class="follow-card-top">
+                                <div class="follow-vet">${escapeHtml(f.vet)}</div>
+                                <div class="follow-date">${escapeHtml(f.date)}</div>
+                            </div>
+                            <div class="follow-card-preview">${escapeHtml(preview)}</div>
                         </div>
+                        <span class="follow-card-chevron" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        </span>
+                    </button>
+                    <div class="follow-card-body">
+                        <div class="follow-field">
+                            <div class="follow-field-label">التشخيص <span class="req">*</span></div>
+                            <div class="follow-field-value">${escapeHtml(f.diagnosis)}</div>
+                        </div>
+                        <div class="follow-field">
+                            <div class="follow-field-label">العلاج <span class="req">*</span></div>
+                            <div class="follow-field-value">${escapeHtml(f.treatment)}</div>
+                        </div>
+                        ${f.note ? `
+                        <div class="follow-field">
+                            <div class="follow-field-label">الملاحظات</div>
+                            <div class="follow-field-value">${escapeHtml(f.note)}</div>
+                        </div>` : ''}
+                        ${nutritionHtml}
+                        ${statusHtml}
                     </div>
-                    <div class="follow-field">
-                        <div class="follow-field-label">التشخيص <span class="req">*</span></div>
-                        <div class="follow-field-value">${f.diagnosis}</div>
-                    </div>
-                    <div class="follow-field">
-                        <div class="follow-field-label">العلاج <span class="req">*</span></div>
-                        <div class="follow-field-value">${f.treatment}</div>
-                    </div>
-                    ${f.note ? `
-                    <div class="follow-field">
-                        <div class="follow-field-label">الملاحظات</div>
-                        <div class="follow-field-value">${f.note}</div>
-                    </div>` : ''}
-                    ${nutritionHtml}
                 </div>`;
         }).join('');
     }
 
     window.onload = function() {
-        const d = hospitalDB[caseId] || hospitalDB['HC-2025-001'];
+        const d = serverCase || hospitalDB[caseId] || hospitalDB['HC-2025-001'];
 
         document.getElementById('headerBadge').innerHTML =
             '<span class="badge ' + d.statusClass + '"><span class="dot"></span>' + d.statusText + '</span>';
 
-        document.getElementById('topAnimalPhoto').textContent = d.animalEmoji;
+        document.getElementById('topAnimalPhoto').innerHTML = d.animalPhotoUrl
+            ? `<img src="${escapeHtml(d.animalPhotoUrl)}" alt="">`
+            : (d.animalEmoji || '🐾');
         document.getElementById('topAnimalName').textContent = d.animalName || d.animalType;
         document.getElementById('topVet').textContent = d.vet;
 
@@ -410,6 +820,7 @@
         }
 
         renderFollowUps(d.followUps);
+        renderDecisionPanel(d);
     };
 </script>
 @endsection

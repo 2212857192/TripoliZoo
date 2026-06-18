@@ -2,6 +2,7 @@
     'emptyLabel' => null,
     'prompt' => null,
     'withValues' => false,
+    'selected' => null,
 ])
 
 @if ($prompt)
@@ -12,8 +13,8 @@
 
 @foreach (animal_groups() as $group)
     @if ($withValues)
-        <option value="{{ $group }}">{{ $group }}</option>
+        <option value="{{ $group }}" @selected($selected === $group)>{{ $group }}</option>
     @else
-        <option>{{ $group }}</option>
+        <option @selected($selected === $group)>{{ $group }}</option>
     @endif
 @endforeach

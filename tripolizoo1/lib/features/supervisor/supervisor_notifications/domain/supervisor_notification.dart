@@ -28,7 +28,7 @@ class SupervisorNotification {
     this.targetRoute,
   });
 
-  final String id;
+  final int id;
   final SupervisorNotificationType type;
   final String title;
   final String description;

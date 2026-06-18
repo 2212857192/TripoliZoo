@@ -101,6 +101,10 @@
         border-color: #cbd5e1;
     }
 
+    .notification-dropdown-wrapper {
+        position: relative;
+    }
+
     .notification-badge {
         position: absolute;
         top: 9px;
@@ -130,9 +134,25 @@
         position: relative;
         display: flex;
         align-items: center;
-        gap: 10px;
         padding-left: 14px;
         border-left: 1px solid var(--border);
+    }
+
+    .user-menu-trigger {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: none;
+        background: transparent;
+        padding: 0;
+        cursor: pointer;
+        font: inherit;
+        color: inherit;
+    }
+
+    .user-menu-trigger:hover .user-menu-chevron {
+        background: #f1f5f9;
+        color: #475569;
     }
 
     .user-menu-info {
@@ -168,25 +188,18 @@
     .user-menu-chevron {
         width: 28px;
         height: 28px;
-        border: none;
-        background: transparent;
         color: #94a3b8;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        cursor: pointer;
         border-radius: 6px;
         transition: all 0.2s;
         flex-shrink: 0;
     }
 
-    .user-menu-chevron:hover {
-        background: #f1f5f9;
-        color: #475569;
-    }
-
-    .user-menu-chevron.open {
+    .user-menu-trigger[aria-expanded="true"] .user-menu-chevron {
         color: #334155;
+        background: #f1f5f9;
     }
 
     .user-menu-dropdown {
@@ -209,7 +222,8 @@
     }
 
     .user-menu-dropdown a,
-    .user-menu-dropdown button[type="submit"] {
+    .user-menu-dropdown button[type="submit"],
+    .user-menu-dropdown .user-menu-action {
         display: flex;
         align-items: center;
         gap: 8px;
@@ -219,16 +233,27 @@
         font-family: 'Cairo', sans-serif;
         font-size: 0.82rem;
         font-weight: 700;
-        color: #dc2626;
         transition: background 0.2s;
         width: 100%;
         background: none;
         border: none;
         cursor: pointer;
+        text-align: right;
     }
 
-    .user-menu-dropdown a:hover,
-    .user-menu-dropdown button[type="submit"]:hover {
+    .user-menu-dropdown .user-menu-action {
+        color: #334155;
+    }
+
+    .user-menu-dropdown .user-menu-action:hover {
+        background: #f8fafc;
+    }
+
+    .user-menu-dropdown .portal-logout-btn {
+        color: #dc2626;
+    }
+
+    .user-menu-dropdown .portal-logout-btn:hover {
         background: #fef2f2;
     }
 
@@ -397,6 +422,150 @@
 
     .date-filter-picker-wrap input {
         width: 100%;
+    }
+
+    /* ── مودال تغيير كلمة المرور ── */
+    .portal-modal-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(4px);
+        z-index: 6000;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .portal-modal-backdrop.open {
+        display: flex;
+    }
+
+    .portal-modal-box {
+        width: 100%;
+        max-width: 440px;
+        background: #fff;
+        border-radius: 18px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+        overflow: hidden;
+    }
+
+    .portal-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.1rem 1.25rem;
+        border-bottom: 1px solid #f1f5f9;
+        background: #fafbfc;
+    }
+
+    .portal-modal-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .portal-modal-close {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 8px;
+        background: #fff;
+        color: #64748b;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .portal-modal-close:hover {
+        background: #f1f5f9;
+        color: #334155;
+    }
+
+    .portal-modal-body {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+    }
+
+    .portal-modal-hint {
+        margin: 0;
+        font-size: 0.82rem;
+        color: #64748b;
+        font-weight: 600;
+        line-height: 1.6;
+    }
+
+    .portal-field label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: #475569;
+    }
+
+    .portal-field input {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 600;
+        outline: none;
+    }
+
+    .portal-field input:focus {
+        border-color: #2E7D32;
+        box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12);
+    }
+
+    .portal-modal-error {
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+        font-size: 0.82rem;
+        font-weight: 700;
+        line-height: 1.5;
+    }
+
+    .portal-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.65rem;
+        padding: 0.9rem 1.25rem 1.15rem;
+        border-top: 1px solid #f1f5f9;
+        background: #fff;
+    }
+
+    .portal-modal-btn {
+        border: none;
+        border-radius: 10px;
+        padding: 10px 16px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.84rem;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    .portal-modal-btn.secondary {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .portal-modal-btn.primary {
+        background: #2E7D32;
+        color: #fff;
+    }
+
+    .portal-modal-btn:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
     }
 
 </style>

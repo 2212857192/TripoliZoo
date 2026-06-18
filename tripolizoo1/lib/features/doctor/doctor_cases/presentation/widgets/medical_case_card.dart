@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:tripolizoo/features/doctor/doctor_cases/domain/medical_case.dart';
 import 'package:tripolizoo/features/doctor/doctor_cases/presentation/widgets/medical_case_status_badge.dart';
 import 'package:tripolizoo/features/doctor/doctor_cases/presentation/widgets/medical_case_type_badge.dart';
+import 'package:tripolizoo/features/doctor/shared/doctor_ui.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
 
 class MedicalCaseCard extends StatelessWidget {
@@ -15,25 +16,16 @@ class MedicalCaseCard extends StatelessWidget {
   final MedicalCase medicalCase;
   final VoidCallback onViewDetails;
 
-  static const _border = Color(0xFFE5E7EB);
-  static const _muted = Color(0xFF6B7280);
-
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(DoctorUi.cardRadius),
+        border: Border.all(color: DoctorUi.border, width: 1.5),
+        boxShadow: DoctorUi.cardShadow,
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -44,7 +36,7 @@ class MedicalCaseCard extends StatelessWidget {
                 style: GoogleFonts.cairo(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
-                  color: _muted,
+                  color: DoctorUi.muted,
                 ),
               ),
               const Spacer(),
@@ -57,7 +49,7 @@ class MedicalCaseCard extends StatelessWidget {
             style: GoogleFonts.cairo(
               fontSize: 17,
               fontWeight: FontWeight.w900,
-              color: const Color(0xFF1A1A1A),
+              color: DoctorUi.textPrimary,
               height: 1.2,
             ),
           ),
@@ -67,7 +59,7 @@ class MedicalCaseCard extends StatelessWidget {
             style: GoogleFonts.cairo(
               fontSize: 12.5,
               fontWeight: FontWeight.w600,
-              color: _muted,
+              color: DoctorUi.textSecondary,
             ),
           ),
           const SizedBox(height: 10),
@@ -76,7 +68,7 @@ class MedicalCaseCard extends StatelessWidget {
             style: GoogleFonts.cairo(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF374151),
+              color: DoctorUi.textSecondary,
               height: 1.45,
             ),
           ),
@@ -89,34 +81,51 @@ class MedicalCaseCard extends StatelessWidget {
                   style: GoogleFonts.cairo(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w600,
-                    color: _muted,
+                    color: DoctorUi.muted,
                   ),
                 ),
               ),
               MedicalCaseStatusBadge(status: medicalCase.status),
             ],
           ),
-          const SizedBox(height: 14),
-          Material(
-            color: const Color(0xFFF0F4F0),
-            borderRadius: BorderRadius.circular(12),
-            child: InkWell(
-              onTap: onViewDetails,
+          const SizedBox(height: 16),
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.06),
               borderRadius: BorderRadius.circular(12),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: _border),
-                ),
-                child: Text(
-                  'عرض التفاصيل',
-                  style: GoogleFonts.cairo(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primaryDark,
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.12),
+                width: 1.2,
+              ),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              child: InkWell(
+                onTap: onViewDetails,
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 11),
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'عرض تفاصيل الحالة',
+                        style: GoogleFonts.cairo(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primaryDark,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.chevron_left_rounded,
+                        color: AppColors.primaryDark,
+                        size: 16,
+                      ),
+                    ],
                   ),
                 ),
               ),

@@ -47,6 +47,9 @@
     .content-area .user-menu-dropdown a,
     .topbar .portal-logout-form,
     .topbar .portal-logout-btn,
+    .topbar .user-menu-change-password,
+    #changePasswordModal,
+    #changePasswordModal .portal-modal-btn,
     .sidebar .portal-logout-form,
     .sidebar .portal-logout-btn {
         display: inline-flex !important;
@@ -171,9 +174,10 @@
             if (e.target.closest('.seg-tab')) return;
             if (e.target.closest('.tab-btn')) return;
             if (e.target.closest('.action-btn')) return;
-            if (e.target.closest('.user-menu-chevron')) return;
+            if (e.target.closest('.user-menu-trigger')) return;
             if (e.target.closest('.topbar-user-menu')) return;
             if (e.target.closest('.portal-logout-form')) return;
+            if (e.target.closest('#changePasswordModal')) return;
             if (e.target.closest('.sidebar-footer')) return;
             if (e.target.closest('.modal-tab')) return;
             if (e.target.closest('.btn-tbl.view')) return;

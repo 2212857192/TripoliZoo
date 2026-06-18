@@ -74,7 +74,6 @@ class MainShell extends StatelessWidget {
                       child: _NavItem(
                         icon: Icons.map_outlined,
                         activeIcon: Icons.map_rounded,
-                        imageAsset: 'assets/images/map_nav_icon.png',
                         label: 'الخريطة',
                         selected: idx == 1,
                         onTap: () => _goBranch(context, 1),

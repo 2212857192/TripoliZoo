@@ -1,8 +1,13 @@
+import 'dart:io' show File;
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:tripolizoo/features/supervisor/data/supervisor_animals_data.dart';
 import 'package:tripolizoo/features/supervisor/shared/widgets/supervisor_form_sheet.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_health_reports/presentation/health_reports_provider.dart';
+import 'package:tripolizoo/shared/media/image_attachment_picker.dart';
 
 class HealthReportFormSheet extends StatefulWidget {
   const HealthReportFormSheet({
@@ -27,9 +32,10 @@ class _HealthReportFormSheetState extends State<HealthReportFormSheet> {
   final _formKey = GlobalKey<FormState>();
   final _scrollController = ScrollController();
   final _description = TextEditingController();
+  final _attachmentPicker = ImageAttachmentPicker();
 
   SupervisorAnimal? _selectedAnimal;
-  bool _hasAttachment = false;
+  XFile? _attachment;
   bool _loading = false;
 
   @override
@@ -39,21 +45,50 @@ class _HealthReportFormSheetState extends State<HealthReportFormSheet> {
     super.dispose();
   }
 
+  Future<void> _pickAttachment() async {
+    try {
+      final image = await _attachmentPicker.pickFromGallery();
+
+      if (!mounted || image == null) return;
+
+      setState(() => _attachment = image);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذّر اختيار الصورة. حاول مرة أخرى.')),
+      );
+    }
+  }
+
+  void _removeAttachment() {
+    setState(() => _attachment = null);
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    await Future.delayed(const Duration(milliseconds: 450));
 
     if (!mounted) return;
     final animal = _selectedAnimal!;
-    context.read<HealthReportsProvider>().addReport(
-          animalId: animal.id,
-          animalType: animal.type ?? animal.name,
-          description: _description.text,
-          hasAttachment: _hasAttachment,
-        );
+    final provider = context.read<HealthReportsProvider>();
+    final report = await provider.addReport(
+      animalId: animal.id,
+      animalType: animal.type ?? animal.name,
+      description: _description.text,
+      attachment: _attachment,
+      isUrgent: widget.urgent,
+    );
 
     if (!mounted) return;
+    setState(() => _loading = false);
+
+    if (report == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذّر إرسال البلاغ. حاول مرة أخرى.')),
+      );
+      return;
+    }
+
     Navigator.of(context).pop(true);
   }
 
@@ -101,7 +136,7 @@ class _HealthReportFormSheetState extends State<HealthReportFormSheet> {
         SupervisorFormDropdown<SupervisorAnimal>(
           value: _selectedAnimal,
           hint: 'اختر رقم الحيوان',
-          items: SupervisorAnimalsData.groupAnimals,
+          items: context.watch<HealthReportsProvider>().groupAnimals,
           itemLabel: (a) => a.label,
           onChanged: (v) => setState(() => _selectedAnimal = v),
           validator: (v) => v == null ? 'اختر رقم الحيوان' : null,
@@ -117,10 +152,96 @@ class _HealthReportFormSheetState extends State<HealthReportFormSheet> {
         const SizedBox(height: 16),
         const SupervisorFormLabel('صورة / مرفق'),
         SupervisorAttachmentButton(
-          attached: _hasAttachment,
-          onTap: () => setState(() => _hasAttachment = !_hasAttachment),
+          attached: _attachment != null,
+          onTap: _pickAttachment,
         ),
+        if (_attachment != null) ...[
+          const SizedBox(height: 12),
+          _AttachmentPreview(
+            attachment: _attachment!,
+            onRemove: _removeAttachment,
+          ),
+        ],
       ],
+    );
+  }
+}
+
+class _AttachmentPreview extends StatelessWidget {
+  const _AttachmentPreview({
+    required this.attachment,
+    required this.onRemove,
+  });
+
+  final XFile attachment;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(14),
+      child: Stack(
+        children: [
+          _buildImage(),
+          Positioned(
+            top: 8,
+            left: 8,
+            child: Material(
+              color: Colors.black54,
+              shape: const CircleBorder(),
+              child: InkWell(
+                onTap: onRemove,
+                customBorder: const CircleBorder(),
+                child: const Padding(
+                  padding: EdgeInsets.all(6),
+                  child: Icon(
+                    Icons.close_rounded,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildImage() {
+    if (!kIsWeb && attachment.path.isNotEmpty) {
+      return Image.file(
+        File(attachment.path),
+        height: 180,
+        width: double.infinity,
+        fit: BoxFit.cover,
+      );
+    }
+
+    return FutureBuilder<List<int>>(
+      future: attachment.readAsBytes(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const SizedBox(
+            height: 180,
+            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          );
+        }
+
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const SizedBox(
+            height: 120,
+            child: Center(child: Text('تعذّر عرض الصورة')),
+          );
+        }
+
+        return Image.memory(
+          Uint8List.fromList(snapshot.data!),
+          height: 180,
+          width: double.infinity,
+          fit: BoxFit.cover,
+        );
+      },
     );
   }
 }

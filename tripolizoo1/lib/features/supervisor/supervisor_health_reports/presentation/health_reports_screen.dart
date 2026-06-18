@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tripolizoo/features/supervisor/shared/supervisor_form_launcher.dart';
+import 'package:tripolizoo/features/supervisor/shared/supervisor_ui.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_health_reports/domain/health_report.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_health_reports/presentation/forms/health_report_form_sheet.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_health_reports/presentation/health_report_detail_sheet.dart';
@@ -18,12 +20,18 @@ class HealthReportsScreen extends StatefulWidget {
 }
 
 class _HealthReportsScreenState extends State<HealthReportsScreen> {
-  static const _bg = Color(0xFFF5F5F5);
-  static const _border = Color(0xFFE5E7EB);
-  static const _muted = Color(0xFF6B7280);
-
   final _searchController = TextEditingController();
   HealthReportStatus? _statusFilter;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<HealthReportsProvider>().load(
+            audience: HealthReportsAudience.supervisor,
+          );
+    });
+  }
 
   @override
   void dispose() {
@@ -54,130 +62,180 @@ class _HealthReportsScreenState extends State<HealthReportsScreen> {
           query: query,
         );
 
-    return Scaffold(
-      backgroundColor: _bg,
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(20, topPad + 20, 20, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      'البلاغات الصحية',
-                      style: GoogleFonts.cairo(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF1A1A1A),
-                        height: 1.2,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: SupervisorUi.background,
+        body: SafeArea(
+          top: false,
+          bottom: false,
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              // ── Premium Header ──
+              SliverToBoxAdapter(
+                child: AnnotatedRegion<SystemUiOverlayStyle>(
+                  value: SystemUiOverlayStyle.dark,
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(20, topPad + 18, 20, 20),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.vertical(
+                        bottom: Radius.circular(28),
                       ),
+                      border: Border(
+                        bottom: BorderSide(color: SupervisorUi.border, width: 1.5),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0x0D142E1B),
+                          blurRadius: 16,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _searchController,
-                      onChanged: (_) => setState(() {}),
-                      style: GoogleFonts.cairo(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1A1A1A),
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'ابحث برقم الحيوان أو رقم البلاغ',
-                        hintStyle: GoogleFonts.cairo(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w500,
-                          color: _muted,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'البلاغات الصحية',
+                          style: GoogleFonts.cairo(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w900,
+                            color: SupervisorUi.textPrimary,
+                            height: 1.2,
+                          ),
                         ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 14,
+                        const SizedBox(height: 4),
+                        Text(
+                          'متابعة الحالة الصحية للحيوانات وإرسال بلاغات للأطباء',
+                          style: GoogleFonts.cairo(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: SupervisorUi.muted,
+                          ),
                         ),
-                        prefixIcon: const Icon(
-                          Icons.search_rounded,
-                          color: _muted,
-                          size: 22,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // ── Search & Filter ──
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          boxShadow: SupervisorUi.softShadow,
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(color: _border),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(color: _border),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(
-                            color: AppColors.primary,
-                            width: 1.5,
+                        child: TextField(
+                          controller: _searchController,
+                          onChanged: (_) => setState(() {}),
+                          style: GoogleFonts.cairo(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: SupervisorUi.textPrimary,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'ابحث برقم الحيوان أو رقم البلاغ',
+                            hintStyle: GoogleFonts.cairo(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w500,
+                              color: SupervisorUi.muted,
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 14,
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.search_rounded,
+                              color: SupervisorUi.muted,
+                              size: 22,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(color: SupervisorUi.border, width: 1.5),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(color: SupervisorUi.border, width: 1.5),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(
+                                color: AppColors.primary,
+                                width: 1.5,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 14),
-                    HealthReportStatusFilter(
-                      selected: _statusFilter,
-                      onChanged: (v) => setState(() => _statusFilter = v),
-                    ),
-                    const SizedBox(height: 16),
-                    _SendReportButton(onTap: _openSendForm),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
-            ),
-            if (reports.isEmpty)
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.assignment_outlined,
-                        size: 48,
-                        color: _muted.withValues(alpha: 0.5),
+                      const SizedBox(height: 14),
+                      HealthReportStatusFilter(
+                        selected: _statusFilter,
+                        onChanged: (v) => setState(() => _statusFilter = v),
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        query.isNotEmpty || _statusFilter != null
-                            ? 'لا توجد بلاغات مطابقة'
-                            : 'لا توجد بلاغات بعد',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.cairo(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: _muted,
-                        ),
-                      ),
+                      const SizedBox(height: 14),
+                      _SendReportButton(onTap: _openSendForm),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
-              )
-            else
-              SliverPadding(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, bottomPad + 100),
-                sliver: SliverList.separated(
-                  itemCount: reports.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final report = reports[index];
-                    return HealthReportCard(
-                      report: report,
-                      onTap: () => _openDetail(report),
-                    );
-                  },
-                ),
               ),
-          ],
+
+              // ── List or Empty State ──
+              if (reports.isEmpty)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.assignment_turned_in_outlined,
+                          size: 48,
+                          color: SupervisorUi.muted.withValues(alpha: 0.5),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          query.isNotEmpty || _statusFilter != null
+                              ? 'لا توجد بلاغات مطابقة'
+                              : 'لا توجد بلاغات صحية مسجلة',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.cairo(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: SupervisorUi.muted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, bottomPad + 100),
+                  sliver: SliverList.separated(
+                    itemCount: reports.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final report = reports[index];
+                      return HealthReportCard(
+                        report: report,
+                        onTap: () => _openDetail(report),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

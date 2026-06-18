@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "462792145653",
+    "project_id": "tripolizoo",
+    "storage_bucket": "tripolizoo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:462792145653:android:e4eb6ea13fb9678a4de3bc",
+        "android_client_info": {
+          "package_name": "com.example.tripolizoo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_FSXRfZgftqEGDqrwYXfa8DjJRfGagMU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -156,69 +156,74 @@
 
 @section('content')
 
+@php
+    $portalBase = $portalBase ?? '/records';
+    $stats = $stats ?? [];
+@endphp
+
 {{-- 1. SUMMARY CARDS --}}
 <div class="stats-grid">
-    <a href="/records/animals" class="stat-card">
+    <a href="{{ $portalBase }}/animals" class="stat-card">
         <div class="stat-icon-wrap">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
         </div>
-        <div class="stat-num">342</div>
+        <div class="stat-num">{{ $stats['active_animals'] ?? 0 }}</div>
         <div class="stat-label">إجمالي الحيوانات<br>داخل الحديقة</div>
     </a>
 
-    <a href="/records/animals" class="stat-card">
+    <a href="{{ $portalBase }}/animals" class="stat-card">
         <div class="stat-icon-wrap">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         </div>
-        <div class="stat-num">504</div>
+        <div class="stat-num">{{ $stats['total_profiles'] ?? 0 }}</div>
         <div class="stat-label">إجمالي ملفات<br>الحيوانات</div>
     </a>
 
-    <a href="/records/logs/births" class="stat-card">
+    <a href="{{ $portalBase }}/logs/births" class="stat-card">
         <div class="stat-icon-wrap">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
         </div>
-        <div class="stat-num">56</div>
+        <div class="stat-num">{{ $stats['births'] ?? 0 }}</div>
         <div class="stat-label">سجل<br>الولادات</div>
     </a>
 
-    <a href="/records/logs/stillbirths" class="stat-card">
+    <a href="{{ $portalBase }}/logs/stillbirths" class="stat-card">
         <div class="stat-icon-wrap">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
         </div>
-        <div class="stat-num">4</div>
+        <div class="stat-num">{{ $stats['stillbirths'] ?? 0 }}</div>
         <div class="stat-label">سجل الولادات<br>النافقة</div>
     </a>
 
-    <a href="/records/logs/entries" class="stat-card">
+    <a href="{{ $portalBase }}/logs/entries" class="stat-card">
         <div class="stat-icon-wrap">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
         </div>
-        <div class="stat-num">120</div>
+        <div class="stat-num">{{ $stats['entries'] ?? 0 }}</div>
         <div class="stat-label">سجل الحيوانات<br>الداخلة</div>
     </a>
 
-    <a href="/records/logs/mortality" class="stat-card">
+    <a href="{{ $portalBase }}/logs/mortality" class="stat-card">
         <div class="stat-icon-wrap">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>
         </div>
-        <div class="stat-num">14</div>
+        <div class="stat-num">{{ $stats['mortality'] ?? 0 }}</div>
         <div class="stat-label">سجل<br>النفوق</div>
     </a>
 
-    <a href="/records/logs/slaughter" class="stat-card">
+    <a href="{{ $portalBase }}/logs/slaughter" class="stat-card">
         <div class="stat-icon-wrap">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="14 2 18 6 7 17 3 17 3 13 14 2"></polygon><line x1="3" y1="22" x2="21" y2="22"></line></svg>
         </div>
-        <div class="stat-num">2</div>
+        <div class="stat-num">{{ $stats['slaughter'] ?? 0 }}</div>
         <div class="stat-label">سجل الذبح<br>الاضطراري</div>
     </a>
 
-    <a href="/records/logs/exits" class="stat-card">
+    <a href="{{ $portalBase }}/logs/exits" class="stat-card">
         <div class="stat-icon-wrap">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
         </div>
-        <div class="stat-num">4</div>
+        <div class="stat-num">{{ $stats['exits'] ?? 0 }}</div>
         <div class="stat-label">سجل الحيوانات<br>الخارجة</div>
     </a>
 </div>
@@ -244,30 +249,24 @@
                 </tr>
             </thead>
             <tbody>
+                @forelse($recentRecords ?? [] as $record)
                 <tr>
-                    <td style="color:#64748b; font-size:0.85rem;">2026-06-07</td>
-                    <td><span class="badge badge-success">إضافة حيوان</span></td>
-                    <td>الغزلان</td>
-                    @include('partials.animal-table-cell', ['emoji' => '🦌', 'animalId' => '#ANM-1045', 'sub' => 'غزال الريم'])
+                    <td style="color:#64748b; font-size:0.85rem;">{{ $record['date'] }}</td>
+                    <td><span class="badge {{ $record['badge_class'] }}">{{ $record['type_label'] }}</span></td>
+                    <td>{{ $record['group'] }}</td>
+                    @include('partials.animal-table-cell', [
+                        'name' => $record['animal_name'],
+                        'image' => $record['image'] ?? null,
+                        'animalId' => $record['animal_code'] ? '#'.$record['animal_code'] : null,
+                        'sub' => $record['species'] ?? null,
+                        'sourceTag' => $record['source_tag'] ?? null,
+                    ])
                 </tr>
+                @empty
                 <tr>
-                    <td style="color:#64748b; font-size:0.85rem;">2026-06-06</td>
-                    <td><span class="badge badge-danger">نفوق</span></td>
-                    <td>الطيور</td>
-                    @include('partials.animal-table-cell', ['emoji' => '🦩', 'animalId' => '#ANM-0899', 'sub' => 'نعامة'])
+                    <td colspan="4" style="text-align:center;color:#94a3b8;font-weight:700;padding:2rem;">لا توجد سجلات حديثة</td>
                 </tr>
-                <tr>
-                    <td style="color:#64748b; font-size:0.85rem;">2026-06-05</td>
-                    <td><span class="badge badge-primary">ولادة</span></td>
-                    <td>القرود</td>
-                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => '#ANM-1046', 'sub' => 'قرد مكاك', 'sourceTag' => 'قيد المتابعة'])
-                </tr>
-                <tr>
-                    <td style="color:#64748b; font-size:0.85rem;">2026-06-05</td>
-                    <td><span class="badge badge-gray">تعديل ملف</span></td>
-                    <td>القططية</td>
-                    @include('partials.animal-table-cell', ['emoji' => '🐯', 'animalId' => '#ANM-0012', 'sub' => 'نمر سيبيري'])
-                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

@@ -448,12 +448,6 @@
                 <span class="nav-item-text">معلومات الزيارة</span>
             </a>
         </nav>
-
-        <div class="sidebar-footer">
-            <div style="padding: 1.2rem; border-top: 1px solid #e2e8f0;">
-                @include('partials.portal-logout')
-            </div>
-        </div>
     </aside>
 
     <!-- Main Content -->

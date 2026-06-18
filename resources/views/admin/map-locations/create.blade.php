@@ -3,422 +3,233 @@
 @section('page_title', 'إدارة الخريطة التفاعلية')
 
 @section('styles')
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-    :root {
-        --glass-bg: rgba(255, 255, 255, 0.9);
-        --glass-border: rgba(226, 232, 240, 0.8);
-        --primary-gradient: linear-gradient(135deg, #1e3a1e 0%, #2d5a27 100%);
-        --accent-gradient: linear-gradient(135deg, #E8651A 0%, #f97316 100%);
-        --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
-    }
-
     .page-back {
         display: inline-flex;
         align-items: center;
         gap: 8px;
         color: var(--text-muted);
         text-decoration: none;
-        font-weight: 700;
-        font-size: 0.88rem;
-        margin-bottom: 1.5rem;
-        transition: color 0.2s;
+        font-weight: 800;
+        margin-bottom: 1.2rem;
     }
-
-    .page-back:hover { color: var(--orange); }
-
-
-
-    /* Page Hero */
-    .page-hero {
+    .form-card {
         background: white;
         border: 1px solid var(--border);
         border-radius: 20px;
-        padding: 2rem;
-        color: var(--text-main);
-        margin-bottom: 1.5rem;
-        box-shadow: var(--card-shadow);
-    }
-
-    .page-hero h2 {
-        font-size: 1.6rem;
-        font-weight: 900;
-        margin: 0 0 6px;
-        color: #1e3a1e;
-    }
-
-    .page-hero p {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        font-weight: 600;
-        margin: 0;
-    }
-
-    /* Premium card design */
-    .premium-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--glass-border);
-        border-radius: 20px;
-        box-shadow: var(--card-shadow);
+        box-shadow: 0 12px 32px rgba(15, 23, 42, .06);
         overflow: hidden;
     }
-
-    .card-accent-header {
-        padding: 1.3rem 1.8rem;
-        background: linear-gradient(to left, rgba(45, 90, 39, 0.03), transparent);
-        border-bottom: 1.5px solid var(--border);
-        display: flex;
-        align-items: center;
-        gap: 12px;
+    .form-head {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border);
     }
-
-    .card-accent-header h3 {
-        font-size: 1.1rem;
-        font-weight: 900;
-        color: #1e3a1e;
+    .form-head h3 {
         margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .icon-wrapper {
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
-        background: rgba(45, 90, 39, 0.08);
-        color: #2d5a27;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .premium-card-body {
-        padding: 2rem;
-    }
-
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 800;
-        font-size: 0.88rem;
         color: #1e3a1e;
+        font-size: 1.08rem;
+        font-weight: 900;
     }
-
-    .form-input {
-        width: 100%;
-        padding: 12px 16px;
-        border: 1.5px solid var(--border);
-        border-radius: 10px;
-        font-family: 'Cairo', sans-serif;
-        font-size: 0.92rem;
-        outline: none;
-        transition: all 0.2s;
-        background: white;
+    .form-body {
+        padding: 1.5rem;
+        display: grid;
+        gap: 1.2rem;
     }
-
-    .form-input:focus {
-        border-color: var(--orange);
-        box-shadow: 0 0 0 3px rgba(232, 101, 26, 0.08);
-    }
-
     .form-row {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
     }
-
-    .form-divider {
-        height: 1px;
-        background: var(--border);
-        margin: 1.5rem 0;
+    .form-group label {
+        display: block;
+        margin-bottom: 7px;
+        color: #1e3a1e;
+        font-size: .86rem;
+        font-weight: 900;
     }
-
-    /* Toggle switches */
+    .form-input {
+        width: 100%;
+        border: 1.5px solid var(--border);
+        border-radius: 11px;
+        padding: 11px 13px;
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        background: #fff;
+    }
+    textarea.form-input {
+        min-height: 96px;
+        resize: vertical;
+    }
     .toggle-row {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        background: rgba(248, 250, 252, 0.8);
-        padding: 12px 20px;
-        border-radius: 12px;
-        border: 1px solid var(--border);
-        margin-bottom: 1.8rem;
-    }
-
-    .toggle-row label {
+        gap: .65rem;
         font-weight: 800;
-        font-size: 0.88rem;
         color: var(--text-main);
     }
-
-    .switch {
+    .map-picker {
         position: relative;
-        display: inline-block;
-        width: 46px;
-        height: 25px;
-    }
-
-    .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        inset: 0;
-        background: #CBD5E1;
-        border-radius: 50px;
-        transition: 0.3s;
-    }
-
-    .slider::before {
-        position: absolute;
-        content: "";
-        width: 19px;
-        height: 19px;
-        left: 3px;
-        bottom: 3px;
-        background: white;
-        border-radius: 50%;
-        transition: 0.3s;
-    }
-
-    .switch input:checked + .slider {
-        background: var(--green);
-    }
-
-    .switch input:checked + .slider::before {
-        transform: translateX(21px);
-    }
-
-    /* Actions Row */
-    .actions-row {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-    }
-
-    .btn-submit-premium {
-        padding: 12px 30px;
-        background: var(--accent-gradient);
-        color: white;
-        border: none;
-        border-radius: 10px;
-        font-family: 'Cairo', sans-serif;
-        font-weight: 800;
-        font-size: 0.95rem;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        box-shadow: 0 5px 15px rgba(232, 101, 26, 0.25);
-        transition: all 0.3s;
-    }
-
-    .btn-submit-premium:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 10px 20px rgba(232, 101, 26, 0.35);
-    }
-
-    .btn-cancel-premium {
-        padding: 12px 24px;
-        background: var(--bg-color);
-        color: var(--text-muted);
+        overflow: hidden;
         border: 1.5px solid var(--border);
-        border-radius: 10px;
+        border-radius: 16px;
+        background: #edf4e9;
+        cursor: crosshair;
+    }
+    .map-picker img {
+        display: block;
+        width: 100%;
+        max-height: 620px;
+        object-fit: cover;
+    }
+    .picker-pin {
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #E8651A;
+        border: 3px solid white;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, .25);
+        transform: translate(-50%, -50%);
+        display: none;
+        pointer-events: none;
+    }
+    .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: .75rem;
+        padding-top: .5rem;
+    }
+    .btn-primary, .btn-secondary {
+        border: 0;
+        border-radius: 12px;
+        padding: 12px 22px;
         font-family: 'Cairo', sans-serif;
-        font-weight: 800;
-        cursor: pointer;
-        text-align: center;
+        font-weight: 900;
         text-decoration: none;
-        transition: all 0.2s;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        cursor: pointer;
     }
-
-    .btn-cancel-premium:hover {
-        background: #E2E8F0;
-        color: var(--text-main);
-    }
-
-    .toast {
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%) translateY(80px);
-        background: #1E293B;
+    .btn-primary {
+        background: linear-gradient(135deg, #E8651A, #f97316);
         color: white;
-        padding: 12px 24px;
-        border-radius: 50px;
-        font-weight: 700;
-        font-size: 0.9rem;
-        z-index: 9999;
-        transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
-        white-space: nowrap;
     }
-
-    .toast.show {
-        transform: translateX(-50%) translateY(0);
+    .btn-secondary {
+        background: #f1f5f9;
+        color: var(--text-muted);
     }
-
-    @media (max-width: 768px) {
+    @media (max-width: 780px) {
         .form-row { grid-template-columns: 1fr; }
-        .actions-row { flex-direction: column; }
-        .btn-submit-premium, .btn-cancel-premium { width: 100%; justify-content: center; }
+        .actions { flex-direction: column; }
     }
 </style>
 @endsection
 
 @section('content')
+<a href="{{ route('admin.map-locations.index') }}" class="page-back">العودة لخريطة الحديقة</a>
 
-<div class="ticket-single-layout">
-    
-    <a href="/admin/map-locations" class="page-back">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-        العودة لخريطة الحديقة
-    </a>
-
-    <!-- Header Hero -->
-    <div class="page-hero">
-        <h2>إدارة الخريطة التفاعلية</h2>
-        <p>إضافة موقع جديد على خريطة الحديقة (أقفاص، خدمات، مطاعم)</p>
+<form method="POST" action="{{ route('admin.map-locations.store') }}" class="form-card">
+    @csrf
+    <div class="form-head">
+        <h3>إضافة موقع جديد على خريطة الزائر</h3>
     </div>
-
-    <!-- Main Container -->
-    <div class="premium-card">
-        <div class="card-accent-header">
-            <div class="icon-wrapper">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon></svg>
-            </div>
-            <h3>حدد الموقع الجغرافي على الخريطة التفاعلية</h3>
-        </div>
-        
-        <div class="premium-card-body">
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>اسم الموقع <span style="color:#EF4444">*</span></label>
-                    <input type="text" id="name" class="form-input" placeholder="مثال: قفص الزرافة الاستوائية">
-                </div>
-                <div class="form-group">
-                    <label>فئة الموقع</label>
-                    <select id="type" class="form-input">
-                        <option value="enclosure">أقفاص وموائل الحيوانات</option>
-                        <option value="service">الخدمات والمرافق العامة</option>
-                        <option value="dining">المطاعم والمقاهي</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>إحداثي خط العرض (Latitude) <span style="color:#EF4444">*</span></label>
-                    <input type="text" id="coord_lat" class="form-input" placeholder="اضغط على الخريطة لتحديده" readonly style="background:#F1F5F9;">
-                </div>
-                <div class="form-group">
-                    <label>إحداثي خط الطول (Longitude) <span style="color:#EF4444">*</span></label>
-                    <input type="text" id="coord_lng" class="form-input" placeholder="اضغط على الخريطة لتحديده" readonly style="background:#F1F5F9;">
-                </div>
-            </div>
-
-            <!-- Leaflet Selection Map -->
+    <div class="form-body">
+        <div class="form-row">
             <div class="form-group">
-                <label>انقر على نقطة في الخريطة لتحديد الإحداثيات الجغرافية بدقة:</label>
-                <div id="leafletSelectMap" style="height: 300px; border-radius: 12px; border: 1.5px solid var(--border); overflow: hidden; z-index: 1;"></div>
+                <label>اسم الموقع</label>
+                <input class="form-input" type="text" name="name" value="{{ old('name') }}" required>
             </div>
-
-            <!-- Action buttons inside the same container -->
-            <div class="actions-row">
-                <a href="/admin/map-locations" class="btn-cancel-premium">إلغاء وتراجع</a>
-                <button class="btn-submit-premium" onclick="submitForm()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    حفظ وإسقاط الموقع
-                </button>
+            <div class="form-group">
+                <label>فئة الموقع</label>
+                <select class="form-input" name="category" id="category" onchange="toggleAnimalProfile()">
+                    <option value="enclosure" @selected(old('category') === 'enclosure')>أقفاص وموائل الحيوانات</option>
+                    <option value="service" @selected(old('category') === 'service')>الخدمات والمرافق العامة</option>
+                    <option value="dining" @selected(old('category') === 'dining')>المطاعم والمقاهي</option>
+                </select>
             </div>
         </div>
+
+        <div class="form-row">
+            <div class="form-group" id="animalProfileGroup">
+                <label>ربط بحيوان مسجّل، اختياري</label>
+                <select class="form-input" name="animal_profile_id">
+                    <option value="">بدون ربط</option>
+                    @foreach($profiles as $profile)
+                        @php $alreadyUsed = $usedProfileIds->contains($profile->id); @endphp
+                        <option
+                            value="{{ $profile->id }}"
+                            @selected(old('animal_profile_id') == $profile->id)
+                            @disabled($alreadyUsed)
+                        >
+                            {{ $profile->animal?->displayLabel() ?? 'حيوان بدون اسم' }}
+                            @if($alreadyUsed) — مرتبط بموقع @elseif(!$profile->is_visible) — مخفي عن الزائر @endif
+                        </option>
+                    @endforeach
+                </select>
+                @if($usedProfileIds->isNotEmpty())
+                    <p style="margin:.45rem 0 0;font-size:.77rem;color:#64748b;font-weight:700;">
+                        ℹ️ الخيارات الرمادية مرتبطة بمواقع أخرى ولا يمكن اختيارها.
+                    </p>
+                @endif
+            </div>
+            <div class="form-group">
+                <label>حالة الظهور</label>
+                <label class="toggle-row">
+                    <input type="hidden" name="is_active" value="0">
+                    <input type="checkbox" name="is_active" value="1" @checked(old('is_active', '1') == '1')>
+                    ظاهر في تطبيق وموقع الزائر
+                </label>
+            </div>
+        </div>
+
+        <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}" required>
+        <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}" required>
+
+        <div class="form-group">
+            <label>اضغط على الخريطة لتحديد موضع الدبوس</label>
+            <div class="map-picker" id="mapPicker">
+                <img src="{{ asset('map.PNG') }}" alt="خريطة حديقة حيوان طرابلس">
+                <span class="picker-pin" id="pickerPin"></span>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="{{ route('admin.map-locations.index') }}" class="btn-secondary">إلغاء</a>
+            <button class="btn-primary" type="submit">حفظ الموقع</button>
+        </div>
     </div>
-
-</div>
-
-<div class="toast" id="toast"></div>
+</form>
 @endsection
 
 @section('scripts')
-<!-- Leaflet JS CDN -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    let map;
-    let marker;
+    const picker = document.getElementById('mapPicker');
+    const pin = document.getElementById('pickerPin');
+    const latInput = document.getElementById('latitude');
+    const lngInput = document.getElementById('longitude');
 
-    const zooCenter = [32.8485, 13.1785];
-
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
+    function setPin(x, y) {
+        latInput.value = y.toFixed(7);
+        lngInput.value = x.toFixed(7);
+        pin.style.left = `${x * 100}%`;
+        pin.style.top = `${y * 100}%`;
+        pin.style.display = 'block';
     }
 
-    function initSelectMap() {
-        map = L.map('leafletSelectMap').setView(zooCenter, 16);
+    picker.addEventListener('click', (event) => {
+        const rect = picker.getBoundingClientRect();
+        setPin(
+            Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)),
+            Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height))
+        );
+    });
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Map Click event
-        map.on('click', function(e) {
-            const lat = e.latlng.lat;
-            const lng = e.latlng.lng;
-
-            // Set coordinates inputs
-            document.getElementById('coord_lat').value = lat.toFixed(6);
-            document.getElementById('coord_lng').value = lng.toFixed(6);
-
-            // Add or move marker
-            if (marker) {
-                marker.setLatLng(e.latlng);
-            } else {
-                marker = L.marker(e.latlng).addTo(map);
-            }
-        });
+    function toggleAnimalProfile() {
+        const group = document.getElementById('animalProfileGroup');
+        group.style.display = document.getElementById('category').value === 'enclosure' ? 'block' : 'none';
     }
 
-    function submitForm() {
-        const name = document.getElementById('name').value.trim();
-        const lat = document.getElementById('coord_lat').value;
-
-        if (!name) {
-            showToast('⚠️ يرجى إدخال اسم الموقع');
-            return;
-        }
-
-        if (!lat) {
-            showToast('⚠️ يرجى النقر على الخريطة لتحديد الإحداثيات');
-            return;
-        }
-
-        const btn = document.querySelector('.btn-submit-premium');
-        btn.textContent = '⏳ جاري الإسقاط...';
-        btn.disabled = true;
-
-        setTimeout(() => {
-            showToast('✅ تم إسقاط وتثبيت الموقع على الخريطة بنجاح');
-            btn.textContent = '✅ تم الحفظ!';
-            setTimeout(() => { window.location.href = '/admin/map-locations'; }, 1000);
-        }, 800);
-    }
-
-    window.onload = initSelectMap;
+    @if(old('latitude') !== null && old('longitude') !== null)
+        setPin({{ (float) old('longitude') }}, {{ (float) old('latitude') }});
+    @endif
+    toggleAnimalProfile();
 </script>
 @endsection

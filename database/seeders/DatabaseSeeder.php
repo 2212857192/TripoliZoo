@@ -36,12 +36,22 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
+            'name' => 'مشرف الغزلان',
+            'email' => 'supervisor@tripolizoo.ly',
+            'password' => '12345678',
+            'role' => UserRole::GroupSupervisor->value,
+            'status' => 'active',
+            'assigned_group' => 'الغزلان',
+            'joined_at' => now()->subYear(),
+        ]);
+
+        User::create([
             'name' => 'خالد منصور',
             'email' => 'khalid@tripolizoo.ly',
             'password' => '12345678',
             'role' => UserRole::GroupSupervisor->value,
             'status' => 'active',
-            'assigned_group' => 'مجموعة الثديات الكبرى',
+            'assigned_group' => 'الثدييات الكبيرة',
             'joined_at' => now()->subYear(),
         ]);
 
@@ -51,8 +61,27 @@ class DatabaseSeeder extends Seeder
             'password' => '12345678',
             'role' => UserRole::Veterinarian->value,
             'status' => 'active',
-            'assigned_group' => 'مجموعة الثديات الكبرى',
+            'assigned_group' => 'الغزلان',
             'joined_at' => '2022-03-15',
+        ]);
+
+        User::create([
+            'name' => 'عمر الفيتوري',
+            'email' => 'omar@tripolizoo.ly',
+            'password' => '12345678',
+            'role' => UserRole::Veterinarian->value,
+            'status' => 'active',
+            'assigned_group' => 'الثدييات الكبيرة',
+            'joined_at' => now()->subMonths(8),
+        ]);
+
+        User::create([
+            'name' => 'حياة محمد',
+            'email' => 'vethead@tripolizoo.ly',
+            'password' => '12345678',
+            'role' => UserRole::VetHead->value,
+            'status' => 'active',
+            'joined_at' => now()->subYear(),
         ]);
 
         User::create([
@@ -119,7 +148,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $lion = Animal::create([
-            'code' => 'ANM-0012',
+            'code' => 'C001',
             'name' => 'سيمبا',
             'species' => 'أسد أفريقي',
             'group' => 'القططية',
@@ -129,7 +158,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $elephant = Animal::create([
-            'code' => 'LRG-0120',
+            'code' => 'L001',
             'name' => null,
             'species' => 'فيل آسيوي',
             'group' => 'الثدييات الكبيرة',
@@ -139,7 +168,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Animal::create([
-            'code' => 'ANM-1045',
+            'code' => 'G001',
             'name' => null,
             'species' => 'غزال الريم',
             'group' => 'الغزلان',
@@ -184,5 +213,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'نقطة الدخول والتذاكر',
             'is_active' => true,
         ]);
+
+        app(\App\Services\MapPathGraphService::class)->syncFromLocations();
     }
 }

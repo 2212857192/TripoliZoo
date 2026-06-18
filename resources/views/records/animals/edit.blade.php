@@ -425,40 +425,49 @@
 @endsection
 
 @section('content')
+@php
+    $portalBase = $portalBase ?? '/records';
+    $ageMethod = old('age_method', $animal->age_method ?? 'birth');
+@endphp
 
-<div class="form-page-header">
-    <div>
-        <h2>تعديل بيانات الحيوان الرسمية</h2>
-        <p>يمكنك تعديل البيانات الأساسية الرسمية فقط — التشخيصات والسجلات الطبية غير قابلة للتعديل من هنا.</p>
-    </div>
-    <a href="/records/animals" class="btn-cancel-form">
+@if($errors->any())
+<div class="notice-readonly" style="background:#fef2f2;border-color:#fecaca;color:#991b1b;margin-bottom:1rem;">
+    @foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach
+</div>
+@endif
+
+@if(session('success'))
+<div class="notice-readonly" style="background:#f0fdf4;border-color:#bbf7d0;color:#166534;margin-bottom:1rem;">{{ session('success') }}</div>
+@endif
+
+<div class="form-page-header" style="justify-content:flex-end;">
+    <a href="{{ $portalBase }}/animals/{{ $animal->code }}" class="btn-cancel-form">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-        العودة للقائمة
+        العودة لملف الحيوان
     </a>
 </div>
 
-{{-- Identity Banner --}}
 <div class="identity-banner">
     <div class="identity-avatar">🦁</div>
     <div class="identity-info">
-        <h3>سيمبا</h3>
-        <p>أسد أفريقي &nbsp;•&nbsp; القططية &nbsp;•&nbsp; ذكر</p>
+        <h3>{{ $animal->name ?: $animal->species }}</h3>
+        <p>{{ $animal->species }} &nbsp;•&nbsp; {{ $animal->group }} &nbsp;•&nbsp; {{ $animal->gender }}</p>
     </div>
     <div class="identity-tag">
         <span class="tag-label">رقم الحيوان</span>
-        <span class="tag-value">#ANM-0012</span>
+        <span class="tag-value">#{{ $animal->code }}</span>
     </div>
 </div>
 
-{{-- Readonly Notice --}}
 <div class="notice-readonly">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0; margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    <div>
-        <strong>تنبيه:</strong> لا يسمح بتعديل التشخيصات أو العلاجات أو السجلات الرسمية الناتجة عن المسارات (النفوق، القرارات الطبية، الذبح الاضطراري...) من هذه الواجهة.
-    </div>
+    <div><strong>تنبيه:</strong> يمكن تعديل البيانات الأساسية فقط. السجلات الطبية والقرارات الرسمية لا تُعدّل من هنا.</div>
 </div>
 
-<form id="editAnimalForm" onsubmit="return false;">
+<form id="editAnimalForm" method="POST" action="{{ route('records.animals.update', $animal) }}" enctype="multipart/form-data">
+    @csrf
+    @method('PUT')
+    <input type="hidden" name="age_method" id="ageMethodField" value="{{ $ageMethod }}">
 
     {{-- ══════════════════ SECTION 1: BASIC DATA ══════════════════ --}}
     <div class="form-section">
@@ -474,62 +483,47 @@
         <div class="form-section-body">
             <div class="form-grid">
 
-                {{-- Animal Name --}}
                 <div class="field-group">
-                    <label class="field-label">اسم الحيوان <span class="optional">(اختياري — إن وجد)</span></label>
-                    <input type="text" class="form-control" value="سيمبا" placeholder="مثال: سيمبا، صخر، لونا...">
+                    <label class="field-label">رقم الحيوان</label>
+                    <input type="text" class="form-control readonly" value="#{{ $animal->code }}" readonly>
                 </div>
-
-                {{-- Species/Type --}}
+                <div class="field-group">
+                    <label class="field-label">المجموعة</label>
+                    <input type="text" class="form-control readonly" value="{{ $animal->group }}" readonly>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">اسم الحيوان <span class="optional">(اختياري)</span></label>
+                    <input type="text" name="name" class="form-control" value="{{ old('name', $animal->name) }}">
+                </div>
                 <div class="field-group">
                     <label class="field-label"><span class="required">*</span> النوع</label>
-                    <input type="text" class="form-control" value="أسد أفريقي" placeholder="مثال: أسد أفريقي، غزال الريم...">
+                    <input type="text" name="species" class="form-control" value="{{ old('species', $animal->species) }}" required>
                 </div>
-
-                {{-- Group --}}
-                <div class="field-group">
-                    <label class="field-label"><span class="required">*</span> المجموعة</label>
-                    <select class="form-control">
-                        @include('partials.animal-group-options')
-                    </select>
-                </div>
-
-                {{-- Gender --}}
                 <div class="field-group">
                     <label class="field-label"><span class="required">*</span> الجنس</label>
-                    <select class="form-control">
-                        <option selected>ذكر</option>
-                        <option>أنثى</option>
+                    <select name="gender" class="form-control" required>
+                        <option value="ذكر" @selected(old('gender', $animal->gender) === 'ذكر')>ذكر</option>
+                        <option value="أنثى" @selected(old('gender', $animal->gender) === 'أنثى')>أنثى</option>
                     </select>
                 </div>
-
-                {{-- Distinguishing Marks --}}
                 <div class="field-group field-span-2">
                     <label class="field-label">العلامات المميزة <span class="optional">(اختياري)</span></label>
-                    <input type="text" class="form-control" value="وشم على الأذن اليسرى برقم 012" placeholder="مثال: لون مميز، ندبة، علامة طبيعية...">
+                    <input type="text" name="distinguishing_marks" class="form-control" value="{{ old('distinguishing_marks', $animal->distinguishing_marks) }}">
                 </div>
-
-                {{-- Animal Photo --}}
                 <div class="field-group field-span-2">
                     <label class="field-label">صورة الحيوان <span class="optional">(اختياري)</span></label>
-                    {{-- Current photo preview (simulated) --}}
-                    <div class="current-photo-wrap">
-                        <div class="current-photo" style="font-size:2rem;">🦁</div>
-                        <div class="current-photo-info">
-                            <p>الصورة الحالية: simba_photo.jpg</p>
-                            <button type="button" class="btn-remove-photo">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                                إزالة الصورة
-                            </button>
-                        </div>
+                    @if($animal->displayPhotoUrl())
+                    <div style="margin-bottom:10px;">
+                        <img src="{{ $animal->displayPhotoUrl() }}" alt="" style="width:72px;height:72px;border-radius:12px;object-fit:cover;">
+                        <label style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:0.85rem;font-weight:700;">
+                            <input type="checkbox" name="remove_photo" value="1"> إزالة الصورة الحالية
+                        </label>
                     </div>
+                    @endif
                     <label class="upload-area" for="animalPhoto">
-                        <div style="color: #94a3b8;">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                        </div>
-                        <p>استبدال الصورة — اضغط لرفع صورة جديدة<br><span style="font-size:0.75rem; color:#94a3b8;">PNG, JPG حتى 5 ميجابايت</span></p>
-                        <input type="file" id="animalPhoto" accept="image/*" style="display:none;" onchange="showFileName(this, 'photoName')">
-                        <p id="photoName" style="color:#1a4a2e; font-weight:700; margin-top:6px;"></p>
+                        <input type="file" id="animalPhoto" name="photo" accept="image/*" style="display:none;" onchange="showFileName(this, 'photoName')">
+                        <span>رفع صورة جديدة</span>
+                        <p id="photoName" style="color:#1a4a2e;font-weight:700;margin-top:6px;"></p>
                     </label>
                 </div>
 
@@ -552,45 +546,32 @@
             <div class="field-group" style="margin-bottom: 1.5rem;">
                 <label class="field-label"><span class="required">*</span> طريقة تحديد العمر</label>
                 <div class="age-method-toggle">
-                    <button type="button" class="age-method-btn active" id="btnBirthdate" onclick="setAgeMethod('birthdate')">
-                        📅 تاريخ ميلاد معروف
-                    </button>
-                    <button type="button" class="age-method-btn" id="btnApprox" onclick="setAgeMethod('approx')">
-                        🔢 عمر تقريبي عند التسجيل
-                    </button>
+                    <button type="button" class="age-method-btn {{ $ageMethod === 'birth' ? 'active' : '' }}" id="btnBirthdate" onclick="setAgeMethod('birthdate')">📅 تاريخ ميلاد معروف</button>
+                    <button type="button" class="age-method-btn {{ $ageMethod === 'approx' ? 'active' : '' }}" id="btnApprox" onclick="setAgeMethod('approx')">🔢 عمر تقريبي</button>
                 </div>
             </div>
 
-            <div class="conditional-block visible" id="blockBirthdate">
+            <div class="conditional-block {{ $ageMethod === 'birth' ? 'visible' : '' }}" id="blockBirthdate" style="{{ $ageMethod === 'birth' ? 'display:flex;' : 'display:none;' }}">
                 <div class="form-grid">
                     <div class="field-group">
                         <label class="field-label"><span class="required">*</span> تاريخ الميلاد</label>
-                        <input type="date" class="form-control" value="2018-02-14">
-                    </div>
-                    <div class="field-group" style="align-self: end;">
-                        <label class="field-label" style="color:#64748b;">العمر المحسوب</label>
-                        <input type="text" class="form-control" value="8 سنوات و 3 أشهر" disabled>
+                        <input type="date" name="birth_date" class="form-control" value="{{ old('birth_date', $animal->birth_date?->format('Y-m-d')) }}">
                     </div>
                 </div>
             </div>
-
-            <div class="conditional-block" id="blockApprox">
+            <div class="conditional-block {{ $ageMethod === 'approx' ? 'visible' : '' }}" id="blockApprox" style="{{ $ageMethod === 'approx' ? 'display:flex;' : 'display:none;' }}">
                 <div class="form-grid col-3">
                     <div class="field-group">
-                        <label class="field-label"><span class="required">*</span> العمر التقريبي عند التسجيل</label>
-                        <input type="number" class="form-control" placeholder="مثال: 4" min="1">
+                        <label class="field-label"><span class="required">*</span> العمر التقريبي</label>
+                        <input type="number" name="approx_age_value" class="form-control" value="{{ old('approx_age_value', $animal->approx_age_value) }}" min="1">
                     </div>
                     <div class="field-group">
                         <label class="field-label"><span class="required">*</span> وحدة العمر</label>
-                        <select class="form-control">
-                            <option>أيام</option>
-                            <option>أشهر</option>
-                            <option selected>سنوات</option>
+                        <select name="approx_age_unit" class="form-control">
+                            <option value="أيام" @selected(old('approx_age_unit', $animal->approx_age_unit) === 'أيام')>أيام</option>
+                            <option value="أشهر" @selected(old('approx_age_unit', $animal->approx_age_unit) === 'أشهر')>أشهر</option>
+                            <option value="سنوات" @selected(old('approx_age_unit', $animal->approx_age_unit ?: 'سنوات') === 'سنوات')>سنوات</option>
                         </select>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label" style="color:#64748b;">العمر الحالي التقريبي</label>
-                        <input type="text" class="form-control" placeholder="سيُحسب تلقائياً..." disabled>
                     </div>
                 </div>
             </div>
@@ -612,102 +593,42 @@
             <div class="form-grid">
                 <div class="field-group">
                     <label class="field-label"><span class="required">*</span> أصل الحيوان</label>
-                    <select class="form-control">
-                        <option selected>مولود داخل الحديقة</option>
-                        <option>وارد من خارج الحديقة</option>
+                    <select name="origin" class="form-control" required>
+                        <option value="مولود داخل الحديقة" @selected(old('origin', $animal->origin) === 'مولود داخل الحديقة')>مولود داخل الحديقة</option>
+                        <option value="وارد من خارج الحديقة" @selected(old('origin', $animal->origin) === 'وارد من خارج الحديقة')>وارد من خارج الحديقة</option>
                     </select>
                 </div>
                 <div class="field-group">
                     <label class="field-label"><span class="required">*</span> مصدر الحيوان</label>
-                    <input type="text" class="form-control" value="مولود داخل الحديقة حسب السجلات الورقية" placeholder="مثال: وارد من جهة رسمية، إهداء من جهة خاصة...">
+                    <input type="text" name="animal_source" class="form-control" value="{{ old('animal_source', $animal->registration_note) }}" required>
                 </div>
             </div>
-        </div>
-    </div>
-
-    {{-- ══════════════════ SECTION 4: HISTORY ══════════════════ --}}
-    <div class="form-section">
-        <div class="form-section-header">
-            <div class="section-icon" style="background:#fef3c7; color:#d97706;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            </div>
-            <div>
-                <h3>التاريخ السابق قبل تشغيل النظام</h3>
-                <p>اختياري — يمكن تحديث الملخص أو استبدال المرفق</p>
-            </div>
-        </div>
-        <div class="form-section-body">
-            <div class="form-grid">
-                <div class="field-group field-span-2">
-                    <label class="field-label">ملخص التاريخ السابق <span class="optional">(اختياري)</span></label>
-                    <textarea class="form-control" rows="4" placeholder="اكتب ملخصًا عن التاريخ الطبي أو البيئي للحيوان قبل إدخاله في النظام...">لا توجد سجلات طبية موثقة قبل تشغيل النظام، الحيوان مولود في الحديقة منذ عام 2018.</textarea>
-                </div>
-                <div class="field-group field-span-2">
-                    <label class="field-label">مرفق التاريخ السابق <span class="optional">(اختياري)</span></label>
-                    <label class="upload-area" for="historyFile">
-                        <div style="color: #94a3b8;">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                        </div>
-                        <p>رفع مرفق جديد أو استبدال المرفق الحالي<br><span style="font-size:0.75rem; color:#94a3b8;">PDF, PNG, JPG حتى 10 ميجابايت</span></p>
-                        <input type="file" id="historyFile" accept=".pdf,image/*" style="display:none;" onchange="showFileName(this, 'historyFileName')">
-                        <p id="historyFileName" style="color:#1a4a2e; font-weight:700; margin-top:6px;"></p>
-                    </label>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- ══════════════════ NOT EDITABLE ══════════════════ --}}
-    <div class="readonly-section">
-        <div class="readonly-section-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            البيانات غير القابلة للتعديل من هذه الواجهة
-        </div>
-        <div class="readonly-chips">
-            <span class="readonly-chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>التشخيصات</span>
-            <span class="readonly-chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>العلاجات والجرعات</span>
-            <span class="readonly-chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>القرارات الطبية</span>
-            <span class="readonly-chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>قرار الذبح الاضطراري</span>
-            <span class="readonly-chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>نتائج التشريح</span>
-            <span class="readonly-chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>قرارات الإفراج الصحي</span>
-            <span class="readonly-chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>حالة النفوق</span>
-            <span class="readonly-chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>التوصيات الغذائية العلاجية</span>
         </div>
     </div>
 
     {{-- ══════════════════ FORM ACTIONS ══════════════════ --}}
     <div class="form-actions">
-        <button type="button" class="btn-save" onclick="saveEdits()">
+        <button type="submit" class="btn-save">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             حفظ التعديلات
         </button>
-        <a href="/records/animals" class="btn-cancel-form">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            إلغاء
-        </a>
+        <a href="{{ $portalBase }}/animals/{{ $animal->code }}" class="btn-cancel-form">إلغاء</a>
     </div>
 
 </form>
-
-{{-- ══════════════════ SUCCESS TOAST ══════════════════ --}}
-<div class="toast green" id="toastMsg">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-    <span id="toastText">تم تعديل بيانات الحيوان بنجاح.</span>
-</div>
 
 @endsection
 
 @section('scripts')
 <script>
-    // ── Age Method Toggle ──
     function setAgeMethod(method) {
+        document.getElementById('ageMethodField').value = method === 'birthdate' ? 'birth' : 'approx';
         document.querySelectorAll('.age-method-btn').forEach(b => b.classList.remove('active'));
         ['blockBirthdate', 'blockApprox'].forEach(id => {
             const el = document.getElementById(id);
             el.classList.remove('visible');
             el.style.display = 'none';
         });
-
         if (method === 'birthdate') {
             document.getElementById('btnBirthdate').classList.add('active');
             const b = document.getElementById('blockBirthdate');
@@ -719,24 +640,9 @@
         }
     }
 
-    setAgeMethod('birthdate');
-
-    // ── File Upload ──
     function showFileName(input, targetId) {
         const t = document.getElementById(targetId);
         if (input.files && input.files[0]) t.innerText = '📎 ' + input.files[0].name;
-    }
-
-    // ── Save & Toast ──
-    function saveEdits() {
-        showToast('✅ تم تعديل بيانات الحيوان بنجاح.');
-    }
-
-    function showToast(msg) {
-        const t = document.getElementById('toastMsg');
-        document.getElementById('toastText').innerText = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3500);
     }
 </script>
 @endsection

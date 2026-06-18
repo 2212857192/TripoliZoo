@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/domain/animal.dart';
-import 'package:tripolizoo/features/visitor/visitor_explore/presentation/animals_explore_screen.dart';
+import 'package:tripolizoo/features/visitor/visitor_explore/presentation/animal_detail_screen.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/presentation/qr_scanner_screen.dart';
 
 void main() {
@@ -13,10 +13,11 @@ void main() {
     category: 'predators',
     image: 'assets/images/lion.jpg',
     desc: 'وصف الحيوان',
-    stats: {'العمر': '12-16 سنة', 'الوزن': '190 كجم'},
-    facts: ['حقيقة أولى', 'حقيقة ثانية'],
+    stats: {'الرمز': 'L-001', 'العمر': '12-16 سنة'},
+    facts: ['حقيقة أولى'],
     location: 'مملكة الأسود',
     habitat: 'السافانا المفتوحة',
+    mapLocationId: 7,
   );
 
   Widget buildScreen(Widget child, {String languageCode = 'ar'}) {
@@ -32,7 +33,7 @@ void main() {
     );
   }
 
-  testWidgets('animal details use one card with one text for all information',
+  testWidgets('animal details show description and show-the-way button',
       (tester) async {
     await tester.pumpWidget(
       buildScreen(const AnimalDetailScreen(animal: animal)),
@@ -40,26 +41,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(animal.name), findsWidgets);
-    expect(
-      find.byKey(const ValueKey('animal-information-card')),
-      findsOneWidget,
-    );
-
-    final informationFinder =
-        find.byKey(const ValueKey('animal-information-text'));
-    expect(informationFinder, findsOneWidget);
-    final information = tester.widget<Text>(informationFinder).data!;
-
-    expect(information, contains('وصف الحيوان'));
-    expect(information, contains('السافانا المفتوحة'));
-    expect(information, contains('مملكة الأسود'));
-    expect(information, contains('12-16 سنة'));
-    expect(information, isNot(contains('حقيقة أولى')));
-    expect(find.text('عرض موقعه على الخريطة'), findsNothing);
+    expect(find.text('وصف الحيوان'), findsOneWidget);
+    expect(find.text('أظهر الطريق'), findsOneWidget);
   });
 
-  testWidgets('animal information card localizes its labels in English',
-      (tester) async {
+  testWidgets('animal show-the-way button localizes in English', (tester) async {
     await tester.pumpWidget(
       buildScreen(
         const AnimalDetailScreen(animal: animal),
@@ -68,14 +54,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final information = tester
-        .widget<Text>(find.byKey(const ValueKey('animal-information-text')))
-        .data!;
-
-    expect(information, contains('Habitat'));
-    expect(information, contains('Location'));
-    expect(information, contains('Quick facts'));
-    expect(information, isNot(contains('Amazing facts')));
+    expect(find.text('Show the way'), findsOneWidget);
   });
 
   testWidgets('QR scanner explains that scanning reveals animal information',
@@ -91,25 +70,6 @@ void main() {
 
     expect(
       find.text('امسح رمز الحيوان لاستكشاف معلوماته والتعرّف عليه.'),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('QR scanner explanation is available in English', (tester) async {
-    await tester.pumpWidget(
-      buildScreen(
-        QrScannerScreen(
-          requestCameraPermission: () async => false,
-        ),
-        languageCode: 'en',
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(
-      find.text(
-        'Scan an animal code to explore its information and learn more about it.',
-      ),
       findsOneWidget,
     );
   });

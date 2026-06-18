@@ -3,7 +3,6 @@
 @section('page_title', 'إدارة معلومات الزيارة')
 
 @section('styles')
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
     :root {
         --glass-bg: rgba(255, 255, 255, 0.85);
@@ -328,14 +327,6 @@
     .btn-visibility.visible { color: #166534; border-color: #86EFAC; background: #F0FDF4; }
     .btn-visibility.hidden  { color: #991B1B; border-color: #FECACA; background: #FEF2F2; }
 
-    #visitMap {
-        height: 260px;
-        border-radius: 14px;
-        border: 1.5px solid var(--border);
-        overflow: hidden;
-        z-index: 1;
-    }
-
     .entry-instructions {
         font-size: 0.95rem;
         font-weight: 700;
@@ -409,23 +400,6 @@
                 </div>
             </div>
 
-            <!-- Zoo Location Map -->
-            <div class="premium-card">
-                <div class="card-accent-header">
-                    <div class="icon-wrapper">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                    </div>
-                    <h3>موقع الحديقة على الخريطة</h3>
-                </div>
-                <div class="premium-card-body">
-                    <div class="grid-cell" style="margin-bottom: 1rem;">
-                        <label>العنوان</label>
-                        <span>حديقة حيوانات طرابلس — طريق المطار، طرابلس، ليبيا</span>
-                    </div>
-                    <div id="visitMap"></div>
-                </div>
-            </div>
-
             <!-- Entry Instructions -->
             <div class="premium-card">
                 <div class="card-accent-header">
@@ -487,7 +461,6 @@
 @endsection
 
 @section('scripts')
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     let statusVisible = true;
 
@@ -502,15 +475,5 @@
             btn.className = 'btn-visibility hidden';
         }
     }
-
-    window.onload = function() {
-        const zooCoords = [32.8485, 13.1785];
-        const map = L.map('visitMap').setView(zooCoords, 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap'
-        }).addTo(map);
-        L.marker(zooCoords).addTo(map)
-            .bindPopup('حديقة حيوانات طرابلس').openPopup();
-    };
 </script>
 @endsection

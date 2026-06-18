@@ -29,6 +29,18 @@ class EnsureUserHasPortal
             return redirect($target)->with('error', $message);
         }
 
+        if (! $user->canUseWebPortal()) {
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()
+                ->route('login')
+                ->withErrors([
+                    'email' => 'هذا الحساب مخصص لتطبيق الجوال. استخدم تطبيق حديقة طرابلس لتسجيل الدخول.',
+                ]);
+        }
+
         return $next($request);
     }
 }

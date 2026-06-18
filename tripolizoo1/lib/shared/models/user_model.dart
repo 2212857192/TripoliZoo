@@ -5,6 +5,7 @@ class UserModel {
   final String phone;
   final bool isGuest;
   final String role; // visitor, doctor, supervisor
+  final String? assignedGroup;
 
   const UserModel({
     required this.id,
@@ -13,6 +14,7 @@ class UserModel {
     required this.phone,
     this.isGuest = false,
     this.role = 'visitor',
+    this.assignedGroup,
   });
 
   factory UserModel.guest() => const UserModel(
@@ -31,6 +33,7 @@ class UserModel {
         phone: json['phone'] as String? ?? '',
         isGuest: json['is_guest'] as bool? ?? false,
         role: json['role'] as String? ?? 'visitor',
+        assignedGroup: json['assigned_group'] as String?,
       );
 
   Map<String, dynamic> toJson() => {
@@ -40,6 +43,7 @@ class UserModel {
         'phone': phone,
         'is_guest': isGuest,
         'role': role,
+        'assigned_group': assignedGroup,
       };
 
   UserModel copyWith({
@@ -47,6 +51,7 @@ class UserModel {
     String? email,
     String? phone,
     String? role,
+    String? assignedGroup,
   }) =>
       UserModel(
         id: id,
@@ -55,5 +60,6 @@ class UserModel {
         phone: phone ?? this.phone,
         isGuest: isGuest,
         role: role ?? this.role,
+        assignedGroup: assignedGroup ?? this.assignedGroup,
       );
 }

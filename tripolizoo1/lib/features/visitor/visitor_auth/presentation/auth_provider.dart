@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:tripolizoo/shared/models/user_model.dart';
 import 'package:tripolizoo/features/visitor/visitor_auth/data/auth_service.dart';
 import 'package:tripolizoo/features/visitor/visitor_auth/data/api_auth_service.dart';
+import 'package:tripolizoo/shared/push/push_notification_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   AuthProvider({AuthService? authService})
@@ -56,9 +57,17 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> login(String email, String password) async {
-    return _run(() async {
+    final ok = await _run(() async {
       _user = await _authService.login(email: email, password: password);
     });
+    if (ok) {
+      final role = _user?.role;
+      await PushNotificationService.syncTokenForLoggedInUser(
+        isDoctor: role == 'doctor',
+        isSupervisor: role == 'supervisor',
+      );
+    }
+    return ok;
   }
 
   Future<bool> register({
@@ -136,18 +145,16 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
     return _run(() async {
-      if (currentPassword.length < 6) {
-        throw const AuthException('كلمة المرور الحالية غير صحيحة');
-      }
-      if (newPassword.length < 8) {
-        throw const AuthException('كلمة المرور الجديدة ضعيفة');
-      }
-      // Mock — يُستبدل بطلب API لاحقاً.
+      await _authService.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
     });
   }
 
   Future<void> logout() async {
     if (_user != null && !_user!.isGuest) {
+      await PushNotificationService.clearToken();
       await _authService.logout();
     }
     _user = null;

@@ -1,4 +1,4 @@
-﻿@extends($__layout ?? 'vet.layout')
+@extends($__layout ?? 'vet.layout')
 @section('title', 'إحالات العلاج | المستشفى البيطري')
 @section('page_title', 'إحالات العلاج')
 
@@ -462,12 +462,7 @@
             document.getElementById('mStatusBadge').innerHTML = `<span class="badge badge-approved"><span class="dot"></span>معتمدة</span>`;
             document.getElementById('appDate').textContent = d.appDate;
             document.getElementById('statusApproved').style.display = 'block';
-            const hospitalLink = d.hospitalCaseId ? `{{ $vetBase }}/cases/hospital/${d.hospitalCaseId}` : '{{ $vetBase }}/cases/hospital';
-            footer.innerHTML = closeBtn + `
-                <a href="${hospitalLink}" class="btn-secondary">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    عرض الحالة داخل المستشفى
-                </a>`;
+            footer.innerHTML = closeBtn;
         } else {
             document.getElementById('mStatusBadge').innerHTML = `<span class="badge badge-rejected"><span class="dot"></span>مرفوضة</span>`;
             document.getElementById('rejDate').textContent = d.rejDate;

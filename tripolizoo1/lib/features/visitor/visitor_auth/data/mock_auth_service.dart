@@ -104,6 +104,20 @@ class MockAuthService implements AuthService {
   }
 
   @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (currentPassword.length < AppConstants.minPasswordLength) {
+      throw const AuthException('كلمة المرور الحالية غير صحيحة');
+    }
+    if (newPassword.length < AppConstants.minPasswordLength) {
+      throw const AuthException('كلمة المرور الجديدة ضعيفة');
+    }
+  }
+
+  @override
   Future<UserModel> guestLogin() async {
     await Future.delayed(const Duration(milliseconds: 300));
     return UserModel.guest();

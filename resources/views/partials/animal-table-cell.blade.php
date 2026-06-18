@@ -10,10 +10,10 @@
             @endif
         </div>
         <div>
-            <div class="animal-cell-name @if(empty($name)) is-muted @endif">{{ $name ?? '—' }}</div>
             @if(!empty($animalId))
                 <div class="animal-cell-id">{{ $animalId }}</div>
             @endif
+            <div class="animal-cell-name @if(empty($name)) is-muted @endif">{{ $name ?? '—' }}</div>
             @if(!empty($sub))
                 <div class="animal-cell-sub">{{ $sub }}</div>
             @endif

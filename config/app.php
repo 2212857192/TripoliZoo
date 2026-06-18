@@ -56,6 +56,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Visitor / QR Public URL
+    |--------------------------------------------------------------------------
+    |
+    | The address mobile visitors use when scanning animal QR codes.
+    | Set this to your LAN IP or production domain when APP_URL is localhost.
+    |
+    */
+
+    'visitor_public_url' => env('VISITOR_PUBLIC_URL'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

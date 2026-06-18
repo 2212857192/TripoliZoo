@@ -7,12 +7,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:tripolizoo/features/visitor/visitor_auth/presentation/auth_provider.dart';
+import 'package:tripolizoo/features/visitor/visitor_tickets/data/ticket_repository.dart';
 import 'package:tripolizoo/features/visitor/visitor_tickets/presentation/ticket_cart_provider.dart';
 import 'package:tripolizoo/features/visitor/visitor_tickets/presentation/tickets_screen.dart';
 import 'package:tripolizoo/features/visitor/visitor_tickets/services/ticket_image_service.dart';
 
 void main() {
   const imageChannel = MethodChannel('tripolizoo/ticket_images');
+
+  Future<TicketCartProvider> createTicketCart({
+    void Function(TicketCartProvider cart)? setup,
+  }) async {
+    final cart = TicketCartProvider(repository: MockTicketRepository());
+    await cart.loadTypes();
+    setup?.call(cart);
+    return cart;
+  }
 
   Future<AuthProvider> registeredAuth(WidgetTester tester) async {
     final auth = AuthProvider();
@@ -48,8 +58,10 @@ void main() {
   testWidgets('uses a compact summary and neutral inactive filter',
       (tester) async {
     final auth = await registeredAuth(tester);
+    final cart = await createTicketCart(setup: (c) => c.increment('adult_ly'));
 
-    await tester.pumpWidget(buildTickets(TicketCartProvider(), auth));
+    await tester.pumpWidget(buildTickets(cart, auth));
+    await tester.pumpAndSettle();
 
     final nextButton = tester.widget<SizedBox>(
       find.byKey(const ValueKey('compact-next-button')),
@@ -78,13 +90,17 @@ void main() {
   testWidgets('shows every purchased ticket as a separate QR card',
       (tester) async {
     final auth = await registeredAuth(tester);
-    final cart = TicketCartProvider()
-      ..increment('child_ly')
-      ..increment('child_ly')
-      ..increment('student')
-      ..increment('adult_intl');
+    final cart = await createTicketCart(setup: (c) {
+      c
+        ..increment('adult_ly')
+        ..increment('child_ly')
+        ..increment('child_ly')
+        ..increment('student')
+        ..increment('adult_intl');
+    });
 
     await tester.pumpWidget(buildTickets(cart, auth));
+    await tester.pumpAndSettle();
 
     await tester.tap(
       find.byKey(const ValueKey('continue-to-payment-button')),
@@ -104,10 +120,6 @@ void main() {
     );
     expect((totalCard.decoration! as BoxDecoration).color, Colors.white);
 
-    await tester.enterText(
-      find.byKey(const ValueKey('payment-phone-field')),
-      '0912345678',
-    );
     await tester.tap(find.byKey(const ValueKey('confirm-payment-button')));
     await tester.pumpAndSettle();
 
@@ -122,20 +134,17 @@ void main() {
 
   testWidgets('shows the purchased ticket category in English', (tester) async {
     final auth = await registeredAuth(tester);
-    final cart = TicketCartProvider();
+    final cart = await createTicketCart(setup: (c) => c.increment('adult_ly'));
 
     await tester.pumpWidget(
       buildTickets(cart, auth, locale: const Locale('en')),
     );
+    await tester.pumpAndSettle();
 
     await tester.tap(
       find.byKey(const ValueKey('continue-to-payment-button')),
     );
     await tester.pumpAndSettle();
-    await tester.enterText(
-      find.byKey(const ValueKey('payment-phone-field')),
-      '0912345678',
-    );
     await tester.tap(find.byKey(const ValueKey('confirm-payment-button')));
     await tester.pumpAndSettle();
 
@@ -146,13 +155,16 @@ void main() {
 
   testWidgets('payment requires a valid linked phone number', (tester) async {
     final auth = await registeredAuth(tester);
-    final cart = TicketCartProvider();
+    final cart = await createTicketCart(setup: (c) => c.increment('adult_ly'));
 
     await tester.pumpWidget(buildTickets(cart, auth));
+    await tester.pumpAndSettle();
 
     await tester.tap(
       find.byKey(const ValueKey('continue-to-payment-button')),
     );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('payment-method-electronic')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('confirm-payment-button')));
     await tester.pumpAndSettle();
@@ -169,8 +181,9 @@ void main() {
       (tester) async {
     final auth = AuthProvider();
     await tester.runAsync(auth.guestLogin);
+    final cart = await createTicketCart();
 
-    await tester.pumpWidget(buildTickets(TicketCartProvider(), auth));
+    await tester.pumpWidget(buildTickets(cart, auth));
     await tester.pumpAndSettle();
 
     expect(
@@ -194,12 +207,15 @@ void main() {
 
   testWidgets('exports one PNG image for every purchased ticket',
       (tester) async {
-    final cart = TicketCartProvider()
-      ..increment('child_ly')
-      ..increment('child_ly')
-      ..increment('student')
-      ..increment('adult_intl');
-    final tickets = cart.purchase();
+    final cart = await createTicketCart(setup: (c) {
+      c
+        ..increment('adult_ly')
+        ..increment('child_ly')
+        ..increment('child_ly')
+        ..increment('student')
+        ..increment('adult_intl');
+    });
+    final tickets = await cart.purchaseCash();
     final savedNames = <String>[];
 
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger

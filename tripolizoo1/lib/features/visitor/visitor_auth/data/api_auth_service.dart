@@ -114,6 +114,21 @@ class ApiAuthService implements AuthService {
   }
 
   @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    await _client.post(
+      ApiConfig.changePassword,
+      body: {
+        'current_password': currentPassword,
+        'password': newPassword,
+        'password_confirmation': newPassword,
+      },
+    );
+  }
+
+  @override
   Future<void> logout() async {
     try {
       await _client.post(ApiConfig.logout);

@@ -1,53 +1,82 @@
 import 'package:flutter/foundation.dart';
-import 'package:tripolizoo/features/supervisor/supervisor_group_followup/data/follow_up_mock_repository.dart';
+
+import 'package:tripolizoo/features/supervisor/supervisor_group_followup/data/birth_registrations_api_repository.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_group_followup/data/health_cases_api_repository.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_group_followup/data/mortality_cases_api_repository.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_group_followup/data/operational_notes_api_repository.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_group_followup/domain/follow_up_entry.dart';
 
 class FollowUpProvider extends ChangeNotifier {
-  FollowUpProvider() {
-    _entries = FollowUpMockRepository.seedEntries();
-  }
+  FollowUpProvider({
+    HealthCasesApiRepository? healthRepository,
+    MortalityCasesApiRepository? mortalityRepository,
+    OperationalNotesApiRepository? operationalNotesRepository,
+    BirthRegistrationsApiRepository? birthRegistrationsRepository,
+  })  : _healthRepository = healthRepository ?? HealthCasesApiRepository(),
+        _mortalityRepository =
+            mortalityRepository ?? MortalityCasesApiRepository(),
+        _operationalNotesRepository =
+            operationalNotesRepository ?? OperationalNotesApiRepository(),
+        _birthRegistrationsRepository =
+            birthRegistrationsRepository ?? BirthRegistrationsApiRepository();
+
+  final HealthCasesApiRepository _healthRepository;
+  final MortalityCasesApiRepository _mortalityRepository;
+  final OperationalNotesApiRepository _operationalNotesRepository;
+  final BirthRegistrationsApiRepository _birthRegistrationsRepository;
+
+  final List<FollowUpEntry> _localEntries = [];
+
+  List<HealthFollowUpEntry> _healthEntries = [];
+  List<MortalityFollowUpEntry> _mortalityEntries = [];
+  List<OperationalNoteEntry> _operationalNoteEntries = [];
+  List<BirthFollowUpEntry> _birthEntries = [];
 
   List<FollowUpEntry> _entries = [];
+  DateTime? _loadedDate;
+  bool _loading = false;
+  String? _error;
 
-  List<FollowUpEntry> forDate(DateTime date) {
+  List<FollowUpEntry> get entries => _entries;
+  bool get isLoading => _loading;
+  String? get error => _error;
+
+  Future<void> loadForDate(DateTime date) async {
     final day = DateTime(date.year, date.month, date.day);
-    return _entries
-        .where((e) {
-          final registered = DateTime(
-            e.registeredAt.year,
-            e.registeredAt.month,
-            e.registeredAt.day,
-          );
-          return registered == day;
-        })
-        .toList()
-      ..sort((a, b) => b.registeredAt.compareTo(a.registeredAt));
+    _loadedDate = day;
+    _loading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final results = await Future.wait([
+        _healthRepository.fetchCases(date: day),
+        _mortalityRepository.fetchCases(date: day),
+        _operationalNotesRepository.fetchNotes(date: day),
+        _birthRegistrationsRepository.fetchRegistrations(date: day),
+      ]);
+
+      _healthEntries = results[0] as List<HealthFollowUpEntry>;
+      _mortalityEntries = results[1] as List<MortalityFollowUpEntry>;
+      _operationalNoteEntries = results[2] as List<OperationalNoteEntry>;
+      _birthEntries = results[3] as List<BirthFollowUpEntry>;
+      _rebuildEntries();
+    } catch (_) {
+      _healthEntries = [];
+      _mortalityEntries = [];
+      _operationalNoteEntries = [];
+      _birthEntries = [];
+      _entries = _localEntriesForDay(day);
+      _error = 'تعذّر تحميل سجل المتابعة';
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
   }
 
-  void addHealth({
-    required String animalId,
-    String? animalType,
-    required String description,
-    required HealthFollowUpKind followUpKind,
-    String? fullDescription,
-    String? extraNotes,
-    bool hasAttachment = false,
-  }) {
-    _entries.insert(
-      0,
-      HealthFollowUpEntry(
-        id: 'h_${DateTime.now().millisecondsSinceEpoch}',
-        registeredAt: DateTime.now(),
-        animalId: animalId,
-        animalType: _nullIfEmpty(animalType),
-        description: description,
-        followUpKind: followUpKind,
-        fullDescription: _nullIfEmpty(fullDescription),
-        extraNotes: _nullIfEmpty(extraNotes),
-        hasAttachment: hasAttachment,
-      ),
-    );
-    notifyListeners();
+  Future<void> refresh() async {
+    if (_loadedDate == null) return;
+    await loadForDate(_loadedDate!);
   }
 
   void addBirth({
@@ -57,7 +86,7 @@ class FollowUpProvider extends ChangeNotifier {
     required int birthCount,
     required List<NewbornRecord> newborns,
   }) {
-    _entries.insert(
+    _localEntries.insert(
       0,
       BirthFollowUpEntry(
         id: 'b_${DateTime.now().millisecondsSinceEpoch}',
@@ -69,53 +98,35 @@ class FollowUpProvider extends ChangeNotifier {
         newborns: newborns,
       ),
     );
+    _rebuildEntries();
     notifyListeners();
   }
 
-  void addMortality({
-    required MortalityVictimKind victimKind,
-    required String animalId,
-    String? animalType,
-    String? deathCause,
-    String? extraNotes,
-    bool hasAttachment = false,
-  }) {
-    _entries.insert(
-      0,
-      MortalityFollowUpEntry(
-        id: 'm_${DateTime.now().millisecondsSinceEpoch}',
-        registeredAt: DateTime.now(),
-        victimKind: victimKind,
-        animalId: animalId,
-        animalType: _nullIfEmpty(animalType),
-        deathCause: _nullIfEmpty(deathCause),
-        extraNotes: _nullIfEmpty(extraNotes),
-        hasAttachment: hasAttachment,
-      ),
-    );
-    notifyListeners();
+  void _rebuildEntries() {
+    final day = _loadedDate;
+    if (day == null) {
+      _entries = [];
+      return;
+    }
+
+    final local = _localEntriesForDay(day);
+    _entries = [
+      ..._healthEntries,
+      ..._mortalityEntries,
+      ..._operationalNoteEntries,
+      ..._birthEntries,
+      ...local,
+    ]..sort((a, b) => b.registeredAt.compareTo(a.registeredAt));
   }
 
-  void addOperationalNote({
-    required OperationalNoteKind noteKind,
-    required String summary,
-    String? fullText,
-    String? extraNotes,
-    bool hasAttachment = false,
-  }) {
-    _entries.insert(
-      0,
-      OperationalNoteEntry(
-        id: 'o_${DateTime.now().millisecondsSinceEpoch}',
-        registeredAt: DateTime.now(),
-        noteKind: noteKind,
-        summary: summary,
-        fullText: _nullIfEmpty(fullText),
-        extraNotes: _nullIfEmpty(extraNotes),
-        hasAttachment: hasAttachment,
-      ),
-    );
-    notifyListeners();
+  List<FollowUpEntry> _localEntriesForDay(DateTime day) {
+    return _localEntries
+        .where((entry) => _isSameDay(entry.registeredAt, day))
+        .toList();
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   String? _nullIfEmpty(String? value) {

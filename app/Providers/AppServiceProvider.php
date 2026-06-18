@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\View\Composers\CareLayoutComposer;
+use App\View\Composers\VetLayoutComposer;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        View::composer('vet.layout', VetLayoutComposer::class);
+        View::composer('care.layout', CareLayoutComposer::class);
     }
 }

@@ -3,7 +3,6 @@
 @section('page_title', 'تعديل معلومات الزيارة')
 
 @section('styles')
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
     :root {
         --glass-bg: rgba(255, 255, 255, 0.85);
@@ -346,14 +345,6 @@
         color: #991B1B;
     }
 
-    #visitMapEdit {
-        height: 260px;
-        border-radius: 12px;
-        border: 1.5px solid var(--border);
-        overflow: hidden;
-        z-index: 1;
-    }
-
     @media (max-width: 900px) {
         .visit-container { grid-template-columns: 1fr; }
         .form-row { grid-template-columns: 1fr; }
@@ -412,28 +403,6 @@
                         <label>رقم الأمن</label>
                         <input type="text" id="security_phone" class="form-input" value="091-555-0123" dir="ltr">
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Zoo Location -->
-        <div class="premium-card" style="margin-bottom: 1.8rem;">
-            <div class="card-accent-header">
-                <div class="icon-wrapper">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                </div>
-                <h3>موقع الحديقة على الخريطة</h3>
-            </div>
-            <div class="premium-card-body">
-                <div class="form-group">
-                    <label>عنوان الحديقة</label>
-                    <input type="text" id="zoo_address" class="form-input" value="حديقة حيوانات طرابلس — طريق المطار، طرابلس، ليبيا">
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>الموقع على الخريطة (انقر لتحديد النقطة)</label>
-                    <div id="visitMapEdit"></div>
-                    <input type="hidden" id="zoo_lat" value="32.848500">
-                    <input type="hidden" id="zoo_lng" value="13.178500">
                 </div>
             </div>
         </div>
@@ -529,10 +498,8 @@
 @endsection
 
 @section('scripts')
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     let statusVisEdit = true;
-    let editMap, editMarker;
 
     function toggleStatusVisEdit() {
         statusVisEdit = !statusVisEdit;
@@ -544,25 +511,6 @@
             btn.textContent = '🚫 مخفي عن الزوار';
             btn.classList.add('hidden-state');
         }
-    }
-
-    function initEditMap() {
-        const lat = parseFloat(document.getElementById('zoo_lat').value);
-        const lng = parseFloat(document.getElementById('zoo_lng').value);
-        const coords = [lat, lng];
-
-        editMap = L.map('visitMapEdit').setView(coords, 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap'
-        }).addTo(editMap);
-
-        editMarker = L.marker(coords).addTo(editMap);
-
-        editMap.on('click', function(e) {
-            document.getElementById('zoo_lat').value = e.latlng.lat.toFixed(6);
-            document.getElementById('zoo_lng').value = e.latlng.lng.toFixed(6);
-            editMarker.setLatLng(e.latlng);
-        });
     }
 
     function showToast(msg) {
@@ -583,7 +531,5 @@
             setTimeout(() => { window.location.href = '/admin/visit-info'; }, 1200);
         }, 800);
     }
-
-    window.onload = initEditMap;
 </script>
 @endsection

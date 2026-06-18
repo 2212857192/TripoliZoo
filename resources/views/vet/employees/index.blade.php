@@ -471,11 +471,7 @@
 <!-- Top Card: Header + Filters -->
 <div class="top-card">
     <!-- Page Header -->
-    <div class="page-header">
-        <div class="page-header-info">
-            <h2>حسابات الموظفين</h2>
-            <p>إجمالي <strong id="empCount">3</strong> موظف مسجل في النظام</p>
-        </div>
+    <div class="page-header" style="justify-content:flex-end;">
         <button class="btn-add" onclick="openModal('addModal')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             إضافة موظف جديد

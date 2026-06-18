@@ -40,6 +40,14 @@ enum UserRole: string
         return $this->appRole() !== null;
     }
 
+    public function canUseWebPortal(): bool
+    {
+        return match ($this) {
+            self::Veterinarian, self::Visitor => false,
+            default => $this->portal() !== null,
+        };
+    }
+
     public function label(): string
     {
         return $this->value;
@@ -54,6 +62,7 @@ enum UserRole: string
     public static function employeeOptions(): array
     {
         return [
+            self::Director->value,
             self::GroupSupervisor->value,
             self::Veterinarian->value,
             self::CareHead->value,

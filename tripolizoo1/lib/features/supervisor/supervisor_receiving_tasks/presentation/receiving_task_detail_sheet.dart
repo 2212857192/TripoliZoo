@@ -33,11 +33,18 @@ class ReceivingTaskDetailSheet extends StatelessWidget {
     final note = await ConfirmReceiptFormSheet.show(context);
     if (!context.mounted || note == null) return;
 
-    context.read<ReceivingTasksProvider>().confirmReceipt(
+    final success = await context.read<ReceivingTasksProvider>().confirmReceipt(
           task.id,
           note: note.isEmpty ? null : note,
         );
     if (!context.mounted) return;
+    if (!success) {
+      showSupervisorSuccessSnackBar(
+        context,
+        message: 'تعذر تأكيد الاستلام. تحقق من الاتصال.',
+      );
+      return;
+    }
     Navigator.of(context).pop();
     showSupervisorSuccessSnackBar(
       context,
@@ -49,12 +56,20 @@ class ReceivingTaskDetailSheet extends StatelessWidget {
     final result = await TemporaryDelayFormSheet.show(context);
     if (!context.mounted || result == null) return;
 
-    context.read<ReceivingTasksProvider>().recordTemporaryDelay(
-          task.id,
-          reason: result.reason,
-          extraNote: result.extraNote,
-        );
+    final success =
+        await context.read<ReceivingTasksProvider>().recordTemporaryDelay(
+              task.id,
+              reason: result.reason,
+              extraNote: result.extraNote,
+            );
     if (!context.mounted) return;
+    if (!success) {
+      showSupervisorSuccessSnackBar(
+        context,
+        message: 'تعذر تسجيل التأخير. تحقق من الاتصال.',
+      );
+      return;
+    }
     showSupervisorSuccessSnackBar(
       context,
       message: 'تم تسجيل تعذر الاستلام مؤقتًا',
@@ -203,7 +218,7 @@ class ReceivingTaskDetailSheet extends StatelessWidget {
                         ),
                         _DetailRow(
                           label: 'صادر عن',
-                          value: task.decisionIssuedBy,
+                          value: task.decisionIssuerLabel,
                         ),
                         if (task.decisionNotes != null &&
                             task.decisionNotes!.trim().isNotEmpty)

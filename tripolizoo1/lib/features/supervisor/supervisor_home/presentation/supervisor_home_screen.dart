@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:tripolizoo/features/supervisor/data/supervisor_dashboard_data.dart';
-import 'package:tripolizoo/features/supervisor/supervisor_notifications/presentation/supervisor_notifications_provider.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_home/presentation/supervisor_dashboard_provider.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_receiving_tasks/presentation/receiving_tasks_provider.dart';
 import 'package:tripolizoo/features/supervisor/shared/supervisor_ui.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_home/presentation/widgets/diet_recommendations_section.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_home/presentation/widgets/quick_actions_section.dart';
@@ -11,7 +11,7 @@ import 'package:tripolizoo/features/supervisor/supervisor_home/presentation/widg
 import 'package:tripolizoo/features/supervisor/supervisor_home/presentation/widgets/urgent_health_button.dart';
 import 'package:tripolizoo/features/supervisor/shared/supervisor_form_launcher.dart';
 import 'package:tripolizoo/features/supervisor/shared/supervisor_form_type.dart';
-import 'package:tripolizoo/shared/constants/app_colors.dart';
+import 'package:tripolizoo/features/visitor/visitor_auth/presentation/auth_provider.dart';
 
 class SupervisorHomeScreen extends StatefulWidget {
   const SupervisorHomeScreen({super.key});
@@ -24,6 +24,8 @@ class _SupervisorHomeScreenState extends State<SupervisorHomeScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _fadeController;
   late final Animation<double> _fadeAnimation;
+  final _scrollController = ScrollController();
+  final _dietSectionKey = GlobalKey();
 
   @override
   void initState() {
@@ -37,20 +39,34 @@ class _SupervisorHomeScreenState extends State<SupervisorHomeScreen>
       curve: Curves.easeOut,
     );
     _fadeController.forward();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ReceivingTasksProvider>().load();
+      context.read<SupervisorDashboardProvider>().load();
+    });
   }
 
   @override
   void dispose() {
     _fadeController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    const data = SupervisorDashboardData.mock;
-    final unreadNotifications =
-        context.watch<SupervisorNotificationsProvider>().unreadCount;
+    final dashboard = context.watch<SupervisorDashboardProvider>();
+    final authUser = context.watch<AuthProvider>().user;
+    final pendingReceivingTasks = dashboard.pendingReceivingTasks > 0
+        ? dashboard.pendingReceivingTasks
+        : context.watch<ReceivingTasksProvider>().pendingCount;
+    final unreadNotifications = dashboard.unreadNotifications;
+    final dietRecommendations = dashboard.dietRecommendations;
+    final activeDietCount = dashboard.activeDietRecommendations;
     final bottomPad = MediaQuery.of(context).padding.bottom;
+    final supervisorName =
+        authUser?.name ?? dashboard.data?.supervisorName ?? 'مشرف';
+    final groupName =
+        authUser?.assignedGroup ?? dashboard.data?.groupName ?? '—';
 
     return Scaffold(
       backgroundColor: SupervisorUi.background,
@@ -60,6 +76,7 @@ class _SupervisorHomeScreenState extends State<SupervisorHomeScreen>
           top: false,
           bottom: false,
           child: SingleChildScrollView(
+            controller: _scrollController,
             physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -68,8 +85,8 @@ class _SupervisorHomeScreenState extends State<SupervisorHomeScreen>
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: SupervisorHomeHeader(
-                    supervisorName: data.supervisorName,
-                    groupName: data.groupName,
+                    supervisorName: supervisorName,
+                    groupName: groupName,
                     unreadNotifications: unreadNotifications,
                     onNotificationsTap: () =>
                         context.push('/supervisor/notifications'),
@@ -96,7 +113,7 @@ class _SupervisorHomeScreenState extends State<SupervisorHomeScreen>
                             Row(
                               children: [
                                 SummaryStatCard(
-                                  count: data.pendingReceivingTasks,
+                                  count: pendingReceivingTasks,
                                   title: 'مهام الاستلام',
                                   subtitle: 'بانتظار الاستلام',
                                   icon: Icons.inventory_2_outlined,
@@ -107,15 +124,14 @@ class _SupervisorHomeScreenState extends State<SupervisorHomeScreen>
                                 ),
                                 const SizedBox(width: 12),
                                 SummaryStatCard(
-                                  count: data.activeDietRecommendations,
+                                  count: activeDietCount,
                                   title: 'التوصيات الغذائية',
                                   subtitle: 'نشطة حالياً',
                                   icon: Icons.restaurant_outlined,
                                   iconBg: const Color(0xFFE8F5E9),
-                                  onTap: () => _showComingSoon(
-                                    context,
-                                    'التوصيات الغذائية العلاجية',
-                                  ),
+                                  onTap: dietRecommendations.isEmpty
+                                      ? () {}
+                                      : () => _scrollToDietRecommendations(context),
                                 ),
                               ],
                             ),
@@ -167,10 +183,16 @@ class _SupervisorHomeScreenState extends State<SupervisorHomeScreen>
                       UrgentHealthButton(
                         onTap: () => _openUrgentReport(context),
                       ),
+                      if (dietRecommendations.isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        KeyedSubtree(
+                          key: _dietSectionKey,
+                          child: DietRecommendationsSection(
+                            recommendations: dietRecommendations,
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 24),
-                      DietRecommendationsSection(
-                        recommendations: data.dietRecommendations,
-                      ),
                     ],
                   ),
                 ),
@@ -203,12 +225,15 @@ class _SupervisorHomeScreenState extends State<SupervisorHomeScreen>
     );
   }
 
-  void _showComingSoon(BuildContext context, String feature) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('قريبًا: $feature'),
-        backgroundColor: AppColors.primary,
-      ),
+  void _scrollToDietRecommendations(BuildContext context) {
+    final target = _dietSectionKey.currentContext;
+    if (target == null) return;
+
+    Scrollable.ensureVisible(
+      target,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutCubic,
+      alignment: 0.05,
     );
   }
 }

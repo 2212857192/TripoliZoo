@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tripolizoo/features/doctor/doctor_quarantine/domain/quarantine_record.dart';
+import 'package:tripolizoo/features/doctor/shared/doctor_ui.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
 
 class QuarantineCard extends StatelessWidget {
@@ -13,32 +14,23 @@ class QuarantineCard extends StatelessWidget {
   final QuarantineRecord record;
   final VoidCallback onTap;
 
-  static const _border = Color(0xFFE5E7EB);
-  static const _muted = Color(0xFF6B7280);
-
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(DoctorUi.cardRadius),
+        border: Border.all(color: DoctorUi.border, width: 1.5),
+        boxShadow: DoctorUi.cardShadow,
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DoctorUi.cardRadius),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DoctorUi.cardRadius),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -50,7 +42,7 @@ class QuarantineCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF3F4F6),
+                        color: AppColors.primary.withValues(alpha: 0.06),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -58,26 +50,30 @@ class QuarantineCard extends StatelessWidget {
                         style: GoogleFonts.cairo(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: _muted,
+                          color: AppColors.primaryDark,
                         ),
                       ),
                     ),
                     const Spacer(),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
+                        horizontal: 12,
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFF7ED),
+                        color: const Color(0xFFFFF3E0),
                         borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: const Color(0xFFFFB74D).withValues(alpha: 0.3),
+                          width: 1,
+                        ),
                       ),
                       child: Text(
                         record.status.label,
                         style: GoogleFonts.cairo(
                           fontSize: 10.5,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFFB45309),
+                          color: const Color(0xFFE65100),
                         ),
                       ),
                     ),
@@ -89,7 +85,7 @@ class QuarantineCard extends StatelessWidget {
                   style: GoogleFonts.cairo(
                     fontSize: 17,
                     fontWeight: FontWeight.w900,
-                    color: const Color(0xFF1A1A1A),
+                    color: DoctorUi.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -98,7 +94,7 @@ class QuarantineCard extends StatelessWidget {
                   style: GoogleFonts.cairo(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w600,
-                    color: _muted,
+                    color: DoctorUi.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -122,23 +118,37 @@ class QuarantineCard extends StatelessWidget {
                         'آخر ملاحظة: ${formatQuarantineDate(record.lastNoteDate!)}',
                   ),
                 ],
-                const SizedBox(height: 14),
+                const SizedBox(height: 16),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 11),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF0F4F0),
+                    color: AppColors.primary.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: _border),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.12),
+                      width: 1.2,
+                    ),
                   ),
                   alignment: Alignment.center,
-                  child: Text(
-                    'عرض التفاصيل',
-                    style: GoogleFonts.cairo(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.primaryDark,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'عرض تفاصيل السجل',
+                        style: GoogleFonts.cairo(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primaryDark,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.chevron_left_rounded,
+                        color: AppColors.primaryDark,
+                        size: 16,
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -161,7 +171,7 @@ class _InfoRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 16, color: QuarantineCard._muted),
+        Icon(icon, size: 16, color: DoctorUi.muted),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
@@ -169,7 +179,7 @@ class _InfoRow extends StatelessWidget {
             style: GoogleFonts.cairo(
               fontSize: 12.5,
               fontWeight: FontWeight.w600,
-              color: QuarantineCard._muted,
+              color: DoctorUi.muted,
               height: 1.4,
             ),
           ),

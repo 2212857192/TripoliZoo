@@ -189,7 +189,9 @@ class _MainSection extends StatelessWidget {
                     titleColor: const Color(0xFFE65100),
                     isLast: true,
                     onTap: () {
-                      context.read<AuthProvider>().logout();
+                      if (hasAccount) {
+                        context.read<AuthProvider>().logout();
+                      }
                       context.go('/login');
                     },
                   ),

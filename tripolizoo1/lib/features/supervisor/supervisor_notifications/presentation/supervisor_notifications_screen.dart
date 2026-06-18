@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tripolizoo/features/supervisor/shared/supervisor_ui.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_home/presentation/supervisor_dashboard_provider.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_notifications/domain/supervisor_notification.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_notifications/presentation/supervisor_notifications_provider.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_notifications/presentation/widgets/supervisor_notification_card.dart';
@@ -22,10 +23,20 @@ class _SupervisorNotificationsScreenState
   SupervisorNotificationReadFilter _filter =
       SupervisorNotificationReadFilter.all;
 
-  void _openNotification(SupervisorNotification notification) {
-    context
-        .read<SupervisorNotificationsProvider>()
-        .markAsRead(notification.id);
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SupervisorNotificationsProvider>().load();
+    });
+  }
+
+  Future<void> _openNotification(SupervisorNotification notification) async {
+    final provider = context.read<SupervisorNotificationsProvider>();
+    await provider.markAsRead(notification.id);
+    if (!mounted) return;
+
+    context.read<SupervisorDashboardProvider>().load();
 
     final route = notification.targetRoute;
     if (route != null) {
@@ -47,9 +58,14 @@ class _SupervisorNotificationsScreenState
       body: SafeArea(
         top: false,
         bottom: false,
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
+        child: RefreshIndicator(
+          color: AppColors.primary,
+          onRefresh: () => provider.load(),
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            slivers: [
             SliverToBoxAdapter(
               child: AnnotatedRegion<SystemUiOverlayStyle>(
                 value: SystemUiOverlayStyle.dark,
@@ -186,7 +202,44 @@ class _SupervisorNotificationsScreenState
                 ),
               ),
             ),
-            if (items.isEmpty)
+            if (provider.isLoading && items.isEmpty)
+              const SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: CircularProgressIndicator(color: AppColors.primary),
+                ),
+              )
+            else if (provider.errorMessage != null && items.isEmpty)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'تعذّر تحميل الإشعارات',
+                        style: GoogleFonts.cairo(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: SupervisorUi.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        provider.errorMessage!,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.cairo(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: SupervisorUi.muted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else if (items.isEmpty)
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: Padding(
@@ -235,7 +288,8 @@ class _SupervisorNotificationsScreenState
                   },
                 ),
               ),
-          ],
+            ],
+          ),
         ),
       ),
     );

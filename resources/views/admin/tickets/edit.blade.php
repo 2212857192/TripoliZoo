@@ -1,18 +1,6 @@
 @extends($__layout ?? 'admin.layout')
-@section('title', 'تعديل سعر التذكرة | Tripoli Zoo')
-@section('page_title', 'تعديل سعر التذكرة')
-
-@php
-// Static demo ticket data based on id
-$tickets = [
-    '1' => ['name' => 'تذكرة الكبار', 'price' => '10.00', 'target' => 'كبار (فوق 12 سنة)', 'benefits' => 'الدخول العام للحديقة', 'nationality' => 'مواطن', 'age' => 'بالغ', 'active' => true],
-    '2' => ['name' => 'تذكرة الأطفال', 'price' => '5.00', 'target' => 'أطفال (3 - 12 سنة)', 'benefits' => 'الدخول العام للحديقة', 'nationality' => 'مواطن', 'age' => 'طفل', 'active' => true],
-    '3' => ['name' => 'تذكرة كبار الشخصيات VIP', 'price' => '25.00', 'target' => 'العائلات وVIP', 'benefits' => 'سيارة جولف + مرشد', 'nationality' => 'مواطن', 'age' => 'بالغ', 'active' => true],
-    '4' => ['name' => 'تذكرة السياح الأجانب', 'price' => '50.00', 'target' => 'الزوار غير الليبيين', 'benefits' => 'مرشد سياحي خاص', 'nationality' => 'أجنبي', 'age' => 'بالغ', 'active' => false],
-    '5' => ['name' => 'تذكرة الطلاب', 'price' => '7.00', 'target' => 'طلاب المدارس والجامعات', 'benefits' => 'الدخول العام — يُطلب إبراز بطاقة طالب', 'nationality' => 'مواطن', 'age' => 'طالب', 'active' => true],
-];
-$ticket = $tickets[$id] ?? $tickets['1'];
-@endphp
+@section('title', 'تعديل فئة التذكرة | Tripoli Zoo')
+@section('page_title', 'تعديل فئة التذكرة')
 
 @section('styles')
 <style>
@@ -290,15 +278,15 @@ $ticket = $tickets[$id] ?? $tickets['1'];
 
 <div class="ticket-single-layout">
     
-    <a href="/admin/tickets" class="page-back">
+    <a href="{{ route('admin.tickets.index') }}" class="page-back">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
         العودة إلى قائمة التذاكر
     </a>
 
     <!-- Header Hero -->
     <div class="page-hero">
-        <h2>تعديل تعرفة سعر التذكرة</h2>
-        <p>قم بتعديل وتحديث الأسعار المطبقة للبيع لفئة التذكرة المحددة.</p>
+        <h2>تعديل فئة التذكرة</h2>
+        <p>حدّث السعر والحالة والبيانات المعروضة في تطبيق الزوار.</p>
     </div>
 
     <!-- Main Container -->
@@ -311,93 +299,65 @@ $ticket = $tickets[$id] ?? $tickets['1'];
         </div>
         
         <div class="premium-card-body">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>فئة التذكرة</label>
-                    <input type="text" id="name" class="form-input" value="{{ $ticket['name'] }}" disabled style="background:#F1F5F9;cursor:not-allowed;font-weight:700;">
+            <form method="POST" action="{{ route('admin.tickets.update', $ticket) }}">
+                @csrf
+                @method('PUT')
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>اسم فئة التذكرة <span style="color:#EF4444">*</span></label>
+                        <input type="text" name="name" class="form-input" value="{{ old('name', $ticket->name) }}" required>
+                        @error('name')<div style="color:#EF4444;font-size:0.82rem;margin-top:6px;">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="form-group">
+                        <label>السعر بالدينار الليبي (د.ل) <span style="color:#EF4444">*</span></label>
+                        <input type="number" name="price" class="form-input" value="{{ old('price', $ticket->price) }}" step="0.5" min="0" required>
+                        @error('price')<div style="color:#EF4444;font-size:0.82rem;margin-top:6px;">{{ $message }}</div>@enderror
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>السعر الجديد بالدينار الليبي (د.ل) <span style="color:#EF4444">*</span></label>
-                    <input type="number" id="price" class="form-input" value="{{ $ticket['price'] }}" step="0.5">
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>الفئة المستهدفة بالدخول</label>
-                    <input type="text" id="target" class="form-input" value="{{ $ticket['target'] }}" disabled style="background:#F1F5F9;cursor:not-allowed;">
-                </div>
-                <div class="form-group">
-                    <label>نوع الزائر</label>
-                    <input type="text" id="nationality" class="form-input" value="{{ $ticket['nationality'] }}" disabled style="background:#F1F5F9;cursor:not-allowed;font-weight:700;">
-                </div>
-                <div class="form-group">
-                    <label>العمر</label>
-                    <input type="text" id="age" class="form-input" value="{{ $ticket['age'] }}" disabled style="background:#F1F5F9;cursor:not-allowed;font-weight:700;">
-                </div>
-            </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>الخدمات والمزايا المشمولة</label>
-                    <input type="text" id="benefits" class="form-input" value="{{ $ticket['benefits'] }}" disabled style="background:#F1F5F9;cursor:not-allowed;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>الفئة المستهدفة بالدخول</label>
+                        <input type="text" name="target_description" class="form-input" value="{{ old('target_description', $ticket->target_description) }}">
+                    </div>
+                    <div class="form-group">
+                        <label>نوع الزائر <span style="color:#EF4444">*</span></label>
+                        <select name="visitor_nationality" class="form-input" required>
+                            <option value="مواطن" @selected(old('visitor_nationality', $ticket->visitor_nationality) === 'مواطن')>مواطن</option>
+                            <option value="أجنبي" @selected(old('visitor_nationality', $ticket->visitor_nationality) === 'أجنبي')>أجنبي</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>العمر <span style="color:#EF4444">*</span></label>
+                        <select name="visitor_age_group" class="form-input" required>
+                            <option value="بالغ" @selected(old('visitor_age_group', $ticket->visitor_age_group) === 'بالغ')>بالغ</option>
+                            <option value="طفل" @selected(old('visitor_age_group', $ticket->visitor_age_group) === 'طفل')>طفل</option>
+                            <option value="طالب" @selected(old('visitor_age_group', $ticket->visitor_age_group) === 'طالب')>طالب</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Divider -->
-            <div class="form-divider"></div>
+                <div class="form-divider"></div>
 
-            <!-- Activation Switch inside same card container -->
-            <div class="toggle-row">
-                <label>تفعيل فئة التذكرة للبيع فوراً في النظام</label>
-                <label class="switch">
-                    <input type="checkbox" id="active" {{ $ticket['active'] ? 'checked' : '' }}>
-                    <span class="slider"></span>
-                </label>
-            </div>
+                <div class="toggle-row">
+                    <label>تفعيل فئة التذكرة للبيع في تطبيق الزوار</label>
+                    <label class="switch">
+                        <input type="hidden" name="is_active" value="0">
+                        <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $ticket->is_active))>
+                        <span class="slider"></span>
+                    </label>
+                </div>
 
-            <!-- Action buttons inside the same container -->
-            <div class="actions-row">
-                <a href="/admin/tickets" class="btn-cancel-premium">إلغاء وتراجع</a>
-                <button class="btn-submit-premium" onclick="submitForm()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    تحديث السعر الحالي
-                </button>
-            </div>
+                <div class="actions-row">
+                    <a href="{{ route('admin.tickets.index') }}" class="btn-cancel-premium">إلغاء وتراجع</a>
+                    <button type="submit" class="btn-submit-premium">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        حفظ التعديلات
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
 </div>
-
-<div class="toast" id="toast"></div>
-@endsection
-
-@section('scripts')
-<script>
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    function submitForm() {
-        const price = document.getElementById('price').value.trim();
-
-        if (!price) {
-            showToast('⚠️ يرجى تحديد سعر التذكرة الجديد');
-            return;
-        }
-
-        const btn = document.querySelector('.btn-submit-premium');
-        btn.textContent = '⏳ جاري الحفظ...';
-        btn.disabled = true;
-
-        setTimeout(() => {
-            showToast('✅ تم تحديث السعر بنجاح ونشره للبيع');
-            btn.textContent = '✅ تم التعديل!';
-            setTimeout(() => { window.location.href = '/admin/tickets'; }, 1000);
-        }, 800);
-    }
-</script>
 @endsection

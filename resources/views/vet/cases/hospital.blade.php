@@ -369,14 +369,14 @@
 </div>
 
 {{-- ═══ FILTER CARD ═══ --}}
-<div style="background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.2rem; margin-bottom: 1.5rem; display: flex; justify-content: flex-start; align-items: center;">
+<form method="GET" action="{{ $vetBase }}/cases/hospital" style="background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.2rem; margin-bottom: 1.5rem; display: flex; justify-content: flex-start; align-items: center;">
     <div style="display: flex; gap: 15px; width: 100%;">
         <div style="flex: 2; position: relative;">
             <svg style="position: absolute; right: 12px; top: 11px; color: #94a3b8;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="بحث برقم الحيوان أو نوعه..." style="width: 100%; padding: 10px 35px 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 600; outline: none; color: #0f172a;">
+            <input type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="بحث برقم الحيوان أو نوعه..." style="width: 100%; padding: 10px 35px 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 600; outline: none; color: #0f172a;">
         </div>
-        <select style="flex: 1; padding: 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; color: #475569; font-weight: 600; outline: none;">
-                        @include('partials.animal-group-options', ['emptyLabel' => 'جميع المجموعات'])
+        <select name="group" style="flex: 1; padding: 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; color: #475569; font-weight: 600; outline: none;">
+                        @include('partials.animal-group-options', ['emptyLabel' => 'جميع المجموعات', 'selected' => $filters['group'] ?? '', 'withValues' => true])
         </select>
         @include('partials.date-filter', [
             'filterId' => 'hospitalDateFilter',
@@ -387,14 +387,15 @@
             'showLast7' => true,
             'showLast30' => true,
         ])
-        <select id="statusFilter" style="flex: 1; padding: 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; color: #475569; font-weight: 600; outline: none;">
+        <select name="status" id="statusFilter" style="flex: 1; padding: 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; color: #475569; font-weight: 600; outline: none;">
             <option value="">جميع الحالات</option>
-            <option>جاهز للخروج</option>
-            <option>قيد العلاج</option>
-            <option>لا يستجيب للعلاج</option>
+            @foreach(\App\Enums\HospitalCaseStatus::cases() as $statusOption)
+                <option value="{{ $statusOption->value }}" @selected(($filters['status'] ?? '') === $statusOption->value)>{{ $statusOption->label() }}</option>
+            @endforeach
         </select>
+        <button type="submit" class="btn-search" style="flex: 0 0 auto; padding: 10px 18px;">بحث</button>
     </div>
-</div>
+</form>
 
 <!-- ════ TAB 1: الحالات النشطة ════ -->
 <div id="active-cases" class="tab-content active">
@@ -407,7 +408,7 @@
                 <thead>
                     <tr>
                         <th>الحيوان</th>
-                        <th>نوع الحيوان</th>
+                        <th>النوع</th>
                         <th>المجموعة</th>
                         <th>تاريخ الدخول</th>
                         <th>الحالة</th>
@@ -415,48 +416,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        @include('partials.animal-table-cell', ['name' => 'سيمبا', 'emoji' => '🦁', 'animalId' => '#ANM-101'])
-                        <td>أسد إفريقي</td>
-                        <td>القططية</td>
-                        <td>2026-05-30</td>
-                        <td><span class="badge badge-ready"><span class="dot"></span>جاهز للخروج</span></td>
-                        <td>
-                            <div style="display:flex; gap:6px; justify-content: center;">
-                                <a href="{{ $vetBase }}/cases/hospital/HC-2025-001" class="btn-tbl view" title="عرض">
-                                    @include('partials.icon-eye-view')
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        @include('partials.animal-table-cell', ['name' => 'جميلة', 'emoji' => '🦒', 'animalId' => '#ANM-154'])
-                        <td>زرافة نيلية</td>
-                        <td>الثدييات الكبيرة</td>
-                        <td>2026-06-02</td>
-                        <td><span class="badge badge-watch"><span class="dot"></span>قيد العلاج</span></td>
-                        <td>
-                            <div style="display:flex; gap:6px; justify-content: center;">
-                                <a href="{{ $vetBase }}/cases/hospital/HC-2025-002" class="btn-tbl view" title="عرض">
-                                    @include('partials.icon-eye-view')
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        @include('partials.animal-table-cell', ['emoji' => '🦅', 'animalId' => '#ANM-088'])
-                        <td>نسر ذهبي</td>
-                        <td>الطيور</td>
-                        <td>2026-05-29</td>
-                        <td><span class="badge badge-no-response"><span class="dot"></span>لا يستجيب للعلاج</span></td>
-                        <td>
-                            <div style="display:flex; gap:6px; justify-content: center;">
-                                <a href="{{ $vetBase }}/cases/hospital/HC-2025-003" class="btn-tbl view" title="عرض">
-                                    @include('partials.icon-eye-view')
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
+                    @include('partials.hospital-case-rows', [
+                        'cases' => $activeCases ?? collect(),
+                        'vetBase' => $vetBase,
+                        'mode' => 'active',
+                    ])
                 </tbody>
             </table>
         </div>
@@ -474,7 +438,7 @@
                 <thead>
                     <tr>
                         <th>الحيوان</th>
-                        <th>نوع الحيوان</th>
+                        <th>النوع</th>
                         <th>المجموعة</th>
                         <th>تاريخ قرار الخروج</th>
                         <th>الحالة</th>
@@ -482,34 +446,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        @include('partials.animal-table-cell', ['emoji' => '🦌', 'animalId' => '#ANM-120'])
-                        <td>غزال الدوركاس</td>
-                        <td>الغزلان</td>
-                        <td>2026-06-05</td>
-                        <td><span class="badge badge-handover"><span class="dot"></span>بانتظار الاستلام</span></td>
-                        <td>
-                            <div style="display:flex; gap:6px; justify-content: center;">
-                                <a href="{{ $vetBase }}/cases/hospital/HC-2025-004" class="btn-tbl view" title="متابعة">
-                                    @include('partials.icon-eye-view')
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        @include('partials.animal-table-cell', ['emoji' => '🐆', 'animalId' => '#ANM-305'])
-                        <td>فهد إفريقي</td>
-                        <td>القططية</td>
-                        <td>2026-06-04</td>
-                        <td><span class="badge badge-unavailable"><span class="dot"></span>تعذر الاستلام مؤقتًا</span></td>
-                        <td>
-                            <div style="display:flex; gap:6px; justify-content: center;">
-                                <a href="{{ $vetBase }}/cases/hospital/HC-2025-005" class="btn-tbl view" title="متابعة">
-                                    @include('partials.icon-eye-view')
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
+                    @include('partials.hospital-case-rows', [
+                        'cases' => $pendingHandoverCases ?? collect(),
+                        'vetBase' => $vetBase,
+                        'mode' => 'pending',
+                    ])
                 </tbody>
             </table>
         </div>
@@ -527,7 +468,7 @@
                 <thead>
                     <tr>
                         <th>الحيوان</th>
-                        <th>نوع الحيوان</th>
+                        <th>النوع</th>
                         <th>تاريخ الدخول</th>
                         <th>تاريخ الانتهاء</th>
                         <th>النتيجة / الحالة</th>
@@ -535,34 +476,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        @include('partials.animal-table-cell', ['name' => 'بونغو', 'emoji' => '🐒', 'animalId' => '#ANL-0182-2023'])
-                        <td>شمبانزي</td>
-                        <td>2026-05-10</td>
-                        <td>2026-05-20</td>
-                        <td><span class="badge badge-received"><span class="dot"></span>خروج بعد العلاج</span></td>
-                        <td>
-                            <div style="display:flex; gap:6px; justify-content: center;">
-                                <a href="{{ $vetBase }}/cases/hospital/HC-2025-006" class="btn-tbl view" title="عرض التفاصيل">
-                                    @include('partials.icon-eye-view')
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        @include('partials.animal-table-cell', ['emoji' => '🦌', 'animalId' => '#ANM-042'])
-                        <td>مها أبو حراب</td>
-                        <td>2026-05-25</td>
-                        <td>2026-05-27</td>
-                        <td><span class="badge badge-slaughter"><span class="dot"></span>ذبح اضطراري</span></td>
-                        <td>
-                            <div style="display:flex; gap:6px; justify-content: center;">
-                                <a href="{{ $vetBase }}/cases/hospital/HC-2025-007" class="btn-tbl view" title="عرض التفاصيل">
-                                    @include('partials.icon-eye-view')
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
+                    @include('partials.hospital-case-rows', [
+                        'cases' => $completedCases ?? collect(),
+                        'vetBase' => $vetBase,
+                        'mode' => 'completed',
+                    ])
                 </tbody>
             </table>
         </div>
@@ -748,6 +666,11 @@ function switchDTab(tabNum) {
                 <label style="font-size:0.8rem; font-weight:800; color:#374151; display:block; margin-bottom:6px;">ملاحظة القرار (اختياري)</label>
                 <textarea style="width:100%; padding:9px 12px; border:1.5px solid #e2e8f0; border-radius:10px; font-family:'Cairo',sans-serif; font-size:0.83rem; font-weight:600; resize:vertical; min-height:70px; outline:none;" placeholder="أضف أي تفاصيل إضافية عن القرار..."></textarea>
             </div>
+            <div style="margin-top:1rem;">
+                <label style="font-size:0.8rem; font-weight:800; color:#374151; display:block; margin-bottom:6px;">العلاجات المسجلة خلال فترة الإقامة</label>
+                <ul id="decisionTreatmentsPreview" style="margin:0; padding:12px 14px 12px 0; list-style:disc; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; min-height:48px;"></ul>
+                <p style="font-size:0.75rem; color:#64748b; font-weight:600; margin-top:6px; line-height:1.5;">يُجمع تلقائياً من سجل المتابعة الطبية اليومية ويُدرج في بيانات القرار.</p>
+            </div>
         </div>
         <div class="decision-footer">
             <button class="btn-cancel" onclick="closeModal('decisionModal')" style="padding:9px 18px; background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; border-radius:10px; font-family:'Cairo',sans-serif; font-size:0.85rem; font-weight:800; cursor:pointer;">إلغاء</button>
@@ -774,12 +697,45 @@ function switchDTab(tabNum) {
 
 @section('scripts')
 <script>
+const hospitalCaseFollowUps = {
+    'سيمبا': [
+        'إيقاف المضاد الحيوي. متابعة الجرح موضعياً فقط.',
+        'تنظيف الجرح، ضمادات يومية، مضاد حيوي واسع الطيف.'
+    ]
+};
+
+function collectTreatmentsFromFollowUps(followUps) {
+    const seen = new Set();
+    const list = [];
+    (followUps || []).forEach(item => {
+        const treatment = (typeof item === 'string' ? item : item.treatment || '').trim();
+        if (treatment && !seen.has(treatment)) {
+            seen.add(treatment);
+            list.push(treatment);
+        }
+    });
+    return list;
+}
+
+function renderDecisionTreatmentsPreview(name) {
+    const listEl = document.getElementById('decisionTreatmentsPreview');
+    const treatments = collectTreatmentsFromFollowUps(hospitalCaseFollowUps[name] || []);
+
+    if (!treatments.length) {
+        listEl.innerHTML = '<li style="margin:0 1.4rem; color:#94a3b8; font-weight:700; list-style:none;">لا توجد علاجات مسجلة.</li>';
+        return;
+    }
+
+    listEl.innerHTML = treatments.map(t => `<li style="margin:0 1.4rem 0.5rem 0; font-size:0.83rem; color:#334155; font-weight:700; line-height:1.5;">${t}</li>`).join('');
+}
+
 function openDetailModal(name) {
     document.getElementById('detailAnimalName').textContent = name;
     document.getElementById('detailModal').classList.add('open');
 }
 function openDecisionModal(name) {
     document.getElementById('decisionAnimalName').textContent = name;
+    renderDecisionTreatmentsPreview(name);
     document.getElementById('decisionModal').classList.add('open');
 }
 function openSlaughterModal(name) {

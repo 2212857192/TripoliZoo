@@ -270,21 +270,23 @@
 
 @section('content')
 
+@php $stats = $stats ?? []; @endphp
+
 {{-- 1. SUMMARY CARDS --}}
 <div class="stats-grid">
     <a href="/care/health" class="stat-card">
         <div class="stat-icon-wrap">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
         </div>
-        <div class="stat-num">4</div>
+        <div class="stat-num">{{ $stats['new_health_cases'] ?? 0 }}</div>
         <div class="stat-label">حالات صحية<br>جديدة</div>
     </a>
 
-    <a href="/care/health" class="stat-card">
+    <a href="/care/health?follow_up=needs_referral" class="stat-card">
         <div class="stat-icon-wrap">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         </div>
-        <div class="stat-num">2</div>
+        <div class="stat-num">{{ $stats['health_cases_needing_referral'] ?? 0 }}</div>
         <div class="stat-label">حالات صحية<br>تحتاج إحالة</div>
     </a>
 
@@ -292,7 +294,7 @@
         <div class="stat-icon-wrap">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>
         </div>
-        <div class="stat-num">1</div>
+        <div class="stat-num">{{ $stats['new_mortality_cases'] ?? 0 }}</div>
         <div class="stat-label">حالات نفوق<br>جديدة</div>
     </a>
 
@@ -300,7 +302,7 @@
         <div class="stat-icon-wrap">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
         </div>
-        <div class="stat-num">5</div>
+        <div class="stat-num">{{ $stats['births_under_follow_up'] ?? 0 }}</div>
         <div class="stat-label">مواليد<br>قيد المتابعة</div>
     </a>
 
@@ -308,7 +310,7 @@
         <div class="stat-icon-wrap">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"></polyline></svg>
         </div>
-        <div class="stat-num">3</div>
+        <div class="stat-num">{{ $stats['new_operational_notes'] ?? 0 }}</div>
         <div class="stat-label">ملاحظات تشغيلية<br>جديدة</div>
     </a>
 </div>
@@ -336,73 +338,35 @@
                 </tr>
             </thead>
             <tbody>
+                @forelse($reviewItems ?? [] as $item)
                 <tr>
-                    <td><span class="badge badge-health"><span class="dot"></span>حالة صحية</span></td>
+                    <td><span class="badge {{ $item['badge_class'] }}"><span class="dot"></span>{{ $item['type_label'] }}</span></td>
                     <td>
-                        <div style="font-weight: 700; color: #0f172a;">أسد إفريقي</div>
-                        <div class="animal-id">#ANL-0041-2026</div>
+                        @if($item['animal_name'] || $item['animal_code'])
+                            <div style="font-weight: 700; color: #0f172a;">{{ $item['animal_name'] ?: '—' }}</div>
+                            @if($item['animal_code'])
+                                <div class="animal-id">#{{ $item['animal_code'] }}</div>
+                            @endif
+                        @else
+                            <span style="color: #94a3b8; font-size: 0.85rem;">— غير مرتبط بحيوان —</span>
+                        @endif
                     </td>
-                    <td>القططية</td>
-                    <td>جرح عميق بالقدم الأمامية (تحتاج إحالة)</td>
-                    <td>2026-06-07</td>
+                    <td>{{ $item['group'] ?? '—' }}</td>
+                    <td>{{ $item['description'] }}</td>
+                    <td>{{ $item['date'] ?? '—' }}</td>
                     <td>
                         <div class="actions-cell">
-                            <a href="/care/health" class="btn-tbl" title="الانتقال للواجهة">
+                            <a href="{{ $item['url'] }}" class="btn-tbl" title="الانتقال للواجهة">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </a>
                         </div>
                     </td>
                 </tr>
+                @empty
                 <tr>
-                    <td><span class="badge badge-mortality"><span class="dot"></span>حالة نفوق</span></td>
-                    <td>
-                        <div style="font-weight: 700; color: #0f172a;">غزال الريم</div>
-                        <div class="animal-id">#ANL-0120-2026</div>
-                    </td>
-                    <td>الغزلان</td>
-                    <td>وفاة مفاجئة في الحظيرة (جديدة)</td>
-                    <td>2026-06-06</td>
-                    <td>
-                        <div class="actions-cell">
-                            <a href="/care/mortality" class="btn-tbl" title="الانتقال للواجهة">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                            </a>
-                        </div>
-                    </td>
+                    <td colspan="6" style="text-align:center;color:#64748b;font-weight:700;padding:2rem;">لا توجد عناصر تحتاج مراجعة حالياً</td>
                 </tr>
-                <tr>
-                    <td><span class="badge badge-note"><span class="dot"></span>ملاحظة تشغيلية</span></td>
-                    <td>
-                        <span style="color: #94a3b8; font-size: 0.85rem;">— غير مرتبط بحيوان —</span>
-                    </td>
-                    <td>الطيور الجارحة</td>
-                    <td>تلف في شبك الحظيرة رقم 3 (جديدة)</td>
-                    <td>2026-06-06</td>
-                    <td>
-                        <div class="actions-cell">
-                            <a href="/care/notes" class="btn-tbl" title="الانتقال للواجهة">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><span class="badge badge-birth"><span class="dot"></span>مولود</span></td>
-                    <td>
-                        <div style="font-weight: 700; color: #0f172a;">قرد المكاك</div>
-                        <div class="animal-id">#ANL-0305-2026</div>
-                    </td>
-                    <td>القرود</td>
-                    <td>قريب من إكمال مدة المتابعة الأولية</td>
-                    <td>2026-06-05</td>
-                    <td>
-                        <div class="actions-cell">
-                            <a href="/care/births" class="btn-tbl" title="الانتقال للواجهة">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
@@ -432,46 +396,18 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @foreach($referralSummary ?? [] as $row)
                     <tr>
-                        <td style="font-weight: 800; color:#1e293b;">إحالات العلاج</td>
-                        <td><span class="badge badge-pending">قيد المراجعة</span></td>
-                        <td style="font-weight: 800; font-size: 1rem;">3</td>
+                        <td style="font-weight: 800; color:#1e293b;">{{ $row['label'] }}</td>
+                        <td><span class="badge {{ $row['badge_class'] }}">{{ $row['status_label'] }}</span></td>
+                        <td style="font-weight: 800; font-size: 1rem;{{ $row['badge_class'] === 'badge-rejected' ? ' color: #e11d48;' : '' }}">{{ $row['count'] }}</td>
                         <td>
-                            <a href="/care/referrals/treatment" class="btn-tbl" title="عرض">
+                            <a href="{{ $row['url'] }}" class="btn-tbl" title="عرض">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </a>
                         </td>
                     </tr>
-                    <tr>
-                        <td style="font-weight: 800; color:#1e293b;">إحالات العلاج</td>
-                        <td><span class="badge badge-rejected">مرفوضة</span></td>
-                        <td style="font-weight: 800; font-size: 1rem; color: #e11d48;">1</td>
-                        <td>
-                            <a href="/care/referrals/treatment" class="btn-tbl" title="عرض">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight: 800; color:#1e293b;">إحالات التشريح</td>
-                        <td><span class="badge badge-pending">بانتظار التوثيق</span></td>
-                        <td style="font-weight: 800; font-size: 1rem;">2</td>
-                        <td>
-                            <a href="/care/referrals/autopsy" class="btn-tbl" title="عرض">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight: 800; color:#1e293b;">إحالات التشريح</td>
-                        <td><span class="badge badge-approved">موثقة</span></td>
-                        <td style="font-weight: 800; font-size: 1rem;">1</td>
-                        <td>
-                            <a href="/care/referrals/autopsy" class="btn-tbl" title="عرض">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                            </a>
-                        </td>
-                    </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -488,59 +424,31 @@
             </div>
         </div>
         <div class="alerts-list">
-            
-            <a href="/care/referrals/treatment" class="alert-item">
+            @forelse($recentAlerts ?? [] as $alert)
+            <a href="{{ $alert['url'] }}" class="alert-item">
                 <div class="alert-content">
-                    <div class="alert-icon" style="color: #e11d48; background: #fff1f2; border-color: #fecdd3;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <div class="alert-icon" style="{{ $alert['icon_style'] }}">
+                        {!! $alert['icon_svg'] !!}
                     </div>
-                    <div class="alert-text">تم رفض إحالة علاج للحيوان 0041-2026-AN</div>
+                    <div class="alert-text">{{ $alert['text'] }}</div>
                 </div>
                 <div style="display:flex; align-items:center;">
-                    <div class="alert-time">منذ 10 دقائق</div>
+                    @if(!empty($alert['at']))
+                    <div class="alert-time">{{ $alert['at']->diffForHumans() }}</div>
+                    @endif
                     <div class="alert-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></div>
                 </div>
             </a>
-
-            <a href="/care/decisions" class="alert-item">
+            @empty
+            <div class="alert-item" style="cursor:default;">
                 <div class="alert-content">
-                    <div class="alert-icon" style="color: #d97706; background: #fffbeb; border-color: #fde68a;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <div class="alert-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                     </div>
-                    <div class="alert-text">تعذر استلام الحيوان 0030-2026-AN مؤقتًا</div>
+                    <div class="alert-text" style="color:#94a3b8;">لا توجد تنبيهات مهمة حالياً</div>
                 </div>
-                <div style="display:flex; align-items:center;">
-                    <div class="alert-time">منذ ساعة</div>
-                    <div class="alert-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></div>
-                </div>
-            </a>
-
-            <a href="/care/referrals/autopsy" class="alert-item">
-                <div class="alert-content">
-                    <div class="alert-icon" style="color: #15803d; background: #f0fdf4; border-color: #bbf7d0;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                    </div>
-                    <div class="alert-text">تم توثيق نتيجة تشريح للحيوان 0120-2026-AN</div>
-                </div>
-                <div style="display:flex; align-items:center;">
-                    <div class="alert-time">منذ ساعتين</div>
-                    <div class="alert-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></div>
-                </div>
-            </a>
-
-            <a href="/care/decisions" class="alert-item">
-                <div class="alert-content">
-                    <div class="alert-icon" style="color: #2563eb; background: #eff6ff; border-color: #bfdbfe;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    </div>
-                    <div class="alert-text">صدر قرار إفراج صحي للحيوان 0101-2026-AN</div>
-                </div>
-                <div style="display:flex; align-items:center;">
-                    <div class="alert-time">أمس</div>
-                    <div class="alert-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></div>
-                </div>
-            </a>
-
+            </div>
+            @endforelse
         </div>
     </div>
 </div>

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tripolizoo/features/doctor/shared/doctor_ui.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_health_reports/domain/health_report.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_health_reports/presentation/widgets/health_report_attachment_preview.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_health_reports/presentation/health_reports_provider.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_group_followup/presentation/widgets/follow_up_time_label.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
@@ -22,6 +23,11 @@ class _DoctorReportsScreenState extends State<DoctorReportsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<HealthReportsProvider>().load(
+            audience: HealthReportsAudience.doctor,
+          );
+    });
   }
 
   @override
@@ -30,12 +36,21 @@ class _DoctorReportsScreenState extends State<DoctorReportsScreen>
     super.dispose();
   }
 
-  void _openReportDetail(BuildContext context, HealthReport report) {
-    // 1. Mark report as received automatically upon opening
+  Future<void> _openReportDetail(BuildContext context, HealthReport report) async {
     final provider = context.read<HealthReportsProvider>();
-    provider.markAsReceived(report.id, 'د. أحمد');
+    final updated = await provider.openDoctorReport(report.reportNumber);
 
-    // 2. Open details sheet
+    if (!context.mounted) return;
+
+    if (updated == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذّر تحميل البلاغ')),
+      );
+      return;
+    }
+
+    if (!context.mounted) return;
+
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -46,7 +61,7 @@ class _DoctorReportsScreenState extends State<DoctorReportsScreen>
         providers: [
           ChangeNotifierProvider.value(value: provider),
         ],
-        child: _DoctorReportDetailSheet(reportId: report.id),
+        child: _DoctorReportDetailSheet(reportId: updated.id),
       ),
     );
   }
@@ -383,7 +398,7 @@ class _DoctorReportDetailSheetState extends State<_DoctorReportDetailSheet> {
     super.dispose();
   }
 
-  void _submitClose(BuildContext context, HealthReport report) {
+  Future<void> _submitClose(BuildContext context, HealthReport report) async {
     final note = _noteController.text.trim();
     if (note.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -392,11 +407,19 @@ class _DoctorReportDetailSheetState extends State<_DoctorReportDetailSheet> {
       return;
     }
 
-    context.read<HealthReportsProvider>().closeReport(
-          report.id,
+    final success = await context.read<HealthReportsProvider>().closeReport(
+          reportNumber: report.reportNumber,
           note: note,
-          doctorName: 'د. أحمد',
         );
+
+    if (!context.mounted) return;
+
+    if (!success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذّر إغلاق البلاغ')),
+      );
+      return;
+    }
 
     Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -516,7 +539,11 @@ class _DoctorReportDetailSheetState extends State<_DoctorReportDetailSheet> {
                   _buildSectionCard(
                     title: 'المرفقات المرفوعة',
                     children: [
-                      if (report.hasAttachment)
+                      if (report.attachmentUrl != null)
+                        HealthReportAttachmentPreview(
+                          attachmentUrl: report.attachmentUrl!,
+                        )
+                      else if (report.hasAttachment)
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(

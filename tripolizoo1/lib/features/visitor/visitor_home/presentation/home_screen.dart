@@ -7,7 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/data/animal_repository.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/domain/animal.dart';
-import 'package:tripolizoo/features/visitor/visitor_explore/presentation/animals_explore_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tripolizoo/features/visitor/visitor_explore/presentation/animal_detail_screen.dart';
 import 'package:tripolizoo/shared/constants/app_constants.dart';
 import 'package:tripolizoo/shared/providers/locale_provider.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
@@ -23,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _fadeController;
   late final Animation<double> _fadeAnimation;
-  final _repo = MockAnimalRepository();
+  final _repo = ApiAnimalRepository();
   final _scrollController = ScrollController();
 
   List<Animal> _animals = [];
@@ -575,11 +576,9 @@ class _AnimalCard extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute<void>(
-            builder: (_) => AnimalDetailScreen(animal: animal),
-          ),
-        ),
+        onTap: () {
+          context.push('/animals/${animal.id}');
+        },
         borderRadius: BorderRadius.circular(28),
         child: Ink(
           width: 158,
@@ -598,15 +597,7 @@ class _AnimalCard extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset(
-                  animal.image,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    color: AppColors.primary,
-                    child:
-                        const Icon(Icons.pets, color: Colors.white38, size: 48),
-                  ),
-                ),
+                _AnimalImage(animal: animal),
                 Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -676,6 +667,36 @@ class _GlassPill extends StatelessWidget {
         border: Border.all(color: Colors.white.withValues(alpha: 0.95)),
       ),
       child: child,
+    );
+  }
+}
+
+class _AnimalImage extends StatelessWidget {
+  const _AnimalImage({required this.animal});
+
+  final Animal animal;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget fallback() => Container(
+          color: AppColors.primary,
+          child: const Icon(Icons.pets, color: Colors.white38, size: 48),
+        );
+
+    if (animal.image.isEmpty) return fallback();
+
+    if (animal.hasNetworkImage) {
+      return Image.network(
+        animal.image,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => fallback(),
+      );
+    }
+
+    return Image.asset(
+      animal.image,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => fallback(),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_group_followup/presentation/widgets/follow_up_time_label.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_health_reports/domain/health_report.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_health_reports/presentation/widgets/health_report_attachment_preview.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_health_reports/presentation/widgets/health_report_status_badge.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
 
@@ -152,7 +153,11 @@ class HealthReportDetailSheet extends StatelessWidget {
                     _SectionCard(
                       title: 'المرفقات',
                       children: [
-                        if (report.hasAttachment)
+                        if (report.attachmentUrl != null)
+                          HealthReportAttachmentPreview(
+                            attachmentUrl: report.attachmentUrl!,
+                          )
+                        else if (report.hasAttachment)
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(

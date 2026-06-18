@@ -1,6 +1,6 @@
 @extends($__layout ?? 'admin.layout')
 @section('title', 'إدارة التذاكر | Tripoli Zoo')
-@section('page_title', 'إدارة التذاكر والمبيعات')
+@section('page_title', 'إدارة فئات التذاكر')
 
 @section('styles')
 <style>
@@ -302,240 +302,57 @@
 
     <!-- Tickets Grid -->
     <div class="tickets-grid" id="ticketsGrid">
-        
-        <!-- Ticket 1 -->
-        <div class="ticket-card-premium" data-name="تذكرة الكبار" data-status="active" id="ticket-1">
+        @forelse($ticketTypes as $type)
+        <div class="ticket-card-premium {{ $type->is_active ? '' : 'suspended' }}" data-name="{{ $type->name }}" data-status="{{ $type->is_active ? 'active' : 'suspended' }}" id="ticket-{{ $type->id }}">
             <div class="ticket-header-gradient">
-                <h4 class="ticket-name">تذكرة الكبار</h4>
-                <div class="ticket-price"><span id="price-val-1">10.00</span> <span>د.ل</span></div>
+                <h4 class="ticket-name">{{ $type->name }}</h4>
+                <div class="ticket-price"><span>{{ number_format((float) $type->price, 2) }}</span> <span>د.ل</span></div>
             </div>
             <div class="ticket-details">
                 <div class="detail-row-ticket">
                     <span>الفئة المستهدفة</span>
-                    <span>كبار (فوق 12 سنة)</span>
+                    <span>{{ $type->target_description ?: '—' }}</span>
                 </div>
                 <div class="detail-row-ticket">
                     <span>نوع الزائر</span>
-                    <span>مواطن</span>
+                    <span>{{ $type->visitor_nationality }}</span>
                 </div>
                 <div class="detail-row-ticket">
                     <span>العمر</span>
-                    <span>بالغ</span>
+                    <span>{{ $type->visitor_age_group }}</span>
                 </div>
                 <div class="detail-row-ticket">
                     <span>حالة التذكرة</span>
-                    <span class="status-badge-ticket active" id="badge-1">نشطة</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>شاملة الخدمات</span>
-                    <span>الدخول العام فقط</span>
+                    <span class="status-badge-ticket {{ $type->is_active ? 'active' : 'suspended' }}">
+                        {{ $type->is_active ? 'نشطة' : 'موقوفة' }}
+                    </span>
                 </div>
             </div>
             <div class="ticket-actions-bar">
-                <a href="/admin/tickets/1/edit" class="btn-ticket-op">
-                    تعديل السعر
+                <a href="{{ route('admin.tickets.edit', $type) }}" class="btn-ticket-op">
+                    تعديل الفئة
                 </a>
-                <button class="btn-ticket-op toggle-status suspended-btn" id="btn-toggle-1" onclick="toggleTicketStatus(1)">
-                    إيقاف التذكرة
-                </button>
+                <form action="{{ route('admin.tickets.toggle', $type) }}" method="POST" style="flex:1;display:flex;">
+                    @csrf
+                    @method('PATCH')
+                    <button type="submit" class="btn-ticket-op toggle-status {{ $type->is_active ? 'suspended-btn' : 'activate-btn' }}" style="width:100%;">
+                        {{ $type->is_active ? 'إيقاف التذكرة' : 'تفعيل التذكرة' }}
+                    </button>
+                </form>
             </div>
         </div>
-
-        <!-- Ticket 2 -->
-        <div class="ticket-card-premium" data-name="تذكرة الأطفال" data-status="active" id="ticket-2">
-            <div class="ticket-header-gradient">
-                <h4 class="ticket-name">تذكرة الأطفال</h4>
-                <div class="ticket-price"><span id="price-val-2">5.00</span> <span>د.ل</span></div>
-            </div>
-            <div class="ticket-details">
-                <div class="detail-row-ticket">
-                    <span>الفئة المستهدفة</span>
-                    <span>أطفال (3 - 12 سنة)</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>نوع الزائر</span>
-                    <span>مواطن</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>العمر</span>
-                    <span>طفل</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>حالة التذكرة</span>
-                    <span class="status-badge-ticket active" id="badge-2">نشطة</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>شاملة الخدمات</span>
-                    <span>الدخول العام فقط</span>
-                </div>
-            </div>
-            <div class="ticket-actions-bar">
-                <a href="/admin/tickets/2/edit" class="btn-ticket-op">
-                    تعديل السعر
-                </a>
-                <button class="btn-ticket-op toggle-status suspended-btn" id="btn-toggle-2" onclick="toggleTicketStatus(2)">
-                    إيقاف التذكرة
-                </button>
-            </div>
+        @empty
+        <div style="grid-column:1/-1;padding:2rem;text-align:center;color:var(--text-muted);font-weight:700;">
+            لا توجد فئات تذاكر بعد. أضف فئة جديدة لعرضها في تطبيق الزوار.
         </div>
-
-        <!-- Ticket 3 -->
-        <div class="ticket-card-premium" data-name="تذكرة كبار الشخصيات vip" data-status="active" id="ticket-3">
-            <div class="ticket-header-gradient">
-                <h4 class="ticket-name">تذكرة كبار الشخصيات VIP</h4>
-                <div class="ticket-price"><span id="price-val-3">25.00</span> <span>د.ل</span></div>
-            </div>
-            <div class="ticket-details">
-                <div class="detail-row-ticket">
-                    <span>الفئة المستهدفة</span>
-                    <span>العائلات وVIP</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>نوع الزائر</span>
-                    <span>مواطن</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>العمر</span>
-                    <span>بالغ</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>حالة التذكرة</span>
-                    <span class="status-badge-ticket active" id="badge-3">نشطة</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>شاملة الخدمات</span>
-                    <span>سيارة جولف + مرشد</span>
-                </div>
-            </div>
-            <div class="ticket-actions-bar">
-                <a href="/admin/tickets/3/edit" class="btn-ticket-op">
-                    تعديل السعر
-                </a>
-                <button class="btn-ticket-op toggle-status suspended-btn" id="btn-toggle-3" onclick="toggleTicketStatus(3)">
-                    إيقاف التذكرة
-                </button>
-            </div>
-        </div>
-
-        <!-- Ticket 4 -->
-        <div class="ticket-card-premium suspended" data-name="تذكرة السياح الأجانب" data-status="suspended" id="ticket-4">
-            <div class="ticket-header-gradient">
-                <h4 class="ticket-name">تذكرة السياح الأجانب</h4>
-                <div class="ticket-price"><span id="price-val-4">50.00</span> <span>د.ل</span></div>
-            </div>
-            <div class="ticket-details">
-                <div class="detail-row-ticket">
-                    <span>الفئة المستهدفة</span>
-                    <span>الزوار غير الليبيين</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>نوع الزائر</span>
-                    <span>أجنبي</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>العمر</span>
-                    <span>بالغ</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>حالة التذكرة</span>
-                    <span class="status-badge-ticket suspended" id="badge-4">موقوفة</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>شاملة الخدمات</span>
-                    <span>مرشد سياحي خاص</span>
-                </div>
-            </div>
-            <div class="ticket-actions-bar">
-                <a href="/admin/tickets/4/edit" class="btn-ticket-op">
-                    تعديل السعر
-                </a>
-                <button class="btn-ticket-op toggle-status activate-btn" id="btn-toggle-4" onclick="toggleTicketStatus(4)">
-                    تفعيل التذكرة
-                </button>
-            </div>
-        </div>
-
-        <!-- Ticket 5 -->
-        <div class="ticket-card-premium" data-name="تذكرة الطلاب" data-status="active" id="ticket-5">
-            <div class="ticket-header-gradient">
-                <h4 class="ticket-name">تذكرة الطلاب</h4>
-                <div class="ticket-price"><span id="price-val-5">7.00</span> <span>د.ل</span></div>
-            </div>
-            <div class="ticket-details">
-                <div class="detail-row-ticket">
-                    <span>الفئة المستهدفة</span>
-                    <span>طلاب المدارس والجامعات</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>نوع الزائر</span>
-                    <span>مواطن</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>العمر</span>
-                    <span>طالب</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>حالة التذكرة</span>
-                    <span class="status-badge-ticket active" id="badge-5">نشطة</span>
-                </div>
-                <div class="detail-row-ticket">
-                    <span>شاملة الخدمات</span>
-                    <span>الدخول العام — يُطلب بطاقة طالب</span>
-                </div>
-            </div>
-            <div class="ticket-actions-bar">
-                <a href="/admin/tickets/5/edit" class="btn-ticket-op">
-                    تعديل السعر
-                </a>
-                <button class="btn-ticket-op toggle-status suspended-btn" id="btn-toggle-5" onclick="toggleTicketStatus(5)">
-                    إيقاف التذكرة
-                </button>
-            </div>
-        </div>
-
+        @endforelse
     </div>
 
 </div>
-
-<div class="toast" id="toast"></div>
 @endsection
 
 @section('scripts')
 <script>
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2800);
-    }
-
-    function toggleTicketStatus(id) {
-        const card = document.getElementById('ticket-' + id);
-        const badge = document.getElementById('badge-' + id);
-        const btn = document.getElementById('btn-toggle-' + id);
-        const isCurrentlyActive = card.getAttribute('data-status') === 'active';
-
-        if (isCurrentlyActive) {
-            // Deactivate
-            card.setAttribute('data-status', 'suspended');
-            card.classList.add('suspended');
-            badge.textContent = 'موقوفة';
-            badge.className = 'status-badge-ticket suspended';
-            btn.textContent = 'تفعيل التذكرة';
-            btn.className = 'btn-ticket-op toggle-status activate-btn';
-            showToast('🚫 تم إيقاف التذكرة بنجاح');
-        } else {
-            // Activate
-            card.setAttribute('data-status', 'active');
-            card.classList.remove('suspended');
-            badge.textContent = 'نشطة';
-            badge.className = 'status-badge-ticket active';
-            btn.textContent = 'إيقاف التذكرة';
-            btn.className = 'btn-ticket-op toggle-status suspended-btn';
-            showToast('✅ تم تفعيل التذكرة ونشرها');
-        }
-    }
-
     function filterTickets() {
         const query = document.getElementById('searchInput').value.toLowerCase();
         const status = document.getElementById('statusFilter').value;
@@ -548,11 +365,7 @@
             const matchesQuery = name.includes(query);
             const matchesStatus = (status === 'all') || (cardStatus === status);
 
-            if (matchesQuery && matchesStatus) {
-                card.style.display = 'flex';
-            } else {
-                card.style.display = 'none';
-            }
+            card.style.display = (matchesQuery && matchesStatus) ? 'flex' : 'none';
         });
     }
 </script>

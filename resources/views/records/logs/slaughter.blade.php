@@ -4,38 +4,46 @@
 
 @section('styles')
 @include('records.logs.partials.vet-log-styles')
+<style>
+    .table-card-footer { padding: 1rem 1.5rem; border-top: 1px solid #f1f5f9; background: #FAFBFC; }
+</style>
 @endsection
 
 @section('content')
 
-<div class="top-card">
-    <div class="page-header">
-        <div class="page-header-info">
-            <h2>🔪 سجل الذبح الاضطراري</h2>
-            <p>توثيق قرارات الذبح الاضطراري الصادرة من القسم البيطري.</p>
-        </div>
-        <div class="hero-stats">
-            <div class="hero-stat">
-                <div class="num">3</div>
-                <div class="lbl">قرار مسجّل</div>
-            </div>
-            <div class="hero-stat">
-                <div class="num">1</div>
-                <div class="lbl">هذا العام</div>
-            </div>
-        </div>
-    </div>
+@php
+    $portalBase = $portalBase ?? '/records';
+    $filters = $filters ?? ['q' => '', 'group' => '', 'period' => '', 'date' => ''];
+    $logService = app(\App\Services\RecordsSlaughterLogService::class);
+@endphp
 
-    <div class="filter-bar">
+<div class="top-card">
+    <form method="GET" action="{{ $portalBase }}/logs/slaughter" class="filter-bar" id="slaughterFilterForm">
         <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="بحث برقم الحيوان، النوع، أو الطبيب...">
+            <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="بحث برقم الحيوان، النوع، أو الطبيب...">
         </div>
-        <select class="filter-select">
-                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
+        <select class="filter-select" name="group" onchange="this.form.submit()">
+            @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات', 'selected' => $filters['group']])
         </select>
-        @include('partials.date-filter', ['showWeek' => false, 'showMonth' => true, 'showYear' => true])
-    </div>
+        <select class="filter-select" name="period" onchange="onSlaughterPeriodChange(this)">
+            <option value="" @selected($filters['period'] === '')>كل التواريخ</option>
+            <option value="today" @selected($filters['period'] === 'today')>اليوم</option>
+            <option value="month" @selected($filters['period'] === 'month')>هذا الشهر</option>
+            <option value="year" @selected($filters['period'] === 'year')>هذا العام</option>
+            <option value="custom" @selected($filters['period'] === 'custom')>تاريخ محدد</option>
+        </select>
+        <input
+            type="date"
+            name="date"
+            id="slaughterCustomDate"
+            class="filter-select"
+            value="{{ $filters['date'] }}"
+            style="display: {{ $filters['period'] === 'custom' ? 'block' : 'none' }};"
+            onchange="document.getElementById('slaughterFilterForm').submit()"
+        >
+        <button type="submit" class="filter-select" style="cursor:pointer;background:#f0fdf4;border-color:#bbf7d0;color:#15803d;">بحث</button>
+    </form>
 </div>
 
 <div class="table-card">
@@ -57,48 +65,59 @@
                 </tr>
             </thead>
             <tbody>
+                @forelse($cases as $case)
+                @php
+                    $animal = $case->animal;
+                    $animalCode = $animal?->code;
+                @endphp
                 <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🐴', 'animalId' => '#ANM-0315', 'sub' => 'حصان عربي'])
-                    <td>الثدييات الكبيرة</td>
-                    <td>2025-08-14</td>
-                    <td><span class="cause-text">كسر مفتوح غير قابل للعلاج</span></td>
-                    <td>د. أحمد الفيتوري</td>
-                    <td>د. سالم الزاوي</td>
+                    @include('partials.animal-table-cell', [
+                        'name' => $animal?->name,
+                        'image' => $animal?->displayPhotoUrl(),
+                        'animalId' => $animalCode ? '#'.$animalCode : '—',
+                        'sub' => $animal?->species ?? '—',
+                    ])
+                    <td>{{ $animal?->species ?? '—' }}</td>
+                    <td>{{ $case->group }}</td>
+                    <td style="color:#64748b;font-size:0.85rem;">{{ $logService->decisionDateFor($case) ?? '—' }}</td>
+                    <td><span class="cause-text">{{ $logService->decisionReasonFor($case) }}</span></td>
+                    <td>{{ $logService->responsibleVetFor($case) }}</td>
+                    <td>{{ $logService->approvingHeadFor($case) }}</td>
                     <td>
-                        <a href="/records/animals/ANM-0315" class="btn-tbl btn-tbl-view" title="عرض الملف">
+                        @if($animalCode)
+                        <a href="{{ $portalBase }}/animals/{{ $animalCode }}" class="btn-tbl btn-tbl-view" title="عرض الملف">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </a>
+                        @endif
                     </td>
                 </tr>
+                @empty
                 <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🐃', 'animalId' => '#ANM-0288', 'sub' => 'جاموس مائي'])
-                    <td>الثدييات الكبيرة</td>
-                    <td>2024-03-22</td>
-                    <td><span class="cause-text">إصابة حادة في الأعضاء الداخلية</span></td>
-                    <td>د. فاطمة بن عمر</td>
-                    <td>د. سالم الزاوي</td>
-                    <td>
-                        <a href="/records/animals/ANM-0288" class="btn-tbl btn-tbl-view" title="عرض الملف">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
+                    <td colspan="8" style="text-align:center;color:#94a3b8;font-weight:700;padding:2rem;">لا توجد حالات ذبح اضطراري مسجّلة</td>
                 </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🦌', 'animalId' => '#ANM-0195', 'sub' => 'غزال الريم'])
-                    <td>الغزلان</td>
-                    <td>2023-11-05</td>
-                    <td><span class="cause-text">مرض معدٍ مستعصٍ — قرار طبي</span></td>
-                    <td>د. أحمد الفيتوري</td>
-                    <td>د. سالم الزاوي</td>
-                    <td>
-                        <a href="/records/animals/ANM-0195" class="btn-tbl btn-tbl-view" title="عرض الملف">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
-                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
+    @if($cases->hasPages())
+    <div class="table-card-footer">
+        {{ $cases->links() }}
+    </div>
+    @endif
 </div>
 
+@endsection
+
+@section('scripts')
+<script>
+    function onSlaughterPeriodChange(select) {
+        const dateInput = document.getElementById('slaughterCustomDate');
+        if (!dateInput) return;
+        dateInput.style.display = select.value === 'custom' ? 'block' : 'none';
+        if (select.value !== 'custom') {
+            dateInput.value = '';
+            select.form.submit();
+        }
+    }
+</script>
 @endsection

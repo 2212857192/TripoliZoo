@@ -559,12 +559,6 @@
                 </div>
             </div>
         </nav>
-
-        <div class="sidebar-footer">
-            <div style="padding: 1.2rem; border-top: 1px solid #e2e8f0;">
-                @include('partials.portal-logout')
-            </div>
-        </div>
     </aside>
 
     <!-- Main Content -->
@@ -573,23 +567,7 @@
         <header class="topbar">
             @include('partials.topbar-page-info', ['sectionLabel' => 'المستشفى البيطري', 'defaultTitle' => 'لوحة التحكم'])
             <div class="topbar-actions">
-                @include('partials.topbar-notifications', [
-                    'notificationCount' => 3,
-                    'notificationBody' => '
-                        <div style="font-size:0.8rem;border-bottom:1px solid #f1f5f9;padding-bottom:6px;">
-                            <p style="font-weight:700;margin-bottom:4px;color:var(--text-main);">⚠️ إحالة علاج جديدة للفهد (صخر)</p>
-                            <a href="/vet/referrals/treatment" style="color:var(--green);text-decoration:none;font-weight:800;">عرض الطلب ←</a>
-                        </div>
-                        <div style="font-size:0.8rem;border-bottom:1px solid #f1f5f9;padding-bottom:6px;">
-                            <p style="font-weight:700;margin-bottom:4px;color:var(--text-main);">🦁 الأسد سيمبا جاهز للإفراج الطبي</p>
-                            <a href="/vet/cases/hospital" style="color:var(--green);text-decoration:none;font-weight:800;">مراجعة الحالات ←</a>
-                        </div>
-                        <div style="font-size:0.8rem;">
-                            <p style="font-weight:700;margin-bottom:4px;color:var(--text-main);">💀 طائر العقاب بانتظار توثيق التشريح</p>
-                            <a href="/vet/referrals/autopsy" style="color:var(--green);text-decoration:none;font-weight:800;">الذهاب للتشريح ←</a>
-                        </div>
-                    ',
-                ])
+                @include('partials.topbar-notifications')
                 @include('partials.topbar-user-menu')
             </div>
         </header>
@@ -601,7 +579,17 @@
         </div>
     </main>
 
+    @stack('modals')
+
     @yield('scripts')
+    <script>
+        window.vetReceivingNotificationReadUrl = @json($vetReceivingNotificationReadUrl ?? route('vet.notification.read'));
+        window.vetTreatmentReferralNotificationReadUrl = @json($vetTreatmentReferralNotificationReadUrl ?? route('vet.referrals.treatment.notification.read'));
+        window.vetTreatmentReferralsUrl = @json($vetTreatmentReferralsUrl ?? '/vet/referrals/treatment');
+        window.vetAutopsyReferralNotificationReadUrl = @json($vetAutopsyReferralNotificationReadUrl ?? route('vet.referrals.autopsy.notification.read'));
+        window.vetAutopsyReferralsUrl = @json($vetAutopsyReferralsUrl ?? '/vet/referrals/autopsy');
+        window.vetDecisionsUrl = @json('/vet/decisions');
+    </script>
     @include('partials.dashboard-shell-scripts')
     
     <script>

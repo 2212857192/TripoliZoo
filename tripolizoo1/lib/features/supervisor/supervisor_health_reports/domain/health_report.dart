@@ -29,6 +29,7 @@ class HealthReport {
     this.doctorUpdatedAt,
     this.fieldCaseOpened = false,
     this.hasAttachment = false,
+    this.attachmentUrl,
   });
 
   final String id;
@@ -44,6 +45,7 @@ class HealthReport {
   final DateTime? doctorUpdatedAt;
   final bool fieldCaseOpened;
   final bool hasAttachment;
+  final String? attachmentUrl;
 
   bool get hasDoctorFollowUp =>
       (doctorNote != null && doctorNote!.trim().isNotEmpty) ||

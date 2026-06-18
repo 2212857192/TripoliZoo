@@ -4,43 +4,50 @@
 
 @section('styles')
 @include('records.logs.partials.vet-log-styles')
+<style>
+    .table-card-footer { padding: 1rem 1.5rem; border-top: 1px solid #f1f5f9; background: #FAFBFC; }
+</style>
 @endsection
 
 @section('content')
 
-<div class="top-card">
-    <div class="page-header">
-        <div class="page-header-info">
-            <h2>📋 سجل الولادات النافقة</h2>
-            <p>توثيق المواليد التي نفقت قبل إكمال فترة المتابعة الأولية.</p>
-        </div>
-        <div class="hero-stats">
-            <div class="hero-stat">
-                <div class="num">4</div>
-                <div class="lbl">حالة مسجّلة</div>
-            </div>
-            <div class="hero-stat">
-                <div class="num">3</div>
-                <div class="lbl">تم التشريح</div>
-            </div>
-        </div>
-    </div>
+@php
+    $portalBase = $portalBase ?? '/records';
+    $filters = $filters ?? ['q' => '', 'group' => '', 'autopsy' => '', 'period' => '', 'date' => ''];
+@endphp
 
-    <div class="filter-bar">
+<div class="top-card">
+    <form method="GET" action="{{ $portalBase }}/logs/stillbirths" class="filter-bar" id="stillbirthsFilterForm">
         <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="بحث برقم الحيوان، رقم الأم، أو النوع...">
+            <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="بحث برقم الحيوان، رقم الأم، أو النوع...">
         </div>
-        <select class="filter-select">
-                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
+        <select class="filter-select" name="group" onchange="this.form.submit()">
+            @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات', 'selected' => $filters['group']])
         </select>
-        <select class="filter-select">
-            <option value="">التشريح: الكل</option>
-            <option>نعم — تم التشريح</option>
-            <option>لا — لم يُشَرَّح</option>
+        <select class="filter-select" name="autopsy" onchange="this.form.submit()">
+            <option value="" @selected($filters['autopsy'] === '')>التشريح: الكل</option>
+            <option value="yes" @selected($filters['autopsy'] === 'yes')>نعم — تم التشريح</option>
+            <option value="no" @selected($filters['autopsy'] === 'no')>لا — لم يُشَرَّح</option>
         </select>
-        @include('partials.date-filter', ['showWeek' => false, 'showMonth' => true, 'showYear' => true])
-    </div>
+        <select class="filter-select" name="period" onchange="onStillbirthPeriodChange(this)">
+            <option value="" @selected($filters['period'] === '')>كل التواريخ</option>
+            <option value="today" @selected($filters['period'] === 'today')>اليوم</option>
+            <option value="month" @selected($filters['period'] === 'month')>هذا الشهر</option>
+            <option value="year" @selected($filters['period'] === 'year')>هذا العام</option>
+            <option value="custom" @selected($filters['period'] === 'custom')>تاريخ محدد</option>
+        </select>
+        <input
+            type="date"
+            name="date"
+            id="stillbirthCustomDate"
+            class="filter-select"
+            value="{{ $filters['date'] }}"
+            style="display: {{ $filters['period'] === 'custom' ? 'block' : 'none' }};"
+            onchange="document.getElementById('stillbirthsFilterForm').submit()"
+        >
+        <button type="submit" class="filter-select" style="cursor:pointer;background:#f0fdf4;border-color:#bbf7d0;color:#15803d;">بحث</button>
+    </form>
 </div>
 
 <div class="table-card">
@@ -64,73 +71,71 @@
                 </tr>
             </thead>
             <tbody>
+                @forelse($cases as $case)
+                @php
+                    $animal = $case->animal;
+                    $animalCode = $animal?->code ?? $case->subject_code;
+                    $hasAutopsy = $case->status === \App\Enums\MortalityCaseStatus::ReferredForAutopsy || $case->autopsyReferral;
+                    $birthDate = $animal?->birth_date?->format('Y-m-d')
+                        ?? $animal?->birthRegistration?->birth_date?->format('Y-m-d')
+                        ?? $animal?->registered_at?->format('Y-m-d')
+                        ?? '—';
+                    $motherCode = $animal?->mother?->code ? '#'.$animal->mother->code : '—';
+                @endphp
                 <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🦁', 'animalId' => '#NB-26-007', 'sub' => 'أسد أفريقي'])
-                    <td>#ANM-0082</td>
-                    <td>أسد أفريقي</td>
-                    <td>القططية</td>
-                    <td>أنثى</td>
-                    <td>2026-05-20</td>
-                    <td>2026-06-10</td>
-                    <td><span class="cause-text">ضعف ولادة — فشل التنفس</span></td>
-                    <td><span class="badge badge-completed"><span class="dot"></span>نعم</span></td>
+                    @include('partials.animal-table-cell', [
+                        'name' => $animal?->name,
+                        'image' => $animal?->displayPhotoUrl(),
+                        'animalId' => '#'.$animalCode,
+                        'sub' => $animal?->species ?? $case->subject_type,
+                    ])
+                    <td><span class="animal-id">{{ $motherCode }}</span></td>
+                    <td>{{ $animal?->species ?? $case->subject_type ?? '—' }}</td>
+                    <td>{{ $case->group }}</td>
+                    <td>{{ $animal?->gender ?? '—' }}</td>
+                    <td style="color:#64748b;font-size:0.85rem;">{{ $birthDate }}</td>
+                    <td style="color:#64748b;font-size:0.85rem;">{{ $case->death_date?->format('Y-m-d') ?? '—' }}</td>
+                    <td><span class="cause-text">{{ $case->displayCause() }}</span></td>
                     <td>
-                        <a href="/records/animals/NB-26-007" class="btn-tbl btn-tbl-view" title="عرض الملف">
+                        @if($hasAutopsy)
+                        <span class="badge badge-completed"><span class="dot"></span>نعم</span>
+                        @else
+                        <span class="badge badge-none"><span class="dot"></span>لا</span>
+                        @endif
+                    </td>
+                    <td>
+                        <a href="{{ $portalBase }}/animals/{{ $animalCode }}" class="btn-tbl btn-tbl-view" title="عرض الملف">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </a>
                     </td>
                 </tr>
+                @empty
                 <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🦁', 'animalId' => '#B-022', 'sub' => 'أسد أفريقي'])
-                    <td>#ANM-0082</td>
-                    <td>أسد أفريقي</td>
-                    <td>القططية</td>
-                    <td>أنثى</td>
-                    <td>2027-02-15</td>
-                    <td>2027-02-28</td>
-                    <td><span class="cause-text">إجهاض متأخر — تشوهات خلقية</span></td>
-                    <td><span class="badge badge-completed"><span class="dot"></span>نعم</span></td>
-                    <td>
-                        <a href="/records/animals/B-022" class="btn-tbl btn-tbl-view" title="عرض الملف">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
+                    <td colspan="10" style="text-align:center;color:#94a3b8;font-weight:700;padding:2rem;">لا توجد ولادات نافقة مسجّلة</td>
                 </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🦌', 'animalId' => '#NB-25-014', 'sub' => 'غزال الريم'])
-                    <td>#ANM-0145</td>
-                    <td>غزال الريم</td>
-                    <td>الغزلان</td>
-                    <td>ذكر</td>
-                    <td>2025-10-03</td>
-                    <td>2025-10-18</td>
-                    <td><span class="cause-text">عدوى بكتيرية — خلال فترة المتابعة</span></td>
-                    <td><span class="badge badge-none"><span class="dot"></span>لا</span></td>
-                    <td>
-                        <a href="/records/animals/NB-25-014" class="btn-tbl btn-tbl-view" title="عرض الملف">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => '#NB-25-009', 'sub' => 'قرد مكاك'])
-                    <td>#ANM-0220</td>
-                    <td>قرد مكاك</td>
-                    <td>القرود</td>
-                    <td>ذكر</td>
-                    <td>2025-07-22</td>
-                    <td>2025-08-01</td>
-                    <td><span class="cause-text">موت فجائي — سبب غير محدد</span></td>
-                    <td><span class="badge badge-completed"><span class="dot"></span>نعم</span></td>
-                    <td>
-                        <a href="/records/animals/NB-25-009" class="btn-tbl btn-tbl-view" title="عرض الملف">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
-                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
+    @if($cases->hasPages())
+    <div class="table-card-footer">
+        {{ $cases->links() }}
+    </div>
+    @endif
 </div>
 
+@endsection
+
+@section('scripts')
+<script>
+    function onStillbirthPeriodChange(select) {
+        const dateInput = document.getElementById('stillbirthCustomDate');
+        if (!dateInput) return;
+        dateInput.style.display = select.value === 'custom' ? 'block' : 'none';
+        if (select.value !== 'custom') {
+            dateInput.value = '';
+            select.form.submit();
+        }
+    }
+</script>
 @endsection

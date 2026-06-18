@@ -77,6 +77,16 @@ class LoginController extends Controller
             ])->onlyInput('email');
         }
 
+        if (! $user->canUseWebPortal()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()->withErrors([
+                'email' => 'هذا الحساب مخصص لتطبيق الجوال. استخدم تطبيق حديقة طرابلس لتسجيل الدخول.',
+            ])->onlyInput('email');
+        }
+
         return redirect()->intended($user->homePath());
     }
 

@@ -118,6 +118,36 @@ class AuthController extends Controller
         ]);
     }
 
+    public function changePassword(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'current_password.required' => 'كلمة المرور الحالية مطلوبة.',
+            'password.required' => 'كلمة المرور الجديدة مطلوبة.',
+            'password.min' => 'كلمة المرور يجب أن تكون 8 أحرف على الأقل.',
+            'password.confirmed' => 'تأكيد كلمة المرور غير مطابق.',
+        ]);
+
+        /** @var User $user */
+        $user = $request->user();
+
+        if (! Hash::check($data['current_password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['كلمة المرور الحالية غير صحيحة.'],
+            ]);
+        }
+
+        $user->update([
+            'password' => $data['password'],
+        ]);
+
+        return response()->json([
+            'message' => 'تم تغيير كلمة المرور بنجاح.',
+        ]);
+    }
+
     private function tokenResponse(User $user, ?string $message = null, int $status = 200): JsonResponse
     {
         $user->tokens()->delete();

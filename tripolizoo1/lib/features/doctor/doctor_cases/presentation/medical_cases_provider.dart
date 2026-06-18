@@ -1,13 +1,20 @@
 import 'package:flutter/foundation.dart';
-import 'package:tripolizoo/features/doctor/doctor_cases/data/medical_cases_mock_repository.dart';
+import 'package:tripolizoo/features/doctor/doctor_cases/data/medical_cases_api_repository.dart';
 import 'package:tripolizoo/features/doctor/doctor_cases/domain/medical_case.dart';
 
 class MedicalCasesProvider extends ChangeNotifier {
-  MedicalCasesProvider() {
-    _cases = MedicalCasesMockRepository.seedCases();
-  }
+  MedicalCasesProvider({MedicalCasesApiRepository? repository})
+      : _repository = repository ?? MedicalCasesApiRepository();
+
+  final MedicalCasesApiRepository _repository;
 
   List<MedicalCase> _cases = [];
+  bool _loading = false;
+  String? _error;
+
+  List<MedicalCase> get cases => _cases;
+  bool get isLoading => _loading;
+  String? get error => _error;
 
   int get activeFieldCount => _cases
       .where(
@@ -50,46 +57,102 @@ class MedicalCasesProvider extends ChangeNotifier {
     }).toList();
   }
 
-  MedicalCase openFieldCase({
+  Future<void> load() async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _cases = await _repository.fetchCases();
+    } catch (_) {
+      _cases = [];
+      _error = 'تعذّر تحميل الحالات الطبية';
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<MedicalCase?> fetchCase(String id) async {
+    try {
+      final medicalCase = await _repository.fetchCase(id);
+      _upsertCase(medicalCase);
+      notifyListeners();
+      return medicalCase;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<MedicalCase?> registerProcedure({
+    required String caseId,
+    required String diagnosis,
+    required String treatment,
+    required MedicalCaseResult caseResult,
+    String? note,
+    String? nutritionText,
+    DateTime? nutritionStart,
+    DateTime? nutritionEnd,
+    String? nutritionNote,
+  }) async {
+    try {
+      final medicalCase = await _repository.registerProcedure(
+        caseId: caseId,
+        diagnosis: diagnosis,
+        treatment: treatment,
+        caseResult: caseResult,
+        note: note,
+        nutritionText: nutritionText,
+        nutritionStart: nutritionStart,
+        nutritionEnd: nutritionEnd,
+        nutritionNote: nutritionNote,
+      );
+      _upsertCase(medicalCase);
+      notifyListeners();
+      return medicalCase;
+    } catch (_) {
+      rethrow;
+    }
+  }
+
+  Future<MedicalCase?> closeFieldCase({
+    required String caseId,
+  }) async {
+    try {
+      final medicalCase = await _repository.closeFieldCase(caseId: caseId);
+      _upsertCase(medicalCase);
+      notifyListeners();
+      return medicalCase;
+    } catch (_) {
+      rethrow;
+    }
+  }
+
+  void _upsertCase(MedicalCase medicalCase) {
+    final index = _cases.indexWhere((c) => c.id == medicalCase.id);
+    if (index >= 0) {
+      _cases[index] = medicalCase;
+    } else {
+      _cases.insert(0, medicalCase);
+    }
+  }
+
+  Future<MedicalCase?> openFieldCase({
     required String animalId,
     required String openReason,
     String? initialNote,
-  }) {
-    final now = DateTime.now();
-    final medicalCase = MedicalCase(
-      id: 'mc_${now.millisecondsSinceEpoch}',
-      caseNumber: MedicalCasesMockRepository.nextCaseNumber(
-        _cases,
-        MedicalCaseType.field,
-      ),
-      type: MedicalCaseType.field,
-      status: MedicalCaseStatus.active,
-      animalId: animalId.toUpperCase(),
-      animalType: _guessAnimalType(animalId),
-      animalGroup: 'غير محدد',
-      openReason: openReason.trim(),
-      initialNote: _nullIfEmpty(initialNote),
-      openedAt: now,
-      updatedAt: now,
-      sourceLabel: 'فتح يدوي',
-    );
-    _cases.insert(0, medicalCase);
-    notifyListeners();
-    return medicalCase;
-  }
-
-  String _guessAnimalType(String animalId) {
-    const known = {
-      'A-217': 'غزال',
-      'A-330': 'نعامة',
-      'A-088': 'نمر',
-      'A-102': 'قط بري',
-    };
-    return known[animalId.toUpperCase()] ?? 'حيوان';
-  }
-
-  String? _nullIfEmpty(String? value) {
-    if (value == null || value.trim().isEmpty) return null;
-    return value.trim();
+  }) async {
+    try {
+      final medicalCase = await _repository.openFieldCase(
+        animalCode: animalId,
+        openReason: openReason,
+        initialNote: initialNote,
+      );
+      _cases.insert(0, medicalCase);
+      notifyListeners();
+      return medicalCase;
+    } catch (_) {
+      rethrow;
+    }
   }
 }

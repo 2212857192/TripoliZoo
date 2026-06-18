@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'الرعاية والتغذية | Tripoli Zoo')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -569,8 +570,12 @@
         </nav>
 
         <div class="sidebar-footer">
-            <div style="padding: 1.2rem; border-top: 1px solid #e2e8f0;">
-                @include('partials.portal-logout')
+            <div class="user-card">
+                <div class="user-avatar">{{ mb_substr(auth()->user()->name ?? 'م', 0, 1) }}</div>
+                <div class="user-info">
+                    <h4>{{ auth()->user()->name ?? 'مستخدم' }}</h4>
+                    <p>{{ auth()->user()->role ?? 'رعاية وتغذية' }}</p>
+                </div>
             </div>
         </div>
     </aside>
@@ -581,7 +586,7 @@
         <header class="topbar">
             @include('partials.topbar-page-info', ['sectionLabel' => 'الرعاية والتغذية', 'defaultTitle' => 'لوحة التحكم'])
             <div class="topbar-actions">
-                @include('partials.topbar-notifications', ['notificationCount' => 0])
+                @include('partials.topbar-notifications')
                 @include('partials.topbar-user-menu')
             </div>
         </header>
@@ -593,7 +598,14 @@
         </div>
     </main>
 
+    @stack('modals')
+
     @yield('scripts')
+    <script>
+        window.careNotificationReadUrl = @json($careNotificationReadUrl ?? route('care.notification.read'));
+        window.careNotificationsReadAllUrl = @json(route('care.notifications.read-all'));
+        window.careDecisionsUrl = @json('/care/decisions');
+    </script>
     @include('partials.dashboard-shell-scripts')
     
     <script>

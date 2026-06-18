@@ -371,21 +371,27 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}">
+            @if (config('app.debug'))
+                <div style="background:#EFF6FF;border:1px solid #BFDBFE;color:#1D4ED8;padding:12px 16px;border-radius:10px;margin-bottom:1.2rem;font-size:0.82rem;font-weight:700;line-height:1.7;">
+                    تجريبي: admin@tripolizoo.com أو suad@tripolizoo.ly — كلمة المرور <code dir="ltr">12345678</code>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('login') }}" id="loginForm">
                 @csrf
                 
                 <div class="input-group">
                     <label for="email">البريد الإلكتروني</label>
                     <div class="input-wrapper">
                         <!-- تم إضافة القيمة الافتراضية والاتجاه LTR كما طلبت سابقاً -->
-                        <input type="email" id="email" name="email" value="{{ old('email', 'admin@tripolizoo.com') }}" placeholder="أدخل بريدك الإلكتروني" required dir="ltr" style="text-align: left;">
+                        <input type="email" id="email" name="email" value="{{ old('email', 'admin@tripolizoo.com') }}" placeholder="أدخل بريدك الإلكتروني" required autocomplete="username" dir="ltr" style="text-align: left;">
                     </div>
                 </div>
 
                 <div class="input-group">
                     <label for="password">كلمة المرور</label>
                     <div class="input-wrapper">
-                        <input type="password" id="password" name="password" placeholder="أدخل كلمة المرور" required dir="ltr" style="text-align: left;">
+                        <input type="password" id="password" name="password" placeholder="12345678" required autocomplete="current-password" dir="ltr" style="text-align: left;">
                     </div>
                 </div>
 
@@ -415,5 +421,24 @@
         </div>
     </div>
 
+    <script>
+        (function () {
+            const form = document.getElementById('loginForm');
+            const btn = document.getElementById('submitBtn');
+            if (!form || !btn) return;
+
+            form.addEventListener('submit', function () {
+                btn.classList.add('loading');
+                btn.disabled = true;
+            });
+
+            window.addEventListener('pageshow', function (event) {
+                if (event.persisted) {
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

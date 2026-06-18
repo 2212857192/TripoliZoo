@@ -72,6 +72,7 @@ class ReceivingTask {
     required this.decisionType,
     required this.decisionDate,
     required this.decisionIssuedBy,
+    this.decisionIssuerRole,
     this.animalGender,
     this.animalImageUrl,
     this.decisionNotes,
@@ -95,11 +96,20 @@ class ReceivingTask {
   final ReceivingDecisionType decisionType;
   final DateTime decisionDate;
   final String decisionIssuedBy;
+  final String? decisionIssuerRole;
   final String? decisionNotes;
   final String? delayReason;
   final String? delayExtraNote;
   final DateTime? delayRecordedAt;
   final String? receiptNote;
+
+  String get decisionIssuerLabel {
+    final role = decisionIssuerRole?.trim();
+    if (role == null || role.isEmpty) {
+      return decisionIssuedBy;
+    }
+    return '$decisionIssuedBy — $role';
+  }
 
   String get animalLabel => '$animalId — $animalType';
 
@@ -146,6 +156,7 @@ class ReceivingTask {
       decisionType: decisionType,
       decisionDate: decisionDate,
       decisionIssuedBy: decisionIssuedBy,
+      decisionIssuerRole: decisionIssuerRole,
       decisionNotes: decisionNotes,
       delayReason: clearDelay ? null : (delayReason ?? this.delayReason),
       delayExtraNote:

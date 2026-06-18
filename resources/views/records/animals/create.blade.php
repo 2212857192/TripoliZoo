@@ -316,18 +316,26 @@
 
 @section('content')
 
-<div class="form-page-header">
-    <div>
-        <h2>إضافة حيوان داخل الحديقة</h2>
-        <p>تستخدم هذه الواجهة لإضافة حيوان موجود فعليًا داخل الحديقة ولم يكن مسجلًا في النظام.</p>
-    </div>
-    <a href="/records/animals" class="btn-cancel-form">
+@php $portalBase = $portalBase ?? '/records'; @endphp
+
+@if($errors->any())
+<div class="notice-red" style="margin-bottom:1rem;">
+    @foreach($errors->all() as $error)
+        <div>{{ $error }}</div>
+    @endforeach
+</div>
+@endif
+
+<div class="form-page-header" style="justify-content:flex-end;">
+    <a href="{{ $portalBase }}/animals" class="btn-cancel-form">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
         العودة للقائمة
     </a>
 </div>
 
-<form id="addAnimalForm" onsubmit="return false;">
+<form id="addAnimalForm" method="POST" action="{{ route('records.animals.store') }}" enctype="multipart/form-data">
+    @csrf
+    <input type="hidden" name="age_method" id="ageMethodField" value="{{ old('age_method', 'birth') }}">
 
     {{-- ══════════════════ SECTION 1: BASIC DATA ══════════════════ --}}
     <div class="form-section">
@@ -352,37 +360,37 @@
                 {{-- Animal Name --}}
                 <div class="field-group">
                     <label class="field-label">اسم الحيوان <span class="optional">(اختياري — إن وجد)</span></label>
-                    <input type="text" class="form-control" placeholder="مثال: سيمبا، صخر، لونا...">
+                        <input type="text" name="name" class="form-control" value="{{ old('name') }}" placeholder="مثال: سيمبا، صخر، لونا...">
                 </div>
 
                 {{-- Species/Type --}}
                 <div class="field-group">
                     <label class="field-label"><span class="required">*</span> النوع</label>
-                    <input type="text" class="form-control" placeholder="مثال: أسد أفريقي، غزال الريم، نمر سيبيري...">
+                        <input type="text" name="species" class="form-control" value="{{ old('species') }}" placeholder="مثال: أسد أفريقي، غزال الريم، نمر سيبيري...">
                 </div>
 
                 {{-- Group --}}
                 <div class="field-group">
                     <label class="field-label"><span class="required">*</span> المجموعة</label>
-                    <select class="form-control" id="addGroupSelect" onchange="updateGeneratedId()">
-                        @include('partials.animal-group-options', ['prompt' => 'اختر المجموعة...', 'withValues' => true])
+                        <select name="group" class="form-control" id="addGroupSelect" onchange="updateGeneratedId()">
+                            @include('partials.animal-group-options', ['prompt' => 'اختر المجموعة...', 'withValues' => true, 'selected' => old('group')])
                     </select>
                 </div>
 
                 {{-- Gender --}}
                 <div class="field-group">
                     <label class="field-label"><span class="required">*</span> الجنس</label>
-                    <select class="form-control">
-                        <option value="" disabled selected>اختر الجنس...</option>
-                        <option>ذكر</option>
-                        <option>أنثى</option>
-                    </select>
+                        <select name="gender" class="form-control">
+                            <option value="" disabled @selected(!old('gender'))>اختر الجنس...</option>
+                            <option value="ذكر" @selected(old('gender') === 'ذكر')>ذكر</option>
+                            <option value="أنثى" @selected(old('gender') === 'أنثى')>أنثى</option>
+                        </select>
                 </div>
 
                 {{-- Distinguishing Marks --}}
                 <div class="field-group">
                     <label class="field-label">العلامات المميزة <span class="optional">(اختياري)</span></label>
-                    <input type="text" class="form-control" placeholder="مثال: لون مميز، ندبة، علامة طبيعية...">
+                        <input type="text" name="distinguishing_marks" class="form-control" value="{{ old('distinguishing_marks') }}" placeholder="مثال: لون مميز، ندبة، علامة طبيعية...">
                 </div>
 
                 {{-- Animal Photo --}}
@@ -393,7 +401,7 @@
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                         </div>
                         <p>اضغط لرفع صورة الحيوان، أو اسحب الملف هنا<br><span style="font-size:0.75rem; color:#94a3b8;">PNG, JPG حتى 5 ميجابايت</span></p>
-                        <input type="file" id="animalPhoto" accept="image/*" style="display:none;" onchange="showFileName(this, 'photoName')">
+                        <input type="file" id="animalPhoto" name="photo" accept="image/*" style="display:none;" onchange="showFileName(this, 'photoName')">
                         <p id="photoName" style="color:#1a4a2e; font-weight:700; margin-top:6px;"></p>
                     </label>
                 </div>
@@ -433,7 +441,7 @@
                 <div class="form-grid">
                     <div class="field-group">
                         <label class="field-label"><span class="required">*</span> تاريخ الميلاد</label>
-                        <input type="date" class="form-control">
+                        <input type="date" name="birth_date" class="form-control" value="{{ old('birth_date') }}">
                     </div>
                     <div class="field-group" style="align-self: end;">
                         <label class="field-label" style="color:#64748b;">العمر المحسوب</label>
@@ -447,14 +455,14 @@
                 <div class="form-grid col-3">
                     <div class="field-group">
                         <label class="field-label"><span class="required">*</span> العمر التقريبي عند التسجيل</label>
-                        <input type="number" class="form-control" placeholder="مثال: 4" min="1">
+                        <input type="number" name="approx_age_value" class="form-control" value="{{ old('approx_age_value') }}" placeholder="مثال: 4" min="1">
                     </div>
                     <div class="field-group">
                         <label class="field-label"><span class="required">*</span> وحدة العمر</label>
-                        <select class="form-control">
-                            <option>أيام</option>
-                            <option>أشهر</option>
-                            <option selected>سنوات</option>
+                        <select name="approx_age_unit" class="form-control">
+                            <option value="أيام" @selected(old('approx_age_unit') === 'أيام')>أيام</option>
+                            <option value="أشهر" @selected(old('approx_age_unit', 'سنوات') === 'أشهر')>أشهر</option>
+                            <option value="سنوات" @selected(old('approx_age_unit', 'سنوات') === 'سنوات')>سنوات</option>
                         </select>
                     </div>
                     <div class="field-group">
@@ -482,15 +490,15 @@
             <div class="form-grid">
                 <div class="field-group">
                     <label class="field-label"><span class="required">*</span> أصل الحيوان</label>
-                    <select class="form-control">
-                        <option value="" disabled selected>اختر الأصل...</option>
-                        <option>مولود داخل الحديقة</option>
-                        <option>وارد من خارج الحديقة</option>
+                    <select name="origin" class="form-control">
+                        <option value="" disabled @selected(!old('origin'))>اختر الأصل...</option>
+                        <option value="مولود داخل الحديقة" @selected(old('origin') === 'مولود داخل الحديقة')>مولود داخل الحديقة</option>
+                        <option value="وارد من خارج الحديقة" @selected(old('origin') === 'وارد من خارج الحديقة')>وارد من خارج الحديقة</option>
                     </select>
                 </div>
                 <div class="field-group">
                     <label class="field-label"><span class="required">*</span> مصدر الحيوان</label>
-                    <input type="text" class="form-control" placeholder="مثال: مولود داخل الحديقة حسب السجلات الورقية، وارد من جهة رسمية...">
+                    <input type="text" name="animal_source" class="form-control" value="{{ old('animal_source') }}" placeholder="مثال: مولود داخل الحديقة حسب السجلات الورقية، وارد من جهة رسمية...">
                 </div>
             </div>
         </div>
@@ -511,7 +519,7 @@
             <div class="form-grid">
                 <div class="field-group field-span-2">
                     <label class="field-label">ملخص التاريخ السابق <span class="optional">(اختياري)</span></label>
-                    <textarea class="form-control" rows="4" placeholder="اكتب ملخصًا عن التاريخ الطبي أو البيئي للحيوان قبل إدخاله في النظام..."></textarea>
+                    <textarea name="prior_history" class="form-control" rows="4" placeholder="اكتب ملخصًا عن التاريخ الطبي أو البيئي للحيوان قبل إدخاله في النظام...">{{ old('prior_history') }}</textarea>
                 </div>
                 <div class="field-group field-span-2">
                     <label class="field-label">مرفق التاريخ السابق <span class="optional">(اختياري — PDF أو صورة)</span></label>
@@ -520,7 +528,7 @@
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                         </div>
                         <p>ارفع ملف PDF أو صورة من السجل الورقي القديم<br><span style="font-size:0.75rem; color:#94a3b8;">PDF, PNG, JPG حتى 10 ميجابايت</span></p>
-                        <input type="file" id="historyFile" accept=".pdf,image/*" style="display:none;" onchange="showFileName(this, 'historyFileName')">
+                        <input type="file" id="historyFile" name="prior_history_file" accept=".pdf,image/*" style="display:none;" onchange="showFileName(this, 'historyFileName')">
                         <p id="historyFileName" style="color:#1a4a2e; font-weight:700; margin-top:6px;"></p>
                     </label>
                 </div>
@@ -530,11 +538,11 @@
 
     {{-- ══════════════════ FORM ACTIONS ══════════════════ --}}
     <div class="form-actions">
-        <button type="button" class="btn-save" onclick="submitForm()">
+        <button type="submit" class="btn-save">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             حفظ وإنشاء الملف
         </button>
-        <a href="/records/animals" class="btn-cancel-form">
+        <a href="{{ $portalBase }}/animals" class="btn-cancel-form">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             إلغاء
         </a>
@@ -568,6 +576,7 @@
 <script>
     // ── Age Method Toggle ──
     function setAgeMethod(method) {
+        document.getElementById('ageMethodField').value = method === 'birthdate' ? 'birth' : 'approx';
         document.querySelectorAll('.age-method-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.conditional-block').forEach(b => {
             b.classList.remove('visible');
@@ -588,22 +597,16 @@
     }
 
     // Initialize
-    setAgeMethod('birthdate');
+    setAgeMethod(@json(old('age_method', 'birth') === 'approx' ? 'approx' : 'birthdate'));
 
-    const groupPrefixes = {
-        'القططية': 'ANM', 'الطيور': 'BRD', 'الزواحف': 'RPT',
-        'القرود': 'MON', 'الغزلان': 'GZL', 'الثدييات الكبيرة': 'LRG',
-        'الثدييات الصغيرة': 'SML', 'الدب واللامة': 'BLA'
-    };
-    const groupCounters = { ANM: 1050, BRD: 201, RPT: 88, GZL: 1046, MON: 1047, SML: 330, LRG: 120, BLA: 45 };
+    const nextAnimalCodes = @json($nextAnimalCodes ?? []);
 
     function updateGeneratedId() {
         const sel = document.getElementById('addGroupSelect');
         const input = document.getElementById('addAnimalId');
         const group = sel.value;
-        if (!group || !groupPrefixes[group]) { input.value = '—'; return; }
-        const prefix = groupPrefixes[group];
-        input.value = '#' + prefix + '-' + groupCounters[prefix];
+        if (!group || !nextAnimalCodes[group]) { input.value = '—'; return; }
+        input.value = '#' + nextAnimalCodes[group];
     }
 
     // ── File Upload Name Display ──

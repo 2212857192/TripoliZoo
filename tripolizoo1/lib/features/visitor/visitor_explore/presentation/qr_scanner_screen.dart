@@ -5,7 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/domain/animal.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/data/animal_repository.dart';
-import 'package:tripolizoo/features/visitor/visitor_explore/presentation/animals_explore_screen.dart';
+import 'package:tripolizoo/features/visitor/visitor_explore/presentation/animal_detail_screen.dart';
 import 'package:tripolizoo/shared/utils/localized_text.dart';
 
 class QrScannerScreen extends StatefulWidget {
@@ -22,7 +22,7 @@ class QrScannerScreen extends StatefulWidget {
 
 class _QrScannerScreenState extends State<QrScannerScreen> {
   final MobileScannerController _controller = MobileScannerController();
-  final _repo = MockAnimalRepository();
+  final _repo = ApiAnimalRepository();
   bool _processing = false;
   bool _permissionGranted = false;
   bool _checkingPermission = true;
@@ -62,6 +62,14 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   }
 
   Future<void> _showResult(String code, Animal? animal) async {
+    if (animal != null) {
+      await context.push('/animals/${animal.id}');
+      if (mounted) {
+        _controller.start();
+      }
+      return;
+    }
+
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -85,8 +93,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
             if (animal != null) ...[
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child:
-                    Image.asset(animal.image, height: 120, fit: BoxFit.cover),
+                child: _AnimalPreviewImage(animal: animal),
               ),
               const SizedBox(height: 12),
               Text(animal.name,
@@ -304,6 +311,40 @@ class _Overlay extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AnimalPreviewImage extends StatelessWidget {
+  const _AnimalPreviewImage({required this.animal});
+
+  final Animal animal;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget fallback() => Container(
+          height: 120,
+          width: 180,
+          color: AppColors.primary,
+          child: const Icon(Icons.pets, color: Colors.white38, size: 42),
+        );
+
+    if (animal.image.isEmpty) return fallback();
+
+    if (animal.hasNetworkImage) {
+      return Image.network(
+        animal.image,
+        height: 120,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => fallback(),
+      );
+    }
+
+    return Image.asset(
+      animal.image,
+      height: 120,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => fallback(),
     );
   }
 }

@@ -1,6 +1,6 @@
 abstract final class AppConstants {
-  static const String appName = 'حديقة طرابلس';
-  static const String appNameEn = 'TRIPOLI ZOO';
+  static const String appName = 'حديقة حيوان طرابلس';
+  static const String appNameEn = 'Tripoli Zoo';
 
   static const String workingHours = '10:00 - 18:00';
   static const String workingDays = 'طيلة الأسبوع';

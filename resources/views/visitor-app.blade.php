@@ -286,7 +286,7 @@
             </div>
 
             <!-- Interactive Map -->
-            <div class="grid-card">
+            <a href="/app/map" class="grid-card" style="text-decoration:none; color:inherit;">
                 <div class="icon-wrap c-map">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/>
@@ -298,10 +298,10 @@
                     <div class="card-title">Interactive Map</div>
                     <div class="card-desc">Live wayfinding</div>
                 </div>
-            </div>
+            </a>
 
             <!-- Visitor Info -->
-            <a href="/visit-info" class="grid-card" style="text-decoration:none; color:inherit;">
+            <a href="/app/visit-info" class="grid-card" style="text-decoration:none; color:inherit;">
                 <div class="icon-wrap c-info">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="10"/>

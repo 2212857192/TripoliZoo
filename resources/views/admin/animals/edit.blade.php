@@ -202,6 +202,17 @@
     العودة لعرض المحتوى التعريفي
 </a>
 
+@if($errors->any())
+<div style="margin-bottom:1rem;padding:12px 16px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;color:#B91C1C;font-weight:700;">
+    <div style="margin-bottom:6px;">تعذّر حفظ التعديلات:</div>
+    <ul style="margin:0;padding-right:1.2rem;font-weight:600;">
+        @foreach($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
 <form method="POST" action="{{ route('admin.animals.update', $profile) }}" enctype="multipart/form-data">
 @csrf
 @method('PUT')
@@ -218,6 +229,9 @@
     <div class="section-body">
         <div class="animal-identity-info">
             <h3>{{ $animalName }}</h3>
+            @if($profile->animal?->species)
+            <p style="margin:6px 0 0;font-size:.88rem;font-weight:700;color:#64748B;">النوع: {{ $profile->animal->species }}</p>
+            @endif
         </div>
         <div class="readonly-note">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
@@ -239,12 +253,14 @@
         <textarea
             id="desc"
             name="description"
-            class="desc-textarea"
+            class="desc-textarea @error('description') input-error @enderror"
             oninput="onDescInput()"
             rows="6"
+            minlength="20"
+            maxlength="600"
             required
         >{{ old('description', $profile->description) }}</textarea>
-        <div class="char-count">الأحرف: <span id="charCount">{{ mb_strlen(old('description', $profile->description)) }}</span> / 600</div>
+        <div class="char-count">الأحرف: <span id="charCount">{{ mb_strlen(old('description', $profile->description)) }}</span> / 600 (الحد الأدنى 20)</div>
     </div>
 </div>
 
@@ -255,7 +271,7 @@
     <div class="bottom-card">
         <div class="bottom-card-head">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            <h3>صورة الحيوان <span style="color:#DC2626;font-weight:800;font-size:.75rem;">*</span></h3>
+            <h3>صورة الحيوان</h3>
         </div>
         <div class="bottom-card-body">
             <div class="image-slot">

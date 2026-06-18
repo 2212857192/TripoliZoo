@@ -243,6 +243,17 @@
     العودة إلى قائمة المحتوى التعريفي
 </a>
 
+@if($errors->any())
+<div style="margin-bottom:1rem;padding:12px 16px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;color:#B91C1C;font-weight:700;">
+    <div style="margin-bottom:6px;">تعذّر حفظ المحتوى:</div>
+    <ul style="margin:0;padding-right:1.2rem;font-weight:600;">
+        @foreach($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
 <form method="POST" action="{{ route('admin.animals.store') }}" enctype="multipart/form-data" id="createForm">
 @csrf
 
@@ -261,7 +272,7 @@
             <select id="animalSelect" name="animal_id" onchange="onAnimalChange()" required>
                 <option value="">— اختر حيواناً من القائمة —</option>
                 @forelse($animals as $animal)
-                <option value="{{ $animal->id }}" @selected(old('animal_id') == $animal->id)>{{ $animal->displayLabel() }} ({{ $animal->code }})</option>
+                <option value="{{ $animal->id }}" data-species="{{ $animal->species }}" @selected((string) old('animal_id') === (string) $animal->id)>{{ $animal->displayLabel() }} ({{ $animal->code }})</option>
                 @empty
                 <option value="" disabled>لا توجد حيوانات بدون محتوى تعريفي</option>
                 @endforelse
@@ -272,6 +283,7 @@
         <div class="animal-preview" id="animalPreview">
             <div class="animal-preview-info">
                 <h4 id="previewName">—</h4>
+                <p id="previewSpecies" style="margin:4px 0 0;font-size:.82rem;font-weight:700;color:#64748B;">—</p>
             </div>
             <span class="preview-badge">✓ تم الاختيار</span>
         </div>
@@ -291,13 +303,15 @@
         <textarea
             id="desc"
             name="description"
-            class="desc-textarea"
+            class="desc-textarea @error('description') input-error @enderror"
             placeholder="مثال: الأسد الإفريقي من أكبر القطط البرية في العالم..."
             oninput="onDescInput()"
             rows="6"
+            minlength="20"
+            maxlength="600"
             required
         >{{ old('description') }}</textarea>
-        <div class="char-count">الأحرف: <span id="charCount">0</span> / 600</div>
+        <div class="char-count">الأحرف: <span id="charCount">0</span> / 600 (الحد الأدنى 20)</div>
 
     </div>
 </div>
@@ -323,7 +337,7 @@
             </div>
             <div class="img-preview-wrap" id="imgPreviewWrap">
                 <img id="imgPreview" src="" alt="معاينة الصورة">
-                <button class="img-remove-btn" onclick="removeImg()" title="حذف الصورة">×</button>
+                <button type="button" class="img-remove-btn" onclick="removeImg()" title="حذف الصورة">×</button>
             </div>
         </div>
     </div>
@@ -364,7 +378,11 @@
         const sel = document.getElementById('animalSelect');
         const preview = document.getElementById('animalPreview');
         if (sel.value) {
-            document.getElementById('previewName').textContent = sel.options[sel.selectedIndex].text;
+            const option = sel.options[sel.selectedIndex];
+            document.getElementById('previewName').textContent = option.text;
+            document.getElementById('previewSpecies').textContent = option.dataset.species
+                ? 'النوع: ' + option.dataset.species
+                : '';
             preview.classList.add('show');
         } else {
             preview.classList.remove('show');

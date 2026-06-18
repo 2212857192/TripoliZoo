@@ -11,11 +11,11 @@ class UrgentHealthButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF111B14),
+        gradient: AppColors.primaryGradient,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF111B14).withValues(alpha: 0.2),
+            color: AppColors.primary.withValues(alpha: 0.25),
             blurRadius: 14,
             offset: const Offset(0, 5),
           ),
@@ -27,7 +27,7 @@ class UrgentHealthButton extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(14),
-          splashColor: Colors.white.withValues(alpha: 0.05),
+          splashColor: Colors.white.withValues(alpha: 0.15),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
             child: Row(
@@ -37,10 +37,10 @@ class UrgentHealthButton extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.1),
+                      color: Colors.white.withValues(alpha: 0.2),
                       width: 1,
                     ),
                   ),
@@ -70,7 +70,7 @@ class UrgentHealthButton extends StatelessWidget {
                         style: GoogleFonts.cairo(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white.withValues(alpha: 0.55),
+                          color: Colors.white.withValues(alpha: 0.75),
                           height: 1.3,
                         ),
                       ),
@@ -83,12 +83,12 @@ class UrgentHealthButton extends StatelessWidget {
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.25),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
                     Icons.arrow_back_ios_new_rounded,
-                    color: Color(0xFF81C784),
+                    color: Colors.white,
                     size: 13,
                   ),
                 ),

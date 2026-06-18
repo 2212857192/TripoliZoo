@@ -82,17 +82,21 @@ class User extends Authenticatable
         return $this->roleEnum()?->canUseMobileApp() ?? false;
     }
 
+    public function canUseWebPortal(): bool
+    {
+        return $this->roleEnum()?->canUseWebPortal() ?? false;
+    }
+
     public function appRole(): ?AppRole
     {
         return $this->roleEnum()?->appRole();
     }
 
-    /** حسابات الموظفين (كل users ما عدا مدير النظام ومدير الحديقة والزائر) */
+    /** حسابات الموظفين (كل users ما عدا مدير النظام والزائر) */
     public function scopeEmployees(Builder $query): Builder
     {
         return $query->whereNotIn('role', [
             UserRole::SystemAdmin->value,
-            UserRole::Director->value,
             UserRole::Visitor->value,
         ]);
     }
@@ -101,7 +105,6 @@ class User extends Authenticatable
     {
         return ! in_array($this->role, [
             UserRole::SystemAdmin->value,
-            UserRole::Director->value,
             UserRole::Visitor->value,
         ], true);
     }
@@ -114,5 +117,73 @@ class User extends Authenticatable
     public function ticketSales(): HasMany
     {
         return $this->hasMany(TicketSale::class, 'sold_by');
+    }
+
+    public function quarantineNotifications(): HasMany
+    {
+        return $this->hasMany(QuarantineNotification::class);
+    }
+
+    public function deviceTokens(): HasMany
+    {
+        return $this->hasMany(DeviceToken::class);
+    }
+
+    public function isVetHead(): bool
+    {
+        return $this->role === UserRole::VetHead->value;
+    }
+
+    public function isVeterinarian(): bool
+    {
+        return $this->role === UserRole::Veterinarian->value;
+    }
+
+    public function isGroupSupervisor(): bool
+    {
+        return $this->role === UserRole::GroupSupervisor->value;
+    }
+
+    public function supervisesAnimalGroup(?string $group): bool
+    {
+        return $this->isGroupSupervisor()
+            && $group !== null
+            && $this->assigned_group === $group;
+    }
+
+    public function receivingTasks(): HasMany
+    {
+        return $this->hasMany(ReceivingTask::class, 'supervisor_id');
+    }
+
+    public function supervisorNotifications(): HasMany
+    {
+        return $this->hasMany(SupervisorNotification::class);
+    }
+
+    public function careNotifications(): HasMany
+    {
+        return $this->hasMany(CareNotification::class);
+    }
+
+    public function vetNotifications(): HasMany
+    {
+        return $this->hasMany(VetNotification::class);
+    }
+
+    public function canAccessVetPortal(): bool
+    {
+        return $this->hasPortal(Portal::Vet);
+    }
+
+    public function managesAnimalGroup(?string $group): bool
+    {
+        if ($this->isVetHead()) {
+            return true;
+        }
+
+        return $this->isVeterinarian()
+            && $group !== null
+            && $this->assigned_group === $group;
     }
 }

@@ -147,17 +147,28 @@
 @section('content')
 
 <div class="top-card">
-    <div class="filter-bar">
+    <form method="GET" action="{{ ($portalBase ?? '/care') }}/births" class="filter-bar">
         <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="بحث برقم الحيوان أو نوعه أو رقم الأم...">
+            <input type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="بحث برقم الحيوان أو نوعه أو رقم الأم...">
         </div>
-        <select class="filter-select">
-                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
+        <select class="filter-select" name="group" onchange="this.form.submit()">
+            @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات', 'selected' => $filters['group'] ?? '', 'withValues' => true])
         </select>
-        @include('partials.date-filter')
-    </div>
+        <select class="filter-select" name="status" onchange="this.form.submit()">
+            <option value="" @selected(empty($filters['status']))>كل الحالات</option>
+            <option value="monitoring" @selected(($filters['status'] ?? '') === 'monitoring')>قيد المتابعة</option>
+            <option value="completed" @selected(($filters['status'] ?? '') === 'completed')>دائم داخل الحديقة</option>
+        </select>
+        <button type="submit" class="btn-submit" style="padding:10px 18px;">بحث</button>
+    </form>
 </div>
+
+@if(session('success'))
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;padding:12px 16px;border-radius:12px;margin-bottom:1rem;font-weight:700;">
+        {{ session('success') }}
+    </div>
+@endif
 
 <div class="table-card">
     <div style="overflow-x:auto;">
@@ -165,6 +176,8 @@
             <thead>
                 <tr>
                     <th>الحيوان</th>
+                    <th>رقم الأم</th>
+                    <th>النوع</th>
                     <th>المجموعة</th>
                     <th>تاريخ الولادة</th>
                     <th>الأيام المتبقية</th>
@@ -173,60 +186,85 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🦁', 'animalId' => 'NB-26-001', 'sub' => 'أسد إفريقي'])
-                    <td>القططية</td>
-                    <td>2026-05-23</td>
-                    <td><span class="days-danger">يوم واحد ⚠️</span></td>
-                    <td><span class="badge badge-status-monitoring"><span class="dot"></span>قيد المتابعة</span></td>
-                    <td>
-                        <button onclick="openModal('monitoring','NB-26-001','🦁','أسد إفريقي','القططية','#ANL-0041-2022','2026-05-23','يوم واحد','قيد المتابعة','خالد منصور','—','1.4 كجم','المولود بصحة جيدة ونشط ويرضع بشكل طبيعي.')" class="btn-tbl view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => 'NB-26-002', 'sub' => 'قرد المكاك'])
-                    <td>القرود</td>
-                    <td>2026-06-03</td>
-                    <td><span class="days-ok">11 يوماً</span></td>
-                    <td><span class="badge badge-status-monitoring"><span class="dot"></span>قيد المتابعة</span></td>
-                    <td>
-                        <button onclick="openModal('monitoring','NB-26-002','🐒','قرد المكاك','القرود','#ANL-0182-2023','2026-06-03','11 يوماً','قيد المتابعة','ياسر الغيثي','كدمة على الرسغ الأيسر','0.6 كجم','يتم إرضاع المولود بشكل طبيعي، حيوي ونشط.')" class="btn-tbl view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🦌', 'animalId' => 'NB-26-003', 'sub' => 'غزال الريم'])
-                    <td>الغزلان</td>
-                    <td>2026-05-15</td>
-                    <td><span style="color:#94a3b8;">—</span></td>
-                    <td><span class="badge badge-status-completed"><span class="dot"></span>اكتملت المتابعة</span></td>
-                    <td>
-                        <button onclick="openModal('completed','NB-26-003','🦌','غزال الريم','الغزلان','#ANL-0120-2024','2026-05-15','—','اكتملت المتابعة','أحمد الكواري','عرج واضح في الساق','3.2 كجم','تمت المتابعة بنجاح وتم اعتماده كحيوان دائم.')" class="btn-tbl view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </button>
-                    </td>
-                </tr>
+                @forelse($newborns as $newborn)
+                    @php
+                        $monitoring = $newborn->status === \App\Enums\AnimalStatus::UnderBirthFollowUp->value;
+                        $daysRemaining = app(\App\Services\BirthRegistrationService::class)->daysRemaining($newborn);
+                        $daysClass = 'days-ok';
+                        if ($monitoring && $daysRemaining !== null) {
+                            if ($daysRemaining <= 1) {
+                                $daysClass = 'days-danger';
+                            } elseif ($daysRemaining <= 3) {
+                                $daysClass = 'days-warn';
+                            }
+                        }
+                    @endphp
+                    <tr>
+                        @include('partials.animal-table-cell', [
+                            'emoji' => '🐾',
+                            'animalId' => $newborn->code,
+                            'name' => $newborn->name,
+                            'image' => $newborn->photo_path
+                                ? ($portalBase ?? '/care').'/births/'.$newborn->code.'/photo'
+                                : null,
+                        ])
+                        <td>
+                            @if($newborn->mother)
+                                <span class="animal-id">{{ $newborn->mother->code }}</span>
+                            @else
+                                <span style="color:#94a3b8;">—</span>
+                            @endif
+                        </td>
+                        <td style="font-weight:700;">{{ $newborn->species }}</td>
+                        <td>{{ $newborn->group }}</td>
+                        <td>{{ $newborn->birth_date?->format('Y-m-d') ?? '—' }}</td>
+                        <td>
+                            @if($monitoring)
+                                <span class="{{ $daysClass }}">
+                                    @if($daysRemaining === null)
+                                        —
+                                    @elseif($daysRemaining === 0)
+                                        انتهت المدة ⚠️
+                                    @elseif($daysRemaining === 1)
+                                        يوم واحد
+                                    @else
+                                        {{ $daysRemaining }} يوماً@if($daysRemaining <= 3) ⚠️@endif
+                                    @endif
+                                </span>
+                            @else
+                                <span style="color:#94a3b8;">—</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($monitoring)
+                                <span class="badge badge-status-monitoring"><span class="dot"></span>قيد المتابعة</span>
+                            @else
+                                <span class="badge badge-status-completed"><span class="dot"></span>دائم داخل الحديقة</span>
+                            @endif
+                        </td>
+                        <td>
+                            <button type="button" onclick="openModal('{{ $newborn->code }}')" class="btn-tbl view" title="عرض التفاصيل">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="8" style="text-align:center;padding:2.5rem;color:#64748b;font-weight:700;">
+                            لا توجد مواليد مسجلة حالياً.
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
-    <div class="table-card-footer">
-        <div class="table-pagination">
-            <button class="page-btn" disabled title="السابق">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn" title="التالي" disabled>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <span class="page-info">صفحة 1 من 1 — 3 مواليد</span>
-        </div>
-    </div>
+    @if($newborns->hasPages())
+        <div class="table-card-footer">{{ $newborns->links() }}</div>
+    @endif
 </div>
+@endsection
 
-{{-- ═══ MODAL ═══ --}}
+@push('modals')
 <div class="modal-backdrop" id="birthModal">
     <div class="modal-box">
         <div class="modal-header">
@@ -277,13 +315,9 @@
                             <span class="q-label">المشرف</span>
                             <span class="q-value" id="bSupervisor">—</span>
                         </div>
-                        <div class="q-row">
+                        <div class="q-row" style="border-bottom:none; margin-bottom:0; padding-bottom:0;">
                             <span class="q-label">العلامة المميزة</span>
                             <span class="q-value" id="bMark">—</span>
-                        </div>
-                        <div class="q-row" style="border-bottom:none; margin-bottom:0; padding-bottom:0;">
-                            <span class="q-label">الوزن</span>
-                            <span class="q-value" id="bWeight">—</span>
                         </div>
                     </div>
 
@@ -299,7 +333,7 @@
             <div id="btab-2" style="display:none;">
                 <div class="q-card">
                     <h4 class="q-card-title">المرفقات</h4>
-                    <div class="q-attach-wrap">
+                    <div class="q-attach-wrap" id="bAttachmentWrap">
                         <div class="q-attach-img" id="bAttachmentImg">🦁</div>
                     </div>
                 </div>
@@ -310,52 +344,12 @@
     </div>
 </div>
 
-{{-- ═══ CONFIRM FINISH DIALOG ═══ --}}
-<div class="dialog-backdrop" id="confirmFinishDialog">
-    <div class="dialog-box">
-        <div class="dialog-body">
-            <div class="dialog-icon-wrap" style="background:#f0fdf4;">✅</div>
-            <h4>تأكيد انتهاء فترة المتابعة</h4>
-            <p>هل أنت متأكد من انتهاء فترة المتابعة واعتماد المولود رسمياً كحيوان دائم؟<br>يُرجى بعد ذلك تسجيله في <strong>إدارة الحيوانات</strong> ليحصل على رقمه الرسمي.</p>
-        </div>
-        <div class="dialog-footer">
-            <button class="btn-cancel" onclick="closeDialog('confirmFinishDialog')">إلغاء</button>
-            <button class="btn-submit" onclick="confirmFinish()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                نعم، انتهت فترة المتابعة
-            </button>
-        </div>
-    </div>
-</div>
-
-{{-- ═══ CONFIRM HEALTH REFER DIALOG ═══ --}}
-<div class="dialog-backdrop" id="confirmHealthReferDialog">
-    <div class="dialog-box">
-        <div class="dialog-body">
-            <div class="dialog-icon-wrap" style="background:#fff1f2;">🏥</div>
-            <h4>تأكيد تحويل كحالة صحية</h4>
-            <p>هل أنت متأكد من تحويل هذا المولود كحالة صحية تستدعي تدخل المستشفى البيطري؟<br>سيتم إنشاء حالة صحية وطلب استدعاء الطبيب فوراً.</p>
-        </div>
-        <div class="dialog-footer">
-            <button class="btn-cancel" onclick="closeDialog('confirmHealthReferDialog')">إلغاء</button>
-            <button class="btn-submit-red" onclick="confirmHealthRefer()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
-                نعم، تحويل كحالة صحية
-            </button>
-        </div>
-    </div>
-</div>
-
-{{-- ═══ TOAST ═══ --}}
-<div class="toast" id="toastMsg">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-    <span id="toastText">تمت العملية بنجاح</span>
-</div>
-
-@endsection
+@endpush
 
 @section('scripts')
 <script>
+    const newborns = @json($newbornsForJs ?? []);
+
     function switchBTab(n) {
         document.getElementById('btab-1').style.display = n === 1 ? 'block' : 'none';
         document.getElementById('btab-2').style.display = n === 2 ? 'block' : 'none';
@@ -363,33 +357,31 @@
         document.getElementById('btab-btn-2').className = 'modal-tab' + (n === 2 ? ' active' : '');
     }
 
-    function openModal(state, animalId, emoji, animalType, group, mother, date, days, status, supervisor, mark, weight, notes) {
+    function openModal(code) {
+        const d = newborns[code];
+        if (!d) return;
         switchBTab(1);
 
-        document.getElementById('modalBirthId').textContent = animalId;
-        document.getElementById('bAnimalId').textContent = animalId;
-        document.getElementById('bAnimalType').textContent = animalType;
-        document.getElementById('bGroup').textContent = group;
-        document.getElementById('bMother').textContent = mother;
-        document.getElementById('bDate').textContent = date;
-        document.getElementById('bDays').textContent = days;
-        document.getElementById('bStatus').textContent = status;
-        document.getElementById('bSupervisor').textContent = supervisor;
-        document.getElementById('bMark').textContent = mark;
-        document.getElementById('bWeight').textContent = weight;
-        document.getElementById('bNotes').textContent = notes;
-        document.getElementById('bAttachmentImg').textContent = emoji;
+        document.getElementById('modalBirthId').textContent = d.code;
+        document.getElementById('bAnimalId').textContent = d.code;
+        document.getElementById('bAnimalType').textContent = d.species;
+        document.getElementById('bGroup').textContent = d.group;
+        document.getElementById('bMother').textContent = d.mother_code ? (d.mother_name ? d.mother_code + ' — ' + d.mother_name : d.mother_code) : '—';
+        document.getElementById('bDate').textContent = d.birth_date || '—';
+        document.getElementById('bDays').textContent = d.days_label || '—';
+        document.getElementById('bStatus').textContent = d.status_label;
+        document.getElementById('bSupervisor').textContent = d.supervisor || '—';
+        document.getElementById('bMark').textContent = d.mark || '—';
+        document.getElementById('bNotes').textContent = d.notes || '—';
 
-        const footer = document.getElementById('bFooter');
-        const closeBtn = `<button class="btn-cancel" onclick="closeModal()">إغلاق</button>`;
-
-        if (state === 'monitoring') {
-            footer.innerHTML = closeBtn +
-                `<button class="btn-action-close" onclick="referHealth()">تحويل كحالة صحية</button>
-                <button class="btn-action-release" onclick="finishMonitoring()">انتهت فترة المتابعة</button>`;
+        const attachWrap = document.getElementById('bAttachmentWrap');
+        if (d.has_photo && d.photo_url) {
+            attachWrap.innerHTML = '<img src="' + d.photo_url + '" alt="صورة المولود" class="q-attach-img" style="object-fit:cover;width:180px;height:180px;border-radius:16px;">';
         } else {
-            footer.innerHTML = closeBtn;
+            attachWrap.innerHTML = '<div class="q-attach-img" id="bAttachmentImg">🐾</div>';
         }
+
+        document.getElementById('bFooter').innerHTML = '<button type="button" class="btn-cancel" onclick="closeModal()">إغلاق</button>';
 
         document.getElementById('birthModal').classList.add('open');
     }
@@ -398,42 +390,10 @@
         document.getElementById('birthModal').classList.remove('open');
     }
 
-    // ── Custom dialogs ──
-    function openDialog(id) {
-        document.getElementById(id).classList.add('open');
-    }
-    function closeDialog(id) {
-        document.getElementById(id).classList.remove('open');
-    }
-    function showToast(msg, type='green') {
-        const t = document.getElementById('toastMsg');
-        const tx = document.getElementById('toastText');
-        t.className = 'toast ' + type;
-        tx.innerText = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3500);
-    }
-
-    function finishMonitoring() {
-        openDialog('confirmFinishDialog');
-    }
-    function confirmFinish() {
-        closeDialog('confirmFinishDialog');
-        closeModal();
-        showToast('✅ تم اعتماد المولود. يُرجى تسجيله في إدارة الحيوانات.', 'green');
-    }
-
-    function referHealth() {
-        openDialog('confirmHealthReferDialog');
-    }
-    function confirmHealthRefer() {
-        closeDialog('confirmHealthReferDialog');
-        closeModal();
-        showToast('🏥 تم إنشاء حالة صحية للمولود وطلب التدخل البيطري.', 'red');
-    }
-
-    window.onclick = function(e) {
-        if (e.target === document.getElementById('birthModal')) closeModal();
-    };
+    @if(!empty($highlightAnimal))
+    document.addEventListener('DOMContentLoaded', function() {
+        openModal(@json($highlightAnimal));
+    });
+    @endif
 </script>
 @endsection

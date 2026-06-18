@@ -3,11 +3,14 @@
 @section('page_title', 'عرض المحتوى التعريفي')
 
 @php
-    $animalName = $profile->animal?->species ?? '—';
-    $sci = $profile->scientific_name ?? '';
-    $code = $profile->display_code ?? $profile->animal?->code ?? '—';
+    $animal = $profile->animal;
+    $animalName = $animal?->name ?: $animal?->species ?? '—';
+    $sci = $profile->visitorSubtitle();
+    $code = $profile->display_code ?? $animal?->code ?? '—';
     $img = $profile->imageUrl();
-    $qrUrl = route('visitor.animal', $profile);
+    $mapLocation = $mapLocation ?? null;
+    $qrPayload = $qrPayload ?? $profile->qrPayload();
+    $visitorUrl = $visitorUrl ?? route('visitor.animal', $profile);
 @endphp
 
 @section('styles')
@@ -150,58 +153,6 @@
     }
     .btn-action.back:hover { background:#E2E8F0; color:var(--text-main); }
 
-    /* ── QR modal ── */
-    .modal-overlay {
-        position:fixed; inset:0; background:rgba(15,23,42,.55);
-        backdrop-filter:blur(6px); z-index:1000;
-        display:flex; align-items:center; justify-content:center;
-        opacity:0; visibility:hidden; transition:all .25s;
-    }
-    .modal-overlay.show { opacity:1; visibility:visible; }
-
-    .modal-box {
-        background:white; width:100%; max-width:360px;
-        border-radius:24px; box-shadow:0 25px 60px rgba(0,0,0,.18);
-        overflow:hidden;
-        transform:translateY(24px) scale(.97); transition:all .3s cubic-bezier(.4,0,.2,1);
-    }
-    .modal-overlay.show .modal-box { transform:translateY(0) scale(1); }
-
-    .modal-head {
-        padding:1.2rem 1.6rem; border-bottom:1px solid var(--border);
-        display:flex; justify-content:space-between; align-items:center;
-        background:#FAFBFC;
-    }
-    .modal-head h3 { font-size:1.05rem; font-weight:800; color:var(--text-main); margin:0; }
-
-    .btn-close-x {
-        width:30px; height:30px; background:var(--border); border:none;
-        border-radius:8px; font-size:1.1rem; cursor:pointer;
-        display:flex; align-items:center; justify-content:center;
-        color:var(--text-muted); transition:all .2s;
-    }
-    .btn-close-x:hover { background:#E2E8F0; }
-
-    .qr-body { padding:1.8rem; text-align:center; }
-    .qr-body h4 { font-size:1rem; font-weight:800; color:var(--text-main); margin:0 0 4px; }
-    .qr-body p  { font-size:.8rem; color:var(--text-muted); font-weight:600; margin:0 0 1.2rem; }
-
-    #qrCanvas { border:1px solid var(--border); border-radius:12px; padding:10px; background:white; margin-bottom:1rem; }
-
-    .qr-actions { display:flex; gap:10px; justify-content:center; }
-    .btn-qr-dl {
-        padding:9px 18px; background:var(--green); color:white; border:none;
-        border-radius:8px; font-family:'Cairo',sans-serif; font-weight:700;
-        cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all .2s;
-    }
-    .btn-qr-dl:hover { background:#1B5E20; }
-    .btn-cancel {
-        padding:9px 16px; background:var(--bg-color); color:var(--text-muted);
-        border:1.5px solid var(--border); border-radius:8px;
-        font-family:'Cairo',sans-serif; font-weight:700; cursor:pointer; transition:all .2s;
-    }
-    .btn-cancel:hover { background:#E2E8F0; }
-
     /* ── Toast ── */
     .toast {
         position:fixed; bottom:2rem; left:50%;
@@ -216,6 +167,10 @@
 @endsection
 
 @section('content')
+
+@if(session('success'))
+<div class="notice-blue" style="margin-bottom:1rem;padding:12px 16px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;color:#1D4ED8;font-weight:700;">{{ session('success') }}</div>
+@endif
 
 <a href="{{ route('admin.animals.index') }}" class="page-back">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
@@ -256,6 +211,18 @@
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
                     الرمز: {{ $code }}
                 </span>
+                @if($animal?->group)
+                <span class="meta-pill">{{ $animal->group }}</span>
+                @endif
+                @if($animal?->gender)
+                <span class="meta-pill">{{ $animal->gender }}</span>
+                @endif
+                @if($animal?->formattedAge() && $animal->formattedAge() !== '—')
+                <span class="meta-pill">{{ $animal->formattedAge() }}</span>
+                @endif
+                @if($mapLocation)
+                <span class="meta-pill">📍 {{ $mapLocation->name }}</span>
+                @endif
             </div>
         </div>
     </div>
@@ -313,7 +280,36 @@
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     تعديل المحتوى التعريفي
                 </a>
-                <button class="btn-action qr" onclick="openQR()">
+                <form method="POST" action="{{ route('admin.animals.visibility', $profile) }}">
+                    @csrf
+                    @method('PATCH')
+                    <button type="submit" class="btn-action qr" style="width:100%;">
+                        {{ $profile->is_visible ? 'إخفاء عن تطبيق الزائر' : 'إظهار في تطبيق الزائر' }}
+                    </button>
+                </form>
+                @if($profile->is_visible)
+                <a href="{{ $visitorUrl }}" target="_blank" rel="noopener" class="btn-action qr">
+                    معاينة صفحة الزائر
+                </a>
+                @endif
+                @php
+                    $qrButtonData = [
+                        'name' => $animalName,
+                        'subtitle' => $sci,
+                        'code' => $code,
+                        'group' => $animal?->group,
+                        'image' => $img,
+                        'scanUrl' => $profile->visitorQrUrl(),
+                        'publicUrl' => config('app.visitor_public_url') ?: '',
+                        'qrImageUrl' => route('admin.animals.qr', $profile, absolute: false),
+                        'payload' => $qrPayload,
+                    ];
+                @endphp
+                <button
+                    class="btn-action qr js-animal-qr-trigger"
+                    type="button"
+                    data-qr='@json($qrButtonData)'
+                >
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                     عرض رمز QR التعريفي
                 </button>
@@ -327,60 +323,11 @@
 
 </div>
 
-{{-- QR Modal --}}
-<div class="modal-overlay" id="qrModal">
-    <div class="modal-box">
-        <div class="modal-head">
-            <h3>رمز QR التعريفي</h3>
-            <button class="btn-close-x" onclick="closeQR()">×</button>
-        </div>
-        <div class="qr-body">
-            <h4>{{ $animalName }}</h4>
-            <p>{{ $sci }} — رمز: {{ $code }}</p>
-            <canvas id="qrCanvas" width="180" height="180"></canvas>
-            <div class="qr-actions">
-                <button class="btn-qr-dl" onclick="downloadQR()">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    تحميل
-                </button>
-                <button class="btn-cancel" onclick="closeQR()">إغلاق</button>
-            </div>
-        </div>
-    </div>
-</div>
+@include('partials.admin-animal-qr-modal')
 
 <div class="toast" id="toast"></div>
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-<script>
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg; t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2800);
-    }
-
-    function openQR() {
-        QRCode.toCanvas(document.getElementById('qrCanvas'),
-            @json($qrUrl),
-            { width:180, margin:1, color:{dark:'#1E293B',light:'#FFFFFF'} }
-        );
-        document.getElementById('qrModal').classList.add('show');
-    }
-
-    function closeQR() { document.getElementById('qrModal').classList.remove('show'); }
-
-    function downloadQR() {
-        const link = document.createElement('a');
-        link.download = 'QR-{{ $animalName }}.png';
-        link.href = document.getElementById('qrCanvas').toDataURL('image/png');
-        link.click();
-        showToast('⬇️ تم تحميل رمز QR');
-    }
-
-    document.getElementById('qrModal').addEventListener('click', e => {
-        if (e.target === document.getElementById('qrModal')) closeQR();
-    });
-</script>
+@include('partials.admin-animal-qr-scripts')
 @endsection

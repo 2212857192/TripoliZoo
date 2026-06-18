@@ -1,16 +1,34 @@
-/// حيوانات المجموعة — بيانات تجريبية لقوائم الاختيار.
+/// حيوانات المجموعة — نموذج اختيار من الـ API.
 class SupervisorAnimal {
   const SupervisorAnimal({
     required this.id,
     required this.name,
     this.type,
+    this.customLabel,
   });
 
   final String id;
   final String name;
   final String? type;
+  final String? customLabel;
 
-  String get label => type != null ? '$id — $type' : id;
+  String get label =>
+      customLabel ??
+      (name.isNotEmpty
+          ? type != null
+              ? '$id — $name ($type)'
+              : '$id — $name'
+          : type != null
+              ? '$id — $type'
+              : id);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SupervisorAnimal && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 abstract final class SupervisorAnimalsData {

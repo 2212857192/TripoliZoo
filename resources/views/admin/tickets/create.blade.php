@@ -1,6 +1,6 @@
 @extends($__layout ?? 'admin.layout')
 @section('title', 'إضافة فئة تذكرة جديدة | Tripoli Zoo')
-@section('page_title', 'إدارة التذاكر والمبيعات')
+@section('page_title', 'إدارة فئات التذاكر')
 
 @section('styles')
 <style>
@@ -278,7 +278,7 @@
 
 <div class="ticket-single-layout">
     
-    <a href="/admin/tickets" class="page-back">
+    <a href="{{ route('admin.tickets.index') }}" class="page-back">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
         العودة إلى قائمة التذاكر المتاحة
     </a>
@@ -286,7 +286,7 @@
     <!-- Header Hero -->
     <div class="page-hero">
         <h2>إضافة فئة تذكرة جديدة</h2>
-        <p>تتيح لك هذه الصفحة إعداد فئة تذكرة تسعيرية جديدة للزوار وإطلاقها للبيع على لوحة الإصدار.</p>
+        <p>أضف فئة تذكرة جديدة لتظهر في تطبيق الزوار للشراء.</p>
     </div>
 
     <!-- Main Container -->
@@ -299,95 +299,64 @@
         </div>
         
         <div class="premium-card-body">
-            <!-- Form Fields Grid -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label>اسم فئة التذكرة <span style="color:#EF4444">*</span></label>
-                    <input type="text" id="name" class="form-input" placeholder="مثال: تذكرة دخول سياحية خاصة">
+            <form method="POST" action="{{ route('admin.tickets.store') }}">
+                @csrf
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>اسم فئة التذكرة <span style="color:#EF4444">*</span></label>
+                        <input type="text" name="name" class="form-input" value="{{ old('name') }}" placeholder="مثال: تذكرة دخول سياحية خاصة" required>
+                        @error('name')<div style="color:#EF4444;font-size:0.82rem;margin-top:6px;">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="form-group">
+                        <label>السعر بالدينار الليبي (د.ل) <span style="color:#EF4444">*</span></label>
+                        <input type="number" name="price" class="form-input" value="{{ old('price') }}" placeholder="0.00" step="0.5" min="0" required>
+                        @error('price')<div style="color:#EF4444;font-size:0.82rem;margin-top:6px;">{{ $message }}</div>@enderror
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>السعر بالدينار الليبي (د.ل) <span style="color:#EF4444">*</span></label>
-                    <input type="number" id="price" class="form-input" placeholder="0.00" step="0.5">
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>الفئة المستهدفة بالدخول</label>
-                    <input type="text" id="target" class="form-input" placeholder="مثال: العائلات (4 أفراد معاً)">
-                </div>
-                <div class="form-group">
-                    <label>نوع الزائر <span style="color:#EF4444">*</span></label>
-                    <select id="nationality" class="form-input">
-                        <option value="مواطن">مواطن</option>
-                        <option value="أجنبي">أجنبي</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>العمر <span style="color:#EF4444">*</span></label>
-                    <select id="age" class="form-input">
-                        <option value="بالغ">بالغ</option>
-                        <option value="طفل">طفل</option>
-                        <option value="طالب">طالب</option>
-                    </select>
-                </div>
-            </div>
 
-            <!-- Divider -->
-            <div class="form-divider"></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>الفئة المستهدفة بالدخول</label>
+                        <input type="text" name="target_description" class="form-input" value="{{ old('target_description') }}" placeholder="مثال: العائلات (4 أفراد معاً)">
+                    </div>
+                    <div class="form-group">
+                        <label>نوع الزائر <span style="color:#EF4444">*</span></label>
+                        <select name="visitor_nationality" class="form-input" required>
+                            <option value="مواطن" @selected(old('visitor_nationality', 'مواطن') === 'مواطن')>مواطن</option>
+                            <option value="أجنبي" @selected(old('visitor_nationality') === 'أجنبي')>أجنبي</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>العمر <span style="color:#EF4444">*</span></label>
+                        <select name="visitor_age_group" class="form-input" required>
+                            <option value="بالغ" @selected(old('visitor_age_group', 'بالغ') === 'بالغ')>بالغ</option>
+                            <option value="طفل" @selected(old('visitor_age_group') === 'طفل')>طفل</option>
+                            <option value="طالب" @selected(old('visitor_age_group') === 'طالب')>طالب</option>
+                        </select>
+                    </div>
+                </div>
 
-            <!-- Activation Switch (Flipped inside container) -->
-            <div class="toggle-row">
-                <label>تفعيل فئة التذكرة للبيع فوراً في النظام</label>
-                <label class="switch">
-                    <input type="checkbox" id="active" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
+                <div class="form-divider"></div>
 
-            <!-- Action buttons inside the same container -->
-            <div class="actions-row">
-                <a href="/admin/tickets" class="btn-cancel-premium">إلغاء وتراجع</a>
-                <button class="btn-submit-premium" onclick="submitForm()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    حفظ ونشر التذكرة
-                </button>
-            </div>
+                <div class="toggle-row">
+                    <label>تفعيل فئة التذكرة للبيع فوراً في تطبيق الزوار</label>
+                    <label class="switch">
+                        <input type="hidden" name="is_active" value="0">
+                        <input type="checkbox" name="is_active" value="1" @checked(old('is_active', true))>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="actions-row">
+                    <a href="{{ route('admin.tickets.index') }}" class="btn-cancel-premium">إلغاء وتراجع</a>
+                    <button type="submit" class="btn-submit-premium">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        حفظ فئة التذكرة
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
 </div>
-
-<div class="toast" id="toast"></div>
-@endsection
-
-@section('scripts')
-<script>
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    function submitForm() {
-        const name = document.getElementById('name').value.trim();
-        const price = document.getElementById('price').value.trim();
-
-        if (!name || !price) {
-            showToast('⚠️ يرجى إدخال اسم فئة التذكرة وسعرها');
-            return;
-        }
-
-        const btn = document.querySelector('.btn-submit-premium');
-        btn.textContent = '⏳ جاري النشر...';
-        btn.disabled = true;
-
-        setTimeout(() => {
-            showToast('✅ تمت إضافة فئة التذكرة بنجاح ونشرها');
-            btn.textContent = '✅ تم النشر!';
-            setTimeout(() => { window.location.href = '/admin/tickets'; }, 1000);
-        }, 800);
-    }
-</script>
 @endsection

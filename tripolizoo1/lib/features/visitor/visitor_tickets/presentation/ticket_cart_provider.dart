@@ -1,16 +1,19 @@
 ﻿import 'package:flutter/foundation.dart';
-import 'package:tripolizoo/shared/constants/ticket_data.dart';
+import 'package:tripolizoo/features/visitor/visitor_tickets/data/ticket_repository.dart';
 import 'package:tripolizoo/features/visitor/visitor_tickets/domain/ticket_type.dart';
 
 class TicketCartProvider extends ChangeNotifier {
+  TicketCartProvider({TicketRepository? repository})
+      : _repository = repository ?? ApiTicketRepository();
+
+  final TicketRepository _repository;
+
   DateTime selectedDate = DateTime.now();
-  final Map<String, int> _cart = {
-    'adult_ly': 1,
-    'child_ly': 0,
-    'adult_intl': 0,
-    'child_intl': 0,
-    'student': 0,
-  };
+  final Map<String, int> _cart = {};
+  List<TicketType> availableTypes = [];
+  bool isLoadingTypes = false;
+  bool isPurchasing = false;
+  String? loadTypesError;
 
   final List<PurchasedTicket> _purchased = [];
   List<PurchasedTicket> _lastPurchaseTickets = [];
@@ -19,16 +22,58 @@ class TicketCartProvider extends ChangeNotifier {
   List<PurchasedTicket> get purchasedTickets => List.unmodifiable(_purchased);
   List<PurchasedTicket> get lastPurchaseTickets =>
       List.unmodifiable(_lastPurchaseTickets);
+  List<TicketType> get localTypes =>
+      availableTypes.where((type) => type.isLocal).toList();
+  List<TicketType> get foreignTypes =>
+      availableTypes.where((type) => !type.isLocal).toList();
 
   int get totalVisitors => _cart.values.fold(0, (a, b) => a + b);
 
   double get totalPrice {
     var sum = 0.0;
     for (final entry in _cart.entries) {
-      final type = TicketData.byId(entry.key);
+      final type = typeById(entry.key);
       if (type != null) sum += type.price * entry.value;
     }
     return sum;
+  }
+
+  TicketType? typeById(String id) {
+    for (final type in availableTypes) {
+      if (type.id == id) return type;
+    }
+    return null;
+  }
+
+  Future<void> loadTypes() async {
+    isLoadingTypes = true;
+    loadTypesError = null;
+    notifyListeners();
+
+    try {
+      final types = await _repository.fetchTypes();
+      availableTypes = types;
+      for (final type in types) {
+        _cart.putIfAbsent(type.id, () => 0);
+      }
+    } catch (error) {
+      loadTypesError = error.toString();
+    } finally {
+      isLoadingTypes = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadPurchasedTickets() async {
+    try {
+      final tickets = await _repository.fetchMine();
+      _purchased
+        ..clear()
+        ..addAll(tickets);
+      notifyListeners();
+    } catch (_) {
+      // Keep local purchases when offline.
+    }
   }
 
   void setDate(DateTime date) {
@@ -49,41 +94,62 @@ class TicketCartProvider extends ChangeNotifier {
     }
   }
 
-  List<PurchasedTicket> purchase() {
-    if (totalVisitors == 0) return const [];
+  Future<List<PurchasedTicket>> purchaseCash() async {
+    return _finalizePurchase(
+      () => _repository.purchaseCash(cart: _cart),
+    );
+  }
 
-    final purchasedAt = DateTime.now();
-    final batchId = purchasedAt.microsecondsSinceEpoch;
-    final created = <PurchasedTicket>[];
-    var sequence = 1;
-
-    for (final entry in _cart.entries) {
-      final type = TicketData.byId(entry.key);
-      if (type == null) continue;
-
-      for (var index = 0; index < entry.value; index++) {
-        final serial = sequence.toString().padLeft(2, '0');
-        created.add(
-          PurchasedTicket(
-            id: 'ZL-$batchId-$serial',
-            qrData: 'TRIPOLI-ZOO-$batchId-$serial-${type.id}',
-            visitDate: selectedDate,
-            typeId: type.id,
-            typeTitle: type.title,
-            price: type.price,
-            purchasedAt: purchasedAt,
-          ),
-        );
-        sequence++;
-      }
+  Future<ElectronicPaymentSession> verifyElectronicPayment({
+    required String mobile,
+  }) async {
+    if (totalVisitors == 0 || isPurchasing) {
+      throw StateError('لا توجد تذاكر في السلة');
     }
 
-    _lastPurchaseTickets = created;
-    _purchased.addAll(created);
-    for (final id in _cart.keys) {
-      _cart[id] = 0;
-    }
+    isPurchasing = true;
     notifyListeners();
-    return List.unmodifiable(created);
+
+    try {
+      return await _repository.verifyElectronic(cart: _cart, mobile: mobile);
+    } finally {
+      isPurchasing = false;
+      notifyListeners();
+    }
+  }
+
+  Future<List<PurchasedTicket>> confirmElectronicPayment({
+    required String processId,
+    required String otp,
+  }) async {
+    return _finalizePurchase(
+      () => _repository.confirmElectronic(processId: processId, otp: otp),
+    );
+  }
+
+  Future<List<PurchasedTicket>> _finalizePurchase(
+    Future<List<PurchasedTicket>> Function() purchase,
+  ) async {
+    if (totalVisitors == 0 || isPurchasing) return const [];
+
+    isPurchasing = true;
+    notifyListeners();
+
+    try {
+      final created = await purchase();
+
+      if (created.isEmpty) return const [];
+
+      _lastPurchaseTickets = created;
+      _purchased.addAll(created);
+      for (final id in _cart.keys) {
+        _cart[id] = 0;
+      }
+      notifyListeners();
+      return List.unmodifiable(created);
+    } finally {
+      isPurchasing = false;
+      notifyListeners();
+    }
   }
 }

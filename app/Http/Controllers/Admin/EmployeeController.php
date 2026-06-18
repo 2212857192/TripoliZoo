@@ -136,6 +136,7 @@ class EmployeeController extends Controller
                 'nullable',
                 'string',
                 'max:255',
+                Rule::in(animal_groups()),
             ],
         ];
 
@@ -152,18 +153,29 @@ class EmployeeController extends Controller
             $data['assigned_group'] = null;
         }
 
+        if ($roleEnum?->requiresAssignedGroup() && filled($data['assigned_group'] ?? null)) {
+            $duplicateExists = User::query()
+                ->where('role', $data['role'])
+                ->where('assigned_group', $data['assigned_group'])
+                ->when($employee, fn ($query) => $query->whereKeyNot($employee->id))
+                ->exists();
+
+            if ($duplicateExists) {
+                $roleLabel = $data['role'];
+                $groupLabel = $data['assigned_group'];
+
+                return throw \Illuminate\Validation\ValidationException::withMessages([
+                    'assigned_group' => ["يوجد {$roleLabel} مسجّل مسبقاً للمجموعة «{$groupLabel}». لا يمكن إضافة أكثر من حساب بنفس الدور لنفس المجموعة."],
+                ]);
+            }
+        }
+
         return $data;
     }
 
     /** @return list<string> */
     private function groupOptions(): array
     {
-        return [
-            'مجموعة الثديات الكبرى',
-            'مجموعة قرود ورئيسات',
-            'مجموعة طيور',
-            'مجموعة الزواحف',
-            'مجموعة اكلات العشب',
-        ];
+        return animal_groups();
     }
 }

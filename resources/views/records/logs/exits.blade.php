@@ -4,48 +4,53 @@
 
 @section('styles')
 @include('records.logs.partials.vet-log-styles')
+<style>
+    .table-card-footer { padding: 1rem 1.5rem; border-top: 1px solid #f1f5f9; background: #FAFBFC; }
+</style>
 @endsection
 
 @section('content')
 
-<div class="top-card">
-    <div class="page-header">
-        <div class="page-header-info">
-            <h2>🚪 سجل الحيوانات الخارجة</h2>
-            <p>توثيق الحيوانات التي غادرت الحديقة رسميًا (بيع، نقل، مقايضة، وغيرها).</p>
-        </div>
-        <div class="hero-stats">
-            <div class="hero-stat">
-                <div class="num">8</div>
-                <div class="lbl">حيوان خارج</div>
-            </div>
-            <div class="hero-stat">
-                <div class="num">2</div>
-                <div class="lbl">هذا العام</div>
-            </div>
-        </div>
-    </div>
+@php
+    $portalBase = $portalBase ?? '/records';
+    $filters = $filters ?? ['q' => '', 'group' => '', 'exit_type' => '', 'period' => '', 'date' => ''];
+    $exitTypes = $exitTypes ?? [];
+    $logService = app(\App\Services\RecordsExitLogService::class);
+@endphp
 
-    <div class="filter-bar">
+<div class="top-card">
+    <form method="GET" action="{{ $portalBase }}/logs/exits" class="filter-bar" id="exitsFilterForm">
         <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="بحث برقم الحيوان، الاسم، أو الجهة المستلمة...">
+            <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="بحث برقم الحيوان، الاسم، أو الجهة المستلمة...">
         </div>
-        <select class="filter-select">
-            <option value="">كل أنواع الخروج</option>
-            <option>بيع</option>
-            <option>نقل</option>
-            <option>مقايضة</option>
-            <option>إهداء</option>
-            <option>تسليم</option>
-            <option>إرجاع</option>
-            <option>أخرى</option>
+        <select class="filter-select" name="exit_type" onchange="this.form.submit()">
+            <option value="" @selected($filters['exit_type'] === '')>كل أنواع الخروج</option>
+            @foreach($exitTypes as $value => $label)
+            <option value="{{ $value }}" @selected($filters['exit_type'] === $value)>{{ $label }}</option>
+            @endforeach
         </select>
-        <select class="filter-select">
-                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
+        <select class="filter-select" name="group" onchange="this.form.submit()">
+            @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات', 'selected' => $filters['group']])
         </select>
-        @include('partials.date-filter', ['showWeek' => false, 'showMonth' => true, 'showYear' => true])
-    </div>
+        <select class="filter-select" name="period" onchange="onExitPeriodChange(this)">
+            <option value="" @selected($filters['period'] === '')>كل التواريخ</option>
+            <option value="today" @selected($filters['period'] === 'today')>اليوم</option>
+            <option value="month" @selected($filters['period'] === 'month')>هذا الشهر</option>
+            <option value="year" @selected($filters['period'] === 'year')>هذا العام</option>
+            <option value="custom" @selected($filters['period'] === 'custom')>تاريخ محدد</option>
+        </select>
+        <input
+            type="date"
+            name="date"
+            id="exitCustomDate"
+            class="filter-select"
+            value="{{ $filters['date'] }}"
+            style="display: {{ $filters['period'] === 'custom' ? 'block' : 'none' }};"
+            onchange="document.getElementById('exitsFilterForm').submit()"
+        >
+        <button type="submit" class="filter-select" style="cursor:pointer;background:#f0fdf4;border-color:#bbf7d0;color:#15803d;">بحث</button>
+    </form>
 </div>
 
 <div class="table-card">
@@ -68,67 +73,66 @@
                 </tr>
             </thead>
             <tbody>
+                @forelse($exits as $exit)
+                @php
+                    $animal = $exit->animal;
+                    $animalCode = $animal?->code;
+                @endphp
                 <tr>
-                    @include('partials.animal-table-cell', ['name' => 'لونا', 'emoji' => '🦙', 'animalId' => '#ANM-0520', 'sub' => 'لاما'])
-                    <td>لاما</td>
-                    <td>الدب واللامة</td>
-                    <td>أنثى</td>
-                    <td>2025-10-20</td>
-                    <td><span class="badge badge-completed"><span class="dot"></span>نقل</span></td>
-                    <td>حديقة طرابلس البحرية</td>
-                    <td><span class="cause-text">برنامج تبادل حيوانات</span></td>
+                    @include('partials.animal-table-cell', [
+                        'name' => $animal?->name,
+                        'image' => $animal?->displayPhotoUrl(),
+                        'animalId' => $animalCode ? '#'.$animalCode : '—',
+                        'sub' => $animal?->species ?? '—',
+                    ])
+                    <td>{{ $animal?->species ?? '—' }}</td>
+                    <td>{{ $animal?->group ?? '—' }}</td>
+                    <td>{{ $animal?->gender ?? '—' }}</td>
+                    <td style="color:#64748b;font-size:0.85rem;">{{ $exit->exit_date?->format('Y-m-d') ?? '—' }}</td>
                     <td>
-                        <a href="/records/animals/ANM-0520" class="btn-tbl btn-tbl-view" title="عرض الملف">
+                        <span class="badge {{ $logService->exitTypeBadgeClass($exit) }}">
+                            <span class="dot"></span>{{ $exit->exit_type->label() }}
+                        </span>
+                    </td>
+                    <td>{{ $exit->recipient ?: '—' }}</td>
+                    <td><span class="cause-text">{{ $exit->reason ?: '—' }}</span></td>
+                    <td>
+                        @if($animalCode)
+                        <a href="{{ $portalBase }}/animals/{{ $animalCode }}" class="btn-tbl btn-tbl-view" title="عرض الملف">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </a>
-                    </td>
-                </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🦜', 'animalId' => '#ANM-0488', 'sub' => 'ببغاء أفريقي رمادي'])
-                    <td>ببغاء أفريقي رمادي</td>
-                    <td>الطيور</td>
-                    <td>ذكر</td>
-                    <td>2025-07-08</td>
-                    <td><span class="badge badge-completed"><span class="dot"></span>إهداء</span></td>
-                    <td>مركز التعليم البيئي</td>
-                    <td><span class="cause-text">دعم برنامج توعية</span></td>
-                    <td>
-                        <a href="/records/animals/ANM-0488" class="btn-tbl btn-tbl-view" title="عرض الملف">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🐍', 'sub' => 'ثعبان ملكي'])
-                    <td>ثعبان ملكي</td>
-                    <td>الزواحف</td>
-                    <td>أنثى</td>
-                    <td>2024-12-01</td>
-                    <td><span class="badge badge-none"><span class="dot"></span>إرجاع</span></td>
-                    <td>مربي أصلي — خارجي</td>
-                    <td><span class="cause-text">انتهاء فترة إيداع</span></td>
-                    <td>
+                        @else
                         <span class="cause-text" style="color:#94a3b8;">لا يوجد ملف</span>
+                        @endif
                     </td>
                 </tr>
+                @empty
                 <tr>
-                    @include('partials.animal-table-cell', ['name' => 'رجو', 'emoji' => '🦌', 'animalId' => '#ANM-0330', 'sub' => 'غزال الريم'])
-                    <td>غزال الريم</td>
-                    <td>الغزلان</td>
-                    <td>ذكر</td>
-                    <td>2024-05-15</td>
-                    <td><span class="badge badge-completed"><span class="dot"></span>مقايضة</span></td>
-                    <td>حديقة حيوانات بنغازي</td>
-                    <td><span class="cause-text">تنويع السلالات</span></td>
-                    <td>
-                        <a href="/records/animals/ANM-0330" class="btn-tbl btn-tbl-view" title="عرض الملف">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
+                    <td colspan="9" style="text-align:center;color:#94a3b8;font-weight:700;padding:2rem;">لا توجد حيوانات خارجة مسجّلة</td>
                 </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
+    @if($exits->hasPages())
+    <div class="table-card-footer">
+        {{ $exits->links() }}
+    </div>
+    @endif
 </div>
 
+@endsection
+
+@section('scripts')
+<script>
+    function onExitPeriodChange(select) {
+        const dateInput = document.getElementById('exitCustomDate');
+        if (!dateInput) return;
+        dateInput.style.display = select.value === 'custom' ? 'block' : 'none';
+        if (select.value !== 'custom') {
+            dateInput.value = '';
+            select.form.submit();
+        }
+    }
+</script>
 @endsection

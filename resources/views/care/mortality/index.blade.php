@@ -161,26 +161,38 @@
 @endsection
 
 @section('content')
+@php
+    use App\Enums\MortalityCaseStatus;
+    use App\Enums\UserRole;
+    $portalBase = $portalBase ?? (($readOnly ?? false) ? '/director/care' : '/care');
+    $canAct = empty($readOnly) && auth()->user()?->role === UserRole::CareHead->value;
+@endphp
+
+@if(session('success'))
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;padding:12px 16px;border-radius:12px;margin-bottom:1rem;font-weight:700;">
+        {{ session('success') }}
+    </div>
+@endif
 
 {{-- ═══════ FILTERS ═══════ --}}
-<div class="top-card">
+<form method="GET" action="{{ $portalBase }}/mortality" class="top-card">
     <div class="filter-bar">
         <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="بحث برقم الحيوان أو نوعه...">
+            <input type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="بحث برقم الحيوان أو نوعه أو رقم الحالة...">
         </div>
-        <select class="filter-select">
+        <select class="filter-select" name="status" onchange="this.form.submit()">
             <option value="">كل الحالات</option>
-            <option>جديدة</option>
-            <option>معتمدة</option>
-            <option>محالة للتشريح</option>
+            <option value="new" @selected(($filters['status'] ?? '') === 'new')>جديدة</option>
+            <option value="approved" @selected(($filters['status'] ?? '') === 'approved')>معتمدة</option>
+            <option value="referred_for_autopsy" @selected(($filters['status'] ?? '') === 'referred_for_autopsy')>محالة للتشريح</option>
         </select>
-        <select class="filter-select">
-                        @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات'])
+        <select class="filter-select" name="group" onchange="this.form.submit()">
+            @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات', 'withValues' => true, 'selected' => $filters['group'] ?? ''])
         </select>
-        @include('partials.date-filter')
+        <button type="submit" class="btn-search" style="padding:10px 20px;background:linear-gradient(135deg,#1a4a2e,#2d7a47);color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:0.85rem;font-weight:800;cursor:pointer;">بحث</button>
     </div>
-</div>
+</form>
 
 {{-- ═══ TABLE ═══ --}}
 <div class="table-card">
@@ -189,6 +201,7 @@
             <thead>
                 <tr>
                     <th>الحيوان</th>
+                    <th>النوع</th>
                     <th>المجموعة</th>
                     <th>تاريخ النفوق</th>
                     <th>الحالة</th>
@@ -196,79 +209,55 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    @include('partials.animal-table-cell', ['name' => 'سيمبا', 'emoji' => '🦁', 'animalId' => '#ANL-0041-2026'])
-                    <td>القططية</td>
-                    <td>2026-06-07</td>
-                    <td><span class="badge badge-new"><span class="dot"></span>جديدة</span></td>
-                    <td>
-                        <button onclick="openModal('new_visible')" class="btn-tbl view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => '#ANL-0182-2025'])
-                    <td>القرود</td>
-                    <td>2026-06-06</td>
-                    <td><span class="badge badge-new"><span class="dot"></span>جديدة</span></td>
-                    <td>
-                        <button onclick="openModal('new_unknown')" class="btn-tbl view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['name' => 'نعيمة', 'emoji' => '🦩', 'animalId' => '#ANL-0091-2024'])
-                    <td>الطيور</td>
-                    <td>2026-06-04</td>
-                    <td><span class="badge badge-approved"><span class="dot"></span>معتمدة</span></td>
-                    <td>
-                        <button onclick="openModal('approved')" class="btn-tbl view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['name' => 'ريم', 'emoji' => '🦌', 'animalId' => '#ANL-0120-2026'])
-                    <td>الغزلان</td>
-                    <td>2026-06-03</td>
-                    <td><span class="badge badge-autopsy"><span class="dot"></span>محالة للتشريح</span></td>
-                    <td>
-                        <button onclick="openModal('autopsy')" class="btn-tbl view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    @include('partials.animal-table-cell', ['name' => 'فهد', 'emoji' => '🐆', 'animalId' => '#ANL-0305-2024'])
-                    <td>القططية</td>
-                    <td>2026-05-28</td>
-                    <td><span class="badge badge-approved"><span class="dot"></span>معتمدة</span></td>
-                    <td>
-                        <button onclick="openModal('approved_result')" class="btn-tbl view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </button>
-                    </td>
-                </tr>
+                @forelse($cases as $case)
+                    @php
+                        $animal = $case->animal;
+                        $statusBadge = match ($case->status) {
+                            MortalityCaseStatus::Approved => 'badge-approved',
+                            MortalityCaseStatus::ReferredForAutopsy => 'badge-autopsy',
+                            default => 'badge-new',
+                        };
+                    @endphp
+                    <tr>
+                        @include('partials.animal-table-cell', [
+                            'name' => $animal?->name,
+                            'emoji' => '🐾',
+                            'animalId' => $animal?->code ?? $case->subject_code,
+                        ])
+                        <td style="font-weight:700;">{{ $animal?->species ?? $case->subject_type ?? '—' }}</td>
+                        <td>{{ $case->group }}</td>
+                        <td>{{ $case->death_date?->format('Y-m-d') }}</td>
+                        <td><span class="badge {{ $statusBadge }}"><span class="dot"></span>{{ $case->status->label() }}</span></td>
+                        <td>
+                            <button type="button"
+                                class="btn-tbl view"
+                                title="عرض التفاصيل"
+                                data-case-number="{{ $case->case_number }}"
+                                onclick="openModal(this.dataset.caseNumber)">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:2.5rem;color:#64748b;font-weight:700;">
+                            لا توجد حالات نفوق مسجّلة حالياً.
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
-    <div class="table-card-footer">
-        <div class="table-pagination">
-            <button class="page-btn" disabled title="السابق">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn" title="التالي" disabled>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <span class="page-info">صفحة 1 من 1 — 5 حالات</span>
+    @if($cases->hasPages())
+        <div class="table-card-footer">
+            {{ $cases->links() }}
         </div>
-    </div>
+    @endif
 </div>
 
-{{-- ═══ MODAL ═══ --}}
+@endsection
+
+@push('modals')
 <div class="modal-backdrop" id="mortalityModal">
     <div class="modal-box">
         <div class="modal-header">
@@ -343,6 +332,20 @@
     </div>
 </div>
 
+{{-- ═══ BLOCK APPROVE (unknown cause) DIALOG ═══ --}}
+<div class="dialog-backdrop" id="blockedApproveDialog">
+    <div class="dialog-box">
+        <div class="dialog-body">
+            <div class="dialog-icon-wrap" style="background:#fef2f2;">⚠️</div>
+            <h4>لا يمكن الاعتماد</h4>
+            <p>لا تستطيع اعتماد النتيجة لان سبب النفوق غير ظاهر</p>
+        </div>
+        <div class="dialog-footer">
+            <button class="btn-cancel" onclick="closeDialog('blockedApproveDialog')">حسناً</button>
+        </div>
+    </div>
+</div>
+
 {{-- ═══ CONFIRM APPROVE DIALOG ═══ --}}
 <div class="dialog-backdrop" id="confirmApproveDialog">
     <div class="dialog-box">
@@ -352,11 +355,14 @@
             <p>هل أنت متأكد من اعتماد حالة النفوق رسمياً دون إحالة للتشريح؟<br>سيتم تحديث سجل الحيوان إلى <strong>نافق</strong> وإغلاق الحالة.</p>
         </div>
         <div class="dialog-footer">
-            <button class="btn-cancel" onclick="closeDialog('confirmApproveDialog')">إلغاء</button>
-            <button class="btn-submit" onclick="confirmApprove()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                نعم، اعتماد
-            </button>
+            <button type="button" class="btn-cancel" onclick="closeDialog('confirmApproveDialog')">إلغاء</button>
+            <form id="approveForm" method="POST" style="margin:0;display:inline-flex;">
+                @csrf
+                <button type="submit" class="btn-submit">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    نعم، اعتماد
+                </button>
+            </form>
         </div>
     </div>
 </div>
@@ -393,11 +399,15 @@
             <input type="text" class="reason-extra" id="extraReasonInput" placeholder="أو اكتب سبباً آخر...">
         </div>
         <div class="dialog-footer">
-            <button class="btn-cancel" onclick="closeDialog('autopsyReasonDialog')">إلغاء</button>
-            <button class="btn-submit-orange" onclick="confirmAutopsyReason()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                تأكيد الإحالة للتشريح
-            </button>
+            <button type="button" class="btn-cancel" onclick="closeDialog('autopsyReasonDialog')">إلغاء</button>
+            <form id="autopsyReasonForm" method="POST" style="margin:0;display:inline-flex;">
+                @csrf
+                <input type="hidden" name="autopsy_reason" id="autopsyReasonHidden">
+                <button type="submit" class="btn-submit-orange" onclick="return prepareAutopsyReasonSubmit()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    تأكيد الإحالة للتشريح
+                </button>
+            </form>
         </div>
     </div>
 </div>
@@ -411,11 +421,14 @@
             <p>سبب النفوق <strong>غير ظاهر</strong>.<br>هل تؤكد إحالة هذه الحالة للمستشفى البيطري لإجراء التشريح وتوثيق سبب النفوق النهائي؟</p>
         </div>
         <div class="dialog-footer">
-            <button class="btn-cancel" onclick="closeDialog('confirmAutopsyDialog')">إلغاء</button>
-            <button class="btn-submit-orange" onclick="confirmAutopsy()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                نعم، إحالة للتشريح
-            </button>
+            <button type="button" class="btn-cancel" onclick="closeDialog('confirmAutopsyDialog')">إلغاء</button>
+            <form id="autopsyUnknownForm" method="POST" style="margin:0;display:inline-flex;">
+                @csrf
+                <button type="submit" class="btn-submit-orange">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    نعم، إحالة للتشريح
+                </button>
+            </form>
         </div>
     </div>
 </div>
@@ -425,11 +438,17 @@
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
     <span id="toastText">تمت العملية بنجاح</span>
 </div>
-
-@endsection
+@endpush
 
 @section('scripts')
 <script>
+    const portalBase = @json($portalBase);
+    const canAct = @json($canAct ?? false);
+    const cases = @json($mortalityCasesForJs ?? []);
+    let currentCaseNumber = '';
+    let currentMortalityCause = '';
+    let selectedReason = '';
+
     function switchMTab(n) {
         document.getElementById('mtab-1').style.display = n === 1 ? 'block' : 'none';
         document.getElementById('mtab-2').style.display = n === 2 ? 'block' : 'none';
@@ -437,80 +456,57 @@
         document.getElementById('mtab-btn-2').className = 'modal-tab' + (n === 2 ? ' active' : '');
     }
 
-    function openModal(state) {
+    function isCauseNotApparent(cause) {
+        const value = (cause || '').trim();
+        return value === '' || value === 'غير ظاهر' || value.startsWith('غير ظاهر');
+    }
+
+    function openModal(caseNumber) {
+        const d = cases[caseNumber];
+        if (!d) return;
+
+        currentCaseNumber = caseNumber;
+        currentMortalityCause = d.death_cause;
         switchMTab(1);
 
         const footer = document.getElementById('mFooter');
-        const closeBtn = `<button class="btn-cancel" onclick="closeModal()">إغلاق</button>`;
+        const closeBtn = `<button type="button" class="btn-cancel" onclick="closeModal()">إغلاق</button>`;
 
-        const data = {
-            'new_visible': {
-                caseId: 'MC-2026-001', emoji: '🦁', animalName: 'سيمبا',
-                animalId: '#ANL-0041-2026', animalType: 'أسد إفريقي',
-                group: 'القططية', date: '2026-06-07', cause: 'عضة واضحة من حيوان آخر',
-                notes: 'وجد ميتاً قرب السياج الداخلي. يظهر جرح بالغ الأثر في الرقبة.',
-                status: 'جديدة'
-            },
-            'new_unknown': {
-                caseId: 'MC-2026-002', emoji: '🐒', animalName: null,
-                animalId: '#ANL-0182-2025', animalType: 'قرد المكاك',
-                group: 'القرود', date: '2026-06-06', cause: 'غير ظاهر',
-                notes: 'وجد ميتاً في المنطقة المرتفعة. لا يوجد جرح ظاهر ولا علامات تدل على سبب واضح.',
-                status: 'جديدة'
-            },
-            'approved': {
-                caseId: 'MC-2026-003', emoji: '🦩', animalName: 'نعيمة',
-                animalId: '#ANL-0091-2024', animalType: 'نعامة إفريقية',
-                group: 'الطيور', date: '2026-06-04', cause: 'تعرض لضربة شديدة',
-                notes: 'تعرضت لشجار مع قطيعها. تم اعتماد سبب النفوق رسمياً وتحديث سجلها.',
-                status: 'معتمدة'
-            },
-            'autopsy': {
-                caseId: 'MC-2026-004', emoji: '🦌', animalName: 'ريم',
-                animalId: '#ANL-0120-2026', animalType: 'غزال الريم',
-                group: 'الغزلان', date: '2026-06-03', cause: 'غير ظاهر — بانتظار نتيجة التشريح',
-                notes: 'وجد ميتاً بدون سبب ظاهر. تم إحالته للتشريح للتحقق.',
-                status: 'محالة للتشريح'
-            },
-            'approved_result': {
-                caseId: 'MC-2026-005', emoji: '🐆', animalName: 'فهد',
-                animalId: '#ANL-0305-2024', animalType: 'فهد أفريقي',
-                group: 'القططية', date: '2026-05-28', cause: 'فشل كلوي حاد مصحوب بعدوى بكتيرية',
-                notes: 'وفاة مفاجئة بلا أعراض سابقة. وافق رئيس المستشفى على نتيجة التشريح وتم توثيقها.',
-                status: 'معتمدة'
-            }
-        };
-
-        const d = data[state];
-
-        document.getElementById('modalCaseId').textContent = d.caseId;
-        document.getElementById('mAnimalId').textContent = d.animalId;
-        document.getElementById('mAnimalType').textContent = d.animalType;
-        document.getElementById('mAnimalName').innerHTML = d.animalName
-            ? d.animalName
+        document.getElementById('modalCaseId').textContent = d.case_number;
+        document.getElementById('mAnimalId').textContent = d.animal_code || '—';
+        document.getElementById('mAnimalType').textContent = d.animal_species || '—';
+        document.getElementById('mAnimalName').innerHTML = d.animal_name
+            ? d.animal_name
             : '<span class="q-value muted">—</span>';
-        document.getElementById('mGroup').textContent = d.group;
-        document.getElementById('mDate').textContent = d.date;
-        document.getElementById('mStatus').textContent = d.status;
-        document.getElementById('mNotes').textContent = d.notes;
-        document.getElementById('mAttachmentImg').textContent = d.emoji;
+        document.getElementById('mGroup').textContent = d.group || '—';
+        document.getElementById('mDate').textContent = d.death_date || '—';
+        document.getElementById('mStatus').textContent = d.status_label || '—';
+        document.getElementById('mNotes').textContent = d.notes || '—';
 
         const causeEl = document.getElementById('mCause');
-        if (d.cause === 'غير ظاهر' || d.cause.startsWith('غير ظاهر')) {
-            causeEl.innerHTML = d.cause === 'غير ظاهر'
-                ? '<span class="q-value muted">غير ظاهر</span>'
-                : d.cause;
+        if (isCauseNotApparent(d.death_cause)) {
+            causeEl.innerHTML = '<span class="q-value muted">غير ظاهر</span>';
         } else {
-            causeEl.textContent = d.cause;
+            causeEl.textContent = d.death_cause;
         }
 
-        if (state === 'new_visible') {
-            footer.innerHTML = closeBtn +
-                `<button class="btn-action-close" onclick="openAutopsyReasonDialog()">إحالة للتشريح</button>
-                <button class="btn-action-release" onclick="approveCase()">اعتماد حالة النفوق</button>`;
-        } else if (state === 'new_unknown') {
-            footer.innerHTML = closeBtn +
-                `<button class="btn-action-close" onclick="referAutopsy()">إحالة حالة نفوق للتشريح</button>`;
+        const attachImg = document.getElementById('mAttachmentImg');
+        if (d.attachment_url) {
+            attachImg.innerHTML = `<img src="${d.attachment_url}" alt="مرفق" style="width:180px;height:180px;object-fit:cover;border-radius:16px;">`;
+        } else {
+            attachImg.textContent = '🐾';
+        }
+
+        if (d.status === 'new' && canAct) {
+            if (d.cause_apparent) {
+                footer.innerHTML = closeBtn +
+                    `<button type="button" class="btn-action-close" onclick="openAutopsyReasonDialog()">إحالة للتشريح</button>
+                    <button type="button" class="btn-action-release" onclick="approveCase()">اعتماد حالة النفوق</button>`;
+            } else {
+                footer.innerHTML = closeBtn +
+                    `<button type="button" class="btn-action-close" onclick="referAutopsy()">إحالة حالة نفوق للتشريح</button>
+                    <button type="button" class="btn-action-release" onclick="approveCase()">اعتماد حالة النفوق</button>`;
+            }
         } else {
             footer.innerHTML = closeBtn;
         }
@@ -539,28 +535,24 @@
         setTimeout(() => t.classList.remove('show'), 3500);
     }
 
-    // ── Approve case ──
     function approveCase() {
+        if (!canAct || !currentCaseNumber) return;
+        if (isCauseNotApparent(currentMortalityCause)) {
+            openDialog('blockedApproveDialog');
+            return;
+        }
+        const form = document.getElementById('approveForm');
+        if (form) form.action = `${portalBase}/mortality/${currentCaseNumber}/approve`;
         openDialog('confirmApproveDialog');
     }
-    function confirmApprove() {
-        closeDialog('confirmApproveDialog');
-        closeModal();
-        showToast("✅ تم اعتماد حالة النفوق. سجل الحيوان حُدِّث إلى 'نافق'.", 'green');
-    }
 
-    // ── Autopsy unknown cause ──
     function referAutopsy() {
+        if (!canAct || !currentCaseNumber) return;
+        const form = document.getElementById('autopsyUnknownForm');
+        if (form) form.action = `${portalBase}/mortality/${currentCaseNumber}/refer-autopsy`;
         openDialog('confirmAutopsyDialog');
     }
-    function confirmAutopsy() {
-        closeDialog('confirmAutopsyDialog');
-        closeModal();
-        showToast('🔬 تم إنشاء إحالة تشريح وإرسالها للمستشفى البيطري.', 'orange');
-    }
 
-    // ── Autopsy with visible cause (reason dialog) ──
-    let selectedReason = '';
     function selectReason(el, val) {
         document.querySelectorAll('.reason-option').forEach(o => o.classList.remove('checked'));
         el.classList.add('checked');
@@ -568,29 +560,37 @@
         selectedReason = val;
         document.getElementById('extraReasonInput').value = '';
     }
+
     function openAutopsyReasonDialog() {
+        if (!canAct || !currentCaseNumber) return;
         selectedReason = '';
         document.querySelectorAll('.reason-option').forEach(o => o.classList.remove('checked'));
         document.querySelectorAll('input[name=autopsyReason]').forEach(r => r.checked = false);
         document.getElementById('extraReasonInput').value = '';
+        const form = document.getElementById('autopsyReasonForm');
+        if (form) form.action = `${portalBase}/mortality/${currentCaseNumber}/refer-autopsy`;
         openDialog('autopsyReasonDialog');
     }
-    function confirmAutopsyReason() {
+
+    function prepareAutopsyReasonSubmit() {
         const extra = document.getElementById('extraReasonInput').value.trim();
         const reason = extra || selectedReason;
         if (!reason) {
             document.getElementById('extraReasonInput').style.borderColor = '#ef4444';
             document.getElementById('extraReasonInput').placeholder = '⚠️ يرجى تحديد سبب الإحالة أولاً';
-            return;
+            return false;
         }
-        closeDialog('autopsyReasonDialog');
-        closeModal();
-        showToast('🔬 تم إحالة الحالة للتشريح. السبب: ' + reason, 'orange');
+        document.getElementById('autopsyReasonHidden').value = reason;
+        return true;
     }
 
     window.onclick = function(e) {
         const mainModal = document.getElementById('mortalityModal');
         if (e.target === mainModal) closeModal();
     };
+
+    @if(!empty($highlightCase))
+        document.addEventListener('DOMContentLoaded', () => openModal(@json($highlightCase)));
+    @endif
 </script>
 @endsection

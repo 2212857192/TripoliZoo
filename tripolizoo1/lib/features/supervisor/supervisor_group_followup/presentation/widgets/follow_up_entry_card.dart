@@ -201,7 +201,7 @@ class _FollowUpEntryCardState extends State<FollowUpEntryCard> {
           icon: Icons.medical_services_outlined,
           title: 'حالة صحية',
           lines: [
-            'الحيوان: ${e.animalId}',
+            'الحيوان: ${e.animalId}${e.animalType != null ? ' — ${e.animalType}' : ''}',
             e.description,
           ],
         ),

@@ -22,9 +22,6 @@
     .status-received { background: #f0fdf4; color: #15803d; border: 1px solid #dcfce3; }
     .status-failed { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
 
-    .btn-export { padding: 10px 20px; background: #fff; color: #16a34a; border: 1.5px solid #bbf7d0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 800; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(22,163,74,0.05); }
-    .btn-export:hover { background: #f0fdf4; transform: translateY(-1px); }
-
     /* ── TABS ── */
     .tabs-container { background: #fff; border-radius: 16px; border: 1px solid var(--border); overflow: hidden; }
     .tabs-header { display: flex; background: #FAFBFC; border-bottom: 1px solid #e2e8f0; padding: 0 1rem; }
@@ -44,6 +41,9 @@
     .info-cell-value { font-size: 1rem; color: #0f172a; font-weight: 800; }
     
     .content-box { background: #f8fafc; padding: 16px 20px; border-radius: 10px; font-size: 0.95rem; color: #334155; font-weight: 600; line-height: 1.7; border: 1px solid #e2e8f0; }
+    .treatment-list { margin: 0; padding: 16px 20px 16px 0; list-style: disc; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; }
+    .treatment-list li { margin: 0 1.5rem 0.6rem 0; font-size: 0.95rem; color: #334155; font-weight: 600; line-height: 1.6; }
+    .treatment-list li:last-child { margin-bottom: 0; }
     .section-title { font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
 
     .id-tag { font-family: 'Courier New', monospace; font-size: 0.85rem; background: #f1f5f9; padding: 4px 10px; border-radius: 6px; color: #334155; font-weight: 800; display: inline-block; border: 1px solid #e2e8f0; }
@@ -52,7 +52,34 @@
 </style>
 @endsection
 
-@php $careBase = ($readOnly ?? false) ? '/director/care' : '/care'; @endphp
+@php
+    $careBase = $portalBase ?? (($readOnly ?? false) ? '/director/care' : '/care');
+    $isSlaughter = ($decisionKind ?? 'receiving') === 'slaughter';
+    $animal = $isSlaughter ? $slaughterCase->animal : $task->animal;
+    $typeKey = $isSlaughter ? 'slaughter' : $task->task_type->careDecisionTypeKey();
+    $typeClass = match ($typeKey) {
+        'release' => 'type-release',
+        'slaughter' => 'type-slaughter',
+        default => 'type-discharge',
+    };
+    $typeLabel = $isSlaughter ? 'ذبح اضطراري' : $task->task_type->careDecisionLabel();
+    $issuer = $isSlaughter ? $slaughterCase->admitter : $task->decisionIssuer;
+    $issuerLabel = $issuer ? $issuer->name.' ('.$issuer->role.')' : '—';
+    $statusKey = $isSlaughter ? 'not-required' : $task->status->careStatusKey();
+    $photoUrl = $animal?->photo_path ? \Illuminate\Support\Facades\Storage::url($animal->photo_path) : null;
+    $treatments = $resolvedTreatments ?? ($isSlaughter
+        ? []
+        : array_values(array_filter($task->decision_treatments ?? [])));
+    $sourceLabel = $isSlaughter
+        ? \App\Enums\ReceivingTaskSource::Hospital->fromLabel()
+        : $task->source->fromLabel();
+    $decisionDate = $isSlaughter
+        ? ($slaughterCase->closed_at?->format('Y-m-d') ?? '—')
+        : ($task->decision_date?->format('Y-m-d') ?? '—');
+    $decisionNotes = $isSlaughter
+        ? ($slaughterCase->closing_outcome ?: '—')
+        : ($task->decision_notes ?: '—');
+@endphp
 
 @section('content')
 
@@ -69,20 +96,12 @@
         <div class="header-info">
             <h2>
                 تفاصيل قرار طبي
-                <span id="headerBadge"></span>
+                <span class="badge {{ $typeClass }}"><span class="dot"></span>{{ $typeLabel }}</span>
             </h2>
             <div style="font-size:0.9rem; color:#64748b; font-weight:700; margin-top:8px;">
                 رقم القرار: <span class="id-tag" id="topId">{{ $id }}</span>
             </div>
         </div>
-        @unless($readOnly ?? false)
-        <div id="exportBtnWrap">
-            <button class="btn-export" onclick="alert('جاري تصدير النموذج بتنسيق PDF...')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                تصدير نموذج قرار طبي
-            </button>
-        </div>
-        @endunless
     </div>
 </div>
 
@@ -112,35 +131,39 @@
             </div>
             <div class="info-cell">
                 <div class="info-cell-label">نوع القرار</div>
-                <div class="info-cell-value" id="dType">—</div>
+                <div class="info-cell-value">{{ $typeLabel }}</div>
             </div>
             <div class="info-cell">
                 <div class="info-cell-label">مصدر القرار</div>
-                <div class="info-cell-value" id="dSource">—</div>
+                <div class="info-cell-value">{{ $sourceLabel }}</div>
             </div>
             <div class="info-cell">
                 <div class="info-cell-label">تاريخ إصدار القرار</div>
-                <div class="info-cell-value" id="dDate">—</div>
+                <div class="info-cell-value">{{ $decisionDate }}</div>
             </div>
             <div class="info-cell span-2">
                 <div class="info-cell-label">صادر بواسطة</div>
-                <div class="info-cell-value" id="dIssuer">—</div>
+                <div class="info-cell-value">{{ $issuerLabel }}</div>
             </div>
         </div>
 
         <h3 class="section-title" style="margin-top:2rem;">التفاصيل الطبية المرفقة</h3>
         <div style="display:flex; flex-direction:column; gap:1.5rem;">
             <div>
-                <div class="info-cell-label">سبب أو توضيح القرار</div>
-                <div class="content-box" id="dReason">—</div>
-            </div>
-            <div>
                 <div class="info-cell-label">العلاجات</div>
-                <div class="content-box" id="dTreatments">—</div>
+                @if(count($treatments))
+                    <ul class="treatment-list">
+                        @foreach($treatments as $treatment)
+                            <li>{{ $treatment }}</li>
+                        @endforeach
+                    </ul>
+                @else
+                    <div class="content-box">—</div>
+                @endif
             </div>
             <div>
                 <div class="info-cell-label">ملاحظة</div>
-                <div class="content-box" id="dNotes">—</div>
+                <div class="content-box">{{ $decisionNotes }}</div>
             </div>
         </div>
     </div>
@@ -151,37 +174,41 @@
         <div class="info-grid">
             <div class="info-cell">
                 <div class="info-cell-label">اسم الحيوان</div>
-                <div class="info-cell-value" id="aName">—</div>
+                <div class="info-cell-value">{{ $animal?->name ?: '—' }}</div>
             </div>
             <div class="info-cell">
                 <div class="info-cell-label">صورة</div>
                 <div class="info-cell-value">
-                    <div class="animal-avatar" id="aImage">—</div>
+                    @if($photoUrl)
+                        <img src="{{ $photoUrl }}" alt="" style="width:56px;height:56px;border-radius:14px;object-fit:cover;border:1px solid #e2e8f0;">
+                    @else
+                        <div class="animal-avatar">🐾</div>
+                    @endif
                 </div>
             </div>
             <div class="info-cell">
-                <div class="info-cell-label" id="aIdLabel">رقم الحيوان</div>
-                <div class="info-cell-value id-tag" id="aId">—</div>
+                <div class="info-cell-label">{{ $typeKey === 'release' ? 'رقم الحيوان في الحجر' : 'رقم الحيوان' }}</div>
+                <div class="info-cell-value id-tag">{{ $animal?->code ?? '—' }}</div>
             </div>
             <div class="info-cell">
                 <div class="info-cell-label">العلامة المميزة</div>
-                <div class="info-cell-value" id="aMark">—</div>
+                <div class="info-cell-value">{{ $animal?->distinguishing_marks ?: '—' }}</div>
             </div>
             <div class="info-cell">
                 <div class="info-cell-label">المجموعة المرتبطة</div>
-                <div class="info-cell-value" id="aGroup">—</div>
+                <div class="info-cell-value">{{ $animal?->group ?? '—' }}</div>
             </div>
             <div class="info-cell">
                 <div class="info-cell-label">نوع الحيوان</div>
-                <div class="info-cell-value" id="aType">—</div>
+                <div class="info-cell-value">{{ $animal?->species ?? '—' }}</div>
             </div>
             <div class="info-cell">
                 <div class="info-cell-label">الجنس</div>
-                <div class="info-cell-value" id="aGender">—</div>
+                <div class="info-cell-value">{{ $animal?->gender ?? '—' }}</div>
             </div>
             <div class="info-cell span-2">
                 <div class="info-cell-label">العمر الموثق</div>
-                <div class="info-cell-value" id="aAge">—</div>
+                <div class="info-cell-value">{{ $animal?->formattedAge() ?? '—' }}</div>
             </div>
         </div>
     </div>
@@ -190,35 +217,60 @@
     <div class="tab-content" id="tab-3">
         <div id="receptionContent">
             <h3 class="section-title">متابعة مهمة الاستلام</h3>
+            @if($isSlaughter)
             <div class="info-grid">
                 <div class="info-cell span-2">
                     <div class="info-cell-label">حالة الاستلام الحالية</div>
-                    <div class="info-cell-value" id="rStatusBadge">—</div>
+                    <div class="info-cell-value">
+                        <span class="badge status-pending" style="font-size:0.9rem; padding:6px 14px; background:#f8fafc; color:#475569; border-color:#e2e8f0;">
+                            لا يتطلب استلام
+                        </span>
+                    </div>
+                </div>
+            </div>
+            @else
+            <div class="info-grid">
+                <div class="info-cell span-2">
+                    <div class="info-cell-label">حالة الاستلام الحالية</div>
+                    <div class="info-cell-value">
+                        <span class="badge {{ $task->status->careStatusBadgeClass() }}" style="font-size:0.9rem; padding:6px 14px;">
+                            {{ $task->status->label() }}
+                        </span>
+                    </div>
                 </div>
                 <div class="info-cell">
                     <div class="info-cell-label">المشرف المسؤول</div>
-                    <div class="info-cell-value" id="rSupervisor">—</div>
+                    <div class="info-cell-value">{{ $task->supervisor?->name ?? '—' }}</div>
                 </div>
-                <div class="info-cell">
-                    <div class="info-cell-label">تاريخ إنشاء مهمة الاستلام</div>
-                    <div class="info-cell-value" id="rTaskDate">—</div>
+                @if($statusKey === 'received' && $task->received_at)
+                <div class="info-cell span-2">
+                    <div class="info-cell-label">تاريخ الاستلام</div>
+                    <div class="info-cell-value">{{ $task->received_at->format('Y-m-d') }}</div>
                 </div>
-                <div class="info-cell span-2" id="rActionDateCell" style="display:none;">
-                    <div class="info-cell-label" id="rActionDateLabel">تاريخ الاستلام</div>
-                    <div class="info-cell-value" id="rActionDate">—</div>
+                @endif
+                @if($statusKey === 'received' && $task->receipt_note)
+                <div class="info-cell span-2">
+                    <div class="info-cell-label">ملاحظة الاستلام</div>
+                    <div class="info-cell-value">{{ $task->receipt_note }}</div>
                 </div>
+                @endif
+                @if($statusKey === 'failed' && $task->delay_recorded_at)
+                <div class="info-cell span-2">
+                    <div class="info-cell-label">تاريخ تسجيل التعذر</div>
+                    <div class="info-cell-value">{{ $task->delay_recorded_at->format('Y-m-d') }}</div>
+                </div>
+                @endif
             </div>
+            @endif
 
-            <div id="rFailedReasonWrap" style="display:none; margin-top:1.5rem;">
+            @if(! $isSlaughter && $statusKey === 'failed' && $task->delay_reason)
+            <div style="margin-top:1.5rem;">
                 <div class="info-cell-label" style="color:#dc2626;">سبب التعذر المؤقت</div>
-                <div class="content-box" style="border-color:#fecaca; background:#fef2f2; color:#b91c1c;" id="rFailedReason">—</div>
+                <div class="content-box" style="border-color:#fecaca; background:#fef2f2; color:#b91c1c;">
+                    {{ $task->delay_reason }}{{ $task->delay_extra_note ? ' — '.$task->delay_extra_note : '' }}
+                </div>
             </div>
-        </div>
-
-        <div id="noReceptionContent" style="display:none; text-align:center; padding:3rem 0;">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2" style="margin-bottom:1rem;"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-            <h3 style="font-size:1.2rem; color:#475569; margin:0 0 8px;">لا توجد مهمة استلام</h3>
-            <p style="color:#64748b; font-weight:600; font-size:0.95rem; margin:0;">هذا القرار من نوع "ذبح اضطراري" ولا يتطلب إنشاء مهمة استلام في قسم الرعاية.</p>
+            @endif
         </div>
     </div>
 </div>
@@ -227,138 +279,11 @@
 
 @section('scripts')
 <script>
-    const decisionId = '{{ $id }}';
-
-    // Dummy DB for the views
-    const dummyDB = {
-        'MD-801': { // Discharge, Pending
-            type: 'discharge', typeText: 'خروج بعد العلاج', source: 'حالة داخل المستشفى', date: '2026-06-07', issuer: 'د. محمود (رئيس المستشفى)',
-            reason: 'استقرار الحالة الصحية للحيوان وزوال الأعراض. جاهز للعودة للمجموعة.',
-            treatments: 'مضادات حيوية (أموكسيسيلين) لمدة 7 أيام، مسكنات (ميلوكسيكام)، مغلفات موضعية للجرح.',
-            notes: 'يُفضل إبقاء الحيوان بعيداً عن التجمعات الكبيرة لأول يومين.',
-            animalName: 'سيمبا', animalEmoji: '🦁', mark: 'أذن يمين مقطوعة جزئياً',
-            aId: '#ANL-0041-2022', aType: 'أسد إفريقي', aGender: 'ذكر', aAge: '8 سنوات', aGroup: 'القططية',
-            rStatus: 'pending', rSupervisor: 'خالد منصور', rTaskDate: '2026-06-07', rActionDate: '', rFailedReason: ''
-        },
-        'MD-800': { // Release, Received
-            type: 'release', typeText: 'إفراج صحي', source: 'حجر صحي', date: '2026-06-06', issuer: 'د. محمود (رئيس المستشفى)',
-            reason: 'اجتياز فترة الحجر الصحي المقررة (30 يوم) بنجاح. خلو تام من الأمراض المعدية.',
-            treatments: 'فحوصات دورية، عزل وقائي، مراقبة سلوكية يومية دون علاج دوائي.',
-            notes: 'لا توجد أي توصيات خاصة. الحيوان سليم.',
-            animalName: 'لولو', animalEmoji: '🐒', mark: 'ندبة صغيرة على الذيل',
-            aId: '#Q-0182-2026', aType: 'قرد المكاك', aGender: 'أنثى', aAge: '3 سنوات', aGroup: 'القرود',
-            rStatus: 'received', rSupervisor: 'ياسر الغيثي', rTaskDate: '2026-06-06', rActionDate: '2026-06-06', rFailedReason: ''
-        },
-        'MD-799': { // Slaughter, None
-            type: 'slaughter', typeText: 'ذبح اضطراري', source: 'حالة داخل المستشفى', date: '2026-06-05', issuer: 'د. محمود (رئيس المستشفى)',
-            reason: 'كسر مضاعف في الساق الأمامية غير قابل للشفاء أو التجبير. تدهور حاد في حالة الحيوان.',
-            treatments: 'مسكنات قوية (بوتورفانول)، تخدير موضعي، محاولات تجبير فاشلة.',
-            notes: 'تم تنفيذ الإجراء وفق المعايير الطبية المعتمدة للقتل الرحيم.',
-            animalName: 'ريم', animalEmoji: '🦌', mark: 'بقعة بيضاء على الجبهة',
-            aId: '#ANL-0120-2024', aType: 'غزال الريم', aGender: 'ذكر', aAge: 'سنتان', aGroup: 'الغزلان',
-            rStatus: 'none', rSupervisor: '', rTaskDate: '', rActionDate: '', rFailedReason: ''
-        },
-        'MD-795': { // Discharge, Failed
-            type: 'discharge', typeText: 'خروج بعد العلاج', source: 'حالة داخل المستشفى', date: '2026-06-04', issuer: 'د. صالح (طبيب معالج)',
-            reason: 'التئام الجرح بشكل كامل بعد الخياطة والمضادات الحيوية.',
-            treatments: 'خياطة جراحية، مضادات حيوية (سيفترياكسون) لمدة 5 أيام، مغلفات يومية.',
-            notes: 'يرجى التأكد من نظافة الحظيرة لمنع التلوث.',
-            animalName: 'صقر', animalEmoji: '🦅', mark: 'جناح أيسر مُصلح سابقاً',
-            aId: '#ANL-0250-2025', aType: 'نسر أسمر', aGender: 'ذكر', aAge: '4 سنوات', aGroup: 'الطيور',
-            rStatus: 'failed', rSupervisor: 'سالم عبدالله', rTaskDate: '2026-06-04', rActionDate: '2026-06-04', rFailedReason: 'لا يوجد قفص عزل متاح حالياً لاستقباله كما طُلب في التعليمات. سيتم تجهيز قفص غداً واستلامه.'
-        }
-    };
-
     function switchTab(n, btn) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        
         document.getElementById('tab-' + n).classList.add('active');
         btn.classList.add('active');
     }
-
-    window.onload = function() {
-        const d = dummyDB[decisionId];
-        if(!d) return; // Fallback if ID not in dummy DB
-
-        // Setup Header Badge
-        const hBadge = document.getElementById('headerBadge');
-        if(d.type === 'discharge') hBadge.innerHTML = `<span class="badge type-discharge"><span class="dot"></span>خروج بعد العلاج</span>`;
-        if(d.type === 'release') hBadge.innerHTML = `<span class="badge type-release"><span class="dot"></span>إفراج صحي</span>`;
-        if(d.type === 'slaughter') hBadge.innerHTML = `<span class="badge type-slaughter"><span class="dot"></span>ذبح اضطراري</span>`;
-
-        // Hide export for خروج بعد العلاج
-        const exportWrap = document.getElementById('exportBtnWrap');
-        if (d.type === 'discharge' && exportWrap) {
-            exportWrap.style.display = 'none';
-        }
-
-        // Tab 1: Decision
-        document.getElementById('dType').innerText = d.typeText;
-        document.getElementById('dSource').innerText = d.source;
-        document.getElementById('dDate').innerText = d.date;
-        document.getElementById('dIssuer').innerText = d.issuer;
-        document.getElementById('dReason').innerText = d.reason;
-        document.getElementById('dTreatments').innerText = d.treatments;
-        document.getElementById('dNotes').innerText = d.notes;
-
-        // Tab 2: Animal
-        document.getElementById('aName').innerText = d.animalName || '—';
-        document.getElementById('aImage').innerText = d.animalEmoji || '—';
-        document.getElementById('aId').innerText = d.aId;
-        if (d.type === 'release') {
-            document.getElementById('aIdLabel').innerText = 'رقم الحيوان في الحجر';
-        } else {
-            document.getElementById('aIdLabel').innerText = 'رقم الحيوان';
-        }
-        document.getElementById('aMark').innerText = d.mark || '—';
-        document.getElementById('aType').innerText = d.aType;
-        document.getElementById('aGender').innerText = d.aGender;
-        document.getElementById('aAge').innerText = d.aAge;
-        document.getElementById('aGroup').innerText = d.aGroup;
-
-        // Tab 3: Reception Status
-        const recContent = document.getElementById('receptionContent');
-        const noRecContent = document.getElementById('noReceptionContent');
-        
-        if (d.type === 'slaughter') {
-            recContent.style.display = 'none';
-            noRecContent.style.display = 'block';
-        } else {
-            recContent.style.display = 'block';
-            noRecContent.style.display = 'none';
-
-            document.getElementById('rSupervisor').innerText = d.rSupervisor;
-            document.getElementById('rTaskDate').innerText = d.rTaskDate;
-            
-            const rStatusBadge = document.getElementById('rStatusBadge');
-            const rActionDateCell = document.getElementById('rActionDateCell');
-            const rActionDateLabel = document.getElementById('rActionDateLabel');
-            const rActionDate = document.getElementById('rActionDate');
-            const rFailedReasonWrap = document.getElementById('rFailedReasonWrap');
-
-            if (d.rStatus === 'pending') {
-                rStatusBadge.innerHTML = `<span class="badge status-pending" style="font-size:0.9rem; padding:6px 14px;">بانتظار الاستلام</span>`;
-                rActionDateCell.style.display = 'none';
-                rFailedReasonWrap.style.display = 'none';
-            } 
-            else if (d.rStatus === 'received') {
-                rStatusBadge.innerHTML = `<span class="badge status-received" style="font-size:0.9rem; padding:6px 14px;">تم الاستلام</span>`;
-                rActionDateLabel.innerText = 'تاريخ الاستلام';
-                rActionDate.innerText = d.rActionDate;
-                rActionDateCell.style.display = 'block';
-                rFailedReasonWrap.style.display = 'none';
-            }
-            else if (d.rStatus === 'failed') {
-                rStatusBadge.innerHTML = `<span class="badge status-failed" style="font-size:0.9rem; padding:6px 14px;">تعذر مؤقتاً</span>`;
-                rActionDateLabel.innerText = 'تاريخ تسجيل التعذر';
-                rActionDate.innerText = d.rActionDate;
-                rActionDateCell.style.display = 'block';
-                
-                document.getElementById('rFailedReason').innerText = d.rFailedReason;
-                rFailedReasonWrap.style.display = 'block';
-            }
-        }
-    };
 </script>
 @endsection

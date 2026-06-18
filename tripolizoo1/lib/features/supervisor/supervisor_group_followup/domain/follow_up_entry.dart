@@ -1,3 +1,5 @@
+import 'package:image_picker/image_picker.dart';
+
 /// أنواع التسجيلات في سجل المتابعة.
 enum FollowUpEntryType {
   health,
@@ -29,13 +31,17 @@ enum NewbornGender {
 class NewbornRecord {
   const NewbornRecord({
     required this.gender,
+    this.photo,
     this.distinguishingMark,
     this.note,
+    this.photoUrl,
   });
 
   final NewbornGender gender;
+  final XFile? photo;
   final String? distinguishingMark;
   final String? note;
+  final String? photoUrl;
 
   String get genderLabel => switch (gender) {
         NewbornGender.male => 'ذكر',

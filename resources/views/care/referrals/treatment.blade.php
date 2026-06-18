@@ -138,7 +138,7 @@
             <thead>
                 <tr>
                     <th>الحيوان</th>
-                    <th>نوع الحيوان</th>
+                    <th>النوع</th>
                     <th>المجموعة</th>
                     <th>تاريخ الإحالة</th>
                     <th>الحالة</th>
@@ -244,9 +244,6 @@
                             <h3 class="section-title" style="margin-bottom:0;">معلومات الإحالة</h3>
                             <span id="mStatusBadge"></span>
                         </div>
-
-                        <div class="section-label">سبب التحويل للعلاج</div>
-                        <div class="content-box" id="mTransferReason" style="margin-bottom:1rem;">—</div>
 
                         <div class="info-grid" style="margin-bottom:0;">
                             <div class="info-cell span-2">
@@ -386,7 +383,6 @@
         document.getElementById('mAnimalPhoto').textContent = d.animalEmoji;
         document.getElementById('mAnimalName').textContent = displayName;
         document.getElementById('mAnimalSub').textContent = d.animalId + ' · ' + d.animalType;
-        document.getElementById('mTransferReason').textContent = d.transferReason;
         document.getElementById('mAnimalId').innerText = d.animalId;
         document.getElementById('mAnimalType').innerText = d.animalType;
         document.getElementById('mGender').innerText = d.gender;
@@ -422,11 +418,7 @@
             document.getElementById('mStatusBadge').innerHTML = `<span class="badge badge-approved" style="font-size:0.8rem; padding:4px 10px;"><span class="dot"></span>معتمدة</span>`;
             document.getElementById('appDate').innerText = d.appDate;
             sApproved.style.display = 'block';
-            footer.innerHTML = closeBtn + 
-                `<button class="btn-secondary" onclick="alert('واجهة عرض الحالة في المستشفى - للقراءة فقط')">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    عرض الحالة داخل المستشفى
-                </button>`;
+            footer.innerHTML = closeBtn;
         } 
         else if (status === 'rejected') {
             document.getElementById('mStatusBadge').innerHTML = `<span class="badge badge-rejected" style="font-size:0.8rem; padding:4px 10px;"><span class="dot"></span>مرفوضة</span>`;

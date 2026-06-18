@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:tripolizoo/features/doctor/data/doctor_profile_data.dart';
+import 'package:tripolizoo/features/doctor/shared/doctor_ui.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_account/presentation/change_password_dialog.dart';
 import 'package:tripolizoo/features/visitor/visitor_auth/presentation/auth_provider.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
@@ -9,318 +10,220 @@ import 'package:tripolizoo/shared/constants/app_colors.dart';
 class DoctorAccountScreen extends StatelessWidget {
   const DoctorAccountScreen({super.key});
 
-  static const _bg = Color(0xFFF5F5F5);
-  static const _border = Color(0xFFE5E7EB);
-  static const _muted = Color(0xFF6B7280);
-
   @override
   Widget build(BuildContext context) {
-    const profile = DoctorProfileData.mock;
+    final user = context.watch<AuthProvider>().user;
     final topPad = MediaQuery.of(context).padding.top;
     final bottomPad = MediaQuery.of(context).padding.bottom;
+    final name = user?.name ?? '—';
+    final email = user?.email ?? '—';
 
-    return Scaffold(
-      backgroundColor: _bg,
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.fromLTRB(20, topPad + 20, 20, bottomPad + 100),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'حسابي',
-                style: GoogleFonts.cairo(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF1A1A1A),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: DoctorUi.background,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AnnotatedRegion<SystemUiOverlayStyle>(
+              value: SystemUiOverlayStyle.dark,
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(24),
+                  ),
+                  border: Border(
+                    bottom: BorderSide(color: DoctorUi.border, width: 1.5),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'الملف الشخصي للطبيب البيطري',
-                style: GoogleFonts.cairo(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: _muted,
-                ),
-              ),
-              const SizedBox(height: 20),
-              _ProfileCard(
-                name: profile.fullName,
-                subtitle: profile.displayTitle,
-              ),
-              const SizedBox(height: 12),
-              _SectionCard(
-                title: 'المعلومات الشخصية',
-                rows: [
-                  _InfoRow(label: 'الاسم الكامل', value: profile.fullName),
-                  _InfoRow(
-                    label: 'الرقم الوظيفي',
-                    value: profile.employeeNumber,
-                  ),
-                  _InfoRow(label: 'القسم', value: profile.department),
-                  _InfoRow(label: 'المنطقة', value: profile.area),
-                ],
-              ),
-              const SizedBox(height: 12),
-              _SectionCard(
-                title: 'وسائل التواصل',
-                rows: [
-                  _InfoRow(
-                    label: 'الهاتف',
-                    value: profile.phone,
-                    icon: Icons.phone_outlined,
-                  ),
-                  _InfoRow(
-                    label: 'البريد الإلكتروني',
-                    value: profile.email,
-                    icon: Icons.email_outlined,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              _SectionCard(
-                title: 'معلومات العمل',
-                rows: [
-                  _InfoRow(
-                    label: 'مكان العمل',
-                    value: profile.workplace,
-                    icon: Icons.business_outlined,
-                  ),
-                  _InfoRow(
-                    label: 'تاريخ التعيين',
-                    value: profile.appointmentDate,
-                    icon: Icons.calendar_today_outlined,
-                  ),
-                  _InfoRow(
-                    label: 'الدور',
-                    value: profile.role,
-                    icon: Icons.verified_user_outlined,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              _ActionTile(
-                icon: Icons.lock_outline_rounded,
-                label: 'تغيير كلمة المرور',
-                iconBg: const Color(0xFFE8F5E9),
-                iconColor: AppColors.primaryDark,
-                onTap: () async {
-                  final saved = await ChangePasswordDialog.show(context);
-                  if (!context.mounted || saved != true) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'تم تغيير كلمة المرور بنجاح',
-                        style: GoogleFonts.cairo(fontWeight: FontWeight.w700),
-                      ),
-                      backgroundColor: AppColors.primary,
+                padding: EdgeInsets.fromLTRB(20, topPad + 16, 20, 18),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    'الحساب الشخصي',
+                    style: GoogleFonts.cairo(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      color: DoctorUi.textPrimary,
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
-              const SizedBox(height: 12),
-              _ActionTile(
-                icon: Icons.logout_rounded,
-                label: 'تسجيل الخروج',
-                iconBg: const Color(0xFFFEE2E2),
-                iconColor: const Color(0xFFDC2626),
-                labelColor: const Color(0xFFDC2626),
-                onTap: () => context.read<AuthProvider>().logout(),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: EdgeInsets.fromLTRB(20, 20, 20, bottomPad + 100),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _ProfileCard(
+                      name: name,
+                      email: email,
+                    ),
+                    const SizedBox(height: 20),
+                    _ActionsCard(
+                      onChangePassword: () => _handleChangePassword(context),
+                      onLogout: () => context.read<AuthProvider>().logout(),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Future<void> _handleChangePassword(BuildContext context) async {
+    final saved = await ChangePasswordDialog.show(context);
+    if (!context.mounted || saved != true) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'تم تغيير كلمة المرور بنجاح',
+          style: GoogleFonts.cairo(fontWeight: FontWeight.w700),
+        ),
+        backgroundColor: AppColors.primary,
       ),
     );
   }
 }
 
 class _ProfileCard extends StatelessWidget {
-  const _ProfileCard({required this.name, required this.subtitle});
+  const _ProfileCard({
+    required this.name,
+    required this.email,
+  });
 
   final String name;
-  final String subtitle;
+  final String email;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: DoctorAccountScreen._border),
-      ),
+      decoration: DoctorUi.cardDecoration(),
       child: Row(
         children: [
           Container(
-            width: 64,
-            height: 64,
+            width: 72,
+            height: 72,
             decoration: BoxDecoration(
-              color: const Color(0xFFE8F5E9),
+              gradient: AppColors.primaryGradient,
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFFC8E6C9)),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.25),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: const Icon(
               Icons.person_rounded,
-              size: 32,
-              color: AppColors.primaryDark,
+              size: 36,
+              color: Colors.white,
             ),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   name,
+                  textAlign: TextAlign.right,
                   style: GoogleFonts.cairo(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF1A1A1A),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    color: DoctorUi.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  subtitle,
+                  email,
+                  textAlign: TextAlign.right,
+                  textDirection: TextDirection.ltr,
                   style: GoogleFonts.cairo(
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: DoctorAccountScreen._muted,
-                    height: 1.35,
+                    color: DoctorUi.muted,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryDark,
+                    color: AppColors.primary.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.15),
+                      width: 1,
+                    ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.check_circle_rounded,
-                        color: Colors.white,
-                        size: 14,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'نشط',
-                        style: GoogleFonts.cairo(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.title, required this.rows});
-
-  final String title;
-  final List<Widget> rows;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: DoctorAccountScreen._border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            title,
-            style: GoogleFonts.cairo(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: AppColors.primaryDark,
-            ),
-          ),
-          const SizedBox(height: 12),
-          ...rows,
-        ],
-      ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({
-    required this.label,
-    required this.value,
-    this.icon,
-  });
-
-  final String label;
-  final String value;
-  final IconData? icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Row(
-              children: [
-                if (icon != null) ...[
-                  Icon(icon, size: 16, color: DoctorAccountScreen._muted),
-                  const SizedBox(width: 6),
-                ],
-                Expanded(
                   child: Text(
-                    value,
+                    'طبيب بيطري',
                     style: GoogleFonts.cairo(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF1A1A1A),
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primaryDark,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 12),
-          Text(
-            label,
-            style: GoogleFonts.cairo(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: DoctorAccountScreen._muted,
-            ),
-          ),
         ],
       ),
     );
   }
 }
 
-class _ActionTile extends StatelessWidget {
-  const _ActionTile({
+class _ActionsCard extends StatelessWidget {
+  const _ActionsCard({
+    required this.onChangePassword,
+    required this.onLogout,
+  });
+
+  final VoidCallback onChangePassword;
+  final VoidCallback onLogout;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: DoctorUi.cardDecoration(),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(DoctorUi.cardRadius),
+        child: Column(
+          children: [
+            _ActionRow(
+              icon: Icons.vpn_key_outlined,
+              label: 'تغيير كلمة المرور',
+              iconBg: AppColors.primary.withValues(alpha: 0.08),
+              iconColor: AppColors.primaryDark,
+              onTap: onChangePassword,
+            ),
+            const Divider(height: 1, thickness: 1.2, color: DoctorUi.border),
+            _ActionRow(
+              icon: Icons.logout_rounded,
+              label: 'تسجيل الخروج',
+              iconBg: const Color(0xFFFEE2E2),
+              iconColor: const Color(0xFFDC2626),
+              labelColor: const Color(0xFFDC2626),
+              onTap: onLogout,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionRow extends StatelessWidget {
+  const _ActionRow({
     required this.icon,
     required this.label,
     required this.iconBg,
@@ -339,42 +242,35 @@ class _ActionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
+      color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Ink(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: DoctorAccountScreen._border),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Row(
             children: [
               Container(
-                width: 36,
-                height: 36,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: iconBg,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: iconColor, size: 18),
+                child: Icon(icon, color: iconColor, size: 20),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  label,
-                  style: GoogleFonts.cairo(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: labelColor ?? const Color(0xFF1A1A1A),
-                  ),
+              const SizedBox(width: 14),
+              Text(
+                label,
+                style: GoogleFonts.cairo(
+                  fontSize: 14.5,
+                  fontWeight: FontWeight.w800,
+                  color: labelColor ?? DoctorUi.textPrimary,
                 ),
               ),
-              const Icon(
+              const Spacer(),
+              Icon(
                 Icons.chevron_left_rounded,
-                color: DoctorAccountScreen._muted,
+                color: DoctorUi.muted,
                 size: 22,
               ),
             ],

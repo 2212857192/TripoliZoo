@@ -8,7 +8,7 @@
         display: grid;
         grid-template-columns: repeat(5, 1fr);
         gap: 1rem;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
     }
     @media (max-width: 1300px) { .stats-grid-5 { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 900px) { .stats-grid-5 { grid-template-columns: repeat(2, 1fr); } }
@@ -22,6 +22,14 @@
         position: relative;
         overflow: hidden;
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: transform .2s, box-shadow .2s;
+    }
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
     }
     .stat-card::before {
         content: '';
@@ -67,6 +75,27 @@
         color: #94a3b8;
         line-height: 1.45;
         margin-top: 2px;
+    }
+
+    .alerts-wrap { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.5rem; }
+    .alert-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid #FDE68A;
+        background: #FFFBEB;
+        color: #92400E;
+        font-weight: 700;
+        font-size: 0.88rem;
+    }
+    .alert-item a {
+        color: #B45309;
+        text-decoration: none;
+        font-weight: 800;
+        white-space: nowrap;
     }
 
     .section-card {
@@ -119,64 +148,135 @@
     .custom-table tbody tr:last-child td { border-bottom: none; }
     .custom-table tbody tr:hover { background: #FAFBFC; }
 
-    .status-text { font-weight: 700; color: #334155; }
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 800;
+    }
+    .status-pill.ok { background: #DCFCE7; color: #166534; }
+    .status-pill.warn { background: #FEF3C7; color: #92400E; }
+    .status-pill.neutral { background: #F1F5F9; color: #475569; }
+
+    .today-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        padding: 1.25rem 1.75rem 1.5rem;
+    }
+    @media (max-width: 900px) { .today-grid { grid-template-columns: 1fr; } }
+    .today-item {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 1rem 1.1rem;
+    }
+    .today-item .num { font-size: 1.35rem; font-weight: 900; color: #0f172a; margin-bottom: 4px; }
+    .today-item .lbl { font-size: 0.82rem; font-weight: 700; color: #64748b; }
 </style>
 @endsection
 
 @section('content')
 
-{{-- 1. بطاقات الإحصائيات الأساسية (5) --}}
+@php
+    $stats = $stats ?? [];
+    $employees = $stats['employees'] ?? ['total' => 0, 'active' => 0, 'inactive' => 0];
+    $ticketTypes = $stats['ticket_types'] ?? ['total' => 0, 'active' => 0, 'inactive' => 0];
+    $profiles = $stats['profiles'] ?? ['total' => 0, 'visible' => 0, 'hidden' => 0];
+    $mapLocations = $stats['map_locations'] ?? ['total' => 0, 'active' => 0, 'inactive' => 0];
+    $ticketsToday = $stats['tickets_today'] ?? ['count' => 0, 'quantity' => 0, 'revenue' => 0];
+    $ticketsMonth = $stats['tickets_month'] ?? ['count' => 0, 'quantity' => 0, 'revenue' => 0];
+@endphp
+
+@if(!empty($alerts))
+<div class="alerts-wrap">
+    @foreach($alerts as $alert)
+    <div class="alert-item">
+        <span>{{ $alert['message'] }}</span>
+        <a href="{{ $alert['url'] }}">معالجة ←</a>
+    </div>
+    @endforeach
+</div>
+@endif
+
 <div class="stats-grid-5">
-    <div class="stat-card">
+    <a href="{{ route('admin.employees.index') }}" class="stat-card">
         <div class="stat-icon-wrap">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <div class="stat-card-title">حسابات الموظفين</div>
-        <div class="stat-num">{{ $employeeCount }} حساب مسجل</div>
-        <div class="stat-sub">نشطة: {{ $activeEmployees }} | غير نشطة: {{ $inactiveEmployees }}</div>
-    </div>
+        <div class="stat-num">{{ $employees['total'] }} حساب مسجل</div>
+        <div class="stat-sub">نشطة: {{ $employees['active'] }} | غير نشطة: {{ $employees['inactive'] }}</div>
+    </a>
 
-    <div class="stat-card">
+    <a href="{{ route('admin.tickets.index') }}" class="stat-card">
         <div class="stat-icon-wrap">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         </div>
         <div class="stat-card-title">أنواع التذاكر</div>
-        <div class="stat-num">{{ $ticketTypeCount }} أنواع مسجلة</div>
-        <div class="stat-sub">مفعّلة: {{ $activeTicketTypes }} | معطلة: {{ $inactiveTicketTypes }}</div>
-    </div>
+        <div class="stat-num">{{ $ticketTypes['total'] }} أنواع مسجلة</div>
+        <div class="stat-sub">مفعّلة: {{ $ticketTypes['active'] }} | معطلة: {{ $ticketTypes['inactive'] }}</div>
+    </a>
 
-    <div class="stat-card">
+    <a href="{{ route('admin.animals.index') }}" class="stat-card">
         <div class="stat-icon-wrap">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 12H16c-.7 2-2 3-4 3s-3.3-1-4-3H2.5"/><path d="M5.5 5.1L2 12v6c0 1.1.9 2 2 2h16a2 2 0 002-2v-6l-3.4-6.9A2 2 0 0017 5H7a2 2 0 00-1.5.1z"/></svg>
         </div>
         <div class="stat-card-title">محتوى الحيوانات للزوار</div>
-        <div class="stat-num">{{ $profileCount }} محتوى تعريفي</div>
-        <div class="stat-sub">ظاهر: {{ $visibleProfiles }} | مخفي: {{ $hiddenProfiles }}</div>
-    </div>
+        <div class="stat-num">{{ $profiles['total'] }} محتوى تعريفي</div>
+        <div class="stat-sub">ظاهر: {{ $profiles['visible'] }} | مخفي: {{ $profiles['hidden'] }}</div>
+        @if(($stats['animals_without_profile'] ?? 0) > 0)
+        <div class="stat-sub-muted">{{ $stats['animals_without_profile'] }} حيوان بلا محتوى</div>
+        @endif
+    </a>
 
-    <div class="stat-card">
+    <a href="{{ route('admin.map-locations.index') }}" class="stat-card">
         <div class="stat-icon-wrap">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
         </div>
         <div class="stat-card-title">مواقع الخريطة</div>
-        <div class="stat-num">{{ $mapLocationCount }} موقع مضاف</div>
-        <div class="stat-sub-muted">ضمن الخريطة التفاعلية</div>
-    </div>
+        <div class="stat-num">{{ $mapLocations['total'] }} موقع مضاف</div>
+        <div class="stat-sub">نشط: {{ $mapLocations['active'] }} | معطّل: {{ $mapLocations['inactive'] }}</div>
+    </a>
 
-    <div class="stat-card">
+    <a href="{{ route('admin.visit-info.show') }}" class="stat-card">
         <div class="stat-icon-wrap">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
         <div class="stat-card-title">معلومات الزيارة</div>
-        <div class="stat-num">آخر تحديث: {{ $visitSettings->updated_at?->format('d/m/Y') ?? '—' }}</div>
+        <div class="stat-num">{{ $visitSettings->status_visible ? 'ظاهرة للزوار' : 'مخفية' }}</div>
+        <div class="stat-sub-muted">آخر تحديث: {{ $visitSettings->updated_at?->format('d/m/Y') ?? '—' }}</div>
+    </a>
+</div>
+
+<div class="section-card">
+    <div class="section-card-header">
+        <div class="section-card-title">مبيعات التذاكر</div>
+        <div class="section-card-desc">أرقام محسوبة مباشرة من عمليات البيع المسجّلة في النظام.</div>
+    </div>
+    <div class="today-grid">
+        <div class="today-item">
+            <div class="num">{{ $ticketsToday['quantity'] }}</div>
+            <div class="lbl">تذاكر مباعة اليوم</div>
+        </div>
+        <div class="today-item">
+            <div class="num">{{ number_format($ticketsToday['revenue'], 0) }} د.ل</div>
+            <div class="lbl">إيرادات اليوم ({{ $ticketsToday['count'] }} عملية)</div>
+        </div>
+        <div class="today-item">
+            <div class="num">{{ $ticketsMonth['quantity'] }}</div>
+            <div class="lbl">تذاكر هذا الشهر — {{ number_format($ticketsMonth['revenue'], 0) }} د.ل</div>
+        </div>
     </div>
 </div>
 
-{{-- 2. حالة محتوى تطبيق الزائر --}}
 <div class="section-card">
     <div class="section-card-header">
         <div class="section-card-title">حالة محتوى تطبيق الزائر</div>
-        <div class="section-card-desc">ملخص عام للعناصر الإدارية المرتبطة بتطبيق الزائر.</div>
+        <div class="section-card-desc">ملخص مباشر للعناصر الإدارية المرتبطة بتطبيق الزائر.</div>
     </div>
     <div style="overflow-x: auto;">
         <table class="custom-table">
@@ -187,62 +287,47 @@
                 </tr>
             </thead>
             <tbody>
+                @foreach($visitorAppRows ?? [] as $row)
                 <tr>
-                    <td style="font-weight:800;">معلومات الزيارة</td>
-                    <td class="status-text">آخر تحديث: {{ $visitSettings->updated_at?->format('d/m/Y') ?? '—' }}</td>
+                    <td style="font-weight:800;">{{ $row['label'] }}</td>
+                    <td>
+                        <span class="status-pill {{ $row['tone'] }}">{{ $row['status'] }}</span>
+                    </td>
                 </tr>
-                <tr>
-                    <td style="font-weight:800;">أنواع التذاكر</td>
-                    <td class="status-text">{{ $activeTicketTypes }} مفعّلة / {{ $inactiveTicketTypes }} معطلة</td>
-                </tr>
-                <tr>
-                    <td style="font-weight:800;">محتوى الحيوانات للزوار</td>
-                    <td class="status-text">{{ $visibleProfiles }} ظاهر / {{ $hiddenProfiles }} مخفي</td>
-                </tr>
-                <tr>
-                    <td style="font-weight:800;">مواقع الخريطة</td>
-                    <td class="status-text">{{ $mapLocationCount }} موقع مضاف</td>
-                </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
 </div>
 
-{{-- 3. آخر العمليات الإدارية --}}
 <div class="section-card">
     <div class="section-card-header">
         <div class="section-card-title">آخر العمليات الإدارية</div>
-        <div class="section-card-desc">أحدث العمليات التي تمت على الحسابات، التذاكر، معلومات الزيارة، محتوى الحيوانات، أو مواقع الخريطة.</div>
+        <div class="section-card-desc">أحدث العمليات على الحسابات، التذاكر، معلومات الزيارة، محتوى الحيوانات، أو مواقع الخريطة.</div>
     </div>
     <div style="overflow-x: auto;">
         <table class="custom-table">
             <thead>
                 <tr>
                     <th>التاريخ</th>
+                    <th>المستخدم</th>
                     <th>النوع</th>
                     <th>العملية</th>
+                    <th>التفاصيل</th>
                 </tr>
             </thead>
             <tbody>
-                @php
-                    $entityLabels = [
-                        'user' => 'حسابات الموظفين',
-                        'ticket_type' => 'التذاكر',
-                        'ticket_sale' => 'مبيعات التذاكر',
-                        'visit_settings' => 'معلومات الزيارة',
-                        'animal_profile' => 'محتوى الحيوانات',
-                        'map_location' => 'مواقع الخريطة',
-                    ];
-                @endphp
                 @forelse($recentActivities as $activity)
                 <tr>
-                    <td style="color:#64748b;">{{ $activity->created_at->format('d/m/Y') }}</td>
-                    <td>{{ $entityLabels[$activity->entity_type] ?? $activity->entity_type }}</td>
-                    <td>{{ $activity->summary }}</td>
+                    <td style="color:#64748b;">{{ $activity['date'] }}</td>
+                    <td>{{ $activity['user_name'] }}</td>
+                    <td>{{ $activity['entity_label'] }}</td>
+                    <td>{{ $activity['action_label'] }}</td>
+                    <td>{{ $activity['summary'] }}</td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="3" style="color:#64748b;text-align:center;">لا توجد عمليات مسجّلة بعد</td>
+                    <td colspan="5" style="color:#64748b;text-align:center;">لا توجد عمليات مسجّلة بعد</td>
                 </tr>
                 @endforelse
             </tbody>

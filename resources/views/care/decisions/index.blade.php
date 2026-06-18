@@ -59,7 +59,7 @@
     <div class="filter-bar">
         <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="بحث برقم الحيوان، نوع الحيوان، رقم القرار...">
+            <input type="text" placeholder="بحث برقم الحيوان أو نوع الحيوان..." id="decisionsSearch">
         </div>
         <select class="filter-select">
             <option value="">نوع القرار</option>
@@ -96,61 +96,33 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><span class="badge type-discharge"><span class="dot"></span>خروج بعد العلاج</span></td>
-                    @include('partials.animal-table-cell', ['emoji' => '🦁', 'animalId' => '#ANL-0041-2022'])
-                    <td style="font-weight:700;">أسد إفريقي</td>
-                    <td>القططية</td>
-                    <td>2026-06-07</td>
-                    <td><span class="badge status-pending">بانتظار الاستلام</span></td>
-                    <td>
-                        <a href="{{ route('care.decisions.show', 'MD-801') }}" class="btn-tbl view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    <td><span class="badge type-release"><span class="dot"></span>إفراج صحي</span></td>
-                    @include('partials.animal-table-cell', ['emoji' => '🐒', 'animalId' => '#Q-0182-2026'])
-                    <td style="font-weight:700;">قرد المكاك</td>
-                    <td>القرود</td>
-                    <td>2026-06-06</td>
-                    <td><span class="badge status-received">تم الاستلام</span></td>
-                    <td>
-                        <a href="{{ route('care.decisions.show', 'MD-800') }}" class="btn-tbl view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    <td><span class="badge type-slaughter"><span class="dot"></span>ذبح اضطراري</span></td>
-                    @include('partials.animal-table-cell', ['name' => 'ريم', 'emoji' => '🦌', 'animalId' => '#ANL-0120-2024'])
-                    <td style="font-weight:700;">غزال الريم</td>
-                    <td>الغزلان</td>
-                    <td>2026-06-05</td>
-                    <td><span class="badge status-none">لا يتطلب استلام</span></td>
-                    <td>
-                        <a href="{{ route('care.decisions.show', 'MD-799') }}" class="btn-tbl view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    <td><span class="badge type-discharge"><span class="dot"></span>خروج بعد العلاج</span></td>
-                    @include('partials.animal-table-cell', ['name' => 'صقر', 'emoji' => '🦅', 'animalId' => '#ANL-0250-2025'])
-                    <td style="font-weight:700;">نسر أسمر</td>
-                    <td>الطيور</td>
-                    <td>2026-06-04</td>
-                    <td><span class="badge status-failed">تعذر مؤقتاً</span></td>
-                    <td>
-                        <a href="{{ route('care.decisions.show', 'MD-795') }}" class="btn-tbl view" title="عرض التفاصيل">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                    </td>
-                </tr>
+                @if(($decisions ?? collect())->isNotEmpty())
+                    @include('partials.medical-decisions-rows', [
+                        'decisions' => $decisions,
+                        'decisionsShowRoute' => $decisionsShowRoute ?? 'care.decisions.show',
+                    ])
+                @else
+                    <tr>
+                        <td colspan="7" style="text-align:center;padding:2rem;color:#64748b;font-weight:700;">
+                            لا توجد قرارات طبية مسجّلة بعد
+                        </td>
+                    </tr>
+                @endif
             </tbody>
         </table>
     </div>
 </div>
 
+@endsection
+
+@section('scripts')
+<script>
+document.getElementById('decisionsSearch')?.addEventListener('input', function(e) {
+    const q = e.target.value.trim().toLowerCase();
+    document.querySelectorAll('.custom-table tbody tr[data-search]').forEach(row => {
+        const hay = (row.getAttribute('data-search') || '').toLowerCase();
+        row.style.display = !q || hay.includes(q) ? '' : 'none';
+    });
+});
+</script>
 @endsection

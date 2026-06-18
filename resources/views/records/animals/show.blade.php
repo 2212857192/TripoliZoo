@@ -24,6 +24,10 @@
     .badge .dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
     .badge-active    { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; }
     .badge-active .dot { background:#22c55e; }
+    .badge-quarantine { background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; }
+    .badge-quarantine .dot { background:#f97316; }
+    .badge-pending-receipt { background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; }
+    .badge-pending-receipt .dot { background:#3b82f6; }
     .badge-dead      { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
     .badge-dead .dot { background:#ef4444; }
     .badge-stillborn { background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; }
@@ -325,6 +329,42 @@
     }
     .attachments-notice strong { color: #1a4a2e; font-weight: 800; }
 
+    .profile-lock-notice {
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        border-right: 3px solid #ea580c;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 1.5rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #9a3412;
+        line-height: 1.7;
+    }
+    .profile-lock-notice strong { color: #c2410c; font-weight: 800; }
+
+    .attachment-preview {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .attachment-preview img {
+        max-width: 180px;
+        max-height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .attachment-preview img:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+    }
+    .attachment-preview .report-link { margin-top: 2px; }
+
     /* ── Dialogs ── */
     .dialog-backdrop { display:none; position:fixed; inset:0; background:rgba(15,23,42,.45); backdrop-filter:blur(3px); z-index:1100; align-items:center; justify-content:center; }
     .dialog-backdrop.open { display:flex; }
@@ -379,10 +419,24 @@
 @endsection
 
 @section('content')
+@php
+    $portalBase = $portalBase ?? '/records';
+    $readOnly = $readOnly ?? false;
+@endphp
+
+@if(session('success'))
+<div class="notice-blue" style="margin-bottom:1rem;">{{ session('success') }}</div>
+@endif
+
+@if(!empty($profileLocked) && !empty($lockMessage))
+<div class="profile-lock-notice">
+    <strong>ملف مقفول.</strong> {{ $lockMessage }}
+</div>
+@endif
 
 {{-- ═══ BREADCRUMB ═══ --}}
 <div class="breadcrumb">
-    <a href="/records/animals">
+    <a href="{{ $portalBase }}/animals">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
         قائمة الحيوانات
     </a>
@@ -397,25 +451,31 @@
             <span id="headerBadge"></span>
         </h2>
         <div style="font-size:0.9rem; color:#64748b; font-weight:700; margin-top:8px;">
-            رقم الحيوان: <span class="id-tag" id="topAnimalId">#ANM-0012</span>
+            رقم الحيوان: <span class="id-tag" id="topAnimalId">—</span>
             <span style="margin:0 8px; color:#cbd5e1;">|</span>
-            <span id="pageSubtitle">سيمبا — أسد أفريقي</span>
+            <span id="pageSubtitle">—</span>
         </div>
     </div>
     <div style="display:flex; gap:10px; flex-wrap:wrap;" id="headerActions">
-        <button type="button" class="btn-outline" id="btnEdit" onclick="openDialog('editDialog')">
+        @if(!empty($canEdit))
+        <a href="{{ route('records.animals.edit', $animal) }}" class="btn-outline" id="btnEdit">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             تعديل
-        </button>
-        <button type="button" class="btn-export" id="btnExport" onclick="showToast('📄 جاري تصدير ملف الحيوان PDF...')">
+        </a>
+        @endif
+        @if(!empty($canExport))
+        <a href="{{ route('records.animals.export', $animal) }}" class="btn-export" id="btnExport" target="_blank" rel="noopener">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             تصدير PDF
-        </button>
+        </a>
+        @endif
+        @if(!empty($canExit))
         <button type="button" class="btn-danger-outline" id="btnExit" onclick="openModal('exitModal')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             توثيق خروج
         </button>
-        <a href="/records/animals" class="btn-back">
+        @endif
+        <a href="{{ $portalBase }}/animals" class="btn-back">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
             العودة
         </a>
@@ -428,10 +488,6 @@
         <button type="button" class="tab-btn active" onclick="switchTab('basic', this)">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             البيانات الأساسية
-        </button>
-        <button type="button" class="tab-btn" onclick="switchTab('origin', this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            الأصل والتسجيل
         </button>
         <button type="button" class="tab-btn" onclick="switchTab('medical', this)">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
@@ -456,141 +512,51 @@
         <span>هذا الحيوان أُدخل يدوياً للحيوانات الموجودة قبل تشغيل النظام. المواليد والحجر الصحي لها مسارات خاصة.</span>
     </div>
 
-    <div class="summary-layout">
-        <div>
-            <h3 class="section-title">بيانات الحيوان الأساسية</h3>
-            <div class="info-grid" style="margin-bottom:0;">
-                <div class="info-cell">
-                    <div class="info-cell-label">رقم الحيوان</div>
-                    <div class="info-cell-value id-tag" id="fAnimalId">#ANM-0012</div>
-                </div>
-                <div class="info-cell">
-                    <div class="info-cell-label">الاسم</div>
-                    <div class="info-cell-value" id="fAnimalName">سيمبا</div>
-                </div>
-                <div class="info-cell">
-                    <div class="info-cell-label">النوع</div>
-                    <div class="info-cell-value" id="fAnimalType">أسد أفريقي</div>
-                </div>
-                <div class="info-cell">
-                    <div class="info-cell-label">المجموعة</div>
-                    <div class="info-cell-value" id="fGroup">القططية</div>
-                </div>
-                <div class="info-cell">
-                    <div class="info-cell-label">الجنس</div>
-                    <div class="info-cell-value" id="fGender">ذكر</div>
-                </div>
-                <div class="info-cell">
-                    <div class="info-cell-label">العمر</div>
-                    <div class="info-cell-value" id="fAge">8 سنوات تقريبًا</div>
-                </div>
-                <div class="info-cell">
-                    <div class="info-cell-label">تاريخ التسجيل</div>
-                    <div class="info-cell-value" id="fRegDate">2018-02-14</div>
-                </div>
-                <div class="info-cell span-2">
-                    <div class="info-cell-label">العلامات المميزة</div>
-                    <div class="info-cell-value" id="fMarks">ندبة صغيرة على الأذن اليسرى</div>
-                </div>
-            </div>
-
-            <div id="statusCardWrap"></div>
-            <div id="reproSection"></div>
+    <h3 class="section-title">بيانات الحيوان</h3>
+    <div class="animal-photo-wrap" style="margin-bottom:1.25rem;">
+        <div class="animal-photo" id="basicPhoto">🦁</div>
+    </div>
+    <div class="info-grid" style="margin-bottom:0;">
+        <div class="info-cell">
+            <div class="info-cell-label">رقم الحيوان</div>
+            <div class="info-cell-value id-tag" id="fAnimalId">—</div>
         </div>
-
-        <div class="animal-card">
-            <h4 class="animal-card-title">بيانات الحيوان</h4>
-            <div class="animal-photo-wrap">
-                <div class="animal-photo" id="basicPhoto">🦁</div>
-            </div>
-            <div class="q-row">
-                <span class="q-label">رقم الحيوان</span>
-                <span class="q-value id-tag" id="qAnimalId">#ANM-0012</span>
-            </div>
-            <div class="q-row">
-                <span class="q-label">نوع الحيوان</span>
-                <span class="q-value" id="qAnimalType">أسد أفريقي</span>
-            </div>
-            <div class="q-row" id="qNameRow">
-                <span class="q-label">اسم الحيوان</span>
-                <span class="q-value" id="qAnimalName">سيمبا</span>
-            </div>
-            <div class="q-row">
-                <span class="q-label">الجنس</span>
-                <span class="q-value" id="qGender">ذكر</span>
-            </div>
-            <div class="q-row">
-                <span class="q-label">العمر</span>
-                <span class="q-value" id="qAge">8 سنوات تقريبًا</span>
-            </div>
-            <div class="q-row">
-                <span class="q-label">المجموعة</span>
-                <span class="q-value" id="qGroup">القططية</span>
-            </div>
+        <div class="info-cell">
+            <div class="info-cell-label">الاسم</div>
+            <div class="info-cell-value" id="fAnimalName">—</div>
+        </div>
+        <div class="info-cell">
+            <div class="info-cell-label">النوع</div>
+            <div class="info-cell-value" id="fAnimalType">—</div>
+        </div>
+        <div class="info-cell">
+            <div class="info-cell-label">المجموعة</div>
+            <div class="info-cell-value" id="fGroup">—</div>
+        </div>
+        <div class="info-cell">
+            <div class="info-cell-label">الجنس</div>
+            <div class="info-cell-value" id="fGender">—</div>
+        </div>
+        <div class="info-cell">
+            <div class="info-cell-label">العمر</div>
+            <div class="info-cell-value" id="fAge">—</div>
+        </div>
+        <div class="info-cell">
+            <div class="info-cell-label">تاريخ التسجيل</div>
+            <div class="info-cell-value" id="fRegDate">—</div>
+        </div>
+        <div class="info-cell">
+            <div class="info-cell-label">العلامة المميزة</div>
+            <div class="info-cell-value" id="fMarks">—</div>
         </div>
     </div>
+
+    <div id="statusCardWrap"></div>
+    <div id="reproSection"></div>
 </div>
 
 {{-- ══════════════════════════════════════════ --}}
-{{-- TAB 2: الأصل والتسجيل --}}
-{{-- ══════════════════════════════════════════ --}}
-<div class="tab-content" id="tab-origin">
-
-    <div class="info-card">
-        <div class="info-card-header">
-            <div class="sec-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
-            معلومات الأصل والمصدر
-        </div>
-        <div class="info-grid">
-            <div class="info-cell">
-                <div class="info-cell-label">أصل الحيوان</div>
-                <div class="info-cell-value">مولود داخل الحديقة</div>
-            </div>
-            <div class="info-cell">
-                <div class="info-cell-label">مصدر الحيوان</div>
-                <div class="info-cell-value">مولود داخل الحديقة حسب السجلات الورقية القديمة</div>
-            </div>
-            <div class="info-cell">
-                <div class="info-cell-label">طريقة الإدخال</div>
-                <div class="info-cell-value">إدخال يدوي بواسطة مسؤول السجلات</div>
-            </div>
-            <div class="info-cell">
-                <div class="info-cell-label">تاريخ التسجيل في النظام</div>
-                <div class="info-cell-value">2018-02-14</div>
-            </div>
-        </div>
-    </div>
-
-    {{-- التاريخ السابق --}}
-    <div class="info-card">
-        <div class="info-card-header">
-            <div class="sec-icon orange"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-            التاريخ السابق قبل تشغيل النظام
-        </div>
-        <div style="padding:1.25rem 1.5rem;">
-            <div class="content-box green">
-                لا توجد سجلات طبية موثقة قبل تشغيل النظام. الحيوان مولود في الحديقة منذ عام 2018 وكان يتمتع بصحة جيدة وفقاً للسجلات الورقية المتوفرة.
-            </div>
-            <div style="margin-top:1rem;">
-                <div style="font-size:0.78rem; color:#94a3b8; font-weight:700; margin-bottom:8px;">مرفق التاريخ السابق</div>
-                <div class="attachment-item">
-                    <div class="attachment-icon" style="background:#fef3c7;">📄</div>
-                    <div class="attachment-info">
-                        <h4>simba_history_2018.pdf</h4>
-                        <p>PDF &nbsp;•&nbsp; 1.2 ميجابايت &nbsp;•&nbsp; 2018-02-14</p>
-                    </div>
-                    <a href="#" class="btn-download">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        تحميل
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- ══════════════════════════════════════════ --}}
-{{-- TAB 3: التاريخ الطبي --}}
+{{-- TAB: التاريخ الطبي --}}
 {{-- ══════════════════════════════════════════ --}}
 <div class="tab-content" id="tab-medical">
 
@@ -615,22 +581,7 @@
                         <th>المرجع</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td style="color:#64748b; font-size:0.83rem;">2025-11-10</td>
-                        <td>حالة طبية ميدانية</td>
-                        <td style="font-weight:700;">التهاب في اللثة</td>
-                        <td>د. أحمد سعيد</td>
-                        <td><span class="ref-tag">حالة طبية ميدانية رقم 24</span></td>
-                    </tr>
-                    <tr>
-                        <td style="color:#64748b; font-size:0.83rem;">2024-03-22</td>
-                        <td>حالة داخل المستشفى</td>
-                        <td style="font-weight:700;">إصابة في الكتف الأيمن</td>
-                        <td>د. سارة خليل</td>
-                        <td><span class="ref-tag">حالة داخل المستشفى رقم 15</span></td>
-                    </tr>
-                </tbody>
+                <tbody id="diagnosesBody"></tbody>
             </table>
         </div>
     </div>
@@ -656,52 +607,12 @@
                         <th>المرجع</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td style="color:#64748b; font-size:0.83rem;">2025-11-10</td>
-                        <td style="font-weight:700;">مضاد حيوي أموكسيسيلين</td>
-                        <td>د. أحمد سعيد</td>
-                        <td>التهاب في اللثة</td>
-                        <td><span class="ref-tag">حالة طبية ميدانية رقم 24</span></td>
-                    </tr>
-                </tbody>
+                <tbody id="treatmentsBody"></tbody>
             </table>
         </div>
     </div>
 
-    {{-- 3. جدول الجرعات الوقائية --}}
-    <div class="table-card">
-        <div class="table-card-header">
-            <div class="table-card-title">
-                <div style="width:30px;height:30px;border-radius:8px;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                </div>
-                جدول الجرعات الوقائية
-            </div>
-        </div>
-        <div style="overflow-x:auto;">
-            <table class="custom-table">
-                <thead>
-                    <tr>
-                        <th>التاريخ</th>
-                        <th>اسم الجرعة</th>
-                        <th>الطبيب</th>
-                        <th>المرجع</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="color:#64748b; font-size:0.83rem;">2026-01-15</td>
-                        <td style="font-weight:700;">لقاح الكُزاز السنوي</td>
-                        <td>د. عمر حسن</td>
-                        <td><span class="ref-tag">حالة ميدانية رقم 31</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    {{-- 4. جدول التوصيات الغذائية العلاجية --}}
+    {{-- 3. جدول التوصيات الغذائية العلاجية --}}
     <div class="table-card">
         <div class="table-card-header">
             <div class="table-card-title">
@@ -722,15 +633,7 @@
                         <th>المرجع</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td style="color:#64748b; font-size:0.83rem;">2026-06-01</td>
-                        <td style="font-weight:700;">وجبة لينة مؤقتًا</td>
-                        <td>5 أيام</td>
-                        <td><span class="badge badge-gray"><span class="dot"></span>منتهية</span></td>
-                        <td><span class="ref-tag">حالة طبية ميدانية رقم 24</span></td>
-                    </tr>
-                </tbody>
+                <tbody id="nutritionBody"></tbody>
             </table>
         </div>
     </div>
@@ -773,202 +676,166 @@
         </div>
     </div>
 </div>
-</div>
 
-{{-- ═══ DIALOG: تعديل البيانات ═══ --}}
-<div class="dialog-backdrop" id="editDialog">
-    <div class="dialog-box">
-        <div class="dialog-body">
-            <div class="dialog-icon-wrap" style="background:#f0fdf4;">✏️</div>
-            <h4>تعديل بيانات الحيوان</h4>
-            <p>ستُفتح نافذة تعديل البيانات الرسمية للحيوان سيمبا (#ANM-0012).<br>يمكنك تعديل البيانات الأساسية فقط.</p>
-        </div>
-        <div class="dialog-footer">
-            <button class="btn-cancel" onclick="closeDialog('editDialog')">إلغاء</button>
-            <button class="btn-submit" onclick="window.location.href='/records/animals/{{ $id ?? 1 }}/edit'">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                فتح نموذج التعديل
-            </button>
-        </div>
-    </div>
-</div>
-
-{{-- ═══ MODAL: توثيق الخروج ═══ --}}
+@if(!empty($canExit))
 <div class="modal-backdrop" id="exitModal">
     <div class="modal-box">
-        <div class="modal-header">
-            <div class="modal-title">
-                <div style="width:36px;height:36px;border-radius:10px;background:#fef2f2;color:#dc2626;display:flex;align-items:center;justify-content:center;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <form method="POST" action="{{ route('records.animals.exit', $animal) }}" enctype="multipart/form-data" id="exitForm">
+            @csrf
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div style="width:36px;height:36px;border-radius:10px;background:#fef2f2;color:#dc2626;display:flex;align-items:center;justify-content:center;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    </div>
+                    توثيق خروج حيوان من الحديقة
                 </div>
-                توثيق خروج حيوان من الحديقة
+                <button type="button" class="btn-close" onclick="closeModal('exitModal')">&times;</button>
             </div>
-            <button class="btn-close" onclick="closeModal('exitModal')">&times;</button>
-        </div>
-        <div class="modal-body">
-            
-            <div class="form-section">
-                <div class="form-section-title">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    تفاصيل عملية الخروج
-                </div>
+            <div class="modal-body">
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">تاريخ الخروج <span style="color:#ef4444">*</span></label>
-                        <input type="date" class="form-input" required value="{{ date('Y-m-d') }}">
+                        <input type="date" name="exit_date" class="form-input" required value="{{ date('Y-m-d') }}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">نوع الخروج <span style="color:#ef4444">*</span></label>
-                        <select class="form-select" required>
-                            <option value="">-- اختر نوع الخروج --</option>
-                            <option value="sale">بيع</option>
-                            <option value="transfer">نقل</option>
-                            <option value="swap">مقايضة</option>
-                            <option value="gift">إهداء</option>
-                            <option value="handover">تسليم لجهة خارجية</option>
-                            <option value="return">إرجاع</option>
-                            <option value="other">أخرى</option>
+                        <select name="exit_type" class="form-select" required>
+                            <option value="">اختر نوع الخروج...</option>
+                            @foreach($exitTypes ?? [] as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="form-group full">
-                        <label class="form-label">الجهة المستلمة (اسم الجهة أو المؤسسة أو الشخص) <span style="color:#ef4444">*</span></label>
-                        <input type="text" class="form-input" placeholder="مثال: حديقة حيوان بنغازي، السيد محمد..." required>
+                        <label class="form-label">الجهة المستلمة <span style="color:#ef4444">*</span></label>
+                        <input type="text" name="recipient" class="form-input" required placeholder="مثال: حديقة حيوان بنغازي">
                     </div>
                     <div class="form-group full">
                         <label class="form-label">سبب الخروج <span style="color:#ef4444">*</span></label>
-                        <textarea class="form-textarea" placeholder="اكتب سبب الخروج بوضوح..." required></textarea>
+                        <textarea name="reason" class="form-textarea" required placeholder="اكتب سبب الخروج بوضوح..."></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">مرفق الخروج <span style="color:#64748b">(اختياري)</span></label>
+                        <input type="file" name="attachment" class="form-input" accept=".pdf,image/*">
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">ملاحظات <span style="color:#64748b">(اختياري)</span></label>
+                        <textarea name="notes" class="form-textarea" placeholder="تفاصيل إضافية إن وجدت..."></textarea>
                     </div>
                 </div>
             </div>
-
-            <div class="form-section" style="margin-bottom:0; padding-bottom:0; border-bottom:none;">
-                <div class="form-section-title">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                    المرفقات الإضافية
-                </div>
-                <div class="form-grid">
-                    <div class="form-group full">
-                        <label class="form-label">مرفق الخروج (مستند داعم إن وجد)</label>
-                        <label class="file-upload">
-                            <input type="file" accept=".pdf,image/*">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                            <span>اضغط هنا لرفع المرفق (PDF أو صورة)</span>
-                        </label>
-                    </div>
-                    <div class="form-group full">
-                        <label class="form-label">ملاحظات (تفاصيل إضافية إن وجدت)</label>
-                        <textarea class="form-textarea" placeholder="أي تفاصيل أخرى ترغب في إضافتها..."></textarea>
-                    </div>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal('exitModal')">إلغاء</button>
+                <button type="submit" class="btn-submit-red">حفظ وتوثيق الخروج</button>
             </div>
-            
-        </div>
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeModal('exitModal')">إلغاء</button>
-            <button class="btn-submit-red" onclick="closeModal('exitModal'); showToast('✅ تم توثيق خروج الحيوان بنجاح ووضعه في سجل الحيوانات الخارجة.')">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                حفظ وتوثيق الخروج
-            </button>
-        </div>
+        </form>
     </div>
 </div>
-
-{{-- Toast --}}
-<div class="toast green" id="toastMsg">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-    <span id="toastText">تمت العملية بنجاح</span>
-</div>
+@endif
 
 @endsection
 
 @section('scripts')
 <script>
-    const animalId = '{{ $id ?? 'ANM-0012' }}';
+    const animalId = @json($animal->code);
+    const animalDB = @json($animalProfiles ?? []);
+    const portalBase = @json($portalBase ?? '/records');
 
-    const animalDB = {
-        'ANM-0012': {
-            source: 'records', state: 'active', emoji: '🦁', displayId: '#ANM-0012',
-            name: 'سيمبا', type: 'أسد أفريقي', group: 'القططية', gender: 'ذكر',
-            age: '8 سنوات تقريبًا', regDate: '2018-02-14',
-            marks: 'ندبة صغيرة على الأذن اليسرى',
-            manualEntry: true,
-            historyAttachment: { date: '2018-02-14', fileName: 'simba_history_2018.pdf' },
-            repro: [
-                { id: 'B-014', date: '2026-06-01', type: 'أسد أفريقي', gender: 'أنثى', mark: 'بقعة بيضاء', status: 'قيد المتابعة', statusClass: 'badge-gray', ref: 'سجل الولادات' },
-                { id: 'B-015', date: '2026-06-01', type: 'أسد أفريقي', gender: 'ذكر', mark: '—', status: 'مكتمل', statusClass: 'badge-green', ref: 'سجل الولادات' }
-            ]
-        },
-        'ANM-1046': {
-            source: 'quarantine', state: 'active', emoji: '🐒', displayId: '#MON-1046',
-            name: '—', type: 'قرد مكاك', group: 'القرود', gender: 'أنثى',
-            age: 'يومان', regDate: '2026-06-05', marks: '—', manualEntry: false, repro: null
-        },
-        'ANM-1045': {
-            source: 'quarantine', state: 'active', emoji: '🦌', displayId: '#GZL-1045',
-            name: '—', type: 'غزال الريم', group: 'الغزلان', gender: 'ذكر',
-            age: 'سنتان و 3 أشهر', regDate: '2026-06-07', marks: '—', manualEntry: false, repro: null
-        },
-        'ANM-0200': {
-            source: 'records', state: 'dead', emoji: '🦁', displayId: '#ANM-0200',
-            name: 'سلطان', type: 'أسد', group: 'القططية', gender: 'ذكر',
-            age: '8 سنوات تقريبًا', regDate: '2026-06-07', marks: '—', manualEntry: false, repro: null,
-            mortality: {
-                deathDate: '2027-01-10', cause: 'التهاب حاد أدى إلى النفوق',
-                autopsyReferral: 'نعم', docDate: '2027-01-12',
-                reportFile: 'sultan_autopsy_report.pdf'
-            }
-        },
-        'ANM-0201': {
-            source: 'records', state: 'stillborn', emoji: '🦁', displayId: '#ANM-0201',
-            name: '—', type: 'أسد أفريقي', group: 'القططية', gender: 'أنثى',
-            age: '—', regDate: '2026-06-01', marks: '—', manualEntry: false, repro: null,
-            stillborn: {
-                birthDate: '2026-06-01', deathDate: '2026-06-10',
-                cause: 'ضعف عام بعد الولادة', autopsy: 'لا', docDate: '2026-06-10'
-            }
-        },
-        'ANM-0202': {
-            source: 'records', state: 'slaughter', emoji: '🐄', displayId: '#ANM-0202',
-            name: '—', type: 'بقر', group: 'الثدييات الكبيرة', gender: 'أنثى',
-            age: '5 سنوات', regDate: '2024-03-01', marks: '—', manualEntry: false, repro: null,
-            slaughter: {
-                decisionDate: '2027-02-01', vet: 'د. أحمد', headVet: 'د. منى',
-                notes: '—'
-            }
-        },
-        'ANM-0203': {
-            source: 'records', state: 'exited', emoji: '🦒', displayId: '#ANM-0203',
-            name: '—', type: 'زرافة', group: 'الثدييات الكبيرة', gender: 'ذكر',
-            age: '4 سنوات', regDate: '2023-01-15', marks: '—', manualEntry: false, repro: null,
-            exit: {
-                exitDate: '2027-03-15', exitType: 'نقل', recipient: 'جهة خارجية',
-                reason: 'نقل إداري', notes: '—',
-                exitFile: { date: '2027-03-15', fileName: 'giraffe_exit_document.pdf' }
-            }
-        }
-    };
-
-    function infoFieldsGrid(fields) {
-        return `<div class="info-grid">${fields.map(f => {
-            let val = f.value;
-            if (f.hint && f.muted) {
-                val = `<span class="report-link" style="cursor:default;">${f.hint}</span>`;
-            } else if (f.hint) {
-                val = f.value + `<div class="field-hint">${f.hint}</div>`;
-            }
-            return `
-            <div class="info-cell${f.span ? ' span-2' : ''}">
-                <div class="info-cell-label">${f.label}</div>
-                <div class="info-cell-value${f.muted && !f.hint ? ' muted' : ''}">${val}</div>
-            </div>`;
-        }).join('')}</div>`;
+    function emptyRow(colspan, message) {
+        return `<tr><td colspan="${colspan}" style="text-align:center;color:#94a3b8;font-weight:700;padding:1.5rem;">${message}</td></tr>`;
     }
 
-    function renderInfoCard(title, fields) {
+    function renderMedicalTable(tbodyId, rows, colspan, columns, emptyMessage) {
+        const tbody = document.getElementById(tbodyId);
+        if (!tbody) return;
+        if (!rows || !rows.length) {
+            tbody.innerHTML = emptyRow(colspan, emptyMessage);
+            return;
+        }
+        tbody.innerHTML = rows.map(row => `
+            <tr>${columns.map(col => {
+                let value = row[col.key] ?? '—';
+                if (col.ref) {
+                    value = `<span class="ref-tag">${value}</span>`;
+                }
+                if (col.bold) {
+                    value = `<span style="font-weight:700;">${value}</span>`;
+                }
+                if (col.muted) {
+                    value = `<span style="color:#64748b;font-size:0.83rem;">${value}</span>`;
+                }
+                if (col.badge) {
+                    value = `<span class="badge ${row.statusClass || 'badge-gray'}"><span class="dot"></span>${value}</span>`;
+                }
+                return `<td>${value}</td>`;
+            }).join('')}</tr>`).join('');
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    document.querySelectorAll('.modal-backdrop').forEach(el => {
+        el.addEventListener('click', function(e) { if (e.target === this) closeModal(this.id); });
+    });
+
+    function renderMedicalTab(medical) {
+        medical = medical || { diagnoses: [], treatments: [], vaccinations: [], nutrition: [] };
+
+        renderMedicalTable('diagnosesBody', medical.diagnoses, 5, [
+            { key: 'date', muted: true },
+            { key: 'caseType' },
+            { key: 'diagnosis', bold: true },
+            { key: 'vet' },
+            { key: 'ref', ref: true },
+        ], 'لا توجد تشخيصات مسجّلة لهذا الحيوان');
+
+        renderMedicalTable('treatmentsBody', medical.treatments, 5, [
+            { key: 'date', muted: true },
+            { key: 'treatment', bold: true },
+            { key: 'vet' },
+            { key: 'linkedDiagnosis' },
+            { key: 'ref', ref: true },
+        ], 'لا توجد علاجات أو إجراءات مسجّلة');
+
+        renderMedicalTable('nutritionBody', medical.nutrition, 5, [
+            { key: 'startDate', muted: true },
+            { key: 'recommendation', bold: true },
+            { key: 'duration' },
+            { key: 'status', badge: true },
+            { key: 'ref', ref: true },
+        ], 'لا توجد توصيات غذائية علاجية');
+    }
+
+    function renderStatusTable(title, columns, row) {
         return `
             <div class="status-block">
                 <h3 class="section-title">${title}</h3>
-                ${infoFieldsGrid(fields)}
+                <div class="table-card">
+                    <div style="overflow-x:auto;">
+                        <table class="custom-table">
+                            <thead><tr>${columns.map(c => `<th>${c.label}</th>`).join('')}</tr></thead>
+                            <tbody><tr>${columns.map(c => `<td>${row[c.key] ?? '—'}</td>`).join('')}</tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    function renderDecisionsTable(title, columns, rows, emptyMessage) {
+        const body = (!rows || !rows.length)
+            ? `<tr><td colspan="${columns.length}" style="text-align:center;color:#94a3b8;font-weight:700;padding:1.5rem;">${emptyMessage}</td></tr>`
+            : rows.map(row => `<tr>${columns.map(c => `<td>${row[c.key] ?? '—'}</td>`).join('')}</tr>`).join('');
+
+        return `
+            <div class="status-block">
+                <h3 class="section-title">${title}</h3>
+                <div class="table-card">
+                    <div style="overflow-x:auto;">
+                        <table class="custom-table">
+                            <thead><tr>${columns.map(c => `<th>${c.label}</th>`).join('')}</tr></thead>
+                            <tbody>${body}</tbody>
+                        </table>
+                    </div>
+                </div>
             </div>`;
     }
 
@@ -978,54 +845,84 @@
 
         if (d.state === 'dead' && d.mortality) {
             const m = d.mortality;
-            wrap.innerHTML = renderInfoCard('بيانات النفوق', [
-                { label: 'تاريخ النفوق', value: m.deathDate },
-                { label: 'سبب النفوق', value: m.cause, span: true },
-                { label: 'هل تمت الإحالة للتشريح؟', value: m.autopsyReferral },
-                { label: 'تاريخ التوثيق', value: m.docDate },
-                ...(m.autopsyReferral === 'نعم' && m.reportFile ? [{
-                    label: 'تقرير الصفة التشريحية',
-                    value: '—',
-                    hint: 'موجود في تبويب المرفقات والتقارير',
-                    span: true,
-                    muted: true
-                }] : [])
-            ]);
+            const columns = [
+                { label: 'رقم الحالة', key: 'caseNumber' },
+                { label: 'تاريخ النفوق', key: 'deathDate' },
+                { label: 'سبب النفوق', key: 'cause' },
+                { label: 'المشرف المسجّل', key: 'supervisor' },
+                { label: 'حالة الملف', key: 'caseStatus' },
+                { label: 'هل تمت الإحالة للتشريح؟', key: 'autopsyReferral' },
+                { label: 'سبب التشريح', key: 'autopsyReason' },
+                { label: 'تاريخ التوثيق', key: 'docDate' },
+                { label: 'المعتمد', key: 'reviewer' },
+            ];
+            if (m.autopsyReferral === 'نعم' && m.reportFile) {
+                columns.push({ label: 'تقرير الصفة التشريحية', key: 'reportFile' });
+            }
+            const row = {
+                ...m,
+                reportFile: m.reportFile
+                    ? '<span class="report-link" style="cursor:default;">موجود في تبويب المرفقات والتقارير</span>'
+                    : '—',
+            };
+            wrap.innerHTML = renderStatusTable('بيانات النفوق', columns, row);
+            if (m.notes && m.notes !== '—') {
+                wrap.innerHTML += `<div class="status-block"><h3 class="section-title">ملاحظات النفوق</h3><div class="content-box">${m.notes}</div></div>`;
+            }
             return;
         }
 
         if (d.state === 'stillborn' && d.stillborn) {
             const s = d.stillborn;
-            wrap.innerHTML = renderInfoCard('بيانات نفوق المولود', [
-                { label: 'تاريخ الولادة', value: s.birthDate },
-                { label: 'تاريخ النفوق', value: s.deathDate },
-                { label: 'سبب النفوق', value: s.cause, span: true },
-                { label: 'هل تم التشريح؟', value: s.autopsy },
-                { label: 'تاريخ التوثيق', value: s.docDate }
-            ]);
+            wrap.innerHTML = renderStatusTable('بيانات نفوق المولود', [
+                { label: 'رقم الحالة', key: 'caseNumber' },
+                { label: 'تاريخ الولادة', key: 'birthDate' },
+                { label: 'تاريخ النفوق', key: 'deathDate' },
+                { label: 'سبب النفوق', key: 'cause' },
+                { label: 'المشرف المسجّل', key: 'supervisor' },
+                { label: 'هل تم التشريح؟', key: 'autopsy' },
+                { label: 'تاريخ التوثيق', key: 'docDate' },
+            ], s);
+            if (s.notes && s.notes !== '—') {
+                wrap.innerHTML += `<div class="status-block"><h3 class="section-title">ملاحظات</h3><div class="content-box">${s.notes}</div></div>`;
+            }
             return;
         }
 
         if (d.state === 'slaughter' && d.slaughter) {
             const sl = d.slaughter;
-            wrap.innerHTML = renderInfoCard('بيانات الذبح الاضطراري', [
-                { label: 'تاريخ القرار', value: sl.decisionDate },
-                { label: 'الطبيب المسؤول', value: sl.vet },
-                { label: 'رئيس القسم المعتمد', value: sl.headVet },
-                { label: 'ملاحظات القرار', value: sl.notes !== '—' ? sl.notes : '—', hint: sl.notes === '—' ? 'إن وجدت' : null, span: true, muted: sl.notes === '—' }
-            ]);
+            wrap.innerHTML = renderStatusTable('بيانات الذبح الاضطراري', [
+                { label: 'رقم الحالة', key: 'caseNumber' },
+                { label: 'تاريخ الدخول للمستشفى', key: 'admittedAt' },
+                { label: 'تاريخ القرار', key: 'decisionDate' },
+                { label: 'الشكوى الرئيسية', key: 'chiefComplaint' },
+                { label: 'نتيجة القرار', key: 'closingOutcome' },
+                { label: 'الطبيب المعالج', key: 'vet' },
+                { label: 'رئيس القسم المعتمد', key: 'headVet' },
+            ], sl);
+            wrap.innerHTML += renderDecisionsTable('سجل القرارات والإجراءات الطبية', [
+                { label: 'التاريخ', key: 'date' },
+                { label: 'التشخيص', key: 'diagnosis' },
+                { label: 'العلاج / الإجراء', key: 'treatment' },
+                { label: 'الطبيب', key: 'vet' },
+                { label: 'النتيجة', key: 'result' },
+                { label: 'ملاحظة', key: 'note' },
+            ], sl.decisions || [], 'لا توجد قرارات أو إجراءات مسجّلة لهذه الحالة');
             return;
         }
 
         if (d.state === 'exited' && d.exit) {
             const e = d.exit;
-            wrap.innerHTML = renderInfoCard('بيانات الخروج', [
-                { label: 'تاريخ الخروج', value: e.exitDate },
-                { label: 'نوع الخروج', value: e.exitType },
-                { label: 'الجهة المستلمة', value: e.recipient },
-                { label: 'سبب الخروج', value: e.reason, span: true },
-                { label: 'ملاحظات', value: e.notes !== '—' ? e.notes : '—', hint: e.notes === '—' ? 'إن وجدت' : null, span: true, muted: e.notes === '—' }
-            ]);
+            wrap.innerHTML = renderStatusTable('بيانات الخروج', [
+                { label: 'تاريخ الخروج', key: 'exitDate' },
+                { label: 'نوع الخروج', key: 'exitType' },
+                { label: 'الجهة المستلمة', key: 'recipient' },
+                { label: 'سبب الخروج', key: 'reason' },
+                { label: 'ملاحظات', key: 'notes' },
+            ], {
+                ...e,
+                notes: e.notes !== '—' ? e.notes : '<span style="color:#94a3b8;font-style:italic;">إن وجدت</span>',
+            });
         }
     }
 
@@ -1036,7 +933,8 @@
             items.push({
                 date: d.historyAttachment.date || d.regDate,
                 type: 'مرفق تاريخ سابق',
-                fileName: d.historyAttachment.fileName
+                fileName: d.historyAttachment.fileName,
+                url: d.historyAttachment.url || null,
             });
         }
 
@@ -1044,7 +942,17 @@
             items.push({
                 date: d.mortality.docDate,
                 type: 'تقرير صفة تشريحية',
-                fileName: d.mortality.reportFile
+                fileName: d.mortality.reportFile,
+                url: d.mortality.reportUrl || null,
+            });
+        }
+
+        if (d.state === 'dead' && d.mortality && d.mortality.attachmentFile) {
+            items.push({
+                date: d.mortality.deathDate,
+                type: 'مرفق حالة نفوق',
+                fileName: d.mortality.attachmentFile,
+                url: d.mortality.attachmentUrl || null,
             });
         }
 
@@ -1052,11 +960,39 @@
             items.push({
                 date: d.exit.exitFile.date || d.exit.exitDate,
                 type: 'مرفق خروج',
-                fileName: d.exit.exitFile.fileName
+                fileName: d.exit.exitFile.fileName,
+                url: d.exit.exitFile.url || null,
             });
         }
 
         return items.sort((a, b) => a.date.localeCompare(b.date));
+    }
+
+    function isImageAttachment(url, fileName) {
+        return /\.(jpe?g|png|gif|webp|bmp)(\?|$)/i.test(url || fileName || '');
+    }
+
+    function renderAttachmentCell(item) {
+        if (!item.url) {
+            return `<span style="color:#94a3b8;">${item.fileName}</span>`;
+        }
+
+        if (isImageAttachment(item.url, item.fileName)) {
+            return `<div class="attachment-preview">
+                <a href="${item.url}" target="_blank" rel="noopener" title="${item.fileName}">
+                    <img src="${item.url}" alt="${item.fileName}">
+                </a>
+                <a href="${item.url}" class="report-link" target="_blank" rel="noopener" title="${item.fileName}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    عرض بالحجم الكامل
+                </a>
+            </div>`;
+        }
+
+        return `<a href="${item.url}" class="report-link" target="_blank" rel="noopener" title="${item.fileName}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            عرض / تحميل
+        </a>`;
     }
 
     function renderAttachmentsTab(d) {
@@ -1078,12 +1014,7 @@
             <tr>
                 <td style="color:#64748b; font-size:0.88rem;">${item.date}</td>
                 <td style="font-weight:700;">${item.type}</td>
-                <td>
-                    <a href="#" class="report-link" onclick="return false;" title="${item.fileName}">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        عرض / تحميل
-                    </a>
-                </td>
+                <td>${renderAttachmentCell(item)}</td>
             </tr>`).join('');
     }
 
@@ -1109,7 +1040,7 @@
                         </tr></thead>
                         <tbody>${repro.map(r => `
                             <tr>
-                                <td><span class="animal-id">${r.id}</span></td>
+                                <td><a href="${portalBase}/animals/${r.code}" class="animal-id" style="text-decoration:none;">${r.id}</a></td>
                                 <td style="color:#64748b;font-size:0.83rem;">${r.date}</td>
                                 <td>${r.type}</td><td>${r.gender}</td><td>${r.mark}</td>
                                 <td><span class="badge ${r.statusClass}"><span class="dot"></span>${r.status}</span></td>
@@ -1122,36 +1053,37 @@
     }
 
     const stateBadges = {
-        active:    '<span class="badge badge-active"><span class="dot"></span>داخل الحديقة</span>',
-        dead:      '<span class="badge badge-dead"><span class="dot"></span>نافق</span>',
-        stillborn: '<span class="badge badge-stillborn"><span class="dot"></span>مولود نافق</span>',
-        slaughter: '<span class="badge badge-slaughter"><span class="dot"></span>ذبح اضطراري</span>',
-        exited:    '<span class="badge badge-exited"><span class="dot"></span>خارج من الحديقة</span>'
+        active:          '<span class="badge badge-active"><span class="dot"></span>داخل الحديقة</span>',
+        quarantine:      '<span class="badge badge-quarantine"><span class="dot"></span>تحت الحجر الصحي</span>',
+        pending_receipt: '<span class="badge badge-pending-receipt"><span class="dot"></span>بانتظار الاستلام</span>',
+        dead:            '<span class="badge badge-dead"><span class="dot"></span>نافق</span>',
+        stillborn:       '<span class="badge badge-stillborn"><span class="dot"></span>مولود نافق</span>',
+        slaughter:       '<span class="badge badge-slaughter"><span class="dot"></span>ذبح اضطراري</span>',
+        exited:          '<span class="badge badge-exited"><span class="dot"></span>خارج من الحديقة</span>'
     };
 
     function loadAnimal() {
-        const d = animalDB[animalId] || animalDB['ANM-0012'];
+        const d = animalDB[animalId];
+        if (!d) return;
         const titleName = d.name !== '—' ? d.name + ' — ' + d.type : d.type;
 
         document.getElementById('breadAnimal').textContent = 'ملف ' + d.displayId;
         document.getElementById('topAnimalId').textContent = d.displayId;
         document.getElementById('pageSubtitle').textContent = titleName;
-        document.getElementById('headerBadge').innerHTML = stateBadges[d.state] || stateBadges.active;
+        document.getElementById('headerBadge').innerHTML = stateBadges[d.state] || '<span class="badge badge-gray"><span class="dot"></span>—</span>';
 
         document.getElementById('basicPhoto').textContent = d.emoji;
-        document.getElementById('qAnimalId').textContent = d.displayId;
-        document.getElementById('qAnimalType').textContent = d.type;
-        document.getElementById('qAnimalName').textContent = d.name;
-        document.getElementById('qGender').textContent = d.gender;
-        document.getElementById('qAge').textContent = d.age;
-        document.getElementById('qGroup').textContent = d.group;
-        if (d.name === '—') {
-            document.getElementById('qAnimalName').style.color = '#94a3b8';
-            document.getElementById('qAnimalName').style.fontStyle = 'italic';
+        if (d.photoUrl) {
+            document.getElementById('basicPhoto').innerHTML = `<img src="${d.photoUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">`;
         }
 
         document.getElementById('fAnimalId').textContent = d.displayId;
         document.getElementById('fAnimalName').textContent = d.name;
+        if (d.name === '—') {
+            document.getElementById('fAnimalName').classList.add('muted');
+            document.getElementById('fAnimalName').style.color = '#94a3b8';
+            document.getElementById('fAnimalName').style.fontStyle = 'italic';
+        }
         document.getElementById('fAnimalType').textContent = d.type;
         document.getElementById('fGroup').textContent = d.group;
         document.getElementById('fGender').textContent = d.gender;
@@ -1162,33 +1094,10 @@
         document.getElementById('quarantineNotice').style.display = d.source === 'quarantine' ? 'flex' : 'none';
         document.getElementById('manualNotice').style.display = d.manualEntry ? 'flex' : 'none';
 
-        const isQuarantine = d.source === 'quarantine';
-        const isActive = d.state === 'active';
-        document.getElementById('btnEdit').style.display = (isQuarantine || !isActive) ? 'none' : '';
-        document.getElementById('btnExport').style.display = (isQuarantine || !isActive) ? 'none' : '';
-        document.getElementById('btnExit').style.display = (isQuarantine || !isActive) ? 'none' : '';
-
         renderStatusCard(d);
         renderReproSection(d.state === 'active' ? d.repro : null);
+        renderMedicalTab(d.medical);
         renderAttachmentsTab(d);
-    }
-
-    function openDialog(id) { document.getElementById(id).classList.add('open'); }
-    function closeDialog(id) { document.getElementById(id).classList.remove('open'); }
-    function openModal(id) { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-    document.querySelectorAll('.dialog-backdrop, .modal-backdrop').forEach(el => {
-        el.addEventListener('click', function(e) {
-            if (e.target === this) this.classList.remove('open');
-        });
-    });
-
-    function showToast(msg) {
-        const t = document.getElementById('toastMsg');
-        document.getElementById('toastText').innerText = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3500);
     }
 
     window.onload = loadAnimal;

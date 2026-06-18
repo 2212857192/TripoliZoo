@@ -37,7 +37,7 @@ class AnimalsExploreScreen extends StatefulWidget {
 
 class _AnimalsExploreScreenState extends State<AnimalsExploreScreen>
     with TickerProviderStateMixin {
-  final _repo = MockAnimalRepository();
+  final _repo = ApiAnimalRepository();
   List<Animal> _animals = [];
   String _category = 'all';
   String _search = '';
@@ -375,11 +375,7 @@ class _AnimalCardState extends State<_AnimalCard>
         onTapDown: (_) => _ctrl.forward(),
         onTapUp: (_) {
           _ctrl.reverse();
-          Navigator.of(context, rootNavigator: true).push(
-            MaterialPageRoute<void>(
-              builder: (_) => AnimalDetailScreen(animal: widget.animal),
-            ),
-          );
+          context.push('/animals/${widget.animal.id}');
         },
         onTapCancel: () => _ctrl.reverse(),
         child: SizedBox(
@@ -390,15 +386,7 @@ class _AnimalCardState extends State<_AnimalCard>
               fit: StackFit.expand,
               children: [
                 // ── Animal image
-                Image.asset(
-                  widget.animal.image,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    color: const Color(0xFF1B3A2A),
-                    child:
-                        const Icon(Icons.pets, color: Colors.white24, size: 48),
-                  ),
-                ),
+                _AnimalImage(animal: widget.animal),
 
                 // ── Dark gradient overlay at bottom
                 Container(
@@ -456,256 +444,38 @@ class _AnimalCardState extends State<_AnimalCard>
   }
 }
 
-// ─────────────────────────────────────────────
-//  Animal Detail Screen
-// ─────────────────────────────────────────────
-class AnimalDetailScreen extends StatelessWidget {
+// AnimalDetailScreen lives in animal_detail_screen.dart
+
+class _AnimalImage extends StatelessWidget {
+  const _AnimalImage({
+    required this.animal,
+    this.iconSize = 48,
+  });
+
   final Animal animal;
-  const AnimalDetailScreen({super.key, required this.animal});
+  final double iconSize;
 
-  String _categoryLabel(BuildContext context) {
-    return switch (animal.category) {
-      'predators' => context.localized(ar: 'مفترس', en: 'Predator'),
-      'birds' => context.localized(ar: 'طائر', en: 'Bird'),
-      'mammals' => context.localized(ar: 'ثديي', en: 'Mammal'),
-      _ => '',
-    };
-  }
+  @override
+  Widget build(BuildContext context) {
+    Widget fallback() => Container(
+          color: const Color(0xFF1B3A2A),
+          child: Icon(Icons.pets, color: Colors.white30, size: iconSize),
+        );
 
-  String _informationText(BuildContext context) {
-    final stats = animal.stats.entries
-        .map((entry) => '${entry.key}: ${entry.value}')
-        .join(' · ');
+    if (animal.image.isEmpty) return fallback();
 
-    return [
-      animal.desc,
-      '${context.localized(ar: 'الموطن', en: 'Habitat')}: ${animal.habitat}',
-      '${context.localized(ar: 'الموقع', en: 'Location')}: ${animal.location}',
-      if (stats.isNotEmpty)
-        '${context.localized(ar: 'معلومات سريعة', en: 'Quick facts')}: $stats',
-    ].join('\n\n');
-  }
-
-  Color get _categoryColor {
-    switch (animal.category) {
-      case 'predators':
-        return const Color(0xFFB71C1C);
-      case 'birds':
-        return const Color(0xFF01579B);
-      case 'mammals':
-        return const Color(0xFF4527A0);
-      default:
-        return AppColors.primary;
+    if (animal.hasNetworkImage) {
+      return Image.network(
+        animal.image,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => fallback(),
+      );
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: CustomScrollView(
-        slivers: [
-          // ── Hero image header ──────────────────────────
-          SliverAppBar(
-            expandedHeight: 340,
-            pinned: true,
-            stretch: true,
-            backgroundColor: Colors.white,
-            foregroundColor: AppColors.textPrimary,
-            surfaceTintColor: Colors.white,
-            systemOverlayStyle: SystemUiOverlayStyle.dark,
-            automaticallyImplyLeading: false,
-            leading: Padding(
-              padding: const EdgeInsets.all(8),
-              child: CircleAvatar(
-                backgroundColor: Colors.white.withValues(alpha: 0.9),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                      color: AppColors.textPrimary, size: 18),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ),
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: _CollapsedAnimalTitle(title: animal.name),
-              titlePadding: const EdgeInsets.only(bottom: 16),
-              stretchModes: const [
-                StretchMode.zoomBackground,
-                StretchMode.blurBackground
-              ],
-              background: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image.asset(
-                    animal.image,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      color: const Color(0xFF1B3A2A),
-                      child: const Icon(Icons.pets,
-                          color: Colors.white30, size: 80),
-                    ),
-                  ),
-                  // Bottom gradient
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        stops: const [0.5, 1.0],
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withValues(alpha: 0.7),
-                        ],
-                      ),
-                    ),
-                  ),
-                  // Name overlay at bottom of image
-                  Positioned(
-                    left: 20,
-                    right: 20,
-                    bottom: 20,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: _categoryColor,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            _categoryLabel(context),
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          animal.name,
-                          textAlign: TextAlign.right,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.w900,
-                            shadows: [
-                              Shadow(blurRadius: 8, color: Colors.black54)
-                            ],
-                          ),
-                        ),
-                        Text(
-                          animal.sciName,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.75),
-                            fontSize: 14,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // ── Content ────────────────────────────────────
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  _AnimalInformationCard(
-                    information: _informationText(context),
-                  ),
-                  const SizedBox(height: 40),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CollapsedAnimalTitle extends StatelessWidget {
-  final String title;
-
-  const _CollapsedAnimalTitle({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    final settings =
-        context.dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>();
-    final minExtent = settings?.minExtent ?? kToolbarHeight;
-    final maxExtent = settings?.maxExtent ?? minExtent;
-    final currentExtent = settings?.currentExtent ?? maxExtent;
-    final range = maxExtent - minExtent;
-    final expandedProgress = range == 0
-        ? 0.0
-        : ((currentExtent - minExtent) / range).clamp(0.0, 1.0);
-
-    return Opacity(
-      opacity: 1 - expandedProgress,
-      child: Text(
-        title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: const TextStyle(
-          color: AppColors.textPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-//  Animal information card
-// ─────────────────────────────────────────────
-class _AnimalInformationCard extends StatelessWidget {
-  final String information;
-
-  const _AnimalInformationCard({required this.information});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      key: const ValueKey('animal-information-card'),
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE4EEE6)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Text(
-        information,
-        key: const ValueKey('animal-information-text'),
-        textAlign: Localizations.localeOf(context).languageCode == 'ar'
-            ? TextAlign.right
-            : TextAlign.left,
-        style: GoogleFonts.cairo(
-          height: 1.9,
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: const Color(0xFF34453A),
-        ),
-      ),
+    return Image.asset(
+      animal.image,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => fallback(),
     );
   }
 }
