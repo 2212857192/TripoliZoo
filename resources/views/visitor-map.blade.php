@@ -107,8 +107,12 @@
         .map-inner {
             position: relative;
             display: inline-block;
-            min-width: 100%;
-            min-height: 100%;
+        }
+
+        .map-stage {
+            position: relative;
+            display: inline-block;
+            line-height: 0;
         }
 
         .route-layer {
@@ -122,7 +126,7 @@
 
         .map-img {
             display: block;
-            width: 100%;
+            width: auto;
             height: auto;
             min-width: 600px;
             user-select: none;
@@ -402,6 +406,7 @@
 <div class="map-outer">
     <div class="map-scroll" id="mapScroll">
         <div class="map-inner" id="mapInner">
+            <div class="map-stage" id="mapStage">
             <img
                 class="map-img"
                 id="mapImg"
@@ -419,7 +424,9 @@
                     data-category="{{ $location['category'] }}"
                     data-description="{{ $location['description'] ?? '' }}"
                     data-profile-id="{{ $location['animal_profile_id'] ?? '' }}"
-                    style="left: {{ $location['x'] * 100 }}%; top: {{ $location['y'] * 100 }}%;"
+                    data-x="{{ $location['x'] }}"
+                    data-y="{{ $location['y'] }}"
+                    style="display:none;"
                     onclick="openPin(this)"
                     aria-label="{{ $location['name'] }}"
                     type="button"
@@ -443,6 +450,7 @@
 
             <!-- Pin count -->
             <div class="pin-count" id="pinCount">{{ count($locations) }} موقع</div>
+            </div>
         </div>
     </div>
 
@@ -495,6 +503,7 @@
     </div>
 </div>
 
+@include('partials.normalized-map-pin-scripts')
 <script>
     const CATEGORY_LABELS = {
         enclosure: 'أقفاص وموائل الحيوانات',
@@ -511,6 +520,47 @@
     let activePin = null;
     let currentFilter = 'all';
     let scale = 1;
+
+    function visitorMapMetrics() {
+        const stage = document.getElementById('mapStage');
+        const img = document.getElementById('mapImg');
+        return repositionNormalizedMapPins(stage, img, '.pin[data-x]');
+    }
+
+    function pinPixelPosition(btn) {
+        const x = parseFloat(btn?.dataset.x || '');
+        const y = parseFloat(btn?.dataset.y || '');
+        const metrics = visitorMapMetrics();
+
+        if (Number.isNaN(x) || Number.isNaN(y) || metrics.width <= 0) {
+            return null;
+        }
+
+        return {
+            left: metrics.offsetX + (x * metrics.width),
+            top: metrics.offsetY + (y * metrics.height),
+        };
+    }
+
+    function initVisitorMapPins() {
+        const img = document.getElementById('mapImg');
+        if (!img) return;
+
+        function refreshPins() {
+            visitorMapMetrics();
+            filterPins(currentFilter);
+            if (activePin && new URLSearchParams(window.location.search).get('route') === '1') {
+                drawRouteToPin(activePin);
+            }
+        }
+
+        window.addEventListener('resize', refreshPins);
+        if (img.complete) {
+            refreshPins();
+        } else {
+            img.addEventListener('load', refreshPins, { once: true });
+        }
+    }
 
     function openPin(btn) {
         const cat = btn.dataset.category;
@@ -594,19 +644,23 @@
 
     function drawRouteToPin(btn) {
         const layer = document.getElementById('routeLayer');
-        const inner = document.getElementById('mapInner');
-        if (!layer || !inner || !btn) return;
+        const stage = document.getElementById('mapStage');
+        const img = document.getElementById('mapImg');
+        if (!layer || !stage || !img || !btn) return;
 
-        const rect = inner.getBoundingClientRect();
-        layer.setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
-        layer.style.width = rect.width + 'px';
-        layer.style.height = rect.height + 'px';
+        const metrics = visitorMapMetrics();
+        if (metrics.width <= 0 || metrics.height <= 0) return;
 
-        const style = window.getComputedStyle(btn);
-        const left = parseFloat(style.left) / 100 * rect.width;
-        const top = parseFloat(style.top) / 100 * rect.height;
-        const startX = ENTRANCE.x * rect.width;
-        const startY = ENTRANCE.y * rect.height;
+        layer.setAttribute('viewBox', `0 0 ${metrics.width} ${metrics.height}`);
+        layer.style.width = metrics.width + 'px';
+        layer.style.height = metrics.height + 'px';
+
+        const x = parseFloat(btn.dataset.x || '');
+        const y = parseFloat(btn.dataset.y || '');
+        const left = x * metrics.width;
+        const top = y * metrics.height;
+        const startX = ENTRANCE.x * metrics.width;
+        const startY = ENTRANCE.y * metrics.height;
 
         layer.innerHTML = `
             <defs>
@@ -639,22 +693,18 @@
         if (showRoute) drawRouteToPin(pin);
 
         const scroll = document.getElementById('mapScroll');
-        const inner = document.getElementById('mapInner');
-        if (scroll && inner) {
-            const rect = inner.getBoundingClientRect();
-            const style = window.getComputedStyle(pin);
-            const left = parseFloat(style.left) / 100 * rect.width;
-            const top = parseFloat(style.top) / 100 * rect.height;
-            scroll.scrollLeft = Math.max(0, left - scroll.clientWidth / 2);
-            scroll.scrollTop = Math.max(0, top - scroll.clientHeight / 2);
+        const stage = document.getElementById('mapStage');
+        if (scroll && stage) {
+            const pos = pinPixelPosition(pin);
+            if (!pos) return;
+            scroll.scrollLeft = Math.max(0, pos.left - scroll.clientWidth / 2);
+            scroll.scrollTop = Math.max(0, pos.top - scroll.clientHeight / 2);
         }
     }
 
-    window.addEventListener('load', focusFromQuery);
-    window.addEventListener('resize', () => {
-        if (activePin && new URLSearchParams(window.location.search).get('route') === '1') {
-            drawRouteToPin(activePin);
-        }
+    window.addEventListener('load', () => {
+        initVisitorMapPins();
+        focusFromQuery();
     });
 
     // Touch drag on map

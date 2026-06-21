@@ -15,6 +15,7 @@ class ReceivingTask extends Model
         'task_number',
         'animal_id',
         'quarantine_id',
+        'hospital_case_id',
         'supervisor_id',
         'status',
         'task_type',
@@ -51,6 +52,11 @@ class ReceivingTask extends Model
     public function quarantine(): BelongsTo
     {
         return $this->belongsTo(Quarantine::class);
+    }
+
+    public function hospitalCase(): BelongsTo
+    {
+        return $this->belongsTo(HospitalCase::class);
     }
 
     public function supervisor(): BelongsTo

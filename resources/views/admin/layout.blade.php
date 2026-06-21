@@ -468,6 +468,8 @@
         </div>
     </main>
 
+    @include('partials.admin-confirm-dialog')
+    @include('partials.admin-ui-scripts')
     @yield('scripts')
     @include('partials.dashboard-shell-scripts')
     

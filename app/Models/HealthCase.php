@@ -18,6 +18,7 @@ class HealthCase extends Model
         'supervisor_id',
         'group',
         'description',
+        'animal_notes',
         'follow_up_kind',
         'has_attachment',
         'attachment_path',

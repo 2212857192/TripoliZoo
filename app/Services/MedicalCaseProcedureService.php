@@ -18,6 +18,7 @@ class MedicalCaseProcedureService
     public function __construct(
         private HospitalCaseNotificationService $hospitalNotifier,
         private ReceivingTaskService $receivingTasks,
+        private AnimalLifecycleService $animalLifecycle,
     ) {}
 
     public function record(
@@ -53,6 +54,7 @@ class MedicalCaseProcedureService
             }
         });
 
+        /** @var MedicalCaseProcedure $procedure */
         return $procedure->fresh(['nutritionRecommendation', 'recorder']);
     }
 
@@ -64,10 +66,15 @@ class MedicalCaseProcedureService
             abort(422, 'لا يمكن إغلاق هذه الحالة.');
         }
 
+        $case->loadMissing('animal');
+        if ($case->animal) {
+            $this->animalLifecycle->assertAnimalCanReceiveActions($case->animal);
+        }
+
         $case->update([
-            'status' => FieldCaseStatus::Closed,
+            'status' => FieldCaseStatus::CompletedTreatment,
             'closed_at' => now(),
-            'closing_note' => $closingNote,
+            'closing_note' => $closingNote ?: AnimalLifecycleService::FIELD_CLOSED_MANUAL,
         ]);
 
         return $case->fresh(['animal', 'opener', 'procedures.nutritionRecommendation']);
@@ -89,6 +96,11 @@ class MedicalCaseProcedureService
         string $decision,
         ?string $note = null,
     ): HospitalCase {
+        $case->loadMissing('animal');
+        if ($case->animal) {
+            $this->animalLifecycle->assertAnimalCanReceiveActions($case->animal);
+        }
+
         if (! in_array($case->status, HospitalCaseStatus::awaitingVetHeadDecision(), true)) {
             abort(422, 'لا يمكن إصدار قرار على هذه الحالة حالياً.');
         }
@@ -96,24 +108,31 @@ class MedicalCaseProcedureService
         match ($decision) {
             'discharge' => (function () use ($case, $vetHead, $note) {
                 $case->update([
-                    'status' => HospitalCaseStatus::ReadyForDischarge,
+                    'status' => HospitalCaseStatus::PendingHandover,
                 ]);
 
                 $case->load(['animal', 'procedures']);
 
                 $this->receivingTasks->createFromHospitalDecision(
-                    $case->animal,
+                    $case,
                     $vetHead,
                     ReceivingTaskType::AfterTreatment,
                     $case->procedures,
                     $note ? trim($note) : 'تم اعتماد خروج الحيوان بعد العلاج.',
                 );
             })(),
-            'slaughter' => $case->update([
-                'status' => HospitalCaseStatus::Slaughtered,
-                'closed_at' => now(),
-                'closing_outcome' => $note ? trim($note) : 'ذبح اضطراري',
-            ]),
+            'slaughter' => (function () use ($case) {
+                $case->update([
+                    'status' => HospitalCaseStatus::Slaughtered,
+                    'closed_at' => now(),
+                    'closing_outcome' => AnimalLifecycleService::HOSPITAL_CLOSED_SLAUGHTER,
+                ]);
+
+                $case->loadMissing('animal');
+                if ($case->animal) {
+                    $this->animalLifecycle->finalizeAfterEmergencySlaughter($case->animal, $case);
+                }
+            })(),
             default => abort(422, 'نوع القرار غير صالح.'),
         };
 
@@ -173,6 +192,14 @@ class MedicalCaseProcedureService
 
     private function ensureCaseAcceptsProcedures(Model $case): void
     {
+        $case->loadMissing('animal');
+        if ($case->animal) {
+            $this->animalLifecycle->assertAnimalCanReceiveActions($case->animal);
+
+            $exceptFieldCaseId = $case instanceof FieldCase ? $case->id : null;
+            $this->animalLifecycle->assertNoOpenFieldCase($case->animal, $exceptFieldCaseId);
+        }
+
         if ($case instanceof FieldCase && $case->status !== FieldCaseStatus::Active) {
             abort(422, 'لا يمكن تسجيل إجراء على حالة مغلقة.');
         }

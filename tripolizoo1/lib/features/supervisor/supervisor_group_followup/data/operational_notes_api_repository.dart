@@ -46,7 +46,8 @@ class OperationalNotesApiRepository {
     final fields = <String, String>{
       'note_kind': noteKind,
       'summary': summary.trim(),
-      if (details != null && details.trim().isNotEmpty) 'details': details.trim(),
+      if (details != null && details.trim().isNotEmpty)
+        'details': details.trim(),
     };
 
     final Map<String, dynamic> json;
@@ -85,14 +86,18 @@ class OperationalNotesApiRepository {
 
     return OperationalNoteEntry(
       id: data['note_number']?.toString() ?? data['id']?.toString() ?? '',
-      registeredAt: DateTime.tryParse(data['registered_at']?.toString() ?? '') ??
-          DateTime.now(),
+      registeredAt:
+          DateTime.tryParse(data['registered_at']?.toString() ?? '') ??
+              DateTime.now(),
       noteKind: kind == 'general'
           ? OperationalNoteKind.general
           : OperationalNoteKind.feeding,
       summary: data['summary']?.toString() ?? '',
       fullText: _nullIfEmpty(data['details']?.toString()),
       hasAttachment: data['has_attachment'] == true,
+      attachmentUrl: ApiConfig.resolveAssetUrl(
+        _nullIfEmpty(data['attachment_url']?.toString()),
+      ),
     );
   }
 

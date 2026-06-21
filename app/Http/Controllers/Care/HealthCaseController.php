@@ -10,9 +10,11 @@ use App\Models\HealthCase;
 use App\Models\User;
 use App\Services\HealthCaseNotificationService;
 use App\Services\HealthCaseService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -31,31 +33,54 @@ class HealthCaseController extends Controller
     public function review(Request $request, HealthCase $healthCase, HealthCaseService $service): RedirectResponse
     {
         $user = $this->careHeadUser();
-        $service->markReviewed($healthCase, $user);
 
-        return redirect()
-            ->route('care.health.index')
+        try {
+            $service->markReviewed($healthCase, $user);
+        } catch (ValidationException $exception) {
+            return $this->healthIndexRedirect($request, $healthCase)
+                ->with('error', $this->validationMessage($exception));
+        }
+
+        return $this->healthIndexRedirect($request, $healthCase, ['status' => HealthCaseStatus::Reviewed->value])
             ->with('success', "تم تحديث الحالة {$healthCase->case_number} إلى «تمت المراجعة».");
     }
 
     public function refer(Request $request, HealthCase $healthCase, HealthCaseService $service): RedirectResponse
     {
         $user = $this->careHeadUser();
-        $service->referForTreatment($healthCase, $user);
+
+        try {
+            $service->referForTreatment($healthCase, $user);
+        } catch (ValidationException $exception) {
+            return $this->healthIndexRedirect($request, $healthCase)
+                ->with('error', $this->validationMessage($exception));
+        }
+
         $healthCase->load('treatmentReferral');
 
-        return redirect()
-            ->route('care.health.index')
-            ->with('success', "تم إحالة الحالة {$healthCase->case_number} للعلاج — رقم الإحالة: {$healthCase->treatmentReferral?->referral_number}.");
+        if (! $healthCase->treatmentReferral) {
+            return $this->healthIndexRedirect($request, $healthCase)
+                ->with('error', 'تعذر إنشاء إحالة العلاج. يرجى المحاولة مرة أخرى.');
+        }
+
+        return $this->healthIndexRedirect($request, $healthCase, ['status' => HealthCaseStatus::Referred->value])
+            ->with('success', "تم إحالة الحالة {$healthCase->case_number} للعلاج — رقم الإحالة: {$healthCase->treatmentReferral->referral_number}.");
     }
 
     public function markNotificationRead(
         Request $request,
         HealthCase $healthCase,
         HealthCaseNotificationService $notifier,
-    ): RedirectResponse {
+    ): RedirectResponse|JsonResponse {
         $user = $this->careHeadUser();
         $notifier->markAsReadForUser($healthCase, $user);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'ok' => true,
+                'url' => route('care.health.index', ['case' => $healthCase->case_number]),
+            ]);
+        }
 
         return redirect()->route('care.health.index', ['case' => $healthCase->case_number]);
     }
@@ -112,12 +137,26 @@ class HealthCaseController extends Controller
 
         $cases = $query->paginate(15)->withQueryString();
         $portalBase = $readOnly ? '/director/care' : '/care';
+        $highlightCase = $request->query('case');
+        $jsCases = $cases->getCollection();
+
+        if ($highlightCase && ! $jsCases->contains('case_number', $highlightCase)) {
+            $highlighted = HealthCase::query()
+                ->with(['animal', 'supervisor', 'treatmentReferral'])
+                ->where('case_number', $highlightCase)
+                ->first();
+
+            if ($highlighted) {
+                $jsCases = $jsCases->push($highlighted);
+            }
+        }
 
         return [
             'cases' => $cases,
             'readOnly' => $readOnly,
-            'highlightCase' => $request->query('case'),
-            'healthCasesForJs' => $this->healthCasesForJs($cases, $portalBase),
+            'canAct' => ! $readOnly && auth()->user()?->role === UserRole::CareHead->value,
+            'highlightCase' => $highlightCase,
+            'healthCasesForJs' => $this->healthCasesForJs($jsCases, $portalBase),
             'portalBase' => $portalBase,
             'filters' => [
                 'q' => $request->query('q', ''),
@@ -140,10 +179,30 @@ class HealthCaseController extends Controller
         return $user;
     }
 
+    private function healthIndexRedirect(Request $request, HealthCase $healthCase, array $overrides = []): RedirectResponse
+    {
+        $params = array_filter([
+            'q' => $request->query('q'),
+            'group' => $request->query('group'),
+            'follow_up' => $request->query('follow_up'),
+            'case' => $healthCase->case_number,
+            ...$overrides,
+        ], fn ($value) => $value !== null && $value !== '');
+
+        return redirect()->route('care.health.index', $params);
+    }
+
+    private function validationMessage(ValidationException $exception): string
+    {
+        $messages = collect($exception->errors())->flatten();
+
+        return $messages->first() ?: 'تعذر تنفيذ الإجراء.';
+    }
+
     /** @return array<string, array<string, mixed>> */
     private function healthCasesForJs($cases, string $portalBase): array
     {
-        return $cases->getCollection()->mapWithKeys(function (HealthCase $case) use ($portalBase) {
+        return collect($cases)->mapWithKeys(function (HealthCase $case) use ($portalBase) {
             $animal = $case->animal;
 
             return [$case->case_number => [
@@ -153,6 +212,7 @@ class HealthCaseController extends Controller
                 'follow_up_kind' => $case->follow_up_kind->value,
                 'follow_up_label' => $case->follow_up_kind->label(),
                 'description' => $case->description,
+                'animal_notes' => $case->animal_notes,
                 'animal_code' => $animal?->code,
                 'animal_name' => $animal?->name,
                 'animal_species' => $animal?->species,

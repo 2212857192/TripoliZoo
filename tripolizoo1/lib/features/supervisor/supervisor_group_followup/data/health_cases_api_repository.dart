@@ -46,6 +46,7 @@ class HealthCasesApiRepository {
     required String animalCode,
     required String description,
     required String followUpKind,
+    String? animalNotes,
     XFile? attachment,
   }) async {
     final fields = <String, String>{
@@ -53,6 +54,10 @@ class HealthCasesApiRepository {
       'description': description.trim(),
       'follow_up_kind': followUpKind,
     };
+
+    if (animalNotes != null && animalNotes.trim().isNotEmpty) {
+      fields['animal_notes'] = animalNotes.trim();
+    }
 
     final Map<String, dynamic> json;
     if (attachment != null) {
@@ -91,6 +96,8 @@ class HealthCasesApiRepository {
           'animal_code': animalCode,
           'description': description.trim(),
           'follow_up_kind': followUpKind,
+          if (animalNotes != null && animalNotes.trim().isNotEmpty)
+            'animal_notes': animalNotes.trim(),
         },
       );
     }
@@ -111,8 +118,9 @@ class HealthCasesApiRepository {
 
     return HealthFollowUpEntry(
       id: data['case_number']?.toString() ?? data['id']?.toString() ?? '',
-      registeredAt: DateTime.tryParse(data['registered_at']?.toString() ?? '') ??
-          DateTime.now(),
+      registeredAt:
+          DateTime.tryParse(data['registered_at']?.toString() ?? '') ??
+              DateTime.now(),
       animalId: data['animal_id']?.toString() ?? '',
       animalType: _nullIfEmpty(data['animal_type']?.toString()),
       description: data['description']?.toString() ?? '',
@@ -120,6 +128,9 @@ class HealthCasesApiRepository {
           ? HealthFollowUpKind.needsReferral
           : HealthFollowUpKind.noReferral,
       hasAttachment: data['has_attachment'] == true,
+      attachmentUrl: ApiConfig.resolveAssetUrl(
+        _nullIfEmpty(data['attachment_url']?.toString()),
+      ),
     );
   }
 

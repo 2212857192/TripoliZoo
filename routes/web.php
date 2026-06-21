@@ -154,9 +154,11 @@ Route::prefix('vet')
         Route::get('/referrals/autopsy/{autopsyReferral}/report', [VetAutopsyReferralController::class, 'report'])->name('vet.referrals.autopsy.report');
         Route::get('/referrals/autopsy/{autopsyReferral}', [VetAutopsyReferralController::class, 'show'])->name('vet.referrals.autopsy.show');
         Route::post('/notifications/autopsy-referral/read', [VetNotificationController::class, 'markReadByAutopsyReferral'])->name('vet.referrals.autopsy.notification.read');
+        Route::post('/notifications/hospital/{hospitalCase}/read', [VetNotificationController::class, 'markHospitalCaseRead'])->name('vet.hospital.notification.read');
         Route::get('/decisions', fn () => app(MedicalDecisionController::class)->index(portal: 'vet'))->name('vet.decisions.index');
         Route::get('/decisions/{receivingTask}', fn (ReceivingTask $receivingTask) => app(MedicalDecisionController::class)->show($receivingTask, portal: 'vet'))->name('vet.decisions.show');
         Route::post('/notifications/read', [VetNotificationController::class, 'markReadByTask'])->name('vet.notification.read');
+        Route::get('/notifications/feed', [VetNotificationController::class, 'feed'])->name('vet.notifications.feed');
         Route::post('/notifications/read-all', [VetNotificationController::class, 'markAllRead'])->name('vet.notifications.read-all');
     });
 
@@ -188,6 +190,7 @@ Route::prefix('care')
         Route::get('/decisions/slaughter/{hospitalCase}', [MedicalDecisionController::class, 'showSlaughter'])->name('care.decisions.slaughter.show');
         Route::get('/decisions/{receivingTask}', [MedicalDecisionController::class, 'show'])->name('care.decisions.show');
         Route::post('/notifications/read', [CareNotificationController::class, 'markReadByTask'])->name('care.notification.read');
+        Route::get('/notifications/feed', [CareNotificationController::class, 'feed'])->name('care.notifications.feed');
         Route::post('/notifications/read-all', [CareNotificationController::class, 'markAllRead'])->name('care.notifications.read-all');
     });
 

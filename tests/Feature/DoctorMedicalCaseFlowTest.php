@@ -74,7 +74,8 @@ class DoctorMedicalCaseFlowTest extends TestCase
 
         $this->assertDatabaseHas('field_cases', [
             'id' => $fieldCase->id,
-            'status' => 'closed',
+            'status' => 'completed_treatment',
+            'closing_note' => 'أُغلقت بعد اكتمال العلاج الميداني.',
         ]);
     }
 

@@ -17,6 +17,7 @@ class HealthReportService
         private HealthReportNumberGenerator $numbers,
         private HealthReportNotificationService $notifier,
         private FieldCaseService $fieldCases,
+        private AnimalLifecycleService $animalLifecycle,
     ) {}
 
     public function createReport(
@@ -26,6 +27,9 @@ class HealthReportService
         bool $isUrgent = false,
         ?string $attachmentPath = null,
     ): HealthReport {
+        $this->animalLifecycle->assertAnimalCanReceiveActions($animal);
+        $this->animalLifecycle->assertNoOpenFieldCase($animal);
+
         $report = null;
 
         DB::transaction(function () use ($supervisor, $animal, $description, $isUrgent, $attachmentPath, &$report) {

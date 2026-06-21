@@ -3,13 +3,13 @@
 namespace App\View\Composers;
 
 use App\Enums\Portal;
-use App\Models\CareNotification;
-use App\Models\HealthCaseNotification;
-use App\Models\OperationalNoteNotification;
+use App\Services\PortalNotificationFeedService;
 use Illuminate\View\View;
 
 class CareLayoutComposer
 {
+    public function __construct(private PortalNotificationFeedService $feedService) {}
+
     public function compose(View $view): void
     {
         $user = auth()->user();
@@ -18,60 +18,24 @@ class CareLayoutComposer
             $view->with([
                 'notificationCount' => 0,
                 'notificationBody' => null,
+                'careNotificationFeed' => collect(),
                 'careNotificationReadUrl' => null,
             ]);
 
             return;
         }
 
-        $receivingNotifications = CareNotification::query()
-            ->where('user_id', $user->id)
-            ->whereNull('read_at')
-            ->with(['receivingTask.animal'])
-            ->latest()
-            ->limit(10)
-            ->get();
+        $feed = $this->feedService->buildCareFeed($user);
+        $notificationCount = $this->feedService->careUnreadCount($user);
 
-        $healthCaseNotifications = HealthCaseNotification::query()
-            ->where('user_id', $user->id)
-            ->whereNull('read_at')
-            ->with(['healthCase.animal'])
-            ->latest()
-            ->limit(10)
-            ->get();
-
-        $operationalNoteNotifications = OperationalNoteNotification::query()
-            ->where('user_id', $user->id)
-            ->whereNull('read_at')
-            ->with(['operationalNote.supervisor'])
-            ->latest()
-            ->limit(10)
-            ->get();
-
-        $notificationCount = CareNotification::query()
-            ->where('user_id', $user->id)
-            ->whereNull('read_at')
-            ->count()
-            + HealthCaseNotification::query()
-                ->where('user_id', $user->id)
-                ->whereNull('read_at')
-                ->count()
-            + OperationalNoteNotification::query()
-                ->where('user_id', $user->id)
-                ->whereNull('read_at')
-                ->count();
-
-        $notificationBody = ($receivingNotifications->isEmpty()
-            && $healthCaseNotifications->isEmpty()
-            && $operationalNoteNotifications->isEmpty())
+        $notificationBody = $feed->isEmpty()
             ? null
-            : view('partials.care-notification-items', [
-                'notifications' => $receivingNotifications,
-                'healthCaseNotifications' => $healthCaseNotifications,
-                'operationalNoteNotifications' => $operationalNoteNotifications,
+            : view('partials.care-notification-feed', [
+                'careNotificationFeed' => $feed,
             ])->render();
 
         $view->with(compact('notificationCount', 'notificationBody'));
+        $view->with('careNotificationFeed', $feed);
         $view->with('careNotificationReadUrl', route('care.notification.read'));
     }
 }

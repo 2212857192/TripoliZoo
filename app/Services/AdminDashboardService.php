@@ -105,7 +105,7 @@ class AdminDashboardService
      * @param  Collection<int, TicketType>  $ticketTypes
      * @param  Collection<int, AnimalProfile>  $profiles
      * @param  Collection<int, MapLocation>  $mapLocations
-     * @return list<array{label: string, status: string, tone: string}>
+     * @return list<array{label: string, status: string}>
      */
     private function visitorAppRows(
         VisitSetting $visitSettings,
@@ -114,60 +114,32 @@ class AdminDashboardService
         Collection $mapLocations,
         int $animalsWithoutProfile,
     ): array {
+        unset($animalsWithoutProfile);
+
         $activeTickets = $ticketTypes->where('is_active', true)->count();
         $inactiveTickets = $ticketTypes->where('is_active', false)->count();
         $visibleProfiles = $profiles->where('is_visible', true)->count();
         $hiddenProfiles = $profiles->where('is_visible', false)->count();
-        $activeLocations = $mapLocations->where('is_active', true)->count();
+        $totalLocations = $mapLocations->count();
 
         return [
             [
                 'label' => 'معلومات الزيارة',
-                'status' => $visitSettings->status_visible
-                    ? ($visitSettings->status_text ?: 'مفعّلة للزوار')
-                    : 'مخفية عن الزوار',
-                'tone' => $visitSettings->status_visible ? 'ok' : 'warn',
-            ],
-            [
-                'label' => 'أوقات العمل',
-                'status' => $this->workingHoursLabel($visitSettings),
-                'tone' => 'neutral',
+                'status' => 'آخر تحديث: '.($visitSettings->updated_at?->format('d/m/Y') ?? '—'),
             ],
             [
                 'label' => 'أنواع التذاكر',
-                'status' => "{$activeTickets} مفعّلة / {$inactiveTickets} معطلة",
-                'tone' => $activeTickets > 0 ? 'ok' : 'warn',
+                'status' => "{$activeTickets} مفعلة / {$inactiveTickets} معطلة",
             ],
             [
                 'label' => 'محتوى الحيوانات للزوار',
                 'status' => "{$visibleProfiles} ظاهر / {$hiddenProfiles} مخفي",
-                'tone' => $visibleProfiles > 0 ? 'ok' : 'warn',
             ],
             [
                 'label' => 'مواقع الخريطة',
-                'status' => "{$activeLocations} نشط / {$mapLocations->count()} إجمالي",
-                'tone' => $activeLocations > 0 ? 'ok' : 'warn',
-            ],
-            [
-                'label' => 'حيوانات بلا محتوى تعريفي',
-                'status' => $animalsWithoutProfile > 0
-                    ? "{$animalsWithoutProfile} حيوان يحتاج محتوى"
-                    : 'كل الحيوانات المؤهلة لها محتوى',
-                'tone' => $animalsWithoutProfile > 0 ? 'warn' : 'ok',
+                'status' => "{$totalLocations} موقع مضاف",
             ],
         ];
-    }
-
-    private function workingHoursLabel(VisitSetting $visitSettings): string
-    {
-        $days = collect($visitSettings->working_days ?? [])
-            ->filter()
-            ->count();
-
-        $open = $visitSettings->open_time ? substr((string) $visitSettings->open_time, 0, 5) : '—';
-        $close = $visitSettings->close_time ? substr((string) $visitSettings->close_time, 0, 5) : '—';
-
-        return "{$days} أيام عمل — {$open} إلى {$close}";
     }
 
     /**

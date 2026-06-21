@@ -4,13 +4,11 @@
 
 @php
     $animal = $profile->animal;
-    $animalName = $animal?->name ?: $animal?->species ?? '—';
-    $sci = $profile->visitorSubtitle();
-    $code = $profile->display_code ?? $animal?->code ?? '—';
+    $displayName = $animal?->species ?? '—';
+    $sci = $animal?->group ?? '';
     $img = $profile->imageUrl();
     $mapLocation = $mapLocation ?? null;
     $qrPayload = $qrPayload ?? $profile->qrPayload();
-    $visitorUrl = $visitorUrl ?? route('visitor.animal', $profile);
 @endphp
 
 @section('styles')
@@ -168,10 +166,6 @@
 
 @section('content')
 
-@if(session('success'))
-<div class="notice-blue" style="margin-bottom:1rem;padding:12px 16px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;color:#1D4ED8;font-weight:700;">{{ session('success') }}</div>
-@endif
-
 <a href="{{ route('admin.animals.index') }}" class="page-back">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     العودة إلى قائمة المحتوى التعريفي
@@ -185,8 +179,8 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
             </div>
             <div>
-                <h3>بيانات الحيوان</h3>
-                <p>معلومات الهوية الأساسية للحيوان المسجّل في الحديقة</p>
+                <h3>بيانات النوع</h3>
+                <p>المعلومات المعروضة للزوار في المحتوى التعريفي</p>
             </div>
         </div>
         <span class="vis-badge {{ $profile->is_visible ? 'on' : 'off' }}">
@@ -196,7 +190,7 @@
     <div class="animal-hero">
         <div class="animal-hero-img">
             @if($img)
-                <img src="{{ $img }}" alt="{{ $animalName }}"
+                <img src="{{ $img }}" alt="{{ $displayName }}"
                      onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
                 <span style="display:none">🦁</span>
             @else
@@ -204,22 +198,9 @@
             @endif
         </div>
         <div class="animal-hero-info">
-            <h2>{{ $animalName }}</h2>
+            <h2>{{ $displayName }}</h2>
             @if($sci)<p>{{ $sci }}</p>@endif
             <div class="meta-pills">
-                <span class="meta-pill">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                    الرمز: {{ $code }}
-                </span>
-                @if($animal?->group)
-                <span class="meta-pill">{{ $animal->group }}</span>
-                @endif
-                @if($animal?->gender)
-                <span class="meta-pill">{{ $animal->gender }}</span>
-                @endif
-                @if($animal?->formattedAge() && $animal->formattedAge() !== '—')
-                <span class="meta-pill">{{ $animal->formattedAge() }}</span>
-                @endif
                 @if($mapLocation)
                 <span class="meta-pill">📍 {{ $mapLocation->name }}</span>
                 @endif
@@ -259,7 +240,7 @@
         <div class="bottom-card-body">
             <div class="img-display">
                 @if($img)
-                    <img src="{{ $img }}" alt="{{ $animalName }}"
+                    <img src="{{ $img }}" alt="{{ $displayName }}"
                          onerror="this.parentElement.innerHTML='<span>🦁</span>'">
                 @else
                     <span>🦁</span>
@@ -280,23 +261,18 @@
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     تعديل المحتوى التعريفي
                 </a>
-                <form method="POST" action="{{ route('admin.animals.visibility', $profile) }}">
+                <form method="POST" action="{{ route('admin.animals.visibility', $profile) }}" class="js-animal-visibility-form" data-visible="{{ $profile->is_visible ? '1' : '0' }}">
                     @csrf
                     @method('PATCH')
                     <button type="submit" class="btn-action qr" style="width:100%;">
                         {{ $profile->is_visible ? 'إخفاء عن تطبيق الزائر' : 'إظهار في تطبيق الزائر' }}
                     </button>
                 </form>
-                @if($profile->is_visible)
-                <a href="{{ $visitorUrl }}" target="_blank" rel="noopener" class="btn-action qr">
-                    معاينة صفحة الزائر
-                </a>
-                @endif
                 @php
                     $qrButtonData = [
-                        'name' => $animalName,
+                        'name' => $displayName,
                         'subtitle' => $sci,
-                        'code' => $code,
+                        'code' => $profile->display_code ?? '',
                         'group' => $animal?->group,
                         'image' => $img,
                         'scanUrl' => $profile->visitorQrUrl(),
@@ -325,9 +301,15 @@
 
 @include('partials.admin-animal-qr-modal')
 
-<div class="toast" id="toast"></div>
 @endsection
 
 @section('scripts')
 @include('partials.admin-animal-qr-scripts')
+<script>
+    bindAdminConfirmForms('.js-animal-visibility-form', (form) => {
+        return form.dataset.visible === '1'
+            ? 'هل أنت متأكد من إخفاء هذا المحتوى عن الزوار؟'
+            : 'هل أنت متأكد من إظهار هذا المحتوى للزوار؟';
+    });
+</script>
 @endsection

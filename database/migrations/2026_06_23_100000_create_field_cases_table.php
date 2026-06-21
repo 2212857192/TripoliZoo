@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('status')->default('active');
             $table->foreignId('opened_by')->constrained('users')->cascadeOnDelete();
             $table->foreignId('health_report_id')->nullable()->unique()->constrained()->nullOnDelete();
+            $table->foreignId('hospital_case_id')->nullable()->constrained('hospital_cases')->nullOnDelete();
             $table->timestamp('opened_at');
             $table->timestamp('closed_at')->nullable();
             $table->timestamps();

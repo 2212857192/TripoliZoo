@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\OperationalNote;
 use App\Services\OperationalNoteNotificationService;
 use App\Services\OperationalNoteService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -37,12 +38,20 @@ class OperationalNoteController extends Controller
     }
 
     public function markNotificationRead(
+        Request $request,
         OperationalNote $operationalNote,
         OperationalNoteService $service,
         OperationalNoteNotificationService $notifier,
-    ): RedirectResponse {
+    ): RedirectResponse|JsonResponse {
         $user = $service->careHeadUser();
         $notifier->markAsReadForUser($operationalNote, $user);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'ok' => true,
+                'url' => route('care.notes.index', ['note' => $operationalNote->note_number]),
+            ]);
+        }
 
         return redirect()->route('care.notes.index', ['note' => $operationalNote->note_number]);
     }

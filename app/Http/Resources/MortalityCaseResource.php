@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\MortalityCase;
+use App\Support\ApiStorageUrl;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,9 +30,7 @@ class MortalityCaseResource extends JsonResource
             'registered_at' => $this->created_at?->toIso8601String(),
             'death_date' => $this->death_date?->format('Y-m-d'),
             'has_attachment' => $this->has_attachment,
-            'attachment_url' => $this->attachment_path
-                ? $request->getSchemeAndHttpHost().'/api/auth/mortality-cases/'.$this->case_number.'/attachment'
-                : null,
+            'attachment_url' => ApiStorageUrl::fromPublicPath($this->attachment_path, $request),
         ];
     }
 }

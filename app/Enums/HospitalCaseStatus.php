@@ -24,7 +24,7 @@ enum HospitalCaseStatus: string
             self::PendingSlaughterApproval => 'بانتظار اعتماد الذبح',
             self::PendingHandover => 'بانتظار الاستلام',
             self::HandoverDelayed => 'تعذر الاستلام مؤقتاً',
-            self::Discharged => 'خروج بعد العلاج',
+            self::Discharged => 'تم استلامها',
             self::Slaughtered => 'ذبح اضطراري',
         };
     }
@@ -46,10 +46,13 @@ enum HospitalCaseStatus: string
     public function headerStatusClass(): string
     {
         return match ($this) {
-            self::ReadyForDischarge => 'status-ready',
             self::UnderTreatment => 'status-watch',
+            self::ReadyForDischarge => 'status-ready',
             self::NoResponse => 'status-no-response',
-            default => 'status-watch',
+            self::PendingDischargeApproval, self::PendingHandover => 'status-handover',
+            self::PendingSlaughterApproval, self::HandoverDelayed => 'status-unavailable',
+            self::Discharged => 'status-discharged',
+            self::Slaughtered => 'status-slaughter',
         };
     }
 
@@ -67,7 +70,6 @@ enum HospitalCaseStatus: string
     {
         return [
             self::UnderTreatment,
-            self::ReadyForDischarge,
             self::NoResponse,
             self::PendingDischargeApproval,
             self::PendingSlaughterApproval,
@@ -80,6 +82,7 @@ enum HospitalCaseStatus: string
         return [
             self::PendingHandover,
             self::HandoverDelayed,
+            self::ReadyForDischarge,
         ];
     }
 

@@ -354,13 +354,19 @@
 @endsection
 
 @section('content')
-<a href="/admin/visit-info" class="page-back">
+@php
+    $settings = $settings ?? \App\Models\VisitSetting::current();
+@endphp
+<a href="{{ route('admin.visit-info.show') }}" class="page-back">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
     إلغاء والعودة لصفحة المعلومات
 </a>
 
 <div class="visit-container">
-    <div class="main-panel" style="grid-column: span 2;">
+    <form method="POST" action="{{ route('admin.visit-info.update') }}" id="visitInfoForm" class="main-panel" style="grid-column: span 2; display:flex; flex-direction:column; gap:1.8rem;">
+        @csrf
+        @method('PUT')
+        <input type="hidden" name="status_visible" id="status_visible" value="{{ old('status_visible', $settings->status_visible ? '1' : '0') }}">
 
         <!-- Status & Announcements Form -->
         <div class="premium-card" style="border-right: 5px solid #eab308; background: rgba(254, 243, 199, 0.2); margin-bottom: 1.8rem;">
@@ -373,14 +379,20 @@
             <div class="premium-card-body">
                 <div class="form-group">
                     <label>نص حالة التشغيل</label>
+                    <p style="margin: 0 0 8px; font-size: 0.82rem; color: #64748b; line-height: 1.6;">
+                        استخدم هذا الحقل لعرض حالة التشغيل اليومية للزوار، مثل: «مفتوحة — أهلاً بزوارنا» أو «مغلقة اليوم لأعمال الصيانة».
+                    </p>
                     <div class="status-edit-row">
-                        <input type="text" id="status_text" class="form-input" value="مفتوحة جزئياً — بعض الأقسام تحت الصيانة" style="font-weight:700;">
-                        <button type="button" class="btn-visibility-toggle" id="statusVisToggle" onclick="toggleStatusVisEdit()">👁 ظاهر للزوار</button>
+                        <input type="text" name="status_text" id="status_text" class="form-input" value="{{ old('status_text', $settings->status_text) }}" style="font-weight:700;">
+                        <button type="button" class="btn-visibility-toggle {{ old('status_visible', $settings->status_visible) ? '' : 'hidden-state' }}" id="statusVisToggle" onclick="toggleStatusVisEdit()">{{ old('status_visible', $settings->status_visible) ? '👁 ظاهر للزوار' : '🚫 مخفي عن الزوار' }}</button>
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>نص التنبيه العاجل (يظهر مباشرة للزوار في التطبيق والواجهة)</label>
-                    <textarea class="form-input" rows="2" style="resize: vertical; font-weight: 700; font-family: 'Cairo', sans-serif;">⚠️ نود إحاطة زوارنا الكرام بأن "منطقة الطيور البرية" ومبنى "القبة الفلكية" مغلقان حالياً لأعمال الصيانة الدورية وتحديث المرافق.</textarea>
+                    <p style="margin: 0 0 8px; font-size: 0.82rem; color: #64748b; line-height: 1.6;">
+                        للإغلاقات المؤقتة أو الظروف الطارئة أو أي تغيير مؤقت في العمل دون تعديل أوقات الزيارة الأساسية.
+                    </p>
+                    <textarea name="urgent_alert" class="form-input" rows="2" style="resize: vertical; font-weight: 700; font-family: 'Cairo', sans-serif;">{{ old('urgent_alert', $settings->urgent_alert) }}</textarea>
                 </div>
             </div>
         </div>
@@ -397,11 +409,11 @@
                 <div class="form-row">
                     <div class="form-group" style="margin-bottom: 0;">
                         <label>رقم الإسعاف</label>
-                        <input type="text" id="ambulance_phone" class="form-input" value="193" dir="ltr">
+                        <input type="text" name="ambulance_phone" id="ambulance_phone" class="form-input" value="{{ old('ambulance_phone', $settings->ambulance_phone) }}" dir="ltr">
                     </div>
                     <div class="form-group" style="margin-bottom: 0;">
                         <label>رقم الأمن</label>
-                        <input type="text" id="security_phone" class="form-input" value="091-555-0123" dir="ltr">
+                        <input type="text" name="security_phone" id="security_phone" class="form-input" value="{{ old('security_phone', $settings->security_phone) }}" dir="ltr">
                     </div>
                 </div>
             </div>
@@ -418,10 +430,7 @@
             <div class="premium-card-body">
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>التعليمات المعروضة للزوار</label>
-                    <textarea id="entry_instructions" class="form-input" rows="5" style="resize: vertical; line-height: 1.7;">• يرجى الحضور من البوابة الرئيسية مع التذكرة الإلكترونية أو الورقية.
-• يُمنع إدخال الطعام والمشروبات من خارج الحديقة.
-• يلزم مرافقة الأطفال دون سن 12 سنة في جميع الأوقات.
-• يُرجى الالتزام بالمسارات المحددة وعدم تسلق الأسوار أو الأقفاص.</textarea>
+                    <textarea id="entry_instructions" name="entry_instructions" class="form-input" rows="5" style="resize: vertical; line-height: 1.7;">{{ old('entry_instructions', $settings->entry_instructions) }}</textarea>
                 </div>
             </div>
         </div>
@@ -432,77 +441,57 @@
                 <div class="icon-wrapper">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                 </div>
-                <h3>تعديل مواعيد العمل الرسمية</h3>
+                <h3>أوقات ومواعيد العمل</h3>
             </div>
             <div class="premium-card-body">
-                <!-- Day Selection -->
                 <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label>أيام العمل الأسبوعية (اختر الأيام التي تفتح فيها الحديقة)</label>
-                    <div class="days-selector">
-                        <input type="checkbox" id="day_sat" class="day-checkbox" checked>
-                        <label for="day_sat" class="day-label">السبت</label>
-
-                        <input type="checkbox" id="day_sun" class="day-checkbox" checked>
-                        <label for="day_sun" class="day-label">الأحد</label>
-
-                        <input type="checkbox" id="day_mon" class="day-checkbox" checked>
-                        <label for="day_mon" class="day-label">الإثنين</label>
-
-                        <input type="checkbox" id="day_tue" class="day-checkbox" checked>
-                        <label for="day_tue" class="day-label">الثلاثاء</label>
-
-                        <input type="checkbox" id="day_wed" class="day-checkbox" checked>
-                        <label for="day_wed" class="day-label">الأربعاء</label>
-
-                        <input type="checkbox" id="day_thu" class="day-checkbox" checked>
-                        <label for="day_thu" class="day-label">الخميس</label>
-
-                        <input type="checkbox" id="day_fri" class="day-checkbox">
-                        <label for="day_fri" class="day-label">الجمعة (إغلاق)</label>
+                    <label>نمط العمل</label>
+                    <div class="form-input" style="background: #f8fafc; color: #166534; font-weight: 800; border-color: #bbf7d0;">
+                        {{ \App\Models\VisitSetting::scheduleLabel() }}
                     </div>
+                    <p style="margin: 8px 0 0; font-size: 0.82rem; color: #64748b; line-height: 1.6;">
+                        الحديقة مفتوحة يومياً بشكل افتراضي. لإبلاغ الزوار بإغلاق مؤقت استخدم حالة التشغيل أو التنبيه العاجل أعلاه.
+                    </p>
                 </div>
 
-                <!-- Fixed Hours Selection -->
                 <div class="form-row">
                     <div class="form-group" style="margin: 0;">
                         <label>وقت الفتح (صباحاً)</label>
-                        <input type="time" id="hours_open" class="form-input" value="09:00">
+                        <input type="time" name="open_time" id="hours_open" class="form-input" value="{{ old('open_time', substr((string) $settings->open_time, 0, 5)) }}">
                     </div>
                     <div class="form-group" style="margin: 0;">
                         <label>وقت الإغلاق (مساءً)</label>
-                        <input type="time" id="hours_close" class="form-input" value="18:00">
+                        <input type="time" name="close_time" id="hours_close" class="form-input" value="{{ old('close_time', substr((string) $settings->close_time, 0, 5)) }}">
                     </div>
                 </div>
 
                 <div class="form-group" style="margin-top: 1.3rem; margin-bottom: 0;">
-                    <label>آخر موعد للدخول ومبيعات التذاكر</label>
-                    <input type="text" id="hours_last_ticket" class="form-input" value="قبل ساعة واحدة من موعد الإغلاق">
+                    <label>آخر موعد للدخول</label>
+                    <input type="text" name="last_ticket_time_note" id="hours_last_ticket" class="form-input" value="{{ old('last_ticket_time_note', $settings->last_ticket_time_note) }}">
                 </div>
             </div>
         </div>
 
-        <!-- Action Buttons at the bottom -->
-        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
-            <a href="/admin/visit-info" class="btn-cancel-visit" style="width: auto; margin: 0; padding: 12px 30px;">
+        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 0.5rem;">
+            <a href="{{ route('admin.visit-info.show') }}" class="btn-cancel-visit" style="width: auto; margin: 0; padding: 12px 30px;">
                 إلغاء التعديلات
             </a>
-            <button class="btn-submit-visit" onclick="submitForm()" style="width: auto; padding: 12px 30px;">
+            <button class="btn-submit-visit" type="submit" style="width: auto; padding: 12px 30px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 حفظ ونشر المعلومات
             </button>
         </div>
-    </div>
+    </form>
 </div>
-
-<div class="toast" id="toast"></div>
 @endsection
 
 @section('scripts')
 <script>
-    let statusVisEdit = true;
+    let statusVisEdit = {{ old('status_visible', $settings->status_visible) ? 'true' : 'false' }};
 
     function toggleStatusVisEdit() {
         statusVisEdit = !statusVisEdit;
+        document.getElementById('status_visible').value = statusVisEdit ? '1' : '0';
         const btn = document.getElementById('statusVisToggle');
         if (statusVisEdit) {
             btn.textContent = '👁 ظاهر للزوار';
@@ -513,23 +502,24 @@
         }
     }
 
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
+    document.getElementById('visitInfoForm').addEventListener('submit', async function (event) {
+        if (this.dataset.confirmed === '1') {
+            this.dataset.confirmed = '0';
+            return;
+        }
 
-    function submitForm() {
-        const btn = document.querySelector('.btn-submit-visit');
-        btn.textContent = '⏳ جاري الحفظ والنشر...';
-        btn.disabled = true;
+        event.preventDefault();
 
-        setTimeout(() => {
-            showToast('✅ تم تحديث معلومات الزيارة بنجاح');
-            btn.textContent = '✅ تم النشر!';
-            setTimeout(() => { window.location.href = '/admin/visit-info'; }, 1200);
-        }, 800);
-    }
+        const ok = await showAdminConfirm({
+            title: 'تأكيد الحفظ',
+            message: 'هل أنت متأكد من حفظ ونشر معلومات الزيارة؟',
+            confirmLabel: 'حفظ',
+        });
+
+        if (!ok) return;
+
+        this.dataset.confirmed = '1';
+        this.submit();
+    });
 </script>
 @endsection

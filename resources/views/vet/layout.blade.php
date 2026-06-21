@@ -444,6 +444,31 @@
             color: var(--green);
         }
 
+        .content-area .seg-tab {
+            appearance: none;
+            -webkit-appearance: none;
+            border: none;
+            background: transparent;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #64748b;
+            cursor: pointer;
+            padding: 9px 24px;
+            border-radius: 7px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .content-area .segmented-tabs {
+            display: inline-flex;
+            flex-wrap: wrap;
+            background: #f1f5f9;
+            padding: 5px;
+            border-radius: 10px;
+            gap: 4px;
+        }
+
         .content-area .seg-tab.active {
             color: var(--green) !important;
             background: var(--green-light) !important;
@@ -490,6 +515,26 @@
             color: #0284C7;
             background: #E0F2FE;
             border-color: #BAE6FD;
+        }
+
+        .content-area .btn-search {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #1a4a2e, #2d7a47);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .content-area .btn-search:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 74, 46, 0.25);
         }
     </style>
 </head>
@@ -581,6 +626,9 @@
 
     @stack('modals')
 
+    @include('partials.admin-confirm-dialog')
+    @include('partials.admin-ui-scripts')
+
     @yield('scripts')
     <script>
         window.vetReceivingNotificationReadUrl = @json($vetReceivingNotificationReadUrl ?? route('vet.notification.read'));
@@ -589,6 +637,13 @@
         window.vetAutopsyReferralNotificationReadUrl = @json($vetAutopsyReferralNotificationReadUrl ?? route('vet.referrals.autopsy.notification.read'));
         window.vetAutopsyReferralsUrl = @json($vetAutopsyReferralsUrl ?? '/vet/referrals/autopsy');
         window.vetDecisionsUrl = @json('/vet/decisions');
+        window.vetHospitalCasesUrl = @json('/vet/cases/hospital');
+        window.vetHospitalNotificationReadUrl = function (caseNumber) {
+            return '/vet/notifications/hospital/' + encodeURIComponent(caseNumber) + '/read';
+        };
+        window.quarantineNotificationReadUrl = @json($quarantineNotificationReadUrl ?? route('quarantine.notification.read-case'));
+        window.quarantineListUrl = @json('/vet/quarantine');
+        window.portalNotificationsFeedUrl = @json(route('vet.notifications.feed'));
     </script>
     @include('partials.dashboard-shell-scripts')
     

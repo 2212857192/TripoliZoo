@@ -6,23 +6,11 @@ use App\Models\VisitSetting;
 
 final class VisitSettingPresenter
 {
-  private const DAY_LABELS = [
-    'sat' => 'السبت',
-    'sun' => 'الأحد',
-    'mon' => 'الإثنين',
-    'tue' => 'الثلاثاء',
-    'wed' => 'الأربعاء',
-    'thu' => 'الخميس',
-    'fri' => 'الجمعة',
-  ];
-
   /** @return array<string, mixed> */
   public static function toPublicArray(VisitSetting $settings): array
   {
     $openTime = self::formatTime($settings->open_time);
     $closeTime = self::formatTime($settings->close_time);
-    $openDays = self::openDayKeys($settings);
-    $closedDays = self::closedDayKeys($settings);
 
     return [
       'status' => [
@@ -42,8 +30,10 @@ final class VisitSettingPresenter
         'open_time' => $openTime,
         'close_time' => $closeTime,
         'working_hours_label' => ($openTime && $closeTime) ? "{$openTime} - {$closeTime}" : null,
-        'working_days_label' => self::workingDaysLabel($openDays),
-        'closed_days_label' => self::closedDaysLabel($closedDays),
+        'schedule_label' => VisitSetting::scheduleLabel(),
+        'working_days_label' => VisitSetting::scheduleLabel(),
+        'closed_days_label' => null,
+        'open_daily' => true,
         'last_ticket_time_note' => $settings->last_ticket_time_note,
       ],
       'entry_instructions' => $settings->entry_instructions,
@@ -58,58 +48,6 @@ final class VisitSettingPresenter
     }
 
     return substr((string) $time, 0, 5);
-  }
-
-  /** @return list<string> */
-  public static function openDayKeys(VisitSetting $settings): array
-  {
-    return collect(self::DAY_LABELS)
-      ->keys()
-      ->filter(fn (string $day) => (bool) data_get($settings->working_days, $day, false))
-      ->values()
-      ->all();
-  }
-
-  /** @return list<string> */
-  public static function closedDayKeys(VisitSetting $settings): array
-  {
-    return collect(self::DAY_LABELS)
-      ->keys()
-      ->reject(fn (string $day) => (bool) data_get($settings->working_days, $day, false))
-      ->values()
-      ->all();
-  }
-
-  /** @param  list<string>  $openDays */
-  public static function workingDaysLabel(array $openDays): ?string
-  {
-    if ($openDays === []) {
-      return null;
-    }
-
-    if ($openDays === ['sat', 'sun', 'mon', 'tue', 'wed', 'thu']) {
-      return 'السبت — الخميس';
-    }
-
-    if (count($openDays) === 7) {
-      return 'طيلة الأسبوع';
-    }
-
-    return collect($openDays)
-      ->map(fn (string $day) => self::DAY_LABELS[$day] ?? $day)
-      ->implode('، ');
-  }
-
-  /** @param  list<string>  $closedDays */
-  public static function closedDaysLabel(array $closedDays): ?string
-  {
-    if ($closedDays === []) {
-      return null;
-    }
-
-    return collect($closedDays)
-      ->map(fn (string $day) => self::DAY_LABELS[$day] ?? $day)
-      ->implode('، ');
   }
 
   /** @return list<string> */

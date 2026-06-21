@@ -15,7 +15,7 @@ class TicketTypeController extends Controller
     public function index(): View
     {
         return view('admin.tickets.index', [
-            'ticketTypes' => TicketType::orderBy('name')->get(),
+            'ticketTypes' => TicketType::orderBy('target_description')->get(),
         ]);
     }
 
@@ -29,7 +29,7 @@ class TicketTypeController extends Controller
         $data = $this->validated($request);
         $ticket = TicketType::create($data);
 
-        AdminActivityLogger::log('ticket_type', $ticket->id, 'created', "إضافة فئة تذكرة: {$ticket->name}");
+        AdminActivityLogger::log('ticket_type', $ticket->id, 'created', "إضافة فئة تذكرة: {$ticket->displayLabel()}");
 
         return redirect()
             ->route('admin.tickets.index')
@@ -45,7 +45,7 @@ class TicketTypeController extends Controller
     {
         $ticket->update($this->validated($request));
 
-        AdminActivityLogger::log('ticket_type', $ticket->id, 'updated', "تعديل فئة تذكرة: {$ticket->name}");
+        AdminActivityLogger::log('ticket_type', $ticket->id, 'updated', "تعديل فئة تذكرة: {$ticket->displayLabel()}");
 
         return redirect()
             ->route('admin.tickets.index')
@@ -57,21 +57,27 @@ class TicketTypeController extends Controller
         $ticket->update(['is_active' => ! $ticket->is_active]);
 
         $action = $ticket->is_active ? 'تفعيل' : 'تعطيل';
-        AdminActivityLogger::log('ticket_type', $ticket->id, 'status', "{$action} فئة: {$ticket->name}");
+        AdminActivityLogger::log('ticket_type', $ticket->id, 'status', "{$action} فئة: {$ticket->displayLabel()}");
 
-        return back()->with('success', 'تم تحديث حالة التذكرة.');
+        $message = $ticket->is_active
+            ? 'تم تفعيل التذكرة.'
+            : 'تم إيقاف التذكرة.';
+
+        return back()->with('success', $message);
     }
 
     /** @return array<string, mixed> */
     private function validated(Request $request): array
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'target_description' => ['required', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
-            'target_description' => ['nullable', 'string', 'max:255'],
             'visitor_nationality' => ['required', Rule::in(['مواطن', 'أجنبي'])],
-            'visitor_age_group' => ['required', Rule::in(['بالغ', 'طفل', 'طالب'])],
+            'visitor_age_group' => ['required', 'string', 'max:255'],
             'is_active' => ['sometimes', 'boolean'],
+        ], [
+            'target_description.required' => 'يرجى إدخال الفئة.',
+            'visitor_age_group.required' => 'يرجى إدخال العمر.',
         ]);
 
         $data['is_active'] = $request->boolean('is_active', true);

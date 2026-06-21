@@ -272,7 +272,7 @@
             <select id="animalSelect" name="animal_id" onchange="onAnimalChange()" required>
                 <option value="">— اختر حيواناً من القائمة —</option>
                 @forelse($animals as $animal)
-                <option value="{{ $animal->id }}" data-species="{{ $animal->species }}" @selected((string) old('animal_id') === (string) $animal->id)>{{ $animal->displayLabel() }} ({{ $animal->code }})</option>
+                <option value="{{ $animal->id }}" data-species="{{ $animal->species }}" data-group="{{ $animal->group }}" @selected((string) old('animal_id') === (string) $animal->id)>{{ $animal->species }}@if($animal->group) — {{ $animal->group }}@endif</option>
                 @empty
                 <option value="" disabled>لا توجد حيوانات بدون محتوى تعريفي</option>
                 @endforelse
@@ -379,9 +379,9 @@
         const preview = document.getElementById('animalPreview');
         if (sel.value) {
             const option = sel.options[sel.selectedIndex];
-            document.getElementById('previewName').textContent = option.text;
-            document.getElementById('previewSpecies').textContent = option.dataset.species
-                ? 'النوع: ' + option.dataset.species
+            document.getElementById('previewName').textContent = option.dataset.species || option.text;
+            document.getElementById('previewSpecies').textContent = option.dataset.group
+                ? 'المجموعة: ' + option.dataset.group
                 : '';
             preview.classList.add('show');
         } else {

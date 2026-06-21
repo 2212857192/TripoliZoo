@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\AnimalStatus;
 use App\Enums\MortalityVictimKind;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MortalityCaseResource;
 use App\Models\MortalityCase;
 use App\Models\User;
+use App\Services\AnimalLifecycleService;
 use App\Services\BirthRegistrationService;
 use App\Services\HealthReportService;
 use App\Services\MortalityCaseService;
@@ -54,6 +56,25 @@ class SupervisorMortalityCaseController extends Controller
         );
 
         if (! $animal) {
+            $blockedAnimal = \App\Models\Animal::withQuarantine()
+                ->where('code', $data['animal_code'])
+                ->where('group', $supervisor->assigned_group)
+                ->whereIn('status', [
+                    AnimalStatus::Dead->value,
+                    AnimalStatus::PendingMortalityApproval->value,
+                ])
+                ->first();
+
+            if ($blockedAnimal) {
+                $message = $blockedAnimal->status === AnimalStatus::PendingMortalityApproval->value
+                    ? AnimalLifecycleService::PENDING_MORTALITY_MESSAGE
+                    : AnimalLifecycleService::INACTIVE_MESSAGE;
+
+                return response()->json([
+                    'message' => $message,
+                ], 422);
+            }
+
             return response()->json([
                 'message' => 'الحيوان غير موجود في مجموعتك أو غير متاح للتسجيل.',
             ], 422);

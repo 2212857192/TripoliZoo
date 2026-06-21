@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Storage;
 use App\Support\PublicUrl;
 
 class AnimalProfile extends Model
@@ -60,7 +59,11 @@ class AnimalProfile extends Model
 
     public function imageUrl(): ?string
     {
-        return $this->image_path ? Storage::url($this->image_path) : null;
+        if (! $this->image_path) {
+            return null;
+        }
+
+        return asset('storage/'.ltrim($this->image_path, '/'));
     }
 
     public function qrPayload(): array

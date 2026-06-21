@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\OperationalNote;
+use App\Support\ApiStorageUrl;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -24,9 +25,7 @@ class OperationalNoteResource extends JsonResource
             'registered_at' => $this->noted_at?->toIso8601String(),
             'noted_at' => $this->noted_at?->format('Y-m-d'),
             'has_attachment' => $this->has_attachment,
-            'attachment_url' => $this->attachment_path
-                ? $request->getSchemeAndHttpHost().'/api/auth/operational-notes/'.$this->note_number.'/attachment'
-                : null,
+            'attachment_url' => ApiStorageUrl::fromPublicPath($this->attachment_path, $request),
         ];
     }
 }

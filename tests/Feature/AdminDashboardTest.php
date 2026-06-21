@@ -38,20 +38,18 @@ class AdminDashboardTest extends TestCase
         ]);
 
         $activeTicket = TicketType::create([
-            'name' => 'بالغ',
             'price' => 10,
             'target_description' => 'زائر بالغ',
-            'visitor_nationality' => 'ليبي',
-            'visitor_age_group' => 'adult',
+            'visitor_nationality' => 'مواطن',
+            'visitor_age_group' => '18+',
             'is_active' => true,
         ]);
 
         TicketType::create([
-            'name' => 'قديم',
             'price' => 5,
             'target_description' => 'نوع معطل',
-            'visitor_nationality' => 'ليبي',
-            'visitor_age_group' => 'child',
+            'visitor_nationality' => 'مواطن',
+            'visitor_age_group' => '6-11',
             'is_active' => false,
         ]);
 
@@ -135,10 +133,11 @@ class AdminDashboardTest extends TestCase
             ->assertSee('2 حساب مسجل', false)
             ->assertSee('2 أنواع مسجلة', false)
             ->assertSee('1 محتوى تعريفي', false)
+            ->assertSee('1 مفعلة / 1 معطلة', false)
+            ->assertSee('1 ظاهر / 0 مخفي', false)
             ->assertSee('2 موقع مضاف', false)
-            ->assertSee('تذاكر مباعة اليوم', false)
-            ->assertSee('2', false)
-            ->assertSee('حيوانات بلا محتوى تعريفي', false)
+            ->assertSee('آخر تحديث:', false)
+            ->assertDontSee('مبيعات التذاكر', false)
             ->assertSee('مدير النظام', false)
             ->assertSee('إضافة محتوى تعريفي: ليو (أسد)', false);
     }

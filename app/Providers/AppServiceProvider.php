@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\MapLocation;
+use App\Observers\MapLocationObserver;
 use App\View\Composers\CareLayoutComposer;
 use App\View\Composers\VetLayoutComposer;
 use Illuminate\Support\Facades\View;
@@ -22,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        MapLocation::observe(MapLocationObserver::class);
+
         View::composer('vet.layout', VetLayoutComposer::class);
         View::composer('care.layout', CareLayoutComposer::class);
     }

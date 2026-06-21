@@ -145,8 +145,27 @@
         color: var(--text-main);
         vertical-align: middle;
     }
-    .custom-table tbody tr:last-child td { border-bottom: none; }
-    .custom-table tbody tr:hover { background: #FAFBFC; }
+    .visitor-app-table tbody td {
+        padding: 18px 20px;
+        border-bottom: 1px solid #F1F5F9;
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--text-main);
+        vertical-align: middle;
+    }
+
+    .visitor-app-table tbody td:first-child {
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .visitor-app-table tbody td:last-child {
+        color: #64748b;
+        font-weight: 700;
+    }
+
+    .visitor-app-table tbody tr:last-child td { border-bottom: none; }
+    .visitor-app-table tbody tr:hover { background: #FAFBFC; }
 
     .status-pill {
         display: inline-flex;
@@ -254,32 +273,11 @@
 
 <div class="section-card">
     <div class="section-card-header">
-        <div class="section-card-title">مبيعات التذاكر</div>
-        <div class="section-card-desc">أرقام محسوبة مباشرة من عمليات البيع المسجّلة في النظام.</div>
-    </div>
-    <div class="today-grid">
-        <div class="today-item">
-            <div class="num">{{ $ticketsToday['quantity'] }}</div>
-            <div class="lbl">تذاكر مباعة اليوم</div>
-        </div>
-        <div class="today-item">
-            <div class="num">{{ number_format($ticketsToday['revenue'], 0) }} د.ل</div>
-            <div class="lbl">إيرادات اليوم ({{ $ticketsToday['count'] }} عملية)</div>
-        </div>
-        <div class="today-item">
-            <div class="num">{{ $ticketsMonth['quantity'] }}</div>
-            <div class="lbl">تذاكر هذا الشهر — {{ number_format($ticketsMonth['revenue'], 0) }} د.ل</div>
-        </div>
-    </div>
-</div>
-
-<div class="section-card">
-    <div class="section-card-header">
         <div class="section-card-title">حالة محتوى تطبيق الزائر</div>
-        <div class="section-card-desc">ملخص مباشر للعناصر الإدارية المرتبطة بتطبيق الزائر.</div>
+        <div class="section-card-desc">ملخص عام للعناصر الإدارية المرتبطة بتطبيق الزائر.</div>
     </div>
     <div style="overflow-x: auto;">
-        <table class="custom-table">
+        <table class="custom-table visitor-app-table">
             <thead>
                 <tr>
                     <th>العنصر</th>
@@ -287,14 +285,16 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($visitorAppRows ?? [] as $row)
+                @forelse($visitorAppRows ?? [] as $row)
                 <tr>
-                    <td style="font-weight:800;">{{ $row['label'] }}</td>
-                    <td>
-                        <span class="status-pill {{ $row['tone'] }}">{{ $row['status'] }}</span>
-                    </td>
+                    <td>{{ $row['label'] }}</td>
+                    <td>{{ $row['status'] }}</td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="2" style="color:#64748b;text-align:center;">لا توجد بيانات متاحة</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

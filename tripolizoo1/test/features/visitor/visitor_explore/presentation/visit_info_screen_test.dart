@@ -39,7 +39,8 @@ void main() {
     expect(find.text('حالة التشغيل'), findsOneWidget);
     expect(find.text('مفتوحة — أهلاً بزوارنا'), findsOneWidget);
     expect(find.text('ساعات العمل'), findsOneWidget);
-    expect(find.text('أيام العمل'), findsOneWidget);
+    expect(find.text('آخر موعد للدخول'), findsOneWidget);
+    expect(find.text('مفتوحة يومياً'), findsOneWidget);
     expect(find.text('أرقام الطوارئ'), findsOneWidget);
 
     await tester.drag(

@@ -27,6 +27,7 @@ class _HealthCaseFormSheetState extends State<HealthCaseFormSheet> {
   final _formKey = GlobalKey<FormState>();
   final _scrollController = ScrollController();
   final _description = TextEditingController();
+  final _animalNotes = TextEditingController();
   final _repository = HealthCasesApiRepository();
   final _attachmentPicker = ImageAttachmentPicker();
 
@@ -51,6 +52,7 @@ class _HealthCaseFormSheetState extends State<HealthCaseFormSheet> {
   void dispose() {
     _scrollController.dispose();
     _description.dispose();
+    _animalNotes.dispose();
     super.dispose();
   }
 
@@ -85,6 +87,9 @@ class _HealthCaseFormSheetState extends State<HealthCaseFormSheet> {
         animalCode: animal.id,
         description: _description.text,
         followUpKind: followUpKind,
+        animalNotes: _followUpKind == HealthFollowUpKind.needsReferral
+            ? _animalNotes.text
+            : null,
         attachment: _attachment,
       );
 
@@ -129,7 +134,7 @@ class _HealthCaseFormSheetState extends State<HealthCaseFormSheet> {
         const SupervisorFormLabel('وصف الحالة *'),
         SupervisorFormMultilineField(
           controller: _description,
-          hint: 'صف الأعراض المشاهدة...',
+          hint: 'صف الأعراض أو الإصابة المشاهدة...',
           validator: (v) =>
               v == null || v.trim().isEmpty ? 'أدخل وصف الحالة' : null,
         ),
@@ -149,6 +154,18 @@ class _HealthCaseFormSheetState extends State<HealthCaseFormSheet> {
             ),
           ],
         ),
+        if (_followUpKind == HealthFollowUpKind.needsReferral) ...[
+          const SizedBox(height: 18),
+          const SupervisorFormLabel('ملاحظات مسجلة عن الحيوان *'),
+          SupervisorFormMultilineField(
+            controller: _animalNotes,
+            hint: 'سلوك الحيوان، شهيته، حركته، أو أي ملاحظات تهم المستشفى البيطري...',
+            validator: (v) => _followUpKind == HealthFollowUpKind.needsReferral &&
+                    (v == null || v.trim().isEmpty)
+                ? 'أدخل ملاحظات عن الحيوان لإرسالها للمستشفى'
+                : null,
+          ),
+        ],
         const SizedBox(height: 12),
         SupervisorAttachmentButton(
           attached: _attachment != null,

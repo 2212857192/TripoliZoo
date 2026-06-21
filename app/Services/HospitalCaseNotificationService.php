@@ -51,4 +51,13 @@ class HospitalCaseNotificationService
             "سجّل د. {$vet->name} أن الحيوان {$label} لا يستجيب للعلاج ويحتاج مراجعة ذبح اضطراري.",
         );
     }
+
+    public function markAsReadForUser(HospitalCase $hospitalCase, User $user): void
+    {
+        HospitalCaseNotification::query()
+            ->where('user_id', $user->id)
+            ->where('hospital_case_id', $hospitalCase->id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+    }
 }

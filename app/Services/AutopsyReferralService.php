@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\AnimalStatus;
 use App\Enums\AutopsyReferralStatus;
+use App\Enums\MortalityCaseStatus;
 use App\Enums\UserRole;
 use App\Models\Animal;
 use App\Models\AutopsyReferral;
@@ -18,6 +19,7 @@ class AutopsyReferralService
     public function __construct(
         private AutopsyReferralNumberGenerator $numbers,
         private AutopsyReferralNotificationService $notifier,
+        private AnimalLifecycleService $animalLifecycle,
     ) {}
 
     public function createFromMortalityCase(
@@ -68,6 +70,19 @@ class AutopsyReferralService
                 Animal::withoutGlobalScopes()
                     ->whereKey($referral->animal_id)
                     ->update(['status' => AnimalStatus::Dead->value]);
+            }
+
+            if ($referral->mortalityCase) {
+                $referral->mortalityCase->update([
+                    'status' => MortalityCaseStatus::Approved,
+                    'death_cause' => $finalDeathCause,
+                    'reviewed_by' => $referral->mortalityCase->reviewed_by ?: $vetHead->id,
+                    'reviewed_at' => $referral->mortalityCase->reviewed_at ?: now(),
+                ]);
+            }
+
+            if ($referral->animal) {
+                $this->animalLifecycle->finalizeAsDead($referral->animal);
             }
         });
 

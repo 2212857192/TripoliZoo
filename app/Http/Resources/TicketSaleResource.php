@@ -20,7 +20,7 @@ class TicketSaleResource extends JsonResource
             'qr_data' => $service->qrPayload($this->resource),
             'visit_date' => $this->sold_at?->toIso8601String(),
             'type_id' => (string) $this->ticket_type_id,
-            'type_title' => $this->ticketType?->name ?? '',
+            'type_title' => $this->ticketType?->displayLabel() ?? '',
             'price' => (int) round((float) $this->unit_price),
             'purchased_at' => $this->sold_at?->toIso8601String(),
             'payment_method' => $this->payment_method,

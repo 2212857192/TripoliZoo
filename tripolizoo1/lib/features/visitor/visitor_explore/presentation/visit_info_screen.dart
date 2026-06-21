@@ -156,32 +156,32 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: _StatChip(
-                              icon: Icons.calendar_month,
+                              icon: Icons.schedule_outlined,
                               label: context.localized(
-                                ar: 'أيام العمل',
-                                en: 'Working Days',
+                                ar: 'آخر موعد للدخول',
+                                en: 'Last Entry',
                               ),
-                              value: isArabic
-                                  ? info.workingDays
-                                  : context.localized(
-                                      ar: info.workingDays,
-                                      en: info.workingDays == 'طيلة الأسبوع'
-                                          ? 'Every day'
-                                          : 'Sat — Thu',
-                                    ),
+                              value: info.lastTicketTimeNote?.isNotEmpty == true
+                                  ? info.lastTicketTimeNote!
+                                  : context.localized(ar: '—', en: '—'),
                             ),
                           ),
                         ],
                       ),
-                      if (info.closedDaysLabel?.isNotEmpty ?? false) ...[
+                      if (info.workingDays.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         _StatChip(
-                          icon: Icons.event_busy_outlined,
+                          icon: Icons.event_available_outlined,
                           label: context.localized(
-                            ar: 'أيام الإغلاق',
-                            en: 'Closed Days',
+                            ar: 'نمط العمل',
+                            en: 'Schedule',
                           ),
-                          value: info.closedDaysLabel!,
+                          value: isArabic
+                              ? info.workingDays
+                              : context.localized(
+                                  ar: info.workingDays,
+                                  en: 'Open daily',
+                                ),
                           fullWidth: true,
                         ),
                       ],

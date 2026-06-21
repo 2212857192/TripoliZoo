@@ -72,6 +72,7 @@ class MockVisitInfoRepository implements VisitInfoRepository {
       statusVisible: true,
       ambulancePhone: '193',
       securityPhone: '091-555-0123',
+      lastTicketTimeNote: 'قبل ساعة واحدة من موعد الإغلاق',
     );
   }
 }

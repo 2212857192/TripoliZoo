@@ -495,18 +495,6 @@
 
 @section('content')
 
-@if (session('success'))
-    <div style="background:#F0FDF4;border:1px solid #86EFAC;color:#166534;padding:12px 16px;border-radius:10px;margin-bottom:1.2rem;font-weight:700;font-size:0.9rem;">
-        {{ session('success') }}
-    </div>
-@endif
-
-@if (session('error'))
-    <div style="background:#FEF2F2;border:1px solid #FECACA;color:#991B1B;padding:12px 16px;border-radius:10px;margin-bottom:1.2rem;font-weight:700;font-size:0.9rem;">
-        {{ session('error') }}
-    </div>
-@endif
-
 <!-- Top Card: Header + Filters -->
 <div class="top-card">
     <!-- Page Header -->
@@ -575,7 +563,7 @@
                         <button type="button" class="btn-icon edit" title="تعديل" onclick="openEdit(this)">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                         </button>
-                        <form method="POST" action="{{ route('admin.employees.toggle', $employee) }}" style="display:inline;">
+                        <form method="POST" action="{{ route('admin.employees.toggle', $employee) }}" class="js-employee-toggle-form" style="display:inline;" data-active="{{ $employee->status === 'active' ? '1' : '0' }}">
                             @csrf
                             @method('PATCH')
                             <button type="submit" class="btn-icon {{ $employee->status === 'active' ? 'toggle-on' : 'toggle-off' }}" title="{{ $employee->status === 'active' ? 'إيقاف الحساب' : 'تفعيل الحساب' }}">
@@ -735,7 +723,7 @@
                         <label>الدور الوظيفي</label>
                         <select name="role" id="addRole" class="form-input" onchange="toggleGroupField()" required>
                             <option value="">اختر الدور</option>
-                            @foreach($roleOptions as $roleOption)
+                            @foreach($createRoleOptions ?? $roleOptions as $roleOption)
                             <option value="{{ $roleOption }}" @selected(old('role') === $roleOption)>{{ $roleOption }}</option>
                             @endforeach
                         </select>
@@ -777,7 +765,7 @@
 </div>
 
 <!-- Toast -->
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" style="display:none;"></div>
 
 @endsection
 
@@ -868,17 +856,14 @@
         const group = document.getElementById('addGroup').value;
         if (roleNeedsGroup(role) && !group) {
             e.preventDefault();
-            alert('يجب اختيار المجموعة لهذا الدور');
+            showAdminToast('يجب اختيار المجموعة لهذا الدور', 'error');
         }
     });
 
-    document.getElementById('editForm').addEventListener('submit', function(e) {
-        const role = document.getElementById('editRole').value;
-        const group = document.getElementById('editGroup').value;
-        if (roleNeedsGroup(role) && !group) {
-            e.preventDefault();
-            alert('يجب اختيار المجموعة لهذا الدور');
-        }
+    bindAdminConfirmForms('.js-employee-toggle-form', (form) => {
+        return form.dataset.active === '1'
+            ? 'هل أنت متأكد من تعطيل الحساب؟'
+            : 'هل أنت متأكد من تفعيل الحساب؟';
     });
 
     document.querySelectorAll('.modal-overlay').forEach(ov => {

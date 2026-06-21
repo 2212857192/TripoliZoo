@@ -60,12 +60,9 @@ abstract final class ApiConfig {
   /// يحوّل مسار `/storage/...` أو رابط نسبي إلى URL كامل للعرض في التطبيق.
   static String? resolveAssetUrl(String? path) {
     if (path == null || path.isEmpty) return null;
+
     if (path.startsWith('http://') || path.startsWith('https://')) {
-      if (path.contains('/storage/')) {
-        final parts = path.split('/storage/');
-        return '${uri('').origin}/api/storage/${parts.last}';
-      }
-      return path;
+      return _rewriteLocalhostForDevice(path);
     }
 
     var cleanPath = path;
@@ -76,6 +73,24 @@ abstract final class ApiConfig {
     }
 
     final origin = uri('').origin;
-    return cleanPath.startsWith('/') ? '$origin$cleanPath' : '$origin/$cleanPath';
+    final resolved = cleanPath.startsWith('/')
+        ? '$origin$cleanPath'
+        : '$origin/$cleanPath';
+
+    return _rewriteLocalhostForDevice(resolved);
+  }
+
+  static String _rewriteLocalhostForDevice(String url) {
+    if (kIsWeb) return url;
+
+    if (Platform.isAndroid && url.contains('127.0.0.1')) {
+      return url.replaceFirst('127.0.0.1', '10.0.2.2');
+    }
+
+    if (Platform.isAndroid && url.contains('localhost')) {
+      return url.replaceFirst('localhost', '10.0.2.2');
+    }
+
+    return url;
   }
 }

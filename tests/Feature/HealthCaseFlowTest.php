@@ -3,11 +3,13 @@
 namespace Tests\Feature;
 
 use App\Enums\AnimalStatus;
+use App\Enums\FieldCaseStatus;
 use App\Enums\HealthCaseFollowUpKind;
 use App\Enums\HealthCaseStatus;
 use App\Enums\TreatmentReferralStatus;
 use App\Enums\UserRole;
 use App\Models\Animal;
+use App\Models\FieldCase;
 use App\Models\HealthCase;
 use App\Models\HealthCaseNotification;
 use App\Models\TreatmentReferral;
@@ -56,6 +58,7 @@ class HealthCaseFlowTest extends TestCase
             'animal_code' => 'G001',
             'description' => 'عرج واضح في الساق الأمامية',
             'follow_up_kind' => HealthCaseFollowUpKind::NeedsReferral->value,
+            'animal_notes' => 'يرفض الحركة ولا يأكل منذ الصباح.',
         ]);
 
         $response->assertCreated();
@@ -64,6 +67,8 @@ class HealthCaseFlowTest extends TestCase
             'supervisor_id' => $supervisor->id,
             'status' => HealthCaseStatus::New->value,
             'follow_up_kind' => HealthCaseFollowUpKind::NeedsReferral->value,
+            'description' => 'عرج واضح في الساق الأمامية',
+            'animal_notes' => 'يرفض الحركة ولا يأكل منذ الصباح.',
         ]);
 
         $healthCase = HealthCase::query()->first();
@@ -87,7 +92,11 @@ class HealthCaseFlowTest extends TestCase
             route('care.health.review', $healthCase->case_number),
         );
 
-        $response->assertRedirect(route('care.health.index'));
+        $response->assertRedirect(route('care.health.index', [
+            'case' => $healthCase->case_number,
+            'status' => HealthCaseStatus::Reviewed->value,
+        ]));
+        $response->assertSessionHas('success');
         $this->assertDatabaseHas('health_cases', [
             'id' => $healthCase->id,
             'status' => HealthCaseStatus::Reviewed->value,
@@ -103,7 +112,11 @@ class HealthCaseFlowTest extends TestCase
             route('care.health.refer', $healthCase->case_number),
         );
 
-        $response->assertRedirect(route('care.health.index'));
+        $response->assertRedirect(route('care.health.index', [
+            'case' => $healthCase->case_number,
+            'status' => HealthCaseStatus::Referred->value,
+        ]));
+        $response->assertSessionHas('success');
         $this->assertDatabaseHas('health_cases', [
             'id' => $healthCase->id,
             'status' => HealthCaseStatus::Referred->value,
@@ -125,11 +138,46 @@ class HealthCaseFlowTest extends TestCase
 
         $this->actingAs($careHead)
             ->post(route('care.health.refer', $healthCase->case_number))
-            ->assertStatus(422);
+            ->assertRedirect(route('care.health.index', ['case' => $healthCase->case_number]))
+            ->assertSessionHas('error');
 
         $this->assertDatabaseHas('health_cases', [
             'id' => $healthCase->id,
             'status' => HealthCaseStatus::New->value,
+        ]);
+    }
+
+    public function test_care_head_can_refer_health_case_with_open_field_case(): void
+    {
+        [$careHead, $healthCase] = $this->seedHealthCase();
+
+        $vet = User::factory()->create([
+            'role' => UserRole::Veterinarian->value,
+            'assigned_group' => $healthCase->group,
+            'status' => 'active',
+        ]);
+
+        \App\Models\FieldCase::create([
+            'case_number' => 'FC-2026-099',
+            'animal_id' => $healthCase->animal_id,
+            'group' => $healthCase->group,
+            'open_reason' => 'متابعة ميدانية',
+            'status' => \App\Enums\FieldCaseStatus::Active,
+            'opened_by' => $vet->id,
+            'opened_at' => now(),
+        ]);
+
+        $this->actingAs($careHead)
+            ->post(route('care.health.refer', $healthCase->case_number))
+            ->assertRedirect(route('care.health.index', [
+                'case' => $healthCase->case_number,
+                'status' => HealthCaseStatus::Referred->value,
+            ]))
+            ->assertSessionHas('success');
+
+        $this->assertDatabaseHas('treatment_referrals', [
+            'health_case_id' => $healthCase->id,
+            'status' => TreatmentReferralStatus::Pending->value,
         ]);
     }
 
@@ -141,7 +189,8 @@ class HealthCaseFlowTest extends TestCase
             ->get(route('care.health.index'))
             ->assertOk()
             ->assertSee('data-case-number="'.$healthCase->case_number.'"', false)
-            ->assertSee('"'.$healthCase->case_number.'":', false);
+            ->assertSee('"'.$healthCase->case_number.'":', false)
+            ->assertSee('id="confirmReferDialog"', false);
     }
 
     public function test_supervisor_can_upload_attachment_with_health_case(): void
@@ -181,6 +230,71 @@ class HealthCaseFlowTest extends TestCase
         $this->assertTrue($healthCase->has_attachment);
         $this->assertNotNull($healthCase->attachment_path);
         Storage::disk('public')->assertExists($healthCase->attachment_path);
+
+        $this->getJson('/api/auth/supervisor/health-cases?date='.now()->toDateString())
+            ->assertOk()
+            ->assertJsonPath('data.0.has_attachment', true)
+            ->assertJsonPath('data.0.attachment_url', fn (?string $url) => is_string($url) && str_contains($url, '/api/storage/'));
+    }
+
+    public function test_supervisor_cannot_create_second_open_health_case_for_same_animal(): void
+    {
+        $supervisor = User::factory()->create([
+            'role' => UserRole::GroupSupervisor->value,
+            'assigned_group' => 'الغزلان',
+            'status' => 'active',
+        ]);
+
+        Animal::withoutGlobalScopes()->create([
+            'code' => 'G003',
+            'species' => 'غزال',
+            'group' => 'الغزلان',
+            'gender' => 'ذكر',
+            'status' => AnimalStatus::Active->value,
+            'registered_at' => now(),
+        ]);
+
+        Sanctum::actingAs($supervisor);
+
+        $this->postJson('/api/auth/supervisor/health-cases', [
+            'animal_code' => 'G003',
+            'description' => 'حالة أولى',
+            'follow_up_kind' => HealthCaseFollowUpKind::NoReferral->value,
+        ])->assertCreated();
+
+        $this->postJson('/api/auth/supervisor/health-cases', [
+            'animal_code' => 'G003',
+            'description' => 'حالة ثانية',
+            'follow_up_kind' => HealthCaseFollowUpKind::NoReferral->value,
+        ])
+            ->assertUnprocessable()
+            ->assertJsonPath('message', 'لا يمكن تسجيل حالة صحية جديدة، يوجد حالة صحية قائمة لهذا الحيوان.');
+    }
+
+    public function test_supervisor_must_provide_animal_notes_when_case_needs_referral(): void
+    {
+        $supervisor = User::factory()->create([
+            'role' => UserRole::GroupSupervisor->value,
+            'assigned_group' => 'الغزلان',
+            'status' => 'active',
+        ]);
+
+        Animal::withoutGlobalScopes()->create([
+            'code' => 'G010',
+            'species' => 'غزال',
+            'group' => 'الغزلان',
+            'gender' => 'ذكر',
+            'status' => AnimalStatus::Active->value,
+            'registered_at' => now(),
+        ]);
+
+        Sanctum::actingAs($supervisor);
+
+        $this->postJson('/api/auth/supervisor/health-cases', [
+            'animal_code' => 'G010',
+            'description' => 'جرح في الرجل',
+            'follow_up_kind' => HealthCaseFollowUpKind::NeedsReferral->value,
+        ])->assertUnprocessable();
     }
 
     public function test_referring_health_case_notifies_vet_head_and_shows_on_referrals_page(): void
@@ -194,7 +308,10 @@ class HealthCaseFlowTest extends TestCase
 
         $this->actingAs($careHead)->post(
             route('care.health.refer', $healthCase->case_number),
-        )->assertRedirect(route('care.health.index'));
+        )->assertRedirect(route('care.health.index', [
+            'case' => $healthCase->case_number,
+            'status' => HealthCaseStatus::Referred->value,
+        ]));
 
         $referral = TreatmentReferral::query()->first();
         $this->assertNotNull($referral);
@@ -208,7 +325,14 @@ class HealthCaseFlowTest extends TestCase
             ->get(route('vet.referrals.treatment.index'))
             ->assertOk()
             ->assertSee($referral->referral_number, false)
-            ->assertSee('id="referralModal"', false);
+            ->assertSee('id="referralModal"', false)
+            ->assertSee('animal_notes', false);
+
+        $this->assertDatabaseHas('health_cases', [
+            'id' => $healthCase->id,
+            'description' => 'خمول',
+            'animal_notes' => 'لا يأكل ويبقى منعزلاً في الزاوية.',
+        ]);
     }
 
     public function test_vet_head_can_approve_treatment_referral(): void
@@ -251,6 +375,47 @@ class HealthCaseFlowTest extends TestCase
             ->get(route('vet.cases.hospital.show', $hospitalCase->case_number))
             ->assertOk()
             ->assertSee($healthCase->description, false);
+    }
+
+    public function test_vet_head_approving_referral_closes_open_field_case_as_referred_to_hospital(): void
+    {
+        [$careHead, $healthCase] = $this->seedHealthCase();
+
+        $vet = User::factory()->create([
+            'role' => UserRole::Veterinarian->value,
+            'assigned_group' => $healthCase->group,
+            'status' => 'active',
+        ]);
+
+        $vetHead = User::factory()->create([
+            'role' => UserRole::VetHead->value,
+            'status' => 'active',
+        ]);
+
+        $fieldCase = FieldCase::create([
+            'case_number' => 'FC-2026-200',
+            'animal_id' => $healthCase->animal_id,
+            'group' => $healthCase->group,
+            'open_reason' => 'متابعة ميدانية',
+            'status' => FieldCaseStatus::Active,
+            'opened_by' => $vet->id,
+            'opened_at' => now(),
+        ]);
+
+        $this->actingAs($careHead)->post(route('care.health.refer', $healthCase->case_number));
+        $referral = TreatmentReferral::query()->firstOrFail();
+
+        $this->actingAs($vetHead)
+            ->post(route('vet.referrals.treatment.approve', $referral->referral_number))
+            ->assertRedirect(route('vet.referrals.treatment.index'));
+
+        $hospitalCase = \App\Models\HospitalCase::query()->firstOrFail();
+
+        $this->assertDatabaseHas('field_cases', [
+            'id' => $fieldCase->id,
+            'status' => FieldCaseStatus::ReferredToHospital->value,
+            'hospital_case_id' => $hospitalCase->id,
+        ]);
     }
 
     public function test_supervisor_can_list_health_cases_filtered_by_date(): void
@@ -304,6 +469,9 @@ class HealthCaseFlowTest extends TestCase
             'supervisor_id' => $supervisor->id,
             'group' => 'الغزلان',
             'description' => 'خمول',
+            'animal_notes' => $followUpKind === HealthCaseFollowUpKind::NeedsReferral
+                ? 'لا يأكل ويبقى منعزلاً في الزاوية.'
+                : null,
             'follow_up_kind' => $followUpKind,
             'status' => HealthCaseStatus::New,
         ]);

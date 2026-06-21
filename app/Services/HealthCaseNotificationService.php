@@ -61,6 +61,14 @@ class HealthCaseNotificationService
             ->update(['read_at' => now()]);
     }
 
+    public function markAllAsReadForUser(User $user): void
+    {
+        HealthCaseNotification::query()
+            ->where('user_id', $user->id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+    }
+
     private function storeNotification(User $user, HealthCase $healthCase, string $title, string $message): void
     {
         HealthCaseNotification::updateOrCreate(

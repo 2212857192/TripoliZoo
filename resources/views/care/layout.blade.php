@@ -600,11 +600,23 @@
 
     @stack('modals')
 
+    @include('partials.admin-confirm-dialog')
+    @include('partials.admin-ui-scripts')
+
     @yield('scripts')
     <script>
         window.careNotificationReadUrl = @json($careNotificationReadUrl ?? route('care.notification.read'));
         window.careNotificationsReadAllUrl = @json(route('care.notifications.read-all'));
         window.careDecisionsUrl = @json('/care/decisions');
+        window.careHealthCasesUrl = @json('/care/health');
+        window.careNotesUrl = @json('/care/notes');
+        window.careHealthNotificationReadUrl = function (caseNumber) {
+            return '/care/notifications/health/' + encodeURIComponent(caseNumber) + '/read';
+        };
+        window.careOperationalNoteNotificationReadUrl = function (noteNumber) {
+            return '/care/notifications/operational-note/' + encodeURIComponent(noteNumber) + '/read';
+        };
+        window.portalNotificationsFeedUrl = @json(route('care.notifications.feed'));
     </script>
     @include('partials.dashboard-shell-scripts')
     

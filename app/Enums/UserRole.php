@@ -58,6 +58,12 @@ enum UserRole: string
         return in_array($this, [self::GroupSupervisor, self::Veterinarian], true);
     }
 
+    /** منصب واحد فقط — لا يُسمح بأكثر من حساب مفعّل (بغض النظر عن المجموعة). */
+    public function isSingleAccountRole(): bool
+    {
+        return ! $this->requiresAssignedGroup();
+    }
+
     /** @return list<string> */
     public static function employeeOptions(): array
     {

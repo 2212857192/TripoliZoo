@@ -34,7 +34,7 @@ class VisitorMapApiTest extends TestCase
 
         $this->getJson('/api/map')
             ->assertOk()
-            ->assertJsonPath('data.image_url', url('map.PNG'))
+            ->assertJsonPath('data.image_url', '/map.PNG')
             ->assertJsonCount(1, 'data.locations')
             ->assertJsonPath('data.locations.0.name', 'البوابة الرئيسية')
             ->assertJsonPath('data.locations.0.x', 0.40)

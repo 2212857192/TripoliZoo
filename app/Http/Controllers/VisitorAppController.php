@@ -6,6 +6,7 @@ use App\Models\AnimalProfile;
 use App\Models\MapLocation;
 use App\Models\TicketType;
 use App\Models\VisitSetting;
+use App\Support\MapCoordinates;
 use App\Support\VisitSettingPresenter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\View\View;
@@ -64,44 +65,30 @@ class VisitorAppController extends Controller
             ->orderBy('name')
             ->get();
 
-        $minLat = (float) $locations->min('latitude');
-        $maxLat = (float) $locations->max('latitude');
-        $minLng = (float) $locations->min('longitude');
-        $maxLng = (float) $locations->max('longitude');
-        $useNormalizedValues = $locations->every(
-            fn (MapLocation $location) => (float) $location->latitude >= 0
-                && (float) $location->latitude <= 1
-                && (float) $location->longitude >= 0
-                && (float) $location->longitude <= 1
-        );
-
         return view('visitor-map', [
             'mapImageUrl' => URL::asset('map.PNG'),
-            'locations' => $locations->map(function (MapLocation $location) use ($useNormalizedValues, $minLat, $maxLat, $minLng, $maxLng) {
-                $lat = (float) $location->latitude;
-                $lng = (float) $location->longitude;
-                $animal = $location->animalProfile?->animal;
+            'locations' => $locations
+                ->map(function (MapLocation $location) {
+                    $position = MapCoordinates::position($location);
+                    $animal = $location->animalProfile?->animal;
 
-                return [
-                    'id' => $location->id,
-                    'name' => $location->name,
-                    'category' => $location->category,
-                    'description' => $location->description ?: $animal?->displayLabel(),
-                    'x' => $useNormalizedValues ? $lng : $this->normalizeMapValue($lng, $minLng, $maxLng),
-                    'y' => $useNormalizedValues ? $lat : 1 - $this->normalizeMapValue($lat, $minLat, $maxLat),
-                    'animal_profile_id' => $location->animalProfile?->id,
-                    'animal_photo_url' => $location->animalProfile?->imageUrl() ?? $animal?->displayPhotoUrl(),
-                ];
-            })->values(),
+                    if ($position === null) {
+                        return null;
+                    }
+
+                    return [
+                        'id' => $location->id,
+                        'name' => $location->name,
+                        'category' => $location->category,
+                        'description' => $location->description ?: $animal?->displayLabel(),
+                        'x' => $position['x'],
+                        'y' => $position['y'],
+                        'animal_profile_id' => $location->animalProfile?->id,
+                        'animal_photo_url' => $location->animalProfile?->imageUrl() ?? $animal?->displayPhotoUrl(),
+                    ];
+                })
+                ->filter()
+                ->values(),
         ]);
-    }
-
-    private function normalizeMapValue(float $value, float $min, float $max): float
-    {
-        if ($max <= $min) {
-            return 0.5;
-        }
-
-        return max(0.04, min(0.96, ($value - $min) / ($max - $min)));
     }
 }

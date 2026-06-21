@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\MapCoordinates;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -29,5 +30,19 @@ class MapLocation extends Model
     public function animalProfile(): BelongsTo
     {
         return $this->belongsTo(AnimalProfile::class);
+    }
+
+    public function hasNormalizedCoordinates(): bool
+    {
+        return MapCoordinates::isNormalized(
+            (float) $this->latitude,
+            (float) $this->longitude,
+        );
+    }
+
+    /** @return array{x: float, y: float}|null */
+    public function mapPosition(): ?array
+    {
+        return MapCoordinates::position($this);
     }
 }

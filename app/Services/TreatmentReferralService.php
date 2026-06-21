@@ -13,10 +13,16 @@ class TreatmentReferralService
     public function __construct(
         private TreatmentReferralNotificationService $notifier,
         private HospitalCaseService $hospitalCases,
+        private AnimalLifecycleService $animalLifecycle,
     ) {}
 
     public function approve(TreatmentReferral $referral, User $vetHead): TreatmentReferral
     {
+        $referral->loadMissing('animal');
+        if ($referral->animal) {
+            $this->animalLifecycle->assertAnimalCanReceiveActions($referral->animal);
+        }
+
         if ($referral->status !== TreatmentReferralStatus::Pending) {
             return $referral;
         }
@@ -134,6 +140,7 @@ class TreatmentReferralService
                 'case_date' => $healthCase?->created_at?->format('Y-m-d'),
                 'supervisor' => $healthCase?->supervisor?->name,
                 'description' => $healthCase?->description,
+                'animal_notes' => $healthCase?->animal_notes,
                 'reviewed_at' => $referral->reviewed_at?->format('Y-m-d'),
                 'rejection_reason' => $referral->rejection_reason,
                 'hospital_case_number' => $referral->hospitalCase?->case_number,

@@ -3,7 +3,7 @@ abstract final class AppConstants {
   static const String appNameEn = 'Tripoli Zoo';
 
   static const String workingHours = '10:00 - 18:00';
-  static const String workingDays = 'طيلة الأسبوع';
+  static const String workingDays = 'مفتوحة يومياً';
 
   static const double zooLatitude = 32.859841;
   static const double zooLongitude = 13.175367;

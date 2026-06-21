@@ -8,21 +8,6 @@
         'service' => 'الخدمات والمرافق العامة',
         'dining' => 'المطاعم والمقاهي',
     ];
-
-    // Normalize coordinates exactly like VisitorMapController
-    $useNormalized = $locations->every(
-        fn ($l) => (float)$l->latitude >= 0 && (float)$l->latitude <= 1
-               && (float)$l->longitude >= 0 && (float)$l->longitude <= 1
-    );
-    $minLat = (float)$locations->min('latitude');
-    $maxLat = (float)$locations->max('latitude');
-    $minLng = (float)$locations->min('longitude');
-    $maxLng = (float)$locations->max('longitude');
-
-    $normalizeVal = function(float $v, float $mn, float $mx): float {
-        if ($mx <= $mn) return 0.5;
-        return max(0.04, min(0.96, ($v - $mn) / ($mx - $mn)));
-    };
 @endphp
 
 @section('styles')
@@ -162,7 +147,7 @@
         width: 100%;
         height: 100%;
         min-height: 640px;
-        object-fit: cover;
+        object-fit: contain;
     }
     .map-pin {
         position: absolute;
@@ -215,13 +200,9 @@
             <div class="locations-list" id="locationsList">
                 @forelse($locations as $location)
                     @php
-                        $animal = $location->animalProfile?->animal;
-                        $lat = (float)$location->latitude;
-                        $lng = (float)$location->longitude;
-                        $pinX = $useNormalized ? $lng : $normalizeVal($lng, $minLng, $maxLng);
-                        $pinY = $useNormalized ? $lat : (1 - $normalizeVal($lat, $minLat, $maxLat));
-                        $xPct = round($pinX * 100, 1);
-                        $yPct = round($pinY * 100, 1);
+                        $position = $location->mapPosition();
+                        $xPct = $position ? round($position['x'] * 100, 1) : null;
+                        $yPct = $position ? round($position['y'] * 100, 1) : null;
                     @endphp
                     <article
                         class="location-card"
@@ -237,20 +218,22 @@
                         </div>
                         <div class="meta">
                             {{ $categoryLabels[$location->category] ?? $location->category }}
-                            @if($animal)
-                                · {{ $animal->displayLabel() }}
+                            @if($position)
+                                <br>
+                                الموضع: {{ $xPct }}% أفقي · {{ $yPct }}% عمودي
+                            @else
+                                <br>
+                                <span style="color:#b45309;">يتطلب إعادة تحديد الموقع على الخريطة</span>
                             @endif
-                            <br>
-                            الموضع: {{ $xPct }}% أفقي · {{ $yPct }}% عمودي
                         </div>
                         <div class="actions" onclick="event.stopPropagation()">
-                            <form method="POST" action="{{ route('admin.map-locations.toggle', $location) }}">
+                            <form method="POST" action="{{ route('admin.map-locations.toggle', $location) }}" class="js-map-toggle-form" data-active="{{ $location->is_active ? '1' : '0' }}">
                                 @csrf
                                 @method('PATCH')
                                 <button class="action-btn" type="submit">{{ $location->is_active ? 'إخفاء' : 'إظهار' }}</button>
                             </form>
                             <a class="action-btn" href="{{ route('admin.map-locations.edit', $location) }}">تعديل</a>
-                            <form method="POST" action="{{ route('admin.map-locations.destroy', $location) }}" onsubmit="return confirm('هل أنت متأكد من حذف هذا الموقع؟')">
+                            <form method="POST" action="{{ route('admin.map-locations.destroy', $location) }}" class="js-map-delete-form" data-confirm-title="تأكيد الحذف" data-confirm-danger="1">
                                 @csrf
                                 @method('DELETE')
                                 <button class="action-btn danger" type="submit">حذف</button>
@@ -274,20 +257,19 @@
         <div class="map-body" id="mapBody">
             <img class="map-image" src="{{ asset('map.PNG') }}" alt="خريطة حديقة حيوان طرابلس">
             @foreach($locations as $location)
-                @php
-                    $lat = (float)$location->latitude;
-                    $lng = (float)$location->longitude;
-                    $pinX = $useNormalized ? $lng : $normalizeVal($lng, $minLng, $maxLng);
-                    $pinY = $useNormalized ? $lat : (1 - $normalizeVal($lat, $minLat, $maxLat));
-                @endphp
+                @php $position = $location->mapPosition(); @endphp
+                @if($position)
                 <button
                     class="map-pin {{ $location->category }} {{ $location->is_active ? '' : 'inactive' }}"
                     id="map-pin-{{ $location->id }}"
                     type="button"
                     title="{{ $location->name }}"
-                    style="left: {{ round($pinX * 100, 2) }}%; top: {{ round($pinY * 100, 2) }}%;"
+                    data-x="{{ $position['x'] }}"
+                    data-y="{{ $position['y'] }}"
+                    style="display:none;"
                     onclick="selectLocation({{ $location->id }})"
                 ></button>
+                @endif
             @endforeach
         </div>
     </section>
@@ -295,6 +277,8 @@
 @endsection
 
 @section('scripts')
+@include('partials.admin-map-picker-scripts')
+@include('partials.admin-map-location-form-scripts')
 <script>
     function selectLocation(id) {
         document.querySelectorAll('.location-card').forEach((item) => item.classList.remove('active'));
@@ -328,5 +312,10 @@
             if (pin) pin.style.display = visible ? 'block' : 'none';
         });
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initAdminMapDisplay('mapBody', '.map-image');
+        bindMapLocationForms();
+    });
 </script>
 @endsection

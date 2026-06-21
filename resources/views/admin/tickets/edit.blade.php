@@ -246,26 +246,6 @@
         color: var(--text-main);
     }
 
-    .toast {
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%) translateY(80px);
-        background: #1E293B;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 50px;
-        font-weight: 700;
-        font-size: 0.9rem;
-        z-index: 9999;
-        transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
-        white-space: nowrap;
-    }
-
-    .toast.show {
-        transform: translateX(-50%) translateY(0);
-    }
-
     @media (max-width: 768px) {
         .form-row { grid-template-columns: 1fr; }
         .actions-row { flex-direction: column; }
@@ -304,9 +284,9 @@
                 @method('PUT')
                 <div class="form-row">
                     <div class="form-group">
-                        <label>اسم فئة التذكرة <span style="color:#EF4444">*</span></label>
-                        <input type="text" name="name" class="form-input" value="{{ old('name', $ticket->name) }}" required>
-                        @error('name')<div style="color:#EF4444;font-size:0.82rem;margin-top:6px;">{{ $message }}</div>@enderror
+                        <label>الفئة <span style="color:#EF4444">*</span></label>
+                        <input type="text" name="target_description" class="form-input" value="{{ old('target_description', $ticket->target_description) }}" required>
+                        @error('target_description')<div style="color:#EF4444;font-size:0.82rem;margin-top:6px;">{{ $message }}</div>@enderror
                     </div>
                     <div class="form-group">
                         <label>السعر بالدينار الليبي (د.ل) <span style="color:#EF4444">*</span></label>
@@ -317,10 +297,6 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>الفئة المستهدفة بالدخول</label>
-                        <input type="text" name="target_description" class="form-input" value="{{ old('target_description', $ticket->target_description) }}">
-                    </div>
-                    <div class="form-group">
                         <label>نوع الزائر <span style="color:#EF4444">*</span></label>
                         <select name="visitor_nationality" class="form-input" required>
                             <option value="مواطن" @selected(old('visitor_nationality', $ticket->visitor_nationality) === 'مواطن')>مواطن</option>
@@ -329,11 +305,8 @@
                     </div>
                     <div class="form-group">
                         <label>العمر <span style="color:#EF4444">*</span></label>
-                        <select name="visitor_age_group" class="form-input" required>
-                            <option value="بالغ" @selected(old('visitor_age_group', $ticket->visitor_age_group) === 'بالغ')>بالغ</option>
-                            <option value="طفل" @selected(old('visitor_age_group', $ticket->visitor_age_group) === 'طفل')>طفل</option>
-                            <option value="طالب" @selected(old('visitor_age_group', $ticket->visitor_age_group) === 'طالب')>طالب</option>
-                        </select>
+                        <input type="text" name="visitor_age_group" class="form-input" value="{{ old('visitor_age_group', $ticket->visitor_age_group) }}" placeholder="مثال: 12 سنة فأكثر" required>
+                        @error('visitor_age_group')<div style="color:#EF4444;font-size:0.82rem;margin-top:6px;">{{ $message }}</div>@enderror
                     </div>
                 </div>
 

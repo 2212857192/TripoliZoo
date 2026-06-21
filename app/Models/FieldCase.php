@@ -18,6 +18,7 @@ class FieldCase extends Model
         'status',
         'opened_by',
         'health_report_id',
+        'hospital_case_id',
         'opened_at',
         'closed_at',
         'closing_note',
@@ -45,6 +46,11 @@ class FieldCase extends Model
     public function healthReport(): BelongsTo
     {
         return $this->belongsTo(HealthReport::class);
+    }
+
+    public function hospitalCase(): BelongsTo
+    {
+        return $this->belongsTo(HospitalCase::class);
     }
 
     public function procedures(): \Illuminate\Database\Eloquent\Relations\MorphMany

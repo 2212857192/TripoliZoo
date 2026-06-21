@@ -124,7 +124,7 @@ class VetDashboardService
         HospitalCase::query()
             ->with('animal')
             ->whereIn('status', [
-                HospitalCaseStatus::ReadyForDischarge,
+                HospitalCaseStatus::PendingHandover,
                 HospitalCaseStatus::PendingDischargeApproval,
                 HospitalCaseStatus::PendingSlaughterApproval,
                 HospitalCaseStatus::HandoverDelayed,
@@ -143,20 +143,18 @@ class VetDashboardService
                     'situation' => Str::limit($case->chief_complaint, 80),
                     'date' => $case->admitted_at?->format('Y-m-d'),
                     'action_label' => match ($case->status) {
-                        HospitalCaseStatus::ReadyForDischarge => 'جاهز لإصدار الخروج',
+                        HospitalCaseStatus::PendingHandover => 'بانتظار استلام المشرف',
                         HospitalCaseStatus::PendingDischargeApproval,
                         HospitalCaseStatus::PendingSlaughterApproval => 'قيد مراجعة رئيس القسم',
                         HospitalCaseStatus::HandoverDelayed => 'تعذر الاستلام مؤقتاً',
                         default => $case->status->label(),
                     },
                     'action_badge_class' => match ($case->status) {
-                        HospitalCaseStatus::ReadyForDischarge => 'badge-ready',
+                        HospitalCaseStatus::PendingHandover => 'badge-handover',
                         HospitalCaseStatus::HandoverDelayed => 'badge-pending',
                         default => 'badge-review',
                     },
-                    'url' => $case->status === HospitalCaseStatus::ReadyForDischarge
-                        ? '/vet/decisions'
-                        : '/vet/cases/hospital/'.$case->case_number,
+                    'url' => '/vet/cases/hospital/'.$case->case_number,
                 ]);
             });
 

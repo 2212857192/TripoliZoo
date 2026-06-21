@@ -111,8 +111,9 @@ class MortalityCasesApiRepository {
 
     return MortalityFollowUpEntry(
       id: data['case_number']?.toString() ?? data['id']?.toString() ?? '',
-      registeredAt: DateTime.tryParse(data['registered_at']?.toString() ?? '') ??
-          DateTime.now(),
+      registeredAt:
+          DateTime.tryParse(data['registered_at']?.toString() ?? '') ??
+              DateTime.now(),
       victimKind: victimKind == 'newborn_under_follow_up'
           ? MortalityVictimKind.newbornUnderFollowUp
           : MortalityVictimKind.zooAnimal,
@@ -121,6 +122,9 @@ class MortalityCasesApiRepository {
       deathCause: _nullIfEmpty(data['death_cause']?.toString()),
       extraNotes: _nullIfEmpty(data['notes']?.toString()),
       hasAttachment: data['has_attachment'] == true,
+      attachmentUrl: ApiConfig.resolveAssetUrl(
+        _nullIfEmpty(data['attachment_url']?.toString()),
+      ),
     );
   }
 

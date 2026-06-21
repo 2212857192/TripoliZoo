@@ -13,7 +13,10 @@ use Illuminate\Support\Facades\DB;
 
 class FieldCaseService
 {
-    public function __construct(private FieldCaseNumberGenerator $numbers) {}
+    public function __construct(
+        private FieldCaseNumberGenerator $numbers,
+        private AnimalLifecycleService $animalLifecycle,
+    ) {}
 
     public function openManually(
         User $vet,
@@ -21,6 +24,9 @@ class FieldCaseService
         string $openReason,
         ?string $initialNote = null,
     ): FieldCase {
+        $this->animalLifecycle->assertAnimalCanReceiveActions($animal);
+        $this->animalLifecycle->assertNoOpenFieldCase($animal);
+
         $fieldCase = null;
 
         DB::transaction(function () use ($vet, $animal, $openReason, $initialNote, &$fieldCase) {
@@ -46,6 +52,11 @@ class FieldCaseService
         }
 
         $report->loadMissing('animal');
+
+        if ($report->animal) {
+            $this->animalLifecycle->assertAnimalCanReceiveActions($report->animal);
+            $this->animalLifecycle->assertNoOpenFieldCase($report->animal);
+        }
 
         $fieldCase = null;
 
@@ -103,7 +114,7 @@ class FieldCaseService
                 ->filter(fn (FieldCase $case) => $case->status === FieldCaseStatus::Active)
                 ->values(),
             'closedCases' => $cases
-                ->filter(fn (FieldCase $case) => $case->status === FieldCaseStatus::Closed)
+                ->filter(fn (FieldCase $case) => ! $case->status->isActive())
                 ->values(),
             'filters' => [
                 'q' => $request->query('q', ''),

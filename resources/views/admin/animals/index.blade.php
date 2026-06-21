@@ -221,10 +221,6 @@
     $filters = $filters ?? ['q' => '', 'visibility' => '', 'group' => ''];
 @endphp
 
-@if(session('success'))
-<div class="notice-blue" style="margin-bottom:1rem;padding:12px 16px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;color:#1D4ED8;font-weight:700;">{{ session('success') }}</div>
-@endif
-
 <!-- Top Card -->
 <div class="top-card">
     <div class="top-row">
@@ -256,7 +252,6 @@
         <select class="filter-select" name="group" onchange="this.form.submit()" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-weight:700;">
             @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات', 'selected' => $filters['group']])
         </select>
-        <button type="submit" style="padding:10px 18px;border:none;border-radius:10px;background:var(--green);color:#fff;font-family:'Cairo',sans-serif;font-weight:800;cursor:pointer;">بحث</button>
     </form>
 </div>
 
@@ -265,23 +260,22 @@
     @foreach($profiles as $profile)
     @php
         $animal = $profile->animal;
-        $animalName = $animal?->name ?: $animal?->species ?? '—';
-        $sci = $profile->visitorSubtitle();
-        $code = $profile->display_code ?? $animal?->code ?? '—';
+        $displayName = $animal?->species ?? '—';
+        $sci = $animal?->group ?? '';
         $img = $profile->imageUrl();
         $group = $animal?->group ?? '—';
         $mapLocation = $profile->mapLocations->first();
     @endphp
-    <div class="animal-card" data-vis="{{ $profile->is_visible ? 'visible' : 'hidden' }}" data-name="{{ $animalName }}">
+    <div class="animal-card" data-vis="{{ $profile->is_visible ? 'visible' : 'hidden' }}" data-name="{{ $displayName }}">
         <div class="animal-img-wrap">
             @if($img)
-            <img src="{{ $img }}" alt="{{ $animalName }}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <img src="{{ $img }}" alt="{{ $displayName }}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
             @endif
             <div class="animal-img-placeholder" style="{{ $img ? 'display:none' : '' }}">🦁</div>
             <span class="vis-badge {{ $profile->is_visible ? 'visible' : 'hidden-app' }}">{{ $profile->is_visible ? 'ظاهر للزوار' : 'مخفي' }}</span>
         </div>
         <div class="animal-body">
-            <h3 class="animal-name">{{ $animalName }}</h3>
+            <h3 class="animal-name">{{ $displayName }}</h3>
             @if($sci)<p class="animal-sci">{{ $sci }}</p>@endif
             <p class="animal-desc-preview">{{ Str::limit($profile->description, 120) }}</p>
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
@@ -300,7 +294,7 @@
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                     تعديل
                 </a>
-                <form method="POST" action="{{ route('admin.animals.visibility', $profile) }}" style="display:inline;">
+                <form method="POST" action="{{ route('admin.animals.visibility', $profile) }}" class="js-animal-visibility-form" style="display:inline;" data-visible="{{ $profile->is_visible ? '1' : '0' }}">
                     @csrf
                     @method('PATCH')
                     <button type="submit" class="btn-act vis-btn">
@@ -311,9 +305,9 @@
                 @endunless
                 @php
                     $qrButtonData = [
-                        'name' => $animalName,
+                        'name' => $displayName,
                         'subtitle' => $sci,
-                        'code' => $code,
+                        'code' => $profile->display_code ?? '',
                         'group' => $group !== '—' ? $group : '',
                         'image' => $img,
                         'scanUrl' => $profile->visitorQrUrl(),
@@ -344,9 +338,15 @@
 
 @include('partials.admin-animal-qr-modal')
 
-<div class="toast" id="toast"></div>
 @endsection
 
 @section('scripts')
 @include('partials.admin-animal-qr-scripts')
+<script>
+    bindAdminConfirmForms('.js-animal-visibility-form', (form) => {
+        return form.dataset.visible === '1'
+            ? 'هل أنت متأكد من إخفاء هذا المحتوى عن الزوار؟'
+            : 'هل أنت متأكد من إظهار هذا المحتوى للزوار؟';
+    });
+</script>
 @endsection

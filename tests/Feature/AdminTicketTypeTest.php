@@ -25,24 +25,22 @@ class AdminTicketTypeTest extends TestCase
 
         $this->actingAs($admin)
             ->post(route('admin.tickets.store'), [
-                'name' => 'تذكرة الكبار',
+                'target_description' => 'تذكرة الكبار',
                 'price' => 10,
-                'target_description' => 'فوق 12 سنة',
                 'visitor_nationality' => 'مواطن',
-                'visitor_age_group' => 'بالغ',
+                'visitor_age_group' => '12 سنة فأكثر',
                 'is_active' => '1',
             ])
             ->assertRedirect(route('admin.tickets.index'));
 
-        $ticket = TicketType::query()->where('name', 'تذكرة الكبار')->firstOrFail();
+        $ticket = TicketType::query()->where('target_description', 'تذكرة الكبار')->firstOrFail();
 
         $this->actingAs($admin)
             ->put(route('admin.tickets.update', $ticket), [
-                'name' => 'تذكرة الكبار',
+                'target_description' => 'تذكرة الكبار',
                 'price' => 12,
-                'target_description' => 'فوق 12 سنة',
                 'visitor_nationality' => 'مواطن',
-                'visitor_age_group' => 'بالغ',
+                'visitor_age_group' => '12 سنة فأكثر',
                 'is_active' => '1',
             ])
             ->assertRedirect(route('admin.tickets.index'));

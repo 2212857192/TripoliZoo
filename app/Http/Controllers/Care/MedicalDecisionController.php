@@ -33,12 +33,12 @@ class MedicalDecisionController extends Controller
 
     public function show(
         ReceivingTask $receivingTask,
-        MedicalDecisionTreatmentCollector $treatmentCollector,
         bool $readOnly = false,
         ?string $layout = null,
         string $portal = 'care'
     ): View {
         $receivingTask->load(['animal', 'supervisor', 'decisionIssuer', 'quarantine.vaccines']);
+        $treatmentCollector = app(MedicalDecisionTreatmentCollector::class);
 
         return view('care.decisions.show', [
             '__layout' => $layout ?? ($portal === 'vet' ? 'vet.layout' : 'care.layout'),
@@ -53,7 +53,6 @@ class MedicalDecisionController extends Controller
 
     public function showSlaughter(
         HospitalCase $hospitalCase,
-        MedicalDecisionTreatmentCollector $treatmentCollector,
         bool $readOnly = false,
         ?string $layout = null,
         string $portal = 'care',
@@ -61,6 +60,7 @@ class MedicalDecisionController extends Controller
         abort_unless($hospitalCase->status === HospitalCaseStatus::Slaughtered, 404);
 
         $hospitalCase->load(['animal', 'admitter', 'procedures.recorder']);
+        $treatmentCollector = app(MedicalDecisionTreatmentCollector::class);
 
         return view('care.decisions.show', [
             '__layout' => $layout ?? 'care.layout',
@@ -91,6 +91,8 @@ class MedicalDecisionController extends Controller
                 ->with('procedures')
                 ->where('animal_id', $task->animal_id)
                 ->whereIn('status', [
+                    HospitalCaseStatus::PendingHandover,
+                    HospitalCaseStatus::HandoverDelayed,
                     HospitalCaseStatus::ReadyForDischarge,
                     HospitalCaseStatus::Slaughtered,
                 ])

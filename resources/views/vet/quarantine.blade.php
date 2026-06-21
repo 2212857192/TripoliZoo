@@ -126,6 +126,9 @@
     .dialog-footer { padding: 1rem 1.5rem 1.25rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; justify-content: center; }
     .btn-submit-red { padding: 10px 22px; background: linear-gradient(135deg, #be123c, #e11d48); color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(225,29,72,0.25); }
     .btn-submit-red:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(225,29,72,0.3); }
+    .btn-submit-green { padding: 10px 22px; background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(22,163,74,0.25); }
+    .btn-submit-green:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(22,163,74,0.3); }
+    .dialog-meta.release { background: #f0fdf4; border-color: #bbf7d0; }
 </style>
 @endsection
 
@@ -140,18 +143,6 @@
             <li>{{ $error }}</li>
         @endforeach
     </ul>
-</div>
-@endif
-
-@if(session('success'))
-<div style="background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;padding:12px 16px;border-radius:10px;margin-bottom:1rem;font-weight:700;">
-    {{ session('success') }}
-</div>
-@endif
-
-@if(session('error'))
-<div style="background:#fef2f2;border:1px solid #fecdd3;color:#b91c1c;padding:12px 16px;border-radius:10px;margin-bottom:1rem;font-weight:700;">
-    {{ session('error') }}
 </div>
 @endif
 
@@ -794,6 +785,30 @@
     </div>
 </div>
 
+{{-- ═══ CONFIRM RELEASE DIALOG ═══ --}}
+<div class="dialog-backdrop" id="confirmReleaseDialog">
+    <div class="dialog-box">
+        <div class="dialog-body">
+            <div class="dialog-icon-wrap" style="background:#f0fdf4;">✅</div>
+            <h4>تأكيد الإفراج الصحي</h4>
+            <p>هل أنت متأكد من إصدار قرار الإفراج الصحي؟<br>سيصبح الحيوان ظاهراً في جميع سجلات الحديقة ويُنشأ قرار استلام للمشرف.</p>
+            <div class="dialog-meta release">
+                <div class="dialog-meta-row">
+                    <span class="dialog-meta-label">رقم الحالة</span>
+                    <span class="dialog-meta-value" id="confirmReleaseCaseId">—</span>
+                </div>
+            </div>
+        </div>
+        <div class="dialog-footer">
+            <button type="button" class="btn-cancel" onclick="closeConfirmReleaseDialog()">إلغاء</button>
+            <button type="button" class="btn-submit-green" onclick="submitHealthRelease()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                نعم، إصدار الإفراج
+            </button>
+        </div>
+    </div>
+</div>
+
 {{-- ═══ CONFIRM CLOSE DIALOG ═══ --}}
 <div class="dialog-backdrop" id="confirmCloseDialog">
     <div class="dialog-box">
@@ -827,6 +842,7 @@
 <script>
 const quarantineDB = @json($quarantineRecords ?? []);
 const quarantineReadOnly = @json($readOnly ?? false);
+let pendingReleaseCaseId = null;
 const quarantineCsrf = @json(csrf_token());
 const quarantineReleaseUrl = @json(route('quarantine.release', ['quarantine' => '__CASE__']));
 const quarantineCloseUrl = @json(route('quarantine.close', ['quarantine' => '__CASE__']));
@@ -1033,10 +1049,23 @@ function populateDetailModal(d) {
     }
 }
 
-function submitHealthRelease(caseId) {
-    if (!confirm('هل أنت متأكد من إصدار قرار الإفراج الصحي؟\nسيصبح الحيوان ظاهراً في جميع سجلات الحديقة.')) {
-        return;
-    }
+function requestHealthRelease(caseId) {
+    pendingReleaseCaseId = caseId;
+    document.getElementById('confirmReleaseCaseId').textContent = caseId;
+    document.getElementById('confirmReleaseDialog').classList.add('open');
+}
+
+function closeConfirmReleaseDialog() {
+    document.getElementById('confirmReleaseDialog').classList.remove('open');
+    pendingReleaseCaseId = null;
+}
+
+function submitHealthRelease() {
+    const caseId = pendingReleaseCaseId;
+    if (!caseId) return;
+
+    closeConfirmReleaseDialog();
+    closeModal();
 
     const form = document.createElement('form');
     form.method = 'POST';
@@ -1088,7 +1117,7 @@ function openModal(caseId, tabType) {
         footer.innerHTML = `
             <button class="btn-cancel" onclick="closeModal()">إغلاق</button>
             <button class="btn-action-close" onclick="closeModal(); openEndModal('${caseId}')" style="background:#E11D48; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-family:'Cairo',sans-serif; font-size:0.85rem; font-weight:700; cursor:pointer;">إنهاء الحالة</button>
-            <button class="btn-action-release" onclick="submitHealthRelease('${caseId}')" style="background:#16a34a; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-family:'Cairo',sans-serif; font-size:0.85rem; font-weight:700; cursor:pointer;">اصدار قرار الافراج الصحي</button>
+            <button class="btn-action-release" onclick="requestHealthRelease('${caseId}')" style="background:#16a34a; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-family:'Cairo',sans-serif; font-size:0.85rem; font-weight:700; cursor:pointer;">اصدار قرار الافراج الصحي</button>
         `;
     } else {
         footer.innerHTML = `
@@ -1188,6 +1217,9 @@ document.getElementById('endModal').addEventListener('click', function(e) {
 });
 document.getElementById('confirmCloseDialog').addEventListener('click', function(e) {
     if (e.target === this) closeConfirmCloseDialog();
+});
+document.getElementById('confirmReleaseDialog').addEventListener('click', function(e) {
+    if (e.target === this) closeConfirmReleaseDialog();
 });
 
 document.getElementById('add_birthDate')?.addEventListener('change', () => updateComputedAge('add'));

@@ -142,9 +142,15 @@ class HospitalCaseController extends Controller
             'caseData' => [
                 'statusClass' => $status->headerStatusClass(),
                 'statusText' => $status->label(),
+                'decisionType' => match ($status) {
+                    HospitalCaseStatus::Discharged => 'تم استلامها',
+                    HospitalCaseStatus::Slaughtered => 'ذبح اضطراري',
+                    default => null,
+                },
                 'vet' => $hospitalCase->admitter?->name ?? '—',
                 'reason' => $hospitalCase->chief_complaint,
-                'notes' => $hospitalCase->healthCase?->description ?? $hospitalCase->chief_complaint,
+                'notes' => $hospitalCase->healthCase?->animal_notes
+                    ?: 'لا توجد ملاحظات مسجلة عن الحيوان.',
                 'animalId' => $animal?->code ? '#'.$animal->code : '—',
                 'animalType' => $animal?->species ?? '—',
                 'animalName' => $animal?->name ?? '',

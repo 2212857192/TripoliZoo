@@ -221,16 +221,9 @@
 @php
     use App\Enums\HealthCaseFollowUpKind;
     use App\Enums\HealthCaseStatus;
-    use App\Enums\UserRole;
     $portalBase = $portalBase ?? (($readOnly ?? false) ? '/director/care' : '/care');
-    $canAct = empty($readOnly) && auth()->user()?->role === UserRole::CareHead->value;
+    $canAct = $canAct ?? false;
 @endphp
-
-@if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;padding:12px 16px;border-radius:12px;margin-bottom:1rem;font-weight:700;">
-        {{ session('success') }}
-    </div>
-@endif
 
 <form method="GET" action="{{ $portalBase }}/health" class="top-card">
     <div class="filter-bar">
@@ -355,6 +348,10 @@
                             <h4 class="q-card-title">وصف الحالة الصحية</h4>
                             <div class="q-note-box" id="mDesc">—</div>
                         </div>
+                        <div class="q-card" id="mAnimalNotesCard" style="display:none;">
+                            <h4 class="q-card-title">الملاحظات المسجلة عن الحيوان</h4>
+                            <div class="q-note-box" id="mAnimalNotes">—</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -455,6 +452,15 @@
         document.getElementById('mStatusVal').textContent = data.status_label || '—';
         document.getElementById('mDesc').textContent = data.description || '—';
 
+        const animalNotesCard = document.getElementById('mAnimalNotesCard');
+        const animalNotes = (data.animal_notes || '').trim();
+        if (data.follow_up_kind === 'needs_referral') {
+            animalNotesCard.style.display = '';
+            document.getElementById('mAnimalNotes').textContent = animalNotes || 'لا توجد ملاحظات مسجلة عن الحيوان.';
+        } else {
+            animalNotesCard.style.display = 'none';
+        }
+
         const attachWrap = document.getElementById('mAttachmentWrap');
         if (data.has_attachment && data.attachment_url) {
             attachWrap.innerHTML = `<img src="${data.attachment_url}" alt="مرفق" style="max-width:100%;max-height:280px;border-radius:12px;border:1px solid #e2e8f0;">`;
@@ -492,21 +498,25 @@
         document.getElementById(id).classList.remove('open');
     }
 
-    function markReviewed(caseNumber) {
-        const form = document.getElementById('reviewForm');
-        if (form) form.action = `${portalBase}/health/${caseNumber}/review`;
-        openDialog('confirmReviewDialog');
-    }
-
     function referTreatment(caseNumber) {
         const form = document.getElementById('referForm');
         if (form) form.action = `${portalBase}/health/${caseNumber}/refer`;
+        closeModal();
         openDialog('confirmReferDialog');
+    }
+
+    function markReviewed(caseNumber) {
+        const form = document.getElementById('reviewForm');
+        if (form) form.action = `${portalBase}/health/${caseNumber}/review`;
+        closeModal();
+        openDialog('confirmReviewDialog');
     }
 
     window.onclick = function(e) {
         if (e.target === document.getElementById('caseModal')) closeModal();
     };
+
+    window.openHealthCaseModal = openCaseModal;
 
     @if(!empty($highlightCase))
         document.addEventListener('DOMContentLoaded', () => openCaseModal(@json($highlightCase)));

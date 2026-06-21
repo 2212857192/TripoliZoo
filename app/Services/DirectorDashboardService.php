@@ -51,7 +51,8 @@ class DirectorDashboardService
             fn (HospitalCaseStatus $status) => $status->value,
             [
                 ...HospitalCaseStatus::awaitingVetHeadDecision(),
-                HospitalCaseStatus::ReadyForDischarge,
+                HospitalCaseStatus::PendingHandover,
+                HospitalCaseStatus::HandoverDelayed,
             ],
         );
 
@@ -151,7 +152,7 @@ class DirectorDashboardService
             ->with('ticketType')
             ->whereDate('sold_at', today())
             ->get()
-            ->groupBy(fn (TicketSale $sale) => $sale->ticketType?->name ?? 'أخرى')
+            ->groupBy(fn (TicketSale $sale) => $sale->ticketType?->displayLabel() ?? 'أخرى')
             ->map(fn (Collection $sales, string $name) => [
                 'name' => $name,
                 'count' => (int) $sales->sum('quantity'),

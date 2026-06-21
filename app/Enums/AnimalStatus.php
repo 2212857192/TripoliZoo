@@ -8,6 +8,7 @@ enum AnimalStatus: string
     case PendingReceipt = 'pending_receipt';
     case Quarantine = 'quarantine';
     case UnderBirthFollowUp = 'under_birth_follow_up';
+    case PendingMortalityApproval = 'pending_mortality_approval';
     case Dead = 'dead';
     case Exited = 'exited';
 
@@ -18,6 +19,7 @@ enum AnimalStatus: string
             self::PendingReceipt => 'بانتظار الاستلام',
             self::Quarantine => 'تحت الحجر الصحي',
             self::UnderBirthFollowUp => 'مولود قيد المتابعة',
+            self::PendingMortalityApproval => 'موقوف بانتظار اعتماد النفوق',
             self::Dead => 'نافق',
             self::Exited => 'خارج من الحديقة',
         };

@@ -73,6 +73,7 @@ class HealthFollowUpEntry extends FollowUpEntry {
     this.fullDescription,
     this.extraNotes,
     this.hasAttachment = false,
+    this.attachmentUrl,
   });
 
   final String animalId;
@@ -82,12 +83,14 @@ class HealthFollowUpEntry extends FollowUpEntry {
   final String? fullDescription;
   final String? extraNotes;
   final bool hasAttachment;
+  final String? attachmentUrl;
 
   @override
   FollowUpEntryType get type => FollowUpEntryType.health;
 
   bool get isExpandable =>
-      (fullDescription != null && fullDescription!.length > description.length) ||
+      (fullDescription != null &&
+          fullDescription!.length > description.length) ||
       (extraNotes != null && extraNotes!.isNotEmpty) ||
       hasAttachment;
 }
@@ -125,6 +128,7 @@ class MortalityFollowUpEntry extends FollowUpEntry {
     this.deathCause,
     this.extraNotes,
     this.hasAttachment = false,
+    this.attachmentUrl,
   });
 
   final MortalityVictimKind victimKind;
@@ -133,14 +137,14 @@ class MortalityFollowUpEntry extends FollowUpEntry {
   final String? deathCause;
   final String? extraNotes;
   final bool hasAttachment;
+  final String? attachmentUrl;
 
   @override
   FollowUpEntryType get type => FollowUpEntryType.mortality;
 
-  String get displayCause =>
-      (deathCause == null || deathCause!.trim().isEmpty)
-          ? 'غير ظاهر'
-          : deathCause!;
+  String get displayCause => (deathCause == null || deathCause!.trim().isEmpty)
+      ? 'غير ظاهر'
+      : deathCause!;
 
   bool get isExpandable =>
       (extraNotes != null && extraNotes!.isNotEmpty) || hasAttachment;
@@ -155,6 +159,7 @@ class OperationalNoteEntry extends FollowUpEntry {
     this.fullText,
     this.extraNotes,
     this.hasAttachment = false,
+    this.attachmentUrl,
   });
 
   final OperationalNoteKind noteKind;
@@ -162,6 +167,7 @@ class OperationalNoteEntry extends FollowUpEntry {
   final String? fullText;
   final String? extraNotes;
   final bool hasAttachment;
+  final String? attachmentUrl;
 
   @override
   FollowUpEntryType get type => FollowUpEntryType.operationalNote;

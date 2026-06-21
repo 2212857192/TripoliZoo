@@ -13,7 +13,7 @@ class TicketTypeResource extends JsonResource
     {
         return [
             'id' => (string) $this->id,
-            'name' => $this->name,
+            'name' => $this->target_description ?? '',
             'title' => $this->visitor_age_group,
             'category_label' => $this->visitor_age_group,
             'price' => (int) round((float) $this->price),

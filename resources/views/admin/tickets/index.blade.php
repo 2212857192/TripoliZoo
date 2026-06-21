@@ -256,26 +256,6 @@
     .btn-ticket-op.toggle-status.activate-btn:hover {
         background: #DCFCE7;
     }
-
-    .toast {
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%) translateY(80px);
-        background: #1E293B;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 50px;
-        font-weight: 700;
-        font-size: 0.9rem;
-        z-index: 9999;
-        transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
-        white-space: nowrap;
-    }
-
-    .toast.show {
-        transform: translateX(-50%) translateY(0);
-    }
 </style>
 @endsection
 
@@ -303,14 +283,14 @@
     <!-- Tickets Grid -->
     <div class="tickets-grid" id="ticketsGrid">
         @forelse($ticketTypes as $type)
-        <div class="ticket-card-premium {{ $type->is_active ? '' : 'suspended' }}" data-name="{{ $type->name }}" data-status="{{ $type->is_active ? 'active' : 'suspended' }}" id="ticket-{{ $type->id }}">
+        <div class="ticket-card-premium {{ $type->is_active ? '' : 'suspended' }}" data-name="{{ $type->target_description }}" data-status="{{ $type->is_active ? 'active' : 'suspended' }}" id="ticket-{{ $type->id }}">
             <div class="ticket-header-gradient">
-                <h4 class="ticket-name">{{ $type->name }}</h4>
+                <h4 class="ticket-name">{{ $type->target_description }}</h4>
                 <div class="ticket-price"><span>{{ number_format((float) $type->price, 2) }}</span> <span>د.ل</span></div>
             </div>
             <div class="ticket-details">
                 <div class="detail-row-ticket">
-                    <span>الفئة المستهدفة</span>
+                    <span>الفئة</span>
                     <span>{{ $type->target_description ?: '—' }}</span>
                 </div>
                 <div class="detail-row-ticket">
@@ -332,7 +312,7 @@
                 <a href="{{ route('admin.tickets.edit', $type) }}" class="btn-ticket-op">
                     تعديل الفئة
                 </a>
-                <form action="{{ route('admin.tickets.toggle', $type) }}" method="POST" style="flex:1;display:flex;">
+                <form action="{{ route('admin.tickets.toggle', $type) }}" method="POST" class="js-ticket-toggle-form" data-active="{{ $type->is_active ? '1' : '0' }}" style="flex:1;display:flex;">
                     @csrf
                     @method('PATCH')
                     <button type="submit" class="btn-ticket-op toggle-status {{ $type->is_active ? 'suspended-btn' : 'activate-btn' }}" style="width:100%;">
@@ -352,6 +332,7 @@
 @endsection
 
 @section('scripts')
+@include('partials.admin-ticket-form-scripts')
 <script>
     function filterTickets() {
         const query = document.getElementById('searchInput').value.toLowerCase();

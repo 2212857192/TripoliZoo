@@ -3,10 +3,13 @@
 namespace Tests\Feature;
 
 use App\Enums\AnimalStatus;
+use App\Enums\FieldCaseStatus;
+use App\Enums\HealthCaseFollowUpKind;
 use App\Enums\MortalityCaseStatus;
 use App\Enums\MortalityVictimKind;
 use App\Enums\UserRole;
 use App\Models\Animal;
+use App\Models\FieldCase;
 use App\Models\MortalityCase;
 use App\Models\MortalityCaseNotification;
 use App\Models\User;
@@ -55,6 +58,11 @@ class MortalityCaseFlowTest extends TestCase
             'supervisor_id' => $supervisor->id,
             'status' => MortalityCaseStatus::New->value,
             'death_cause' => 'إصابة واضحة في الرقبة',
+        ]);
+
+        $this->assertDatabaseHas('animals', [
+            'id' => $animal->id,
+            'status' => AnimalStatus::PendingMortalityApproval->value,
         ]);
 
         $mortalityCase = MortalityCase::query()->first();
@@ -145,6 +153,184 @@ class MortalityCaseFlowTest extends TestCase
             'mortality_case_id' => $mortalityCase->id,
             'transfer_reason' => 'سبب غير ظاهر',
         ]);
+    }
+
+    public function test_pending_mortality_animal_cannot_receive_new_health_case(): void
+    {
+        $supervisor = User::factory()->create([
+            'role' => UserRole::GroupSupervisor->value,
+            'assigned_group' => 'الغزلان',
+            'status' => 'active',
+        ]);
+
+        Animal::withoutGlobalScopes()->create([
+            'code' => 'G099',
+            'species' => 'غزال',
+            'group' => 'الغزلان',
+            'gender' => 'ذكر',
+            'status' => AnimalStatus::Active->value,
+            'registered_at' => now(),
+        ]);
+
+        Sanctum::actingAs($supervisor);
+
+        $this->postJson('/api/auth/supervisor/mortality-cases', [
+            'animal_code' => 'G099',
+            'victim_kind' => MortalityVictimKind::ZooAnimal->value,
+            'death_cause' => 'نفوق موثق',
+        ])->assertCreated();
+
+        $this->postJson('/api/auth/supervisor/health-cases', [
+            'animal_code' => 'G099',
+            'description' => 'محاولة تسجيل بعد النفوق',
+            'follow_up_kind' => HealthCaseFollowUpKind::NoReferral->value,
+        ])
+            ->assertUnprocessable()
+            ->assertJsonPath('message', 'لا يمكن تنفيذ الإجراء، الحيوان موقوف بانتظار اعتماد حالة النفوق.');
+    }
+
+    public function test_dead_animal_cannot_receive_new_health_case(): void
+    {
+        $supervisor = User::factory()->create([
+            'role' => UserRole::GroupSupervisor->value,
+            'assigned_group' => 'الغزلان',
+            'status' => 'active',
+        ]);
+
+        $careHead = User::factory()->create([
+            'role' => UserRole::CareHead->value,
+            'status' => 'active',
+        ]);
+
+        $animal = Animal::withoutGlobalScopes()->create([
+            'code' => 'G100',
+            'species' => 'غزال',
+            'group' => 'الغزلان',
+            'gender' => 'ذكر',
+            'status' => AnimalStatus::Active->value,
+            'registered_at' => now(),
+        ]);
+
+        Sanctum::actingAs($supervisor);
+
+        $this->postJson('/api/auth/supervisor/mortality-cases', [
+            'animal_code' => 'G100',
+            'victim_kind' => MortalityVictimKind::ZooAnimal->value,
+            'death_cause' => 'نفوق موثق',
+        ])->assertCreated();
+
+        $mortalityCase = MortalityCase::query()->where('animal_id', $animal->id)->firstOrFail();
+
+        $this->actingAs($careHead)
+            ->post(route('care.mortality.approve', $mortalityCase->case_number))
+            ->assertRedirect(route('care.mortality.index'));
+
+        Sanctum::actingAs($supervisor);
+
+        $this->postJson('/api/auth/supervisor/health-cases', [
+            'animal_code' => 'G100',
+            'description' => 'محاولة تسجيل بعد النفوق',
+            'follow_up_kind' => HealthCaseFollowUpKind::NoReferral->value,
+        ])
+            ->assertUnprocessable()
+            ->assertJsonPath('message', 'لا يمكن تنفيذ الإجراء، الحيوان غير نشط.');
+    }
+
+    public function test_supervisor_can_register_mortality_with_open_field_case(): void
+    {
+        $supervisor = User::factory()->create([
+            'role' => UserRole::GroupSupervisor->value,
+            'assigned_group' => 'الغزلان',
+            'status' => 'active',
+        ]);
+
+        $vet = User::factory()->create([
+            'role' => UserRole::Veterinarian->value,
+            'assigned_group' => 'الغزلان',
+            'status' => 'active',
+        ]);
+
+        $animal = Animal::withoutGlobalScopes()->create([
+            'code' => 'G097',
+            'species' => 'غزال',
+            'group' => 'الغزلان',
+            'gender' => 'ذكر',
+            'status' => AnimalStatus::Active->value,
+            'registered_at' => now(),
+        ]);
+
+        $fieldCase = FieldCase::create([
+            'case_number' => 'FC-2026-097',
+            'animal_id' => $animal->id,
+            'group' => $animal->group,
+            'open_reason' => 'متابعة ميدانية',
+            'status' => FieldCaseStatus::Active,
+            'opened_by' => $vet->id,
+            'opened_at' => now(),
+        ]);
+
+        Sanctum::actingAs($supervisor);
+
+        $this->postJson('/api/auth/supervisor/mortality-cases', [
+            'animal_code' => 'G097',
+            'victim_kind' => MortalityVictimKind::ZooAnimal->value,
+            'death_cause' => 'نفوق مفاجئ',
+        ])->assertCreated();
+
+        $this->assertDatabaseHas('field_cases', [
+            'id' => $fieldCase->id,
+            'status' => FieldCaseStatus::Closed->value,
+            'closing_note' => 'أُغلقت تلقائياً بسبب تسجيل حالة نفوق.',
+        ]);
+
+        $this->assertDatabaseHas('animals', [
+            'id' => $animal->id,
+            'status' => AnimalStatus::PendingMortalityApproval->value,
+        ]);
+    }
+
+    public function test_supervisor_can_create_health_case_while_field_case_is_open(): void
+    {
+        $supervisor = User::factory()->create([
+            'role' => UserRole::GroupSupervisor->value,
+            'assigned_group' => 'الغزلان',
+            'status' => 'active',
+        ]);
+
+        $vet = User::factory()->create([
+            'role' => UserRole::Veterinarian->value,
+            'assigned_group' => 'الغزلان',
+            'status' => 'active',
+        ]);
+
+        $animal = Animal::withoutGlobalScopes()->create([
+            'code' => 'G098',
+            'species' => 'غزال',
+            'group' => 'الغزلان',
+            'gender' => 'ذكر',
+            'status' => AnimalStatus::Active->value,
+            'registered_at' => now(),
+        ]);
+
+        FieldCase::create([
+            'case_number' => 'FC-2026-098',
+            'animal_id' => $animal->id,
+            'group' => $animal->group,
+            'open_reason' => 'متابعة ميدانية',
+            'status' => FieldCaseStatus::Active,
+            'opened_by' => $vet->id,
+            'opened_at' => now(),
+        ]);
+
+        Sanctum::actingAs($supervisor);
+
+        $this->postJson('/api/auth/supervisor/health-cases', [
+            'animal_code' => 'G098',
+            'description' => 'ملاحظة للرعاية رغم وجود حالة ميدانية',
+            'follow_up_kind' => HealthCaseFollowUpKind::NoReferral->value,
+        ])
+            ->assertCreated()
+            ->assertJsonPath('data.description', 'ملاحظة للرعاية رغم وجود حالة ميدانية');
     }
 
     /** @return array{0: User, 1: MortalityCase} */

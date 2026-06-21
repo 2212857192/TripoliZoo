@@ -17,19 +17,18 @@ class VisitorTicketApiTest extends TestCase
     public function test_visitor_can_list_active_ticket_types(): void
     {
         TicketType::create([
-            'name' => 'تذكرة الكبار',
             'price' => 10,
-            'target_description' => 'فوق 12 سنة',
+            'target_description' => 'تذكرة الكبار',
             'visitor_nationality' => 'مواطن',
-            'visitor_age_group' => 'بالغ',
+            'visitor_age_group' => '12 سنة فأكثر',
             'is_active' => true,
         ]);
 
         TicketType::create([
-            'name' => 'تذكرة موقوفة',
             'price' => 5,
+            'target_description' => 'تذكرة موقوفة',
             'visitor_nationality' => 'مواطن',
-            'visitor_age_group' => 'طفل',
+            'visitor_age_group' => '6-11 سنة',
             'is_active' => false,
         ]);
 
@@ -47,11 +46,10 @@ class VisitorTicketApiTest extends TestCase
         ]);
 
         $type = TicketType::create([
-            'name' => 'تذكرة الكبار',
             'price' => 10,
-            'target_description' => 'فوق 12 سنة',
+            'target_description' => 'تذكرة الكبار',
             'visitor_nationality' => 'مواطن',
-            'visitor_age_group' => 'بالغ',
+            'visitor_age_group' => '12 سنة فأكثر',
             'is_active' => true,
         ]);
 
@@ -90,10 +88,10 @@ class VisitorTicketApiTest extends TestCase
         ]);
 
         $type = TicketType::create([
-            'name' => 'تذكرة الكبار',
             'price' => 10,
+            'target_description' => 'تذكرة الكبار',
             'visitor_nationality' => 'مواطن',
-            'visitor_age_group' => 'بالغ',
+            'visitor_age_group' => '12 سنة فأكثر',
             'is_active' => true,
         ]);
 

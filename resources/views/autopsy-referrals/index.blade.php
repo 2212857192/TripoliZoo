@@ -47,12 +47,6 @@
 @endsection
 
 @section('content')
-@if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;padding:12px 16px;border-radius:12px;margin-bottom:1rem;font-weight:700;">
-        {{ session('success') }}
-    </div>
-@endif
-
 <form method="GET" action="{{ $portalBase }}/referrals/autopsy" class="top-card">
     <div class="filter-bar">
         <div class="search-box">

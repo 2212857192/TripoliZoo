@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Enums\AnimalStatus;
 use App\Enums\MortalityCaseStatus;
 use App\Enums\MortalityVictimKind;
 use App\Enums\UserRole;
@@ -10,6 +9,7 @@ use App\Models\Animal;
 use App\Models\MortalityCase;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class MortalityCaseService
@@ -18,6 +18,7 @@ class MortalityCaseService
         private MortalityCaseNumberGenerator $numbers,
         private MortalityCaseNotificationService $notifier,
         private AutopsyReferralService $autopsyReferrals,
+        private AnimalLifecycleService $animalLifecycle,
     ) {}
 
     public function createCase(
@@ -30,6 +31,10 @@ class MortalityCaseService
         ?Animal $animal,
         ?string $attachmentPath = null,
     ): MortalityCase {
+        if ($animal) {
+            $this->animalLifecycle->assertAnimalCanReceiveActions($animal);
+        }
+
         $mortalityCase = null;
 
         DB::transaction(function () use (
@@ -58,8 +63,13 @@ class MortalityCaseService
                 'attachment_path' => $attachmentPath,
                 'status' => MortalityCaseStatus::New,
             ]);
+
+            if ($animal) {
+                $this->animalLifecycle->suspendForPendingMortality($animal, $mortalityCase);
+            }
         });
 
+        /** @var MortalityCase $mortalityCase */
         $fresh = $mortalityCase->fresh(['animal', 'supervisor']);
         $this->notifier->notifyNewCase($fresh);
 
@@ -85,10 +95,8 @@ class MortalityCaseService
                 'reviewed_at' => now(),
             ]);
 
-            if ($mortalityCase->animal_id) {
-                Animal::withoutGlobalScopes()
-                    ->whereKey($mortalityCase->animal_id)
-                    ->update(['status' => AnimalStatus::Dead->value]);
+            if ($mortalityCase->animal) {
+                $this->animalLifecycle->finalizeAsDead($mortalityCase->animal);
             }
         });
 
@@ -122,7 +130,7 @@ class MortalityCaseService
     public function careHeadUser(): User
     {
         /** @var User $user */
-        $user = auth()->user();
+        $user = Auth::user();
 
         if ($user->role !== UserRole::CareHead->value) {
             abort(403, 'هذا الإجراء مخصص لرئيس قسم الرعاية والتغذية.');

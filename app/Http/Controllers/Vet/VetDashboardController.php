@@ -15,7 +15,6 @@ class VetDashboardController extends Controller
             'recentReferrals' => $dashboard->recentReferrals(),
             'urgentCases' => $dashboard->urgentCases(),
             'referralSummary' => $dashboard->referralSummary(),
-            'recentAlerts' => $dashboard->recentAlerts(auth()->user()),
         ]);
     }
 }

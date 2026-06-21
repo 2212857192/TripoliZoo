@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class TicketType extends Model
 {
     protected $fillable = [
-        'name',
         'price',
         'target_description',
         'visitor_nationality',
@@ -27,5 +26,10 @@ class TicketType extends Model
     public function sales(): HasMany
     {
         return $this->hasMany(TicketSale::class);
+    }
+
+    public function displayLabel(): string
+    {
+        return $this->target_description ?: 'تذكرة';
     }
 }

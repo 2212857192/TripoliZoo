@@ -364,32 +364,45 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
                           height: imageH,
                           child: Stack(
                             children: [
-                              _MapImage(imageUrl: data.imageUrl),
+                              _MapImage(
+                                imageUrl: data.imageUrl,
+                                width: imageW,
+                                height: imageH,
+                              ),
                               ...locations.map((location) {
                                 final isSelected =
                                     _selectedLocation?.id == location.id;
-                                final pinSize = isSelected ? 40.0 : 32.0;
-                                final pinWidth = pinSize + 4;
+                                const pinSize = 32.0;
+                                const selectedPinSize = 40.0;
+                                final activePinSize =
+                                    isSelected ? selectedPinSize : pinSize;
+                                final pinWidth = activePinSize + 4;
                                 return Positioned(
-                                  left: imageW * location.x - (pinWidth / 2),
-                                  top: imageH * location.y - (pinSize / 2),
-                                  child: AnimatedBuilder(
-                                    animation: _transformationController,
-                                    builder: (context, child) {
-                                      final scale = _transformationController
-                                          .value
-                                          .getMaxScaleOnAxis();
-                                      return Transform.scale(
-                                        scale: 1.0 / scale,
-                                        alignment: Alignment.center,
-                                        child: child,
-                                      );
-                                    },
-                                    child: _MapPin(
-                                      location: location,
-                                      selected: isSelected,
-                                      onTap: () => setState(
-                                        () => _selectedLocation = location,
+                                  left: imageW * location.x,
+                                  top: imageH * location.y,
+                                  child: Transform.translate(
+                                    offset: Offset(
+                                      -(pinWidth / 2),
+                                      -(activePinSize / 2),
+                                    ),
+                                    child: AnimatedBuilder(
+                                      animation: _transformationController,
+                                      builder: (context, child) {
+                                        final scale = _transformationController
+                                            .value
+                                            .getMaxScaleOnAxis();
+                                        return Transform.scale(
+                                          scale: 1.0 / scale,
+                                          alignment: Alignment.center,
+                                          child: child,
+                                        );
+                                      },
+                                      child: _MapPin(
+                                        location: location,
+                                        selected: isSelected,
+                                        onTap: () => setState(
+                                          () => _selectedLocation = location,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -515,25 +528,34 @@ class _MapCategory {
 // ── Map image ────────────────────────────────────────────────────────────────
 
 class _MapImage extends StatelessWidget {
-  const _MapImage({required this.imageUrl});
+  const _MapImage({
+    required this.imageUrl,
+    required this.width,
+    required this.height,
+  });
+
   final String imageUrl;
+  final double width;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
     Widget fallback() => Image.asset(
           'assets/images/map.PNG',
+          width: width,
+          height: height,
           fit: BoxFit.fill,
-          width: double.infinity,
-          height: double.infinity,
+          alignment: Alignment.topLeft,
         );
 
     if (imageUrl.isEmpty) return fallback();
 
     return Image.network(
       imageUrl,
+      width: width,
+      height: height,
       fit: BoxFit.fill,
-      width: double.infinity,
-      height: double.infinity,
+      alignment: Alignment.topLeft,
       errorBuilder: (_, __, ___) => fallback(),
     );
   }

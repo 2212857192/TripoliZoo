@@ -4,10 +4,15 @@ namespace App\Http\Controllers\Vet;
 
 use App\Http\Controllers\Controller;
 use App\Models\AutopsyReferral;
+use App\Models\HospitalCase;
+use App\Models\HospitalCaseNotification;
+use App\Models\QuarantineNotification;
 use App\Models\ReceivingTask;
 use App\Models\TreatmentReferral;
 use App\Models\VetNotification;
 use App\Services\AutopsyReferralNotificationService;
+use App\Services\HospitalCaseNotificationService;
+use App\Services\PortalNotificationFeedService;
 use App\Services\TreatmentReferralNotificationService;
 use App\Services\VetNotificationService;
 use Illuminate\Http\JsonResponse;
@@ -15,6 +20,18 @@ use Illuminate\Http\Request;
 
 class VetNotificationController extends Controller
 {
+    public function __construct(private PortalNotificationFeedService $feedService) {}
+
+    public function feed(): JsonResponse
+    {
+        $user = auth()->user();
+        if (! $user) {
+            abort(401);
+        }
+
+        return response()->json($this->feedService->forVet($user));
+    }
+
     public function markReadByTask(Request $request): JsonResponse
     {
         $user = auth()->user();
@@ -81,6 +98,18 @@ class VetNotificationController extends Controller
         return response()->json(['ok' => true]);
     }
 
+    public function markHospitalCaseRead(HospitalCase $hospitalCase): JsonResponse
+    {
+        $user = auth()->user();
+        if (! $user) {
+            abort(401);
+        }
+
+        app(HospitalCaseNotificationService::class)->markAsReadForUser($hospitalCase, $user);
+
+        return response()->json(['ok' => true]);
+    }
+
     public function markAllRead(): JsonResponse
     {
         $user = auth()->user();
@@ -89,6 +118,16 @@ class VetNotificationController extends Controller
         }
 
         VetNotification::query()
+            ->where('user_id', $user->id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        QuarantineNotification::query()
+            ->where('user_id', $user->id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        HospitalCaseNotification::query()
             ->where('user_id', $user->id)
             ->whereNull('read_at')
             ->update(['read_at' => now()]);

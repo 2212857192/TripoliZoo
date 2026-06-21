@@ -77,12 +77,6 @@
 @endsection
 
 @section('content')
-@if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;padding:12px 16px;border-radius:12px;margin-bottom:1rem;font-weight:700;">
-        {{ session('success') }}
-    </div>
-@endif
-
 <div class="top-card">
     <div class="segmented-tabs">
         <a href="{{ route('care.notes.index', array_merge($filters ?? [], ['status' => 'new'])) }}" class="seg-tab {{ $activeStatus === 'new' ? 'active' : '' }}">جديدة</a>
@@ -281,6 +275,8 @@
     function openDialog(id) { document.getElementById(id)?.classList.add('open'); }
     function closeDialog(id) { document.getElementById(id)?.classList.remove('open'); }
     function markReviewed() { openDialog('confirmReviewDialog'); }
+
+    window.openOperationalNoteModal = openModal;
 
     @if(!empty($highlightNote))
         document.addEventListener('DOMContentLoaded', () => openModal(@json($highlightNote)));

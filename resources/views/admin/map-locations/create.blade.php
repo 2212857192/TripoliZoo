@@ -74,12 +74,13 @@
         border-radius: 16px;
         background: #edf4e9;
         cursor: crosshair;
+        min-height: 420px;
     }
     .map-picker img {
         display: block;
         width: 100%;
         max-height: 620px;
-        object-fit: cover;
+        object-fit: contain;
     }
     .picker-pin {
         position: absolute;
@@ -92,6 +93,7 @@
         transform: translate(-50%, -50%);
         display: none;
         pointer-events: none;
+        z-index: 2;
     }
     .actions {
         display: flex;
@@ -126,7 +128,7 @@
 @section('content')
 <a href="{{ route('admin.map-locations.index') }}" class="page-back">العودة لخريطة الحديقة</a>
 
-<form method="POST" action="{{ route('admin.map-locations.store') }}" class="form-card">
+<form method="POST" action="{{ route('admin.map-locations.store') }}" class="form-card" id="mapLocationForm">
     @csrf
     <div class="form-head">
         <h3>إضافة موقع جديد على خريطة الزائر</h3>
@@ -139,7 +141,7 @@
             </div>
             <div class="form-group">
                 <label>فئة الموقع</label>
-                <select class="form-input" name="category" id="category" onchange="toggleAnimalProfile()">
+                <select class="form-input" name="category" id="category">
                     <option value="enclosure" @selected(old('category') === 'enclosure')>أقفاص وموائل الحيوانات</option>
                     <option value="service" @selected(old('category') === 'service')>الخدمات والمرافق العامة</option>
                     <option value="dining" @selected(old('category') === 'dining')>المطاعم والمقاهي</option>
@@ -147,44 +149,20 @@
             </div>
         </div>
 
-        <div class="form-row">
-            <div class="form-group" id="animalProfileGroup">
-                <label>ربط بحيوان مسجّل، اختياري</label>
-                <select class="form-input" name="animal_profile_id">
-                    <option value="">بدون ربط</option>
-                    @foreach($profiles as $profile)
-                        @php $alreadyUsed = $usedProfileIds->contains($profile->id); @endphp
-                        <option
-                            value="{{ $profile->id }}"
-                            @selected(old('animal_profile_id') == $profile->id)
-                            @disabled($alreadyUsed)
-                        >
-                            {{ $profile->animal?->displayLabel() ?? 'حيوان بدون اسم' }}
-                            @if($alreadyUsed) — مرتبط بموقع @elseif(!$profile->is_visible) — مخفي عن الزائر @endif
-                        </option>
-                    @endforeach
-                </select>
-                @if($usedProfileIds->isNotEmpty())
-                    <p style="margin:.45rem 0 0;font-size:.77rem;color:#64748b;font-weight:700;">
-                        ℹ️ الخيارات الرمادية مرتبطة بمواقع أخرى ولا يمكن اختيارها.
-                    </p>
-                @endif
-            </div>
-            <div class="form-group">
-                <label>حالة الظهور</label>
-                <label class="toggle-row">
-                    <input type="hidden" name="is_active" value="0">
-                    <input type="checkbox" name="is_active" value="1" @checked(old('is_active', '1') == '1')>
-                    ظاهر في تطبيق وموقع الزائر
-                </label>
-            </div>
+        <div class="form-group">
+            <label>حالة الظهور</label>
+            <label class="toggle-row">
+                <input type="hidden" name="is_active" value="0">
+                <input type="checkbox" name="is_active" value="1" @checked(old('is_active', '1') == '1')>
+                ظاهر في تطبيق وموقع الزائر
+            </label>
         </div>
 
         <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}" required>
         <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}" required>
 
         <div class="form-group">
-            <label>اضغط على الخريطة لتحديد موضع الدبوس</label>
+            <label>اضغط على الخريطة لتحديد موضع الدبوس — نفس الموضع يظهر في موقع وتطبيق الزائر</label>
             <div class="map-picker" id="mapPicker">
                 <img src="{{ asset('map.PNG') }}" alt="خريطة حديقة حيوان طرابلس">
                 <span class="picker-pin" id="pickerPin"></span>
@@ -200,36 +178,18 @@
 @endsection
 
 @section('scripts')
+@include('partials.admin-map-picker-scripts')
+@include('partials.admin-map-location-form-scripts')
 <script>
-    const picker = document.getElementById('mapPicker');
-    const pin = document.getElementById('pickerPin');
-    const latInput = document.getElementById('latitude');
-    const lngInput = document.getElementById('longitude');
-
-    function setPin(x, y) {
-        latInput.value = y.toFixed(7);
-        lngInput.value = x.toFixed(7);
-        pin.style.left = `${x * 100}%`;
-        pin.style.top = `${y * 100}%`;
-        pin.style.display = 'block';
-    }
-
-    picker.addEventListener('click', (event) => {
-        const rect = picker.getBoundingClientRect();
-        setPin(
-            Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)),
-            Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height))
+    document.addEventListener('DOMContentLoaded', () => {
+        initAdminMapPicker(
+            'mapPicker',
+            'latitude',
+            'longitude',
+            'pickerPin',
+            @json(old('longitude') !== null ? (float) old('longitude') : null),
+            @json(old('latitude') !== null ? (float) old('latitude') : null)
         );
     });
-
-    function toggleAnimalProfile() {
-        const group = document.getElementById('animalProfileGroup');
-        group.style.display = document.getElementById('category').value === 'enclosure' ? 'block' : 'none';
-    }
-
-    @if(old('latitude') !== null && old('longitude') !== null)
-        setPin({{ (float) old('longitude') }}, {{ (float) old('latitude') }});
-    @endif
-    toggleAnimalProfile();
 </script>
 @endsection

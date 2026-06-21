@@ -116,9 +116,8 @@ class DatabaseSeeder extends Seeder
 
         TicketType::insert([
             [
-                'name' => 'تذكرة الكبار — مواطن',
                 'price' => 10,
-                'target_description' => 'دخول فردي',
+                'target_description' => 'تذكرة الكبار — مواطن',
                 'visitor_nationality' => 'مواطن',
                 'visitor_age_group' => 'بالغ',
                 'is_active' => true,
@@ -126,9 +125,8 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'name' => 'تذكرة الأطفال — مواطن',
                 'price' => 5,
-                'target_description' => 'دخول طفل',
+                'target_description' => 'تذكرة الأطفال — مواطن',
                 'visitor_nationality' => 'مواطن',
                 'visitor_age_group' => 'طفل',
                 'is_active' => true,
@@ -136,9 +134,8 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'name' => 'تذكرة أجنبي — بالغ',
                 'price' => 25,
-                'target_description' => 'دخول سياحي',
+                'target_description' => 'تذكرة أجنبي — بالغ',
                 'visitor_nationality' => 'أجنبي',
                 'visitor_age_group' => 'بالغ',
                 'is_active' => true,
@@ -198,8 +195,8 @@ class DatabaseSeeder extends Seeder
         MapLocation::create([
             'name' => 'قفص الأسد الأفريقي',
             'category' => 'enclosure',
-            'latitude' => 32.8492,
-            'longitude' => 13.1782,
+            'latitude' => 0.42,
+            'longitude' => 0.55,
             'description' => 'يقع في المنطقة الشمالية للحديقة.',
             'animal_profile_id' => $lionProfile->id,
             'is_active' => true,
@@ -208,8 +205,8 @@ class DatabaseSeeder extends Seeder
         MapLocation::create([
             'name' => 'بوابة الدخول الرئيسية',
             'category' => 'service',
-            'latitude' => 32.8485,
-            'longitude' => 13.1785,
+            'latitude' => 0.88,
+            'longitude' => 0.50,
             'description' => 'نقطة الدخول والتذاكر',
             'is_active' => true,
         ]);

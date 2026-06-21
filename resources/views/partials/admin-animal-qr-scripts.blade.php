@@ -1,7 +1,12 @@
 <script>
     let animalQrState = { name: '', code: '', scanUrl: '', qrImageUrl: '' };
 
-    function showAnimalQrToast(msg) {
+    function showAnimalQrToast(msg, type = 'success') {
+        if (typeof showAdminToast === 'function') {
+            showAdminToast(msg, type);
+            return;
+        }
+
         const toast = document.getElementById('toast');
         if (!toast) return;
         toast.textContent = msg;
@@ -35,7 +40,7 @@
         const resolvedScanUrl = resolveAnimalQrUrl({ scanUrl, payload, publicUrl });
 
         if (!qrImageUrl || !resolvedScanUrl) {
-            showAnimalQrToast('تعذّر إنشاء رابط QR لهذا الحيوان');
+            showAnimalQrToast('تعذّر إنشاء رابط QR لهذا الحيوان', 'error');
             return;
         }
 
@@ -56,7 +61,7 @@
         const scanUrlEl = document.getElementById('qrScanUrl');
 
         if (!nameEl || !metaEl || !codeEl || !qrImg || !loading || !modal) {
-            showAnimalQrToast('تعذّر فتح نافذة QR');
+            showAnimalQrToast('تعذّر فتح نافذة QR', 'error');
             return;
         }
 
@@ -70,7 +75,7 @@
 
         nameEl.textContent = name || '—';
         metaEl.textContent = subtitle || 'محتوى تعريفي للزوار';
-        codeEl.textContent = 'رمز: ' + (code || '—');
+        codeEl.textContent = group ? group : (code ? `رمز: ${code}` : '');
 
         const groupBadge = document.getElementById('qrAnimalGroup');
         if (groupBadge) {
@@ -114,7 +119,7 @@
         qrImg.onerror = () => {
             loading.style.display = 'none';
             qrImg.style.display = 'none';
-            showAnimalQrToast('تعذّر توليد رمز QR');
+            showAnimalQrToast('تعذّر توليد رمز QR', 'error');
         };
 
         const qrOrigin = resolveQrOrigin({ publicUrl });
@@ -133,7 +138,7 @@
     function downloadAnimalQR() {
         const qrImg = document.getElementById('qrImage');
         if (!qrImg || qrImg.style.display === 'none' || !qrImg.src) {
-            showAnimalQrToast('انتظر حتى يكتمل توليد الرمز');
+            showAnimalQrToast('انتظر حتى يكتمل توليد الرمز', 'error');
             return;
         }
 
@@ -141,35 +146,7 @@
         link.download = 'QR-' + (animalQrState.name || 'animal') + '.svg';
         link.href = qrImg.src;
         link.click();
-        showAnimalQrToast('تم تحميل رمز QR');
-    }
-
-    async function copyAnimalScanUrl() {
-        if (!animalQrState.scanUrl) {
-            showAnimalQrToast('لا يوجد رابط للنسخ');
-            return;
-        }
-
-        try {
-            await navigator.clipboard.writeText(animalQrState.scanUrl);
-            showAnimalQrToast('تم نسخ رابط صفحة الحيوان');
-        } catch (_) {
-            showAnimalQrToast('تعذّر النسخ من المتصفح');
-        }
-    }
-
-    async function copyAnimalQRCode() {
-        if (!animalQrState.code || animalQrState.code === '—') {
-            showAnimalQrToast('لا يوجد رمز للنسخ');
-            return;
-        }
-
-        try {
-            await navigator.clipboard.writeText(animalQrState.code);
-            showAnimalQrToast('تم نسخ رمز الحيوان');
-        } catch (_) {
-            showAnimalQrToast('تعذّر النسخ من المتصفح');
-        }
+        showAnimalQrToast('تم تحميل صورة رمز QR');
     }
 
     document.addEventListener('click', (event) => {
@@ -182,7 +159,7 @@
             const data = JSON.parse(trigger.dataset.qr || '{}');
             openAnimalQR(data);
         } catch (_) {
-            showAnimalQrToast('تعذّر قراءة بيانات QR');
+            showAnimalQrToast('تعذّر قراءة بيانات QR', 'error');
         }
     });
 

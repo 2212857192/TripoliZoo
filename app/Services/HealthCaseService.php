@@ -11,6 +11,7 @@ use App\Models\HealthCase;
 use App\Models\TreatmentReferral;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class HealthCaseService
 {
@@ -19,6 +20,7 @@ class HealthCaseService
         private TreatmentReferralNumberGenerator $referralNumbers,
         private HealthCaseNotificationService $notifier,
         private TreatmentReferralNotificationService $referralNotifier,
+        private AnimalLifecycleService $animalLifecycle,
     ) {}
 
     public function createCase(
@@ -27,16 +29,23 @@ class HealthCaseService
         string $description,
         HealthCaseFollowUpKind $followUpKind,
         ?string $attachmentPath = null,
+        ?string $animalNotes = null,
     ): HealthCase {
+        $this->animalLifecycle->assertAnimalCanReceiveActions($animal);
+        $this->animalLifecycle->assertNoOpenHealthCase($animal);
+
         $healthCase = null;
 
-        DB::transaction(function () use ($supervisor, $animal, $description, $followUpKind, $attachmentPath, &$healthCase) {
+        DB::transaction(function () use ($supervisor, $animal, $description, $followUpKind, $attachmentPath, $animalNotes, &$healthCase) {
             $healthCase = HealthCase::create([
                 'case_number' => $this->numbers->next(),
                 'animal_id' => $animal->id,
                 'supervisor_id' => $supervisor->id,
                 'group' => $animal->group,
                 'description' => $description,
+                'animal_notes' => $followUpKind === HealthCaseFollowUpKind::NeedsReferral
+                    ? ($animalNotes !== null && trim($animalNotes) !== '' ? trim($animalNotes) : null)
+                    : null,
                 'follow_up_kind' => $followUpKind,
                 'has_attachment' => $attachmentPath !== null,
                 'attachment_path' => $attachmentPath,
@@ -44,6 +53,7 @@ class HealthCaseService
             ]);
         });
 
+        /** @var HealthCase $healthCase */
         $fresh = $healthCase->fresh(['animal', 'supervisor']);
         $this->notifier->notifyNewCase($fresh);
 
@@ -53,7 +63,9 @@ class HealthCaseService
     public function markReviewed(HealthCase $healthCase, User $careHead): HealthCase
     {
         if (! $healthCase->canBeActedOn()) {
-            return $healthCase;
+            throw ValidationException::withMessages([
+                'case_number' => 'لا يمكن مراجعة هذه الحالة، فقد تمت معالجتها مسبقاً.',
+            ]);
         }
 
         $healthCase->update([
@@ -69,12 +81,21 @@ class HealthCaseService
 
     public function referForTreatment(HealthCase $healthCase, User $careHead): HealthCase
     {
+        $healthCase->loadMissing('animal');
+        if ($healthCase->animal) {
+            $this->animalLifecycle->assertAnimalCanReceiveActions($healthCase->animal);
+        }
+
         if ($healthCase->follow_up_kind !== HealthCaseFollowUpKind::NeedsReferral) {
-            abort(422, 'هذه الحالة مسجّلة بأنها لا تحتاج إحالة.');
+            throw ValidationException::withMessages([
+                'case_number' => 'هذه الحالة مسجّلة بأنها لا تحتاج إحالة.',
+            ]);
         }
 
         if (! $healthCase->canBeActedOn()) {
-            return $healthCase;
+            throw ValidationException::withMessages([
+                'case_number' => 'لا يمكن إحالة هذه الحالة، فقد تمت معالجتها مسبقاً.',
+            ]);
         }
 
         $referral = null;

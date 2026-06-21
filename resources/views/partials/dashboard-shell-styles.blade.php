@@ -120,13 +120,158 @@
         position: absolute;
         left: 0;
         top: calc(100% + 8px);
-        width: 340px;
+        width: 360px;
         background: #fff;
         border: 1px solid var(--border);
         border-radius: 14px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         z-index: 1000;
         padding: 18px;
+    }
+
+    .notification-dropdown-title {
+        font-size: 0.95rem;
+        font-weight: 800;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 10px;
+        margin-bottom: 12px;
+        color: var(--text-main);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .notification-count-pill {
+        background: #fef2f2;
+        color: #ef4444;
+        font-size: 0.7rem;
+        padding: 2px 8px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    .notification-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+
+    .notification-filter-btn {
+        border: 1px solid var(--border);
+        background: #f8fafc;
+        color: #64748b;
+        border-radius: 999px;
+        padding: 5px 10px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+    .notification-filter-btn:hover,
+    .notification-filter-btn.active {
+        background: #ecfdf5;
+        border-color: #86efac;
+        color: #166534;
+    }
+
+    .notification-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 360px;
+        overflow-y: auto;
+    }
+
+    .portal-notification-item {
+        font-size: 0.8rem;
+        border: 1px solid #f1f5f9;
+        padding: 10px 10px 10px 14px;
+        border-radius: 10px;
+        transition: background 0.15s, border-color 0.15s;
+        position: relative;
+    }
+
+    .portal-notification-item.is-unread {
+        background: #f0fdf4;
+        border-color: #bbf7d0;
+        cursor: pointer;
+    }
+
+    .portal-notification-item.is-unread::before {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 10px;
+        bottom: 10px;
+        width: 3px;
+        border-radius: 999px;
+        background: #16a34a;
+    }
+
+    .portal-notification-item.is-read {
+        background: #fff;
+        border-color: #e2e8f0;
+        cursor: pointer;
+        opacity: 0.92;
+    }
+
+    .portal-notification-item.is-read:hover {
+        background: #f8fafc;
+    }
+
+    .portal-notification-item.is-unread:hover {
+        background: #dcfce7;
+    }
+
+    .portal-notification-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+
+    .portal-notification-title {
+        font-weight: 800;
+        margin: 0;
+        color: var(--text-main);
+        line-height: 1.45;
+    }
+
+    .portal-notification-message {
+        color: var(--text-muted);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .portal-notification-time {
+        display: inline-block;
+        margin-top: 6px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #94a3b8;
+    }
+
+    .notification-new-badge {
+        flex-shrink: 0;
+        background: #16a34a;
+        color: #fff;
+        font-size: 0.62rem;
+        font-weight: 900;
+        padding: 2px 7px;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+
+    .notification-empty-state {
+        font-size: 0.8rem;
+        text-align: center;
+        padding: 20px 0;
+        color: var(--text-muted);
     }
 
     /* ── قائمة المستخدم ── */

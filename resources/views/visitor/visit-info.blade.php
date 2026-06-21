@@ -316,9 +316,9 @@
                 <div class="value">{{ $hours['working_hours_label'] ?? '—' }}</div>
             </div>
             <div class="stat-chip">
-                <div>📅</div>
-                <div class="label">أيام العمل</div>
-                <div class="value">{{ $hours['working_days_label'] ?? '—' }}</div>
+                <div>🎫</div>
+                <div class="label">آخر موعد للدخول</div>
+                <div class="value">{{ $hours['last_ticket_time_note'] ?? '—' }}</div>
             </div>
         </div>
 

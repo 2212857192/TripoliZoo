@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_group_followup/domain/follow_up_entry.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_group_followup/presentation/widgets/follow_up_time_label.dart';
+import 'package:tripolizoo/shared/api/api_config.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
 
 class FollowUpEntryCard extends StatefulWidget {
@@ -134,7 +135,7 @@ class _FollowUpEntryCardState extends State<FollowUpEntryCard> {
       HealthFollowUpEntry e => [
           if (e.fullDescription != null) _expandedText(e.fullDescription!),
           if (e.extraNotes != null) _expandedText(e.extraNotes!),
-          if (e.hasAttachment) _attachmentRow(),
+          if (e.hasAttachment) _attachmentPreview(e.attachmentUrl),
         ],
       BirthFollowUpEntry e => [
           for (var i = 0; i < e.newborns.length; i++)
@@ -146,12 +147,12 @@ class _FollowUpEntryCardState extends State<FollowUpEntryCard> {
         ],
       MortalityFollowUpEntry e => [
           if (e.extraNotes != null) _expandedText(e.extraNotes!),
-          if (e.hasAttachment) _attachmentRow(),
+          if (e.hasAttachment) _attachmentPreview(e.attachmentUrl),
         ],
       OperationalNoteEntry e => [
           if (e.fullText != null) _expandedText(e.fullText!),
           if (e.extraNotes != null) _expandedText(e.extraNotes!),
-          if (e.hasAttachment) _attachmentRow(),
+          if (e.hasAttachment) _attachmentPreview(e.attachmentUrl),
         ],
     };
   }
@@ -171,21 +172,46 @@ class _FollowUpEntryCardState extends State<FollowUpEntryCard> {
     );
   }
 
-  Widget _attachmentRow() {
-    return Row(
-      children: [
-        const Icon(Icons.attach_file_rounded,
-            size: 16, color: AppColors.primary),
-        const SizedBox(width: 6),
-        Text(
-          'مرفق ميداني',
-          style: GoogleFonts.cairo(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: _muted,
+  Widget _attachmentPreview(String? imageUrl) {
+    final resolved = ApiConfig.resolveAssetUrl(imageUrl);
+    if (resolved == null || resolved.trim().isEmpty) {
+      return _attachmentFallback();
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Image.network(
+        resolved,
+        height: 160,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _attachmentFallback(),
+      ),
+    );
+  }
+
+  Widget _attachmentFallback() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _border),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.image_outlined, size: 16, color: AppColors.primary),
+          const SizedBox(width: 6),
+          Text(
+            'تعذر عرض الصورة',
+            style: GoogleFonts.cairo(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: _muted,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

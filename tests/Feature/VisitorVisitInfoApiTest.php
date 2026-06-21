@@ -19,23 +19,18 @@ class VisitorVisitInfoApiTest extends TestCase
             'security_phone' => '091-555-0123',
             'open_time' => '10:00',
             'close_time' => '18:00',
+            'last_ticket_time_note' => 'قبل ساعة واحدة من موعد الإغلاق',
             'entry_instructions' => "• الإشراف على الأطفال.\n• الالتزام بالمسارات.",
-            'working_days' => [
-                'sat' => true,
-                'sun' => true,
-                'mon' => true,
-                'tue' => true,
-                'wed' => true,
-                'thu' => true,
-                'fri' => false,
-            ],
         ]);
 
         $this->getJson('/api/visit-info')
             ->assertOk()
             ->assertJsonPath('data.status.text', 'مفتوحة — أهلاً بزوارنا')
             ->assertJsonPath('data.hours.working_hours_label', '10:00 - 18:00')
-            ->assertJsonPath('data.hours.working_days_label', 'السبت — الخميس')
+            ->assertJsonPath('data.hours.schedule_label', 'مفتوحة يومياً')
+            ->assertJsonPath('data.hours.working_days_label', 'مفتوحة يومياً')
+            ->assertJsonPath('data.hours.closed_days_label', null)
+            ->assertJsonPath('data.hours.open_daily', true)
             ->assertJsonPath('data.ambulance_phone', '193')
             ->assertJsonPath('data.security_phone', '091-555-0123')
             ->assertJsonCount(2, 'data.guidelines')

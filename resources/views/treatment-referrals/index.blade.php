@@ -123,12 +123,6 @@
 
 @section('content')
 
-@if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;padding:12px 16px;border-radius:12px;margin-bottom:1rem;font-weight:700;">
-        {{ session('success') }}
-    </div>
-@endif
-
 <form method="GET" action="{{ $portalBase }}/referrals/treatment" class="top-card">
     <div class="filter-bar">
         <div class="search-box">
@@ -432,7 +426,9 @@
         document.getElementById('hDate').textContent = d.case_date || '—';
         document.getElementById('hSupervisor').textContent = d.supervisor || '—';
         document.getElementById('hDesc').textContent = d.description || '—';
-        document.getElementById('hNotes').textContent = d.description || '—';
+        document.getElementById('hNotes').textContent = d.animal_notes?.trim()
+            ? d.animal_notes
+            : 'لا توجد ملاحظات مسجلة عن الحيوان.';
 
         document.getElementById('statusPending').style.display = 'none';
         document.getElementById('statusApproved').style.display = 'none';
@@ -497,6 +493,8 @@
         if (e.target === document.getElementById('approveConfirm')) closeConfirm('approveConfirm');
         if (e.target === document.getElementById('rejectConfirm')) closeConfirm('rejectConfirm');
     };
+
+    window.openTreatmentReferralModal = openModal;
 
     @if(!empty($highlightReferral))
         document.addEventListener('DOMContentLoaded', () => openModal(@json($highlightReferral)));

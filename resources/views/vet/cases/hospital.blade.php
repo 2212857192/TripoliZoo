@@ -50,37 +50,88 @@
     .btn-refresh:hover { background: #f8fafc; }
 
     /* ══ Segmented Tabs ══ */
-    .tabs-card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:0.8rem 1.2rem; margin-bottom:1.5rem; display:flex; align-items:center; flex-wrap:wrap; gap:12px; }
-    .segmented-tabs {
-        display: inline-flex;
+    .tabs-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.8rem 1.2rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    /* ── Filter bar ── */
+    .filter-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-bar {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
         flex-wrap: wrap;
-        background: #f1f5f9;
-        padding: 5px;
+        width: 100%;
+    }
+
+    .search-box {
+        flex: 1;
+        min-width: 220px;
+        position: relative;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 10px 40px 10px 14px;
+        border: 1.5px solid #e2e8f0;
         border-radius: 10px;
-        gap: 6px;
-        max-width: 100%;
-    }
-    .seg-tab {
-        background: transparent;
-        border: none;
-        padding: 9px 18px;
-        border-radius: 7px;
         font-family: 'Cairo', sans-serif;
-        font-size: 0.88rem;
-        font-weight: 800;
-        color: #64748b;
-        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        outline: none;
+        color: #0f172a;
         transition: all 0.2s;
-        white-space: nowrap;
-        flex-shrink: 0;
     }
-    .seg-tab:hover { color: #2E7D32; }
-    .seg-tab.active { background: #fff; color: #2E7D32; box-shadow: 0 2px 4px rgba(0,0,0,0.07); }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-    .btn-add { display:inline-flex; align-items:center; gap:8px; padding:8px 16px; background:#16a34a; border:none; border-radius:8px; font-family:'Cairo',sans-serif; font-size:0.9rem; font-weight:800; color:#fff; cursor:pointer; transition:all 0.2s; box-shadow:0 2px 4px rgba(22,163,74,0.2); }
-    .btn-add:hover { background:#15803d; box-shadow:0 4px 8px rgba(22,163,74,0.3); }
+
+    .search-box input:focus {
+        border-color: #2E7D32;
+        box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+    }
+
+    .search-box svg {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        pointer-events: none;
+    }
+
+    .filter-select {
+        padding: 10px 14px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #334155;
+        outline: none;
+        cursor: pointer;
+        min-width: 150px;
+        background: #fff;
+    }
+
+    .filter-select:focus {
+        border-color: #2E7D32;
+        box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+    }
+
+    .date-filter-group {
+        min-width: 150px;
+    }
     .btn-tbl:hover {
         background: #f8fafc;
         border-color: #cbd5e1;
@@ -89,18 +140,11 @@
     .btn-tbl.view:hover { color: #0284C7; background: #E0F2FE; border-color: #BAE6FD; }
     .btn-tbl.edit:hover { color: #E8651A; background: #FFEDD5; border-color: #FED7AA; }
 
-    /* ── Filter Card ── */
-    .filter-card {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1.2rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        justify-content: flex-start;
-    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .btn-add { display:inline-flex; align-items:center; gap:8px; padding:8px 16px; background:#16a34a; border:none; border-radius:8px; font-family:'Cairo',sans-serif; font-size:0.9rem; font-weight:800; color:#fff; cursor:pointer; transition:all 0.2s; box-shadow:0 2px 4px rgba(22,163,74,0.2); }
+    .btn-add:hover { background:#15803d; box-shadow:0 4px 8px rgba(22,163,74,0.3); }
 
     /* ── Table ── */
     .table-card {
@@ -369,31 +413,31 @@
 </div>
 
 {{-- ═══ FILTER CARD ═══ --}}
-<form method="GET" action="{{ $vetBase }}/cases/hospital" style="background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.2rem; margin-bottom: 1.5rem; display: flex; justify-content: flex-start; align-items: center;">
-    <div style="display: flex; gap: 15px; width: 100%;">
-        <div style="flex: 2; position: relative;">
-            <svg style="position: absolute; right: 12px; top: 11px; color: #94a3b8;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="بحث برقم الحيوان أو نوعه..." style="width: 100%; padding: 10px 35px 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 600; outline: none; color: #0f172a;">
+<form method="GET" action="{{ $vetBase }}/cases/hospital" class="filter-card">
+    <div class="filter-bar">
+        <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="بحث برقم الحيوان أو نوعه...">
         </div>
-        <select name="group" style="flex: 1; padding: 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; color: #475569; font-weight: 600; outline: none;">
-                        @include('partials.animal-group-options', ['emptyLabel' => 'جميع المجموعات', 'selected' => $filters['group'] ?? '', 'withValues' => true])
+        <select class="filter-select" name="group">
+            @include('partials.animal-group-options', ['emptyLabel' => 'جميع المجموعات', 'selected' => $filters['group'] ?? '', 'withValues' => true])
         </select>
         @include('partials.date-filter', [
             'filterId' => 'hospitalDateFilter',
-            'selectClass' => '',
-            'wrapperStyle' => 'flex: 1;',
-            'selectStyle' => 'width: 100%; padding: 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: Cairo, sans-serif; font-size: 0.9rem; color: #475569; font-weight: 600; outline: none;',
+            'selectClass' => 'filter-select',
+            'wrapperStyle' => 'min-width:150px;',
+            'selectStyle' => 'width:100%;',
             'showWeek' => false,
             'showLast7' => true,
             'showLast30' => true,
         ])
-        <select name="status" id="statusFilter" style="flex: 1; padding: 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; color: #475569; font-weight: 600; outline: none;">
+        <select class="filter-select" name="status" id="statusFilter">
             <option value="">جميع الحالات</option>
             @foreach(\App\Enums\HospitalCaseStatus::cases() as $statusOption)
                 <option value="{{ $statusOption->value }}" @selected(($filters['status'] ?? '') === $statusOption->value)>{{ $statusOption->label() }}</option>
             @endforeach
         </select>
-        <button type="submit" class="btn-search" style="flex: 0 0 auto; padding: 10px 18px;">بحث</button>
+        <button type="submit" class="btn-search">بحث</button>
     </div>
 </form>
 
@@ -758,9 +802,9 @@ function switchTab(evt, tabId) {
 }
 
 const statusByTab = {
-    'active-cases': ['جاهز للخروج', 'قيد العلاج', 'لا يستجيب للعلاج'],
-    'pending-handover': ['بانتظار الاستلام', 'تعذر الاستلام مؤقتًا'],
-    'completed-cases': ['خروج بعد العلاج', 'ذبح اضطراري']
+    'active-cases': ['قيد العلاج', 'لا يستجيب للعلاج', 'بانتظار اعتماد الخروج', 'بانتظار اعتماد الذبح'],
+    'pending-handover': ['بانتظار الاستلام', 'تعذر الاستلام مؤقتاً', 'جاهز للخروج'],
+    'completed-cases': ['تم استلامها', 'ذبح اضطراري']
 };
 
 function updateStatusFilter(tabId) {

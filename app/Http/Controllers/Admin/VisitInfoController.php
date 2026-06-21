@@ -40,12 +40,11 @@ class VisitInfoController extends Controller
             'open_time' => ['nullable', 'date_format:H:i'],
             'close_time' => ['nullable', 'date_format:H:i'],
             'last_ticket_time_note' => ['nullable', 'string', 'max:255'],
-            'working_days' => ['nullable', 'array'],
-            'working_days.*' => ['boolean'],
         ]);
 
         $settings = VisitSetting::current();
         $data['status_visible'] = $request->boolean('status_visible');
+        $data['working_days'] = VisitSetting::defaultWorkingDays();
         $data['updated_by'] = $request->user()->id;
 
         $settings->update($data);

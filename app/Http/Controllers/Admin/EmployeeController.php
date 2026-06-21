@@ -40,6 +40,7 @@ class EmployeeController extends Controller
         return view('admin.employees.index', [
             'employees' => $query->get(),
             'roleOptions' => UserRole::employeeOptions(),
+            'createRoleOptions' => $this->availableRolesForCreate(),
             'groupOptions' => $this->groupOptions(),
         ]);
     }
@@ -97,15 +98,35 @@ class EmployeeController extends Controller
     {
         $this->ensureEmployee($employee);
 
+        $willActivate = $employee->status !== 'active';
+
+        if ($willActivate) {
+            $conflict = $this->findActiveAccountConflict(
+                $employee->role,
+                $employee->assigned_group,
+                $employee->id,
+            );
+
+            if ($conflict) {
+                return back()->with(
+                    'error',
+                    "لا يمكن تفعيل هذا الحساب. يوجد حساب مفعّل حالياً لمنصب «{$employee->role}».",
+                );
+            }
+        }
+
         $employee->update([
-            'status' => $employee->status === 'active' ? 'inactive' : 'active',
+            'status' => $willActivate ? 'active' : 'inactive',
         ]);
 
         $label = $employee->status === 'active' ? 'تفعيل' : 'إيقاف';
 
         AdminActivityLogger::log('user', $employee->id, 'status', "{$label} حساب: {$employee->name}");
 
-        return back()->with('success', 'تم تحديث حالة الحساب.');
+        return back()->with(
+            'success',
+            $employee->status === 'active' ? 'تم تفعيل الحساب.' : 'تم تعطيل الحساب.',
+        );
     }
 
     private function ensureEmployee(User $employee): void
@@ -157,6 +178,7 @@ class EmployeeController extends Controller
             $duplicateExists = User::query()
                 ->where('role', $data['role'])
                 ->where('assigned_group', $data['assigned_group'])
+                ->where('status', 'active')
                 ->when($employee, fn ($query) => $query->whereKeyNot($employee->id))
                 ->exists();
 
@@ -165,12 +187,83 @@ class EmployeeController extends Controller
                 $groupLabel = $data['assigned_group'];
 
                 return throw \Illuminate\Validation\ValidationException::withMessages([
-                    'assigned_group' => ["يوجد {$roleLabel} مسجّل مسبقاً للمجموعة «{$groupLabel}». لا يمكن إضافة أكثر من حساب بنفس الدور لنفس المجموعة."],
+                    'assigned_group' => ["يوجد {$roleLabel} مفعّل مسبقاً للمجموعة «{$groupLabel}». لا يمكن إضافة أكثر من حساب بنفس الدور لنفس المجموعة."],
+                ]);
+            }
+        }
+
+        if (($data['status'] ?? 'inactive') === 'active') {
+            $conflict = $this->findActiveAccountConflict(
+                $data['role'],
+                $data['assigned_group'] ?? null,
+                $employee?->id,
+            );
+
+            if ($conflict) {
+                return throw \Illuminate\Validation\ValidationException::withMessages([
+                    'role' => ["يوجد حساب مفعّل حالياً لمنصب «{$data['role']}». لا يمكن تفعيل أكثر من حساب لنفس المنصب."],
+                ]);
+            }
+        }
+
+        if (! $employee && $roleEnum?->isSingleAccountRole()) {
+            $occupied = User::query()
+                ->where('role', $data['role'])
+                ->where('status', 'active')
+                ->exists();
+
+            if ($occupied) {
+                return throw \Illuminate\Validation\ValidationException::withMessages([
+                    'role' => ["يوجد حساب مفعّل حالياً لمنصب «{$data['role']}». لا يمكن إنشاء حساب جديد لنفس المنصب."],
                 ]);
             }
         }
 
         return $data;
+    }
+
+    /** @return list<string> */
+    private function availableRolesForCreate(): array
+    {
+        $occupiedSingleRoles = User::query()
+            ->employees()
+            ->where('status', 'active')
+            ->whereIn('role', collect(UserRole::employeeOptions())
+                ->filter(fn (string $role) => UserRole::tryFrom($role)?->isSingleAccountRole())
+                ->values()
+                ->all())
+            ->pluck('role')
+            ->all();
+
+        return array_values(array_filter(
+            UserRole::employeeOptions(),
+            fn (string $role) => ! in_array($role, $occupiedSingleRoles, true),
+        ));
+    }
+
+    private function findActiveAccountConflict(string $role, ?string $assignedGroup, ?int $ignoreUserId = null): bool
+    {
+        $roleEnum = UserRole::tryFrom($role);
+
+        if (! $roleEnum) {
+            return false;
+        }
+
+        $query = User::query()
+            ->employees()
+            ->where('role', $role)
+            ->where('status', 'active')
+            ->when($ignoreUserId, fn ($builder) => $builder->whereKeyNot($ignoreUserId));
+
+        if ($roleEnum->requiresAssignedGroup()) {
+            if (! filled($assignedGroup)) {
+                return false;
+            }
+
+            $query->where('assigned_group', $assignedGroup);
+        }
+
+        return $query->exists();
     }
 
     /** @return list<string> */

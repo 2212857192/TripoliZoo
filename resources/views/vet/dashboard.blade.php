@@ -379,7 +379,6 @@
                 <tr>
                     <th>نوع الحالة</th>
                     <th>الحيوان</th>
-                    <th>الوضع الحالي</th>
                     <th>التاريخ</th>
                     <th>الوضع الإجرائي</th>
                     <th>إجراء</th>
@@ -395,7 +394,6 @@
                         <div class="animal-id">#{{ $case['animal_code'] }}</div>
                         @endif
                     </td>
-                    <td style="max-width:220px;">{{ $case['situation'] }}</td>
                     <td>{{ $case['date'] ?? '—' }}</td>
                     <td><span class="badge {{ $case['action_badge_class'] }}">{{ $case['action_label'] }}</span></td>
                     <td>
@@ -408,7 +406,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" style="text-align:center;color:#64748b;font-weight:700;padding:2rem;">لا توجد حالات عاجلة حالياً</td>
+                    <td colspan="5" style="text-align:center;color:#64748b;font-weight:700;padding:2rem;">لا توجد حالات عاجلة حالياً</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -416,84 +414,41 @@
     </div>
 </div>
 
-{{-- 4 & 5. TWO COLUMN LAYOUT --}}
-<div class="two-col-grid">
-
-    {{-- 3. REFERRALS TRACKING --}}
-    <div class="table-card" style="margin-bottom: 0;">
-        <div class="table-card-header">
-            <div class="table-card-title">
-                <div class="title-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13L2 9L22 2Z"></path></svg>
-                </div>
-                متابعة الإحالات
+{{-- 4. REFERRALS TRACKING --}}
+<div class="table-card" style="margin-bottom: 2rem;">
+    <div class="table-card-header">
+        <div class="table-card-title">
+            <div class="title-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13L2 9L22 2Z"></path></svg>
             </div>
-        </div>
-        <div style="overflow-x: auto;">
-            <table class="custom-table" style="font-size: 0.85rem;">
-                <thead>
-                    <tr>
-                        <th>نوع الإحالة</th>
-                        <th>الحالة</th>
-                        <th>العدد</th>
-                        <th>إجراء</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($referralSummary ?? [] as $row)
-                    <tr>
-                        <td style="font-weight: 800; color:#1e293b;">{{ $row['label'] }}</td>
-                        <td><span class="badge {{ $row['badge_class'] }}">{{ $row['status_label'] }}</span></td>
-                        <td style="font-weight: 800; font-size: 1rem;">{{ $row['count'] }}</td>
-                        <td>
-                            <a href="{{ $row['url'] }}" class="btn-tbl" title="عرض">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                            </a>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            متابعة الإحالات
         </div>
     </div>
-
-    {{-- 4. RECENT IMPORTANT ALERTS --}}
-    <div class="table-card" style="margin-bottom: 0;">
-        <div class="table-card-header">
-            <div class="table-card-title">
-                <div class="title-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                </div>
-                آخر التنبيهات المهمة
-            </div>
-        </div>
-        <div class="alerts-list">
-            @forelse($recentAlerts ?? [] as $alert)
-            <a href="{{ $alert['url'] }}" class="alert-item">
-                <div class="alert-content">
-                    <div class="alert-icon" style="{{ $alert['icon_style'] }}">
-                        {!! $alert['icon_svg'] !!}
-                    </div>
-                    <div class="alert-text">{{ $alert['text'] }}</div>
-                </div>
-                <div style="display:flex; align-items:center;">
-                    @if(!empty($alert['at']))
-                    <div class="alert-time">{{ $alert['at']->diffForHumans() }}</div>
-                    @endif
-                    <div class="alert-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></div>
-                </div>
-            </a>
-            @empty
-            <div class="alert-item" style="cursor:default;">
-                <div class="alert-content">
-                    <div class="alert-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                    </div>
-                    <div class="alert-text" style="color:#94a3b8;">لا توجد تنبيهات مهمة حالياً</div>
-                </div>
-            </div>
-            @endforelse
-        </div>
+    <div style="overflow-x: auto;">
+        <table class="custom-table" style="font-size: 0.85rem;">
+            <thead>
+                <tr>
+                    <th>نوع الإحالة</th>
+                    <th>الحالة</th>
+                    <th>العدد</th>
+                    <th>إجراء</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($referralSummary ?? [] as $row)
+                <tr>
+                    <td style="font-weight: 800; color:#1e293b;">{{ $row['label'] }}</td>
+                    <td><span class="badge {{ $row['badge_class'] }}">{{ $row['status_label'] }}</span></td>
+                    <td style="font-weight: 800; font-size: 1rem;">{{ $row['count'] }}</td>
+                    <td>
+                        <a href="{{ $row['url'] }}" class="btn-tbl" title="عرض">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </a>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </div>
 

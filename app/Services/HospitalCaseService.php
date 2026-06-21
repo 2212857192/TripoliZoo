@@ -11,11 +11,18 @@ use Illuminate\Support\Facades\DB;
 
 class HospitalCaseService
 {
-    public function __construct(private HospitalCaseNumberGenerator $numbers) {}
+    public function __construct(
+        private HospitalCaseNumberGenerator $numbers,
+        private AnimalLifecycleService $animalLifecycle,
+    ) {}
 
     public function createFromReferral(TreatmentReferral $referral, User $vetHead): HospitalCase
     {
         $referral->loadMissing(['healthCase', 'animal']);
+
+        if ($referral->animal) {
+            $this->animalLifecycle->assertAnimalCanReceiveActions($referral->animal);
+        }
 
         if ($referral->hospitalCase) {
             return $referral->hospitalCase;
@@ -35,8 +42,13 @@ class HospitalCaseService
                 'admitted_by' => $vetHead->id,
                 'admitted_at' => now(),
             ]);
+
+            if ($referral->animal) {
+                $this->animalLifecycle->referActiveFieldCasesToHospital($referral->animal, $hospitalCase);
+            }
         });
 
+        /** @var HospitalCase $hospitalCase */
         return $hospitalCase->fresh(['animal', 'healthCase', 'treatmentReferral', 'admitter']);
     }
 

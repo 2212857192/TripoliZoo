@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        DB::table('ticket_types')
+            ->where(function ($query) {
+                $query->whereNull('target_description')
+                    ->orWhere('target_description', '');
+            })
+            ->update([
+                'target_description' => DB::raw('name'),
+            ]);
+
+        Schema::table('ticket_types', function (Blueprint $table) {
+            $table->dropColumn('name');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('ticket_types', function (Blueprint $table) {
+            $table->string('name')->after('id');
+        });
+
+        DB::table('ticket_types')->update([
+            'name' => DB::raw('target_description'),
+        ]);
+    }
+};

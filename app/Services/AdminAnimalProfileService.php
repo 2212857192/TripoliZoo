@@ -42,7 +42,9 @@ class AdminAnimalProfileService
             });
         }
 
-        $profiles = $query->get();
+        $profiles = $query->get()
+            ->unique(fn (AnimalProfile $profile) => $profile->animal?->species)
+            ->values();
 
         return [
             'profiles' => $profiles,
@@ -63,8 +65,13 @@ class AdminAnimalProfileService
     /** @return array<string, mixed> */
     public function createViewData(): array
     {
+        $animals = $this->eligibleAnimalsQuery()->get();
+
         return [
-            'animals' => $this->eligibleAnimalsQuery()->get(),
+            'animals' => $animals
+                ->unique(fn (Animal $animal) => $animal->species)
+                ->sortBy('species')
+                ->values(),
         ];
     }
 
@@ -176,6 +183,12 @@ class AdminAnimalProfileService
         return Animal::query()
             ->insideZooOfficially()
             ->whereDoesntHave('profile')
+            ->whereNotExists(function ($subquery) {
+                $subquery->selectRaw('1')
+                    ->from('animal_profiles')
+                    ->join('animals as profile_animals', 'profile_animals.id', '=', 'animal_profiles.animal_id')
+                    ->whereColumn('profile_animals.species', 'animals.species');
+            })
             ->orderBy('species')
             ->orderBy('code');
     }

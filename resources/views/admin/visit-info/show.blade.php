@@ -345,10 +345,25 @@
 @endsection
 
 @section('content')
-<div class="visit-container">
+@php
+    $settings = $settings ?? \App\Models\VisitSetting::current();
+    $readOnly = $readOnly ?? false;
+@endphp
 
-    <!-- Main Section -->
+<div class="visit-container">
     <div class="main-panel" style="grid-column: span 2;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
+            <div class="meta-time" style="margin:0;font-size:.88rem;color:#64748b;font-weight:800;">
+                آخر تحديث: {{ $settings->lastUpdatedLabel() }}
+            </div>
+            @unless($readOnly)
+            <a href="{{ route('admin.visit-info.edit') }}" class="btn-luxury-action" style="width:auto;padding:12px 30px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                تعديل معلومات الزيارة
+            </a>
+            @endunless
+        </div>
+
         <div style="display: flex; flex-direction: column; gap: 1.8rem;">
             
             <!-- Current Status & Urgent Alert -->
@@ -364,14 +379,16 @@
                         <div class="grid-cell" style="flex: 1; min-width: 250px; background: white; border: 1.5px solid #fef08a;">
                             <label style="color: #854d0e;">حالة التشغيل</label>
                             <div class="status-text-row" style="margin-top: 8px;">
-                                <span class="status-text-value" id="statusText">مفتوحة جزئياً — بعض الأقسام تحت الصيانة</span>
-                                <button type="button" class="btn-visibility visible" id="statusVisBtn" onclick="toggleStatusVisibility()">👁 ظاهر للزوار</button>
+                                <span class="status-text-value" id="statusText">{{ $settings->status_text ?: '—' }}</span>
+                                <span class="btn-visibility {{ $settings->status_visible ? 'visible' : 'hidden' }}" style="cursor:default;">
+                                    {{ $settings->status_visible ? '👁 ظاهر للزوار' : '🚫 مخفي عن الزوار' }}
+                                </span>
                             </div>
                         </div>
                         <div class="grid-cell" style="flex: 2; min-width: 300px; background: white; border: 1.5px solid #fef08a;">
                             <label style="color: #854d0e;">التنبيه العاجل للزوار (يظهر في واجهة التطبيق)</label>
                             <span style="font-size: 0.95rem; color: #451a03; display: block; margin-top: 4px; font-weight: 700;">
-                                ⚠️ نود إحاطة زوارنا الكرام بأن "منطقة الطيور البرية" ومبنى "القبة الفلكية" مغلقان حالياً لأعمال الصيانة الدورية وتحديث المرافق.
+                                {{ $settings->urgent_alert ?: 'لا يوجد تنبيه عاجل حالياً.' }}
                             </span>
                         </div>
                     </div>
@@ -390,11 +407,11 @@
                     <div class="premium-grid">
                         <div class="grid-cell">
                             <label>رقم الإسعاف</label>
-                            <span dir="ltr">193</span>
+                            <span dir="ltr">{{ $settings->ambulance_phone ?: '—' }}</span>
                         </div>
                         <div class="grid-cell">
                             <label>رقم الأمن</label>
-                            <span dir="ltr">091-555-0123</span>
+                            <span dir="ltr">{{ $settings->security_phone ?: '—' }}</span>
                         </div>
                     </div>
                 </div>
@@ -409,10 +426,7 @@
                     <h3>تعليمات الدخول</h3>
                 </div>
                 <div class="premium-card-body">
-                    <p class="entry-instructions">• يرجى الحضور من البوابة الرئيسية مع التذكرة الإلكترونية أو الورقية.
-• يُمنع إدخال الطعام والمشروبات من خارج الحديقة.
-• يلزم مرافقة الأطفال دون سن 12 سنة في جميع الأوقات.
-• يُرجى الالتزام بالمسارات المحددة وعدم تسلق الأسوار أو الأقفاص.</p>
+                    <p class="entry-instructions">{{ $settings->entry_instructions ?: '—' }}</p>
                 </div>
             </div>
 
@@ -422,58 +436,28 @@
                     <div class="icon-wrapper">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                     </div>
-                    <h3>أوقات ومواعيد العمل الرسمية</h3>
+                    <h3>أوقات ومواعيد العمل</h3>
                 </div>
                 <div class="premium-card-body">
                     <div class="premium-grid">
                         <div class="grid-cell">
-                            <label>أيام العمل</label>
-                            <span>كل أيام الأسبوع (السبت — الخميس)</span>
+                            <label>نمط العمل</label>
+                            <span>{{ \App\Models\VisitSetting::scheduleLabel() }}</span>
                         </div>
                         <div class="grid-cell">
                             <label>مواعيد الدوام اليومي</label>
-                            <span>09:00 ص — 06:00 م</span>
+                            <span>{{ $settings->formattedOpenTime() }} — {{ $settings->formattedCloseTime() }}</span>
                         </div>
-                        <div class="grid-cell">
-                            <label>يوم الإغلاق الأسبوعي</label>
-                            <span>الجمعة</span>
-                        </div>
-                        <div class="grid-cell">
+                        <div class="grid-cell" style="grid-column: span 2;">
                             <label>آخر دخول متاح للزوار</label>
-                            <span>قبل ساعة واحدة من موعد الإغلاق</span>
+                            <span>{{ $settings->last_ticket_time_note ?: '—' }}</span>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Action Buttons at bottom -->
-            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
-                <a href="/admin/visit-info/edit" class="btn-luxury-action" style="width: auto; padding: 12px 30px;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                    تعديل معلومات الزيارة
-                </a>
             </div>
 
         </div>
     </div>
 
 </div>
-@endsection
-
-@section('scripts')
-<script>
-    let statusVisible = true;
-
-    function toggleStatusVisibility() {
-        statusVisible = !statusVisible;
-        const btn = document.getElementById('statusVisBtn');
-        if (statusVisible) {
-            btn.textContent = '👁 ظاهر للزوار';
-            btn.className = 'btn-visibility visible';
-        } else {
-            btn.textContent = '🚫 مخفي عن الزوار';
-            btn.className = 'btn-visibility hidden';
-        }
-    }
-</script>
 @endsection

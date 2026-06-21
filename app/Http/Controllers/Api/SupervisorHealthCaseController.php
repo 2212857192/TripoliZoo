@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\HealthCaseFollowUpKind;
+use App\Enums\AnimalStatus;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\HealthCaseResource;
 use App\Models\Animal;
 use App\Models\HealthCase;
 use App\Models\User;
+use App\Services\AnimalLifecycleService;
 use App\Services\HealthCaseService;
 use App\Services\HealthReportService;
 use Illuminate\Http\JsonResponse;
@@ -55,6 +57,12 @@ class SupervisorHealthCaseController extends Controller
             'animal_code' => ['required', 'string', 'max:50'],
             'description' => ['required', 'string', 'max:2000'],
             'follow_up_kind' => ['required', Rule::in(array_column(HealthCaseFollowUpKind::cases(), 'value'))],
+            'animal_notes' => [
+                Rule::requiredIf($request->input('follow_up_kind') === HealthCaseFollowUpKind::NeedsReferral->value),
+                'nullable',
+                'string',
+                'max:2000',
+            ],
             'attachment' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:5120'],
         ]);
 
@@ -64,6 +72,25 @@ class SupervisorHealthCaseController extends Controller
         );
 
         if (! $animal) {
+            $blockedAnimal = Animal::withQuarantine()
+                ->where('code', $data['animal_code'])
+                ->where('group', $supervisor->assigned_group)
+                ->whereIn('status', [
+                    AnimalStatus::Dead->value,
+                    AnimalStatus::PendingMortalityApproval->value,
+                ])
+                ->first();
+
+            if ($blockedAnimal) {
+                $message = $blockedAnimal->status === AnimalStatus::PendingMortalityApproval->value
+                    ? AnimalLifecycleService::PENDING_MORTALITY_MESSAGE
+                    : AnimalLifecycleService::INACTIVE_MESSAGE;
+
+                return response()->json([
+                    'message' => $message,
+                ], 422);
+            }
+
             return response()->json([
                 'message' => 'الحيوان غير موجود في مجموعتك أو غير متاح للتسجيل.',
             ], 422);
@@ -79,6 +106,7 @@ class SupervisorHealthCaseController extends Controller
             $data['description'],
             HealthCaseFollowUpKind::from($data['follow_up_kind']),
             $attachmentPath,
+            $data['animal_notes'] ?? null,
         );
 
         return response()->json([
