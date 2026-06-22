@@ -20,7 +20,9 @@ import 'package:tripolizoo/shared/constants/app_constants.dart';
 import 'package:tripolizoo/shared/push/push_notification_service.dart';
 
 class TripoliZooApp extends StatefulWidget {
-  const TripoliZooApp({super.key});
+  const TripoliZooApp({super.key, required this.localeProvider});
+
+  final LocaleProvider localeProvider;
 
   @override
   State<TripoliZooApp> createState() => _TripoliZooAppState();
@@ -51,7 +53,7 @@ class _TripoliZooAppState extends State<TripoliZooApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: _authProvider),
-        ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ChangeNotifierProvider.value(value: widget.localeProvider),
         ChangeNotifierProvider(create: (_) => TicketCartProvider()),
         ChangeNotifierProvider(create: (_) => FollowUpProvider()),
         ChangeNotifierProvider(create: (_) => HealthReportsProvider()),
@@ -77,6 +79,7 @@ class _TripoliZooAppState extends State<TripoliZooApp> {
           }
 
           return MaterialApp.router(
+            key: ValueKey(appLocale.languageCode),
             debugShowCheckedModeBanner: false,
             title: AppConstants.appName,
             theme: AppTheme.light,

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\AnimalStatus;
 use App\Enums\HealthReportStatus;
 use App\Enums\HospitalCaseStatus;
+use App\Enums\MortalityCaseStatus;
 use App\Models\Animal;
 use App\Models\HealthReport;
 use App\Models\HospitalCase;
@@ -121,15 +122,7 @@ class HealthReportService
             return collect();
         }
 
-        $query = Animal::withQuarantine()
-            ->where('group', $group)
-            ->whereIn('status', AnimalStatus::groupOperationalValues())
-            ->whereNotNull('registered_at')
-            ->orderBy('code');
-
-        if ($excludeInHospital) {
-            $query->whereNotIn('id', $this->animalIdsInOpenHospital($group));
-        }
+        $query = $this->eligibleSupervisorAnimalsQuery($group, $excludeInHospital);
 
         return $query->get();
     }
@@ -143,23 +136,40 @@ class HealthReportService
             return null;
         }
 
-        $animal = Animal::withQuarantine()
+        return $this->eligibleSupervisorAnimalsQuery($group, $excludeInHospital)
             ->where('code', $code)
-            ->where('group', $group)
-            ->whereIn('status', AnimalStatus::groupOperationalValues())
-            ->whereNotNull('registered_at')
             ->first();
+    }
 
-        if (! $animal || ! $excludeInHospital) {
-            return $animal;
+    /** @return \Illuminate\Database\Eloquent\Builder<Animal> */
+    private function eligibleSupervisorAnimalsQuery(?string $group, bool $excludeInHospital = false)
+    {
+        if (! $group) {
+            return Animal::query()->whereRaw('0 = 1');
         }
 
-        $inHospital = HospitalCase::query()
-            ->where('animal_id', $animal->id)
-            ->whereIn('status', $this->openHospitalStatuses())
-            ->exists();
+        $query = Animal::withQuarantine()
+            ->where('group', $group)
+            ->whereIn('status', AnimalStatus::groupOperationalValues())
+            ->whereNotIn('status', [
+                AnimalStatus::Dead->value,
+                AnimalStatus::PendingMortalityApproval->value,
+                AnimalStatus::Exited->value,
+            ])
+            ->whereNotNull('registered_at')
+            ->whereNotIn('id', function ($subquery) {
+                $subquery->from('mortality_cases')
+                    ->select('animal_id')
+                    ->where('status', MortalityCaseStatus::New->value)
+                    ->whereNotNull('animal_id');
+            })
+            ->orderBy('code');
 
-        return $inHospital ? null : $animal;
+        if ($excludeInHospital) {
+            $query->whereNotIn('id', $this->animalIdsInOpenHospital($group));
+        }
+
+        return $query;
     }
 
     /** @return list<string> */

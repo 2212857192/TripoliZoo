@@ -25,6 +25,7 @@ class ApiVisitInfoRepository implements VisitInfoRepository {
   VisitInfo _fromJson(Map<String, dynamic> json) {
     final hours = json['hours'];
     final status = json['status'];
+    final location = json['location'];
 
     return VisitInfo(
       workingHours: hours is Map
@@ -49,6 +50,18 @@ class ApiVisitInfoRepository implements VisitInfoRepository {
               .where((item) => item.isNotEmpty)
               .toList() ??
           const [],
+      location: location is Map
+          ? _locationFromJson(Map<String, dynamic>.from(location))
+          : null,
+    );
+  }
+
+  VisitLocation _locationFromJson(Map<String, dynamic> json) {
+    return VisitLocation(
+      address: json['address']?.toString(),
+      googleMapsUrl: json['google_maps_url']?.toString(),
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
     );
   }
 }
@@ -64,7 +77,7 @@ class MockVisitInfoRepository implements VisitInfoRepository {
   Future<VisitInfo> fetch() async {
     await Future<void>.delayed(const Duration(milliseconds: 120));
 
-    return const VisitInfo(
+    return VisitInfo(
       workingHours: AppConstants.workingHours,
       workingDays: AppConstants.workingDays,
       guidelines: _defaultGuidelines,
@@ -73,6 +86,13 @@ class MockVisitInfoRepository implements VisitInfoRepository {
       ambulancePhone: '193',
       securityPhone: '091-555-0123',
       lastTicketTimeNote: 'قبل ساعة واحدة من موعد الإغلاق',
+      location: VisitLocation(
+        address: 'حديقة حيوان طرابلس، طرابلس، ليبيا',
+        googleMapsUrl:
+            'https://www.google.com/maps/search/?api=1&query=${AppConstants.zooLatitude},${AppConstants.zooLongitude}',
+        latitude: AppConstants.zooLatitude,
+        longitude: AppConstants.zooLongitude,
+      ),
     );
   }
 }

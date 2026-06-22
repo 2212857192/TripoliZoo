@@ -61,6 +61,7 @@ class VisitorMapController extends Controller
                     'animal_profile_id' => $location->animal_profile_id,
                     'animal_name' => $animal?->name ?: $animal?->species,
                     'animal_code' => $animal?->code,
+                    'animal_group' => $animal?->group,
                     'animal_photo_url' => $location->animalProfile?->imageUrl() ?? $animal?->displayPhotoUrl(),
                 ];
             })

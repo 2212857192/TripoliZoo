@@ -187,6 +187,10 @@ class MortalityCaseFlowTest extends TestCase
         ])
             ->assertUnprocessable()
             ->assertJsonPath('message', 'لا يمكن تنفيذ الإجراء، الحيوان موقوف بانتظار اعتماد حالة النفوق.');
+
+        $this->getJson('/api/auth/supervisor/animals')
+            ->assertOk()
+            ->assertJsonMissing(['id' => 'G099']);
     }
 
     public function test_dead_animal_cannot_receive_new_health_case(): void
@@ -234,6 +238,10 @@ class MortalityCaseFlowTest extends TestCase
         ])
             ->assertUnprocessable()
             ->assertJsonPath('message', 'لا يمكن تنفيذ الإجراء، الحيوان غير نشط.');
+
+        $this->getJson('/api/auth/supervisor/animals')
+            ->assertOk()
+            ->assertJsonMissing(['id' => 'G100']);
     }
 
     public function test_supervisor_can_register_mortality_with_open_field_case(): void

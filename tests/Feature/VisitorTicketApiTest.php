@@ -35,7 +35,9 @@ class VisitorTicketApiTest extends TestCase
         $this->getJson('/api/ticket-types')
             ->assertOk()
             ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.name', 'تذكرة الكبار');
+            ->assertJsonPath('data.0.name', 'تذكرة الكبار')
+            ->assertJsonPath('data.0.title', 'تذكرة الكبار')
+            ->assertJsonPath('data.0.subtitle', '12 سنة فأكثر');
     }
 
     public function test_visitor_can_purchase_cash_tickets_and_list_them(): void

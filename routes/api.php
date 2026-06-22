@@ -84,6 +84,7 @@ Route::prefix('auth')->group(function () {
         Route::post('/doctor/notifications/read-by-case', [DoctorNotificationController::class, 'markReadByCase']);
         Route::post('/doctor/notifications/{notification}/read', [DoctorNotificationController::class, 'markRead']);
         Route::post('/doctor/notifications/receiving/{notification}/read', [DoctorNotificationController::class, 'markReceivingRead']);
+        Route::post('/doctor/notifications/health-reports/{notification}/read', [DoctorNotificationController::class, 'markHealthReportRead']);
         Route::get('/doctor/quarantines', [DoctorQuarantineController::class, 'index']);
         Route::get('/doctor/quarantines/{quarantine}', [DoctorQuarantineController::class, 'show']);
         Route::post('/doctor/quarantines/{quarantine}/notes', [DoctorQuarantineController::class, 'storeNote']);

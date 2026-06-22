@@ -84,15 +84,10 @@ class PurchasedTicket {
   }
 
   String localizedCategoryLabel(String languageCode) {
-    final isArabic = languageCode == 'ar';
-    if (!typeId.contains('_')) {
-      return typeTitle.isNotEmpty
-          ? typeTitle
-          : localizedTypeTitle(languageCode);
+    if (typeTitle.isNotEmpty) {
+      return typeTitle;
     }
-    final audience = typeId.endsWith('_intl')
-        ? (isArabic ? 'أجنبي' : 'Foreigner')
-        : (isArabic ? 'مواطن' : 'Citizen');
-    return '$audience (${localizedTypeTitle(languageCode)})';
+
+    return localizedTypeTitle(languageCode);
   }
 }

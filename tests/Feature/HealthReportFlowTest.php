@@ -73,6 +73,20 @@ class HealthReportFlowTest extends TestCase
             'user_id' => $vet->id,
             'health_report_id' => $report->id,
         ]);
+
+        Sanctum::actingAs($vet);
+
+        $this->getJson('/api/auth/doctor/notifications')
+            ->assertOk()
+            ->assertJsonPath('unread_count', 1)
+            ->assertJsonFragment([
+                'type' => 'health_report',
+                'report_number' => $report->report_number,
+            ]);
+
+        $this->getJson('/api/auth/doctor/dashboard')
+            ->assertOk()
+            ->assertJsonPath('unread_notifications', 1);
     }
 
     public function test_supervisor_can_upload_attachment_with_health_report(): void

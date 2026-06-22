@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Enums\QuarantineStatus;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Models\HealthReportNotification;
 use App\Models\Quarantine;
 use App\Models\QuarantineNotification;
 use App\Models\User;
+use App\Models\VetNotification;
 use App\Services\DoctorMedicalCaseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,9 +29,17 @@ class DoctorDashboardController extends Controller
         $unreadCount = QuarantineNotification::query()
             ->where('user_id', $vet->id)
             ->whereNull('read_at')
-            ->count();
+            ->count()
+            + VetNotification::query()
+                ->where('user_id', $vet->id)
+                ->whereNull('read_at')
+                ->count()
+            + HealthReportNotification::query()
+                ->where('user_id', $vet->id)
+                ->whereNull('read_at')
+                ->count();
 
-        $alerts = QuarantineNotification::query()
+        $quarantineAlerts = QuarantineNotification::query()
             ->where('user_id', $vet->id)
             ->whereNull('read_at')
             ->with(['quarantine.animal'])
@@ -40,7 +50,37 @@ class DoctorDashboardController extends Controller
                 'title' => $notification->title,
                 'subtitle' => $notification->message,
                 'case_number' => $notification->quarantine?->case_number,
+                'report_number' => null,
                 'urgent' => true,
+                'sort_at' => $notification->created_at,
+            ]);
+
+        $healthReportAlerts = HealthReportNotification::query()
+            ->where('user_id', $vet->id)
+            ->whereNull('read_at')
+            ->with(['healthReport'])
+            ->latest()
+            ->limit(5)
+            ->get()
+            ->map(fn (HealthReportNotification $notification) => [
+                'title' => $notification->title,
+                'subtitle' => $notification->message,
+                'case_number' => null,
+                'report_number' => $notification->healthReport?->report_number,
+                'urgent' => str_contains($notification->title, 'عاجل'),
+                'sort_at' => $notification->created_at,
+            ]);
+
+        $alerts = $quarantineAlerts
+            ->concat($healthReportAlerts)
+            ->sortByDesc('sort_at')
+            ->take(5)
+            ->map(fn (array $alert) => [
+                'title' => $alert['title'],
+                'subtitle' => $alert['subtitle'],
+                'case_number' => $alert['case_number'],
+                'report_number' => $alert['report_number'],
+                'urgent' => $alert['urgent'],
             ])
             ->values()
             ->all();

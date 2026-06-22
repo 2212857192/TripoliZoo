@@ -40,6 +40,9 @@ class _HealthReportsScreenState extends State<HealthReportsScreen> {
   }
 
   Future<void> _openSendForm() async {
+    await context.read<HealthReportsProvider>().reloadAnimals();
+    if (!mounted) return;
+
     final saved = await HealthReportFormSheet.show(context);
     if (!mounted || saved != true) return;
     showSupervisorSuccessSnackBar(

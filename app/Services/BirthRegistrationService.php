@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\AnimalStatus;
+use App\Enums\MortalityCaseStatus;
 use App\Enums\UserRole;
 use App\Models\Animal;
 use App\Models\BirthRegistration;
@@ -38,7 +39,7 @@ class BirthRegistrationService
     }
 
     /** @return Collection<int, Animal> */
-    public function newbornsForSupervisor(User $supervisor): Collection
+    public function     newbornsForSupervisor(User $supervisor): Collection
     {
         if (! $supervisor->assigned_group) {
             return collect();
@@ -48,6 +49,16 @@ class BirthRegistrationService
 
         return Animal::underBirthFollowUp()
             ->where('group', $supervisor->assigned_group)
+            ->whereNotIn('status', [
+                AnimalStatus::Dead->value,
+                AnimalStatus::PendingMortalityApproval->value,
+            ])
+            ->whereNotIn('id', function ($subquery) {
+                $subquery->from('mortality_cases')
+                    ->select('animal_id')
+                    ->where('status', MortalityCaseStatus::New->value)
+                    ->whereNotNull('animal_id');
+            })
             ->orderBy('code')
             ->get();
     }

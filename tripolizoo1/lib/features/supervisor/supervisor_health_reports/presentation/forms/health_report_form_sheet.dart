@@ -39,6 +39,17 @@ class _HealthReportFormSheetState extends State<HealthReportFormSheet> {
   bool _loading = false;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await context.read<HealthReportsProvider>().reloadAnimals();
+      if (!mounted) return;
+      setState(() => _selectedAnimal = null);
+    });
+  }
+
+  @override
   void dispose() {
     _scrollController.dispose();
     _description.dispose();

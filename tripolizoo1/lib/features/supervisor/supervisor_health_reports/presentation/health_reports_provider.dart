@@ -77,6 +77,16 @@ class HealthReportsProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> reloadAnimals() async {
+    try {
+      _animals = await _repository.fetchSupervisorAnimals();
+      notifyListeners();
+    } catch (_) {
+      _animals = [];
+      notifyListeners();
+    }
+  }
+
   Future<HealthReport?> addReport({
     required String animalId,
     required String animalType,

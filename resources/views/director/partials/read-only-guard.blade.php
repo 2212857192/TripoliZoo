@@ -48,16 +48,18 @@
     .topbar .portal-logout-form,
     .topbar .portal-logout-btn,
     .topbar .user-menu-change-password,
-    #changePasswordModal,
-    #changePasswordModal .portal-modal-btn,
     .sidebar .portal-logout-form,
     .sidebar .portal-logout-btn {
         display: inline-flex !important;
         pointer-events: auto;
     }
 
-    .content-area .notification-dropdown-wrapper {
-        display: block !important;
+    #changePasswordModal.portal-modal-backdrop:not(.open) {
+        display: none !important;
+    }
+
+    #changePasswordModal.portal-modal-backdrop.open {
+        display: flex !important;
     }
 
     .content-area button.btn-tbl.view,
@@ -139,7 +141,6 @@
             if (el.classList.contains('action-btn')) return;
             if (el.classList.contains('user-menu-chevron')) return;
             if ((el.getAttribute('onclick') || '').indexOf('toggleUserMenu') !== -1) return;
-            if ((el.getAttribute('onclick') || '').indexOf('toggleNotifications') !== -1) return;
             if (el.classList.contains('modal-tab')) return;
             if (el.classList.contains('btn-tbl') && el.classList.contains('view')) return;
             if ((el.getAttribute('onclick') || '').indexOf('openModal') !== -1) return;

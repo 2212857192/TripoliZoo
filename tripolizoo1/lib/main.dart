@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tripolizoo/app.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/services/visitor_gps_platform.dart';
+import 'package:tripolizoo/shared/providers/locale_provider.dart';
 import 'package:tripolizoo/shared/push/push_notification_service.dart';
 
 void main() async {
@@ -9,5 +10,7 @@ void main() async {
   GoogleFonts.config.allowRuntimeFetching = false;
   await configureVisitorGpsReader();
   await PushNotificationService.initialize();
-  runApp(const TripoliZooApp());
+  final localeProvider = LocaleProvider();
+  await localeProvider.loadSaved();
+  runApp(TripoliZooApp(localeProvider: localeProvider));
 }

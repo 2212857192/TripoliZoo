@@ -1,6 +1,6 @@
 enum DoctorNotificationReadFilter { all, unread, read }
 
-enum DoctorNotificationType { quarantine, receivingDelay }
+enum DoctorNotificationType { quarantine, receivingDelay, healthReport }
 
 class DoctorNotification {
   const DoctorNotification({
@@ -10,6 +10,7 @@ class DoctorNotification {
     required this.message,
     this.caseNumber,
     this.taskNumber,
+    this.reportNumber,
     required this.isRead,
     this.createdAt,
   });
@@ -20,10 +21,15 @@ class DoctorNotification {
   final String message;
   final String? caseNumber;
   final String? taskNumber;
+  final String? reportNumber;
   final bool isRead;
   final DateTime? createdAt;
 
   String? get targetRoute {
+    if (type == DoctorNotificationType.healthReport) {
+      return '/doctor/reports';
+    }
+
     if (type == DoctorNotificationType.receivingDelay) {
       final caseNumber = this.caseNumber;
       if (caseNumber != null && caseNumber.isNotEmpty) {
@@ -45,6 +51,7 @@ class DoctorNotification {
       message: message,
       caseNumber: caseNumber,
       taskNumber: taskNumber,
+      reportNumber: reportNumber,
       isRead: isRead ?? this.isRead,
       createdAt: createdAt,
     );

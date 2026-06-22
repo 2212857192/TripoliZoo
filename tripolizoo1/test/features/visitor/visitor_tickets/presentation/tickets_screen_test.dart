@@ -111,9 +111,9 @@ void main() {
     expect(find.byType(QrImageView), findsNothing);
     expect(cart.purchasedTickets, isEmpty);
     expect(find.byKey(const ValueKey('payment-invoice')), findsOneWidget);
-    expect(find.text('بالغ × 1'), findsNWidgets(2));
-    expect(find.text('طفل × 2'), findsOneWidget);
-    expect(find.text('طالب × 1'), findsOneWidget);
+    expect(find.text('تذكرة الكبار — مواطن × 1'), findsNWidgets(2));
+    expect(find.text('تذكرة الأطفال — مواطن × 2'), findsOneWidget);
+    expect(find.text('تذكرة الطلاب — مواطن × 1'), findsOneWidget);
 
     final totalCard = tester.widget<Container>(
       find.byKey(const ValueKey('payment-total-card')),
@@ -128,8 +128,8 @@ void main() {
     expect(find.text('تحميل التذاكر'), findsOneWidget);
     expect(find.text('تذكرة دخول'), findsNWidgets(5));
     expect(find.text('الفئة'), findsNWidgets(5));
-    expect(find.text('مواطن (بالغ)'), findsOneWidget);
-    expect(find.text('أجنبي (بالغ)'), findsOneWidget);
+    expect(find.text('تذكرة الكبار — مواطن'), findsOneWidget);
+    expect(find.text('تذكرة أجنبي — بالغ'), findsOneWidget);
   });
 
   testWidgets('shows the purchased ticket category in English', (tester) async {
@@ -150,7 +150,7 @@ void main() {
 
     expect(find.text('Entry Ticket'), findsOneWidget);
     expect(find.text('Category'), findsOneWidget);
-    expect(find.text('Citizen (Adult)'), findsOneWidget);
+    expect(find.text('تذكرة الكبار — مواطن'), findsOneWidget);
   });
 
   testWidgets('payment requires a valid linked phone number', (tester) async {

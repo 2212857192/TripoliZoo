@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/data/visit_info_repository.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/presentation/visit_info_screen.dart';
+import 'package:tripolizoo/features/visitor/visitor_tickets/data/ticket_repository.dart';
 
 void main() {
   Widget buildVisitInfo() {
@@ -14,6 +15,7 @@ void main() {
           path: '/visit-info',
           builder: (_, __) => VisitInfoScreen(
             repository: MockVisitInfoRepository(),
+            ticketRepository: MockTicketRepository(),
           ),
         ),
       ],
@@ -31,7 +33,12 @@ void main() {
     );
   }
 
-  testWidgets('shows visit information from backend without tickets or map',
+  Future<void> scrollVisitInfo(WidgetTester tester, double offset) async {
+    await tester.drag(find.byType(CustomScrollView), Offset(0, offset));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('shows dynamic visit information with location and ticket prices',
       (tester) async {
     await tester.pumpWidget(buildVisitInfo());
     await tester.pumpAndSettle();
@@ -39,22 +46,24 @@ void main() {
     expect(find.text('حالة التشغيل'), findsOneWidget);
     expect(find.text('مفتوحة — أهلاً بزوارنا'), findsOneWidget);
     expect(find.text('ساعات العمل'), findsOneWidget);
-    expect(find.text('آخر موعد للدخول'), findsOneWidget);
+    expect(find.text('أيام العمل'), findsOneWidget);
     expect(find.text('مفتوحة يومياً'), findsOneWidget);
-    expect(find.text('أرقام الطوارئ'), findsOneWidget);
+    expect(find.text('موقع الحديقة'), findsOneWidget);
+    expect(find.text('حديقة حيوان طرابلس، طرابلس، ليبيا'), findsOneWidget);
+    expect(find.text('فتح في خرائط Google'), findsOneWidget);
 
-    await tester.drag(
-      find.byType(CustomScrollView),
-      const Offset(0, -300),
-    );
-    await tester.pumpAndSettle();
+    await scrollVisitInfo(tester, -250);
+
+    expect(find.text('أسعار تذاكر الدخول'), findsOneWidget);
+    expect(find.text('مواطنون'), findsOneWidget);
+    expect(find.text('أجانب'), findsOneWidget);
+    expect(find.text('10 د.ل'), findsOneWidget);
+    expect(find.text('5 د.ل'), findsAtLeastNWidgets(2));
+    expect(find.text('12 سنة فأكثر'), findsOneWidget);
+    expect(find.text('أرقام الطوارئ'), findsNothing);
+
+    await scrollVisitInfo(tester, -200);
 
     expect(find.text('تعليمات وإرشادات الزيارة'), findsOneWidget);
-
-    expect(find.text('موقع الحديقة'), findsNothing);
-    expect(find.text('أسعار تذاكر الدخول'), findsNothing);
-    expect(find.text('التذكرة الإلكترونية'), findsNothing);
-    expect(find.text('شراء تذكرة'), findsNothing);
-    expect(find.text('فتح في خرائط Google'), findsNothing);
   });
 }

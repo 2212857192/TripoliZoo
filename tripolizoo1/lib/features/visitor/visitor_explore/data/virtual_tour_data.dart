@@ -178,7 +178,7 @@ abstract final class VirtualTourData {
           latitude: 4.4,
           longitude: 46.6,
           targetSceneId: 'scene_7',
-          label: 'حصان 2',
+          label: 'الحصان الثاني',
         ),
       ],
     ),
@@ -188,7 +188,7 @@ abstract final class VirtualTourData {
       title: 'منطقة الخيول',
       imageAsset: panorama(7),
       markerReferenceAsset: marked(7),
-      animalAreaLabel: 'حصان 1',
+      animalAreaLabel: 'الحصان الأول',
       manualMarkers: [
         TourMarker(
           type: TourMarkerType.back,
@@ -207,7 +207,7 @@ abstract final class VirtualTourData {
           type: TourMarkerType.animalArea,
           latitude: -2.2,
           longitude: 162.9,
-          label: 'حصان 1',
+          label: 'الحصان الأول',
         ),
       ],
     ),
@@ -230,9 +230,16 @@ abstract final class VirtualTourData {
           longitude: -5.8,
           targetSceneId: 'scene_9',
         ),
+        TourMarker(
+          type: TourMarkerType.next,
+          latitude: -0.5,
+          longitude: -128.1,
+          targetSceneId: 'scene_5',
+          label: 'منطقة الخيول',
+        ),
       ],
     ),
-    // 9 — 🔴 قدام lon=0.2 lat=-2.2 | 🟡 منطقة الخيول lon=-128.1 lat=-0.5 | 🟢 رجوع lon=177.1 lat=-3.1
+    // 9 — 🔴 قدام lon=8.0 lat=-2.2 | 🟡 منطقة الخيول lon=-128.1 lat=-0.5 | 🟢 رجوع lon=177.1 lat=-3.1
     TourScene(
       id: 'scene_9',
       title: 'منطقة التمساح',
@@ -244,12 +251,6 @@ abstract final class VirtualTourData {
           latitude: -3.1,
           longitude: 177.1,
           targetSceneId: 'scene_8',
-        ),
-        TourMarker(
-          type: TourMarkerType.back,
-          latitude: -2.2,
-          longitude: 0.2,
-          targetSceneId: 'scene_5',
         ),
         TourMarker(
           type: TourMarkerType.next,
@@ -373,12 +374,6 @@ abstract final class VirtualTourData {
           longitude: 5.4,
           targetSceneId: 'scene_14',
         ),
-        TourMarker(
-          type: TourMarkerType.animalArea,
-          latitude: 2.5,
-          longitude: -37.4,
-          label: 'بركة البط والبجع',
-        ),
       ],
     ),
     // 14 — 🟢 lon=-159.9 lat=-6.2 | 🔴 lon=33.9 lat=0.9 | 🟠 lon=13.6 lat=-3.3
@@ -459,12 +454,6 @@ abstract final class VirtualTourData {
           latitude: -1.6,
           longitude: -144.1,
           targetSceneId: 'scene_16',
-        ),
-        TourMarker(
-          type: TourMarkerType.animalArea,
-          latitude: 9.1,
-          longitude: 0.0,
-          label: 'بركة البط والبجع',
         ),
       ],
     ),
@@ -612,7 +601,7 @@ abstract final class VirtualTourData {
         ),
       ],
     ),
-    // 25 — 🟢 lon=167.8 lat=-2.4 | 🔴 lon=-16.9 lat=-1.6 | 🟡 النمر
+    // 25 — 🟢 lon=167.8 lat=-2.4 | 🟢 النمر → scene_26
     TourScene(
       id: 'scene_25',
       title: 'ممر الأسود',
@@ -626,15 +615,10 @@ abstract final class VirtualTourData {
           targetSceneId: 'scene_24',
         ),
         TourMarker(
-          type: TourMarkerType.next,
-          latitude: -1.6,
-          longitude: -16.9,
-          targetSceneId: 'scene_26',
-        ),
-        TourMarker(
           type: TourMarkerType.animalArea,
           latitude: -1.5,
           longitude: -63.1,
+          targetSceneId: 'scene_26',
           label: 'النمر',
         ),
       ],
@@ -863,6 +847,65 @@ abstract final class VirtualTourData {
       other ??= m;
     }
     return back ?? other;
+  }
+
+  /// نقطة التركيز — الكاميرا تتجه دائماً نحو أقرب نقطة تنقل فعّالة
+  static TourMarker? navigationFocusMarker(
+    String sceneId, {
+    String? arrivedFromSceneId,
+    bool returning = false,
+  }) {
+    final scene = sceneById(sceneId);
+    final markers = scene.manualMarkers;
+
+    if (returning) {
+      final backs =
+          markers.where((m) => m.type == TourMarkerType.back).toList();
+
+      if (arrivedFromSceneId != null && backs.length > 1) {
+        for (final m in backs) {
+          if (m.targetSceneId == arrivedFromSceneId) return m;
+        }
+      }
+
+      if (backs.length == 1) return backs.first;
+
+      if (arrivedFromSceneId != null) {
+        for (final m in markers) {
+          if (m.type == TourMarkerType.back) continue;
+          if (m.targetSceneId == arrivedFromSceneId) return m;
+        }
+      }
+    }
+
+    if (arrivedFromSceneId == 'scene_7' &&
+        (sceneId == 'scene_8' || sceneId == 'scene_9' || sceneId == 'scene_10')) {
+      for (final m in markers) {
+        if (m.label == 'منطقة الخيول') return m;
+      }
+    }
+
+    if (scene.animalAreaLabel != null) {
+      for (final m in markers) {
+        if (m.type == TourMarkerType.animalArea) return m;
+      }
+    }
+
+    for (final m in markers) {
+      if (m.type == TourMarkerType.next) return m;
+    }
+
+    for (final m in markers) {
+      if (m.type == TourMarkerType.animalArea && m.targetSceneId != null) {
+        return m;
+      }
+    }
+
+    for (final m in markers) {
+      if (m.type == TourMarkerType.animalArea) return m;
+    }
+
+    return null;
   }
 
   static List<TourMarker> animalMarkers(String sceneId) {

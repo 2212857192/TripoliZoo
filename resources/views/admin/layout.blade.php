@@ -456,7 +456,6 @@
         <header class="topbar">
             @include('partials.topbar-page-info', ['sectionLabel' => 'الإدارة', 'defaultTitle' => 'لوحة التحكم'])
             <div class="topbar-actions">
-                @include('partials.topbar-notifications', ['notificationCount' => 0])
                 @include('partials.topbar-user-menu')
             </div>
         </header>

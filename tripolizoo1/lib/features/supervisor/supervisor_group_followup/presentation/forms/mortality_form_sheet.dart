@@ -44,13 +44,14 @@ class _MortalityFormSheetState extends State<MortalityFormSheet> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      final provider = context.read<HealthReportsProvider>();
-      if (provider.groupAnimals.isEmpty) {
-        provider.load(audience: HealthReportsAudience.supervisor);
-      }
-      _loadNewborns();
+      await context.read<HealthReportsProvider>().reloadAnimals();
+      if (!mounted) return;
+      setState(() {
+        _selectedAnimal = null;
+      });
+      await _loadNewborns();
     });
   }
 

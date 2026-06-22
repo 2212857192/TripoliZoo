@@ -131,38 +131,6 @@ class _SupervisorNotificationsScreenState
                           ],
                         ),
                       ),
-                      if (unreadCount > 0)
-                        Container(
-                          width: 42,
-                          height: 42,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF4F7F4),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: SupervisorUi.border),
-                          ),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              const Icon(
-                                Icons.notifications_outlined,
-                                color: SupervisorUi.textPrimary,
-                                size: 20,
-                              ),
-                              Positioned(
-                                top: 8,
-                                left: 8,
-                                child: Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    color: AppColors.primary,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                     ],
                   ),
                 ),

@@ -9,6 +9,9 @@ import 'package:tripolizoo/features/visitor/visitor_explore/data/visitor_map_rep
 import 'package:tripolizoo/features/visitor/visitor_explore/presentation/map_location_bottom_sheet.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/services/map_coordinate_service.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/services/visitor_gps_service.dart';
+import 'package:tripolizoo/shared/constants/animal_groups.dart';
+
+enum _MapFilterMode { all, group, dining, service }
 
 class InteractiveMapScreen extends StatefulWidget {
   const InteractiveMapScreen({
@@ -28,8 +31,11 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
   final _repo = VisitorMapRepository();
   final _gpsService = VisitorGpsService();
   final _transformationController = TransformationController();
+  final _searchController = TextEditingController();
   late Future<VisitorMapData> _future;
-  String _selectedCategory = 'all';
+  _MapFilterMode _filterMode = _MapFilterMode.all;
+  String? _selectedGroup;
+  String _searchQuery = '';
   VisitorMapLocation? _selectedLocation;
   VisitorMapData? _cachedMapData;
   StreamSubscription<VisitorGpsPosition>? _gpsSubscription;
@@ -43,31 +49,124 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
   double _lastImageH = 3374;
   double _lastMinScale = 1;
 
-  static const _categories = [
-    _MapCategory('all', 'الكل', Icons.apps_rounded),
-    _MapCategory('enclosure', 'حيوانات', Icons.pets_rounded),
-    _MapCategory('service', 'خدمات', Icons.room_service_rounded),
-    _MapCategory('dining', 'مطاعم', Icons.restaurant_rounded),
-  ];
-
   @override
   void initState() {
     super.initState();
     _future = _repo.getMap();
+    _searchController.addListener(() {
+      final query = _searchController.text.trim();
+      if (query == _searchQuery) return;
+      setState(() => _searchQuery = query);
+    });
   }
 
   @override
   void dispose() {
+    _searchController.dispose();
     _gpsSubscription?.cancel();
     _transformationController.dispose();
     super.dispose();
   }
 
+  List<String> _availableGroups(List<VisitorMapLocation> locations) {
+    final present = locations
+        .map((location) => location.animalGroup)
+        .whereType<String>()
+        .where((group) => group.isNotEmpty)
+        .toSet();
+
+    return AnimalGroups.all.where(present.contains).toList();
+  }
+
   List<VisitorMapLocation> _filtered(List<VisitorMapLocation> locations) {
-    if (_selectedCategory == 'all') return locations;
-    return locations
-        .where((location) => location.category == _selectedCategory)
-        .toList();
+    return locations.where((location) {
+      if (_searchQuery.isNotEmpty) {
+        final query = _searchQuery;
+        final haystack = [
+          location.name,
+          location.animalName ?? '',
+          location.description,
+        ].join(' ');
+        if (!haystack.contains(query)) return false;
+      }
+
+      return switch (_filterMode) {
+        _MapFilterMode.all => true,
+        _MapFilterMode.group => location.animalGroup == _selectedGroup,
+        _MapFilterMode.dining => location.category == 'dining',
+        _MapFilterMode.service => location.category == 'service',
+      };
+    }).toList();
+  }
+
+  void _selectGroup(String? group) {
+    setState(() {
+      _filterMode = group == null ? _MapFilterMode.all : _MapFilterMode.group;
+      _selectedGroup = group;
+      if (_selectedLocation != null && group != null) {
+        if (_selectedLocation!.animalGroup != group) {
+          _closeSheet();
+        }
+      }
+    });
+  }
+
+  void _selectUtilityFilter(_MapFilterMode mode) {
+    setState(() {
+      _filterMode = _filterMode == mode ? _MapFilterMode.all : mode;
+      _selectedGroup = null;
+      if (_selectedLocation != null) {
+        final location = _selectedLocation!;
+        final visible = switch (_filterMode) {
+          _MapFilterMode.all => true,
+          _MapFilterMode.group => location.animalGroup == _selectedGroup,
+          _MapFilterMode.dining => location.category == 'dining',
+          _MapFilterMode.service => location.category == 'service',
+        };
+        if (!visible) _closeSheet();
+      }
+    });
+  }
+
+  Future<void> _centerOnUser() async {
+    final data = _cachedMapData;
+    final constraints = _lastMapConstraints;
+    if (data == null || constraints == null) return;
+
+    final gps = await _gpsService.currentPosition();
+    if (gps == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذر تحديد موقعك الحالي')),
+      );
+      return;
+    }
+
+    final coordinates = MapCoordinateService(bounds: data.bounds);
+    final userPosition = coordinates.gpsToNormalized(
+      gps.latitude,
+      gps.longitude,
+    );
+
+    setState(() => _userNormalized = userPosition);
+    _centerOnPoint(userPosition, constraints, scaleMultiplier: 2.4);
+  }
+
+  void _centerOnPoint(
+    Offset point,
+    BoxConstraints constraints, {
+    double scaleMultiplier = 2.8,
+  }) {
+    final targetScale = (_lastMinScale * scaleMultiplier)
+        .clamp(_lastMinScale, _lastMinScale * 5);
+    final pinX = _lastImageW * point.dx;
+    final pinY = _lastImageH * point.dy;
+    final dx = constraints.maxWidth / 2 - pinX * targetScale;
+    final dy = constraints.maxHeight / 2 - pinY * targetScale;
+
+    _transformationController.value = Matrix4.identity()
+      ..translate(dx, dy)
+      ..scale(targetScale);
   }
 
   void _reload() {
@@ -286,8 +385,10 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
     final topPad = MediaQuery.of(context).padding.top;
     final bottomPad = MediaQuery.of(context).padding.bottom;
 
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
         backgroundColor: const Color(0xFF1a2e1a),
         body: FutureBuilder<VisitorMapData>(
@@ -309,6 +410,7 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
 
             final data = snapshot.data!;
             _cachedMapData = data;
+            final groups = _availableGroups(data.locations);
             final locations = _filtered(data.locations);
             final imageW = data.bounds.imageWidth;
             final imageH = data.bounds.imageHeight;
@@ -464,7 +566,7 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
                   ),
                 ),
 
-                // ── Top overlay: Search bar + filters ──────────────────
+                // ── Top overlay: Search bar + group filters ────────────
                 Positioned(
                   top: topPad + 12,
                   left: 16,
@@ -472,34 +574,41 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
                   child: Column(
                     children: [
                       _TopBar(
+                        controller: _searchController,
                         onBack: () => context.canPop()
                             ? context.pop()
                             : context.go('/home'),
-                        onResetZoom: () => setState(() => _isInitialZoomSet = false),
                       ),
                       const SizedBox(height: 10),
-                      _CategoryFilters(
-                        categories: _categories,
-                        selected: _selectedCategory,
-                        onSelected: (value) => setState(() {
-                          _selectedCategory = value;
-                          if (_selectedLocation != null &&
-                              value != 'all' &&
-                              _selectedLocation!.category != value) {
-                            _closeSheet();
-                          }
-                        }),
+                      _GroupFilters(
+                        groups: groups,
+                        filterMode: _filterMode,
+                        selectedGroup: _selectedGroup,
+                        onAllSelected: () => _selectGroup(null),
+                        onGroupSelected: _selectGroup,
                       ),
                     ],
+                  ),
+                ),
+
+                // ── Bottom-right utility buttons ───────────────────────
+                Positioned(
+                  right: 12,
+                  bottom: bottomPad + (_selectedLocation != null ? 300 : 88),
+                  child: _MapUtilityButtons(
+                    activeMode: _filterMode,
+                    onGps: _centerOnUser,
+                    onDining: () => _selectUtilityFilter(_MapFilterMode.dining),
+                    onService: () => _selectUtilityFilter(_MapFilterMode.service),
                   ),
                 ),
 
                 // ── Bottom card ────────────────────────────────────────
                 if (_selectedLocation != null)
                   Positioned(
-                    left: _isNavigating ? 0 : 0,
+                    left: 0,
                     right: 0,
-                    bottom: bottomPad + 88,
+                    bottom: bottomPad + 76,
                     child: MapLocationBottomSheet(
                       location: _selectedLocation!,
                       isNavigating: _isNavigating,
@@ -514,15 +623,6 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
       ),
     );
   }
-}
-
-// ── Data model ──────────────────────────────────────────────────────────────
-
-class _MapCategory {
-  const _MapCategory(this.id, this.label, this.icon);
-  final String id;
-  final String label;
-  final IconData icon;
 }
 
 // ── Map image ────────────────────────────────────────────────────────────────
@@ -564,9 +664,13 @@ class _MapImage extends StatelessWidget {
 // ── Top bar ──────────────────────────────────────────────────────────────────
 
 class _TopBar extends StatelessWidget {
-  const _TopBar({required this.onBack, required this.onResetZoom});
+  const _TopBar({
+    required this.controller,
+    required this.onBack,
+  });
+
+  final TextEditingController controller;
   final VoidCallback onBack;
-  final VoidCallback onResetZoom;
 
   @override
   Widget build(BuildContext context) {
@@ -593,61 +697,69 @@ class _TopBar extends StatelessWidget {
             onPressed: onBack,
           ),
           Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.park_rounded, size: 18, color: Colors.green.shade700),
-                const SizedBox(width: 6),
-                Text(
-                  'خريطة الحديقة',
-                  style: GoogleFonts.cairo(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w900,
-                    color: const Color(0xFF1F2937),
-                  ),
+            child: TextField(
+              controller: controller,
+              textDirection: TextDirection.rtl,
+              decoration: InputDecoration(
+                hintText: 'بحث',
+                hintStyle: GoogleFonts.cairo(
+                  color: const Color(0xFF9CA3AF),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
                 ),
-              ],
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              style: GoogleFonts.cairo(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF1F2937),
+              ),
             ),
           ),
-          IconButton(
-            tooltip: 'إعادة الضبط',
-            icon: const Icon(Icons.my_location_rounded, size: 22),
-            color: const Color(0xFF1B4332),
-            onPressed: onResetZoom,
-          ),
+          const Icon(Icons.search_rounded, color: Color(0xFF9CA3AF), size: 22),
+          const SizedBox(width: 8),
         ],
       ),
     );
   }
 }
 
-// ── Category filter chips ─────────────────────────────────────────────────────
-
-class _CategoryFilters extends StatelessWidget {
-  const _CategoryFilters({
-    required this.categories,
-    required this.selected,
-    required this.onSelected,
+class _GroupFilters extends StatelessWidget {
+  const _GroupFilters({
+    required this.groups,
+    required this.filterMode,
+    required this.selectedGroup,
+    required this.onAllSelected,
+    required this.onGroupSelected,
   });
 
-  final List<_MapCategory> categories;
-  final String selected;
-  final ValueChanged<String> onSelected;
+  final List<String> groups;
+  final _MapFilterMode filterMode;
+  final String? selectedGroup;
+  final VoidCallback onAllSelected;
+  final ValueChanged<String> onGroupSelected;
 
   @override
   Widget build(BuildContext context) {
+    final items = ['الكل', ...groups];
+
     return SizedBox(
       height: 40,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
+        itemCount: items.length,
         separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
-          final cat = categories[index];
-          final active = selected == cat.id;
+          final label = items[index];
+          final isAll = index == 0;
+          final active = isAll
+              ? filterMode == _MapFilterMode.all
+              : filterMode == _MapFilterMode.group && selectedGroup == label;
 
           return GestureDetector(
-            onTap: () => onSelected(cat.id),
+            onTap: () => isAll ? onAllSelected() : onGroupSelected(label),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -670,28 +782,92 @@ class _CategoryFilters extends StatelessWidget {
                 ],
               ),
               alignment: Alignment.center,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    cat.icon,
-                    size: 14,
-                    color: active ? Colors.white : const Color(0xFF374151),
-                  ),
-                  const SizedBox(width: 5),
-                  Text(
-                    cat.label,
-                    style: GoogleFonts.cairo(
-                      color: active ? Colors.white : const Color(0xFF374151),
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
+              child: Text(
+                label,
+                style: GoogleFonts.cairo(
+                  color: active ? Colors.white : const Color(0xFF374151),
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _MapUtilityButtons extends StatelessWidget {
+  const _MapUtilityButtons({
+    required this.activeMode,
+    required this.onGps,
+    required this.onDining,
+    required this.onService,
+  });
+
+  final _MapFilterMode activeMode;
+  final VoidCallback onGps;
+  final VoidCallback onDining;
+  final VoidCallback onService;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _UtilityButton(
+          icon: Icons.restaurant_rounded,
+          active: activeMode == _MapFilterMode.dining,
+          onTap: onDining,
+        ),
+        const SizedBox(height: 10),
+        _UtilityButton(
+          icon: Icons.wc_rounded,
+          active: activeMode == _MapFilterMode.service,
+          onTap: onService,
+        ),
+        const SizedBox(height: 10),
+        _UtilityButton(
+          icon: Icons.my_location_rounded,
+          active: false,
+          onTap: onGps,
+        ),
+      ],
+    );
+  }
+}
+
+class _UtilityButton extends StatelessWidget {
+  const _UtilityButton({
+    required this.icon,
+    required this.active,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final bool active;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: active ? const Color(0xFF1B4332) : const Color(0xFF111827),
+      borderRadius: BorderRadius.circular(10),
+      elevation: 6,
+      shadowColor: Colors.black.withValues(alpha: 0.28),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: SizedBox(
+          width: 46,
+          height: 46,
+          child: Icon(
+            icon,
+            color: Colors.white,
+            size: 22,
+          ),
+        ),
       ),
     );
   }
@@ -743,7 +919,11 @@ class _MapPinState extends State<_MapPin>
   }
 
   IconData get _icon {
-    return Icons.pets_rounded;
+    return switch (widget.location.category) {
+      'dining' => Icons.restaurant_rounded,
+      'service' => Icons.wc_rounded,
+      _ => Icons.pets_rounded,
+    };
   }
 
   @override

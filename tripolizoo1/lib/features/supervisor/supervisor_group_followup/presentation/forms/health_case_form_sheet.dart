@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:tripolizoo/features/visitor/visitor_auth/data/auth_service.dart';
 import 'package:tripolizoo/features/supervisor/data/supervisor_animals_data.dart';
 import 'package:tripolizoo/features/supervisor/shared/widgets/supervisor_form_sheet.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_group_followup/data/health_cases_api_repository.dart';
@@ -39,12 +40,11 @@ class _HealthCaseFormSheetState extends State<HealthCaseFormSheet> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      final provider = context.read<HealthReportsProvider>();
-      if (provider.groupAnimals.isEmpty) {
-        provider.load(audience: HealthReportsAudience.supervisor);
-      }
+      await context.read<HealthReportsProvider>().reloadAnimals();
+      if (!mounted) return;
+      setState(() => _selectedAnimal = null);
     });
   }
 
@@ -99,10 +99,13 @@ class _HealthCaseFormSheetState extends State<HealthCaseFormSheet> {
 
       if (!mounted) return;
       Navigator.of(context).pop(true);
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
+      final message = e is AuthException
+          ? e.message
+          : 'تعذّر تسجيل الحالة. حاول مرة أخرى.';
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر تسجيل الحالة. حاول مرة أخرى.')),
+        SnackBar(content: Text(message)),
       );
     } finally {
       if (mounted) setState(() => _loading = false);

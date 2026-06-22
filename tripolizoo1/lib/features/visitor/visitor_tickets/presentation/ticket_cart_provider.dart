@@ -17,6 +17,7 @@ class TicketCartProvider extends ChangeNotifier {
 
   final List<PurchasedTicket> _purchased = [];
   List<PurchasedTicket> _lastPurchaseTickets = [];
+  VoidCallback? onTicketsTabOpened;
 
   Map<String, int> get cart => Map.unmodifiable(_cart);
   List<PurchasedTicket> get purchasedTickets => List.unmodifiable(_purchased);

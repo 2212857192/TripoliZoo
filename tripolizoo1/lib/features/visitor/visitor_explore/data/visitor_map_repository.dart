@@ -49,6 +49,7 @@ class VisitorMapLocation {
     this.animalProfileId,
     this.animalName,
     this.animalCode,
+    this.animalGroup,
     this.animalPhotoUrl,
   });
 
@@ -61,6 +62,7 @@ class VisitorMapLocation {
   final int? animalProfileId;
   final String? animalName;
   final String? animalCode;
+  final String? animalGroup;
   final String? animalPhotoUrl;
 
   factory VisitorMapLocation.fromJson(Map<String, dynamic> json) {
@@ -74,6 +76,7 @@ class VisitorMapLocation {
       animalProfileId: (json['animal_profile_id'] as num?)?.toInt(),
       animalName: json['animal_name']?.toString(),
       animalCode: json['animal_code']?.toString(),
+      animalGroup: json['animal_group']?.toString(),
       animalPhotoUrl:
           ApiConfig.resolveAssetUrl(json['animal_photo_url']?.toString()),
     );

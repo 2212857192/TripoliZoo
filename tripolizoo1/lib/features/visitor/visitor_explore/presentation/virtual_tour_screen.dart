@@ -18,6 +18,7 @@ class VirtualTourScreen extends StatefulWidget {
 
 class _VirtualTourScreenState extends State<VirtualTourScreen> {
   String _currentSceneId = VirtualTourData.startSceneId;
+  String? _previousSceneId;
   final PanoramaController _panoramaController = PanoramaController();
   List<TourMarker> _markers = [];
   bool _walkthrough = false;
@@ -106,6 +107,28 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
     _viewLon = _viewLon + lonDelta;
   }
 
+  void _focusOnNavigationPoint(
+    List<TourMarker> markers, {
+    required String sceneId,
+    required bool fromForward,
+    String? fromSceneId,
+  }) {
+    final focus = VirtualTourData.navigationFocusMarker(
+      sceneId,
+      arrivedFromSceneId: fromSceneId,
+      returning: !fromForward,
+    );
+    if (focus != null) {
+      _setViewTo(focus.latitude, focus.longitude);
+      return;
+    }
+    if (markers.isNotEmpty) {
+      _setViewTo(markers.first.latitude, markers.first.longitude);
+      return;
+    }
+    _setViewTo(0, 0);
+  }
+
   /// زاوية الكاميرا — للأمام: زر التنقل التالي
   void _applySceneView(
     List<TourMarker> markers, {
@@ -113,29 +136,12 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
     required bool fromForward,
     String? fromSceneId,
   }) {
-    TourMarker? chosen;
-    String? chosenSource;
-    for (final m in markers) {
-      if (m.type == TourMarkerType.next) {
-        chosen = m;
-        chosenSource = 'next';
-        break;
-      }
-    }
-    if (chosen == null) {
-      for (final m in markers) {
-        if (m.type == TourMarkerType.animalArea) {
-          chosen = m;
-          chosenSource = 'animalArea';
-          break;
-        }
-      }
-    }
-    if (chosen != null) {
-      _setViewTo(chosen.latitude, chosen.longitude);
-    } else {
-      _setViewTo(0, 0);
-    }
+    _focusOnNavigationPoint(
+      markers,
+      sceneId: sceneId,
+      fromForward: fromForward,
+      fromSceneId: fromSceneId,
+    );
     // #region agent log
     agentLog(
       location: 'virtual_tour_screen.dart:_applySceneView',
@@ -145,10 +151,6 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
         'sceneId': sceneId,
         'fromForward': fromForward,
         'fromSceneId': fromSceneId,
-        'chosenType': chosen?.type.name,
-        'chosenSource': chosenSource,
-        'chosenLabel': chosen?.label,
-        'chosenTarget': chosen?.targetSceneId,
         'viewLat': _viewLat,
         'viewLon': _viewLon,
         'isHorseRoute': VirtualTourData.isHorseRoute(sceneId),
@@ -310,30 +312,12 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
     );
     // #endregion
     if (applyArrowView) {
-      if (fromForward) {
-        _applySceneView(
-          markers,
-          sceneId: sceneId,
-          fromForward: true,
-          fromSceneId: fromSceneId,
-        );
-      } else if (viaMarker != null) {
-        _setViewTo(viaMarker.latitude, viaMarker.longitude);
-        // #region agent log
-        agentLog(
-          location: 'virtual_tour_screen.dart:_goToScene',
-          message: 'back view from tapped marker',
-          hypothesisId: 'A',
-          data: {
-            'toSceneId': sceneId,
-            'fromSceneId': fromSceneId,
-            'viewLat': _viewLat,
-            'viewLon': _viewLon,
-            'markerTarget': viaMarker.targetSceneId,
-          },
-        );
-        // #endregion
-      }
+      _focusOnNavigationPoint(
+        markers,
+        sceneId: sceneId,
+        fromForward: fromForward,
+        fromSceneId: fromSceneId,
+      );
     }
 
     // نحمّل الصورة التالية فقط ثم نغيّر المشهد فوراً
@@ -341,10 +325,16 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
     if (!mounted) return;
     _pendingSnap = applyArrowView;
     setState(() {
+      _previousSceneId = fromSceneId;
       _currentSceneId = sceneId;
       _markers = markers;
       _hotspots = _buildHotspots(markers);
     });
+    if (applyArrowView) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _snapCameraToArrow();
+      });
+    }
     // #region agent log
     agentLog(
       location: 'virtual_tour_screen.dart:_goToScene',
@@ -518,14 +508,12 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
   }
 
   void _applyWalkthroughEntry(String fromSceneId, List<TourMarker> markers) {
-    final entry = VirtualTourData.entryMarker(_currentSceneId, fromSceneId);
-    if (entry != null) {
-      _viewLat = entry.latitude;
-      _viewLon = _normalizeLon(entry.longitude);
-    } else {
-      _viewLat = 0;
-      _viewLon = 0;
-    }
+    _focusOnNavigationPoint(
+      markers,
+      sceneId: _currentSceneId,
+      fromForward: true,
+      fromSceneId: fromSceneId,
+    );
   }
 
   Future<void> _visitAnimalDuringWalk(TourMarker marker, int gen) async {
@@ -706,17 +694,13 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
             viaMarker: marker,
           );
         } else {
-          // #region agent log
-          agentLog(
-            location: 'virtual_tour_screen.dart:_onMarkerTap:animalArea',
-            message: 'animalArea label-only mode (no sheet)',
-            hypothesisId: 'A',
-            data: {
-              'label': marker.label,
-              'targetSceneId': target,
-            },
-          );
-          // #endregion
+          _stopWalkthrough();
+          _setViewTo(marker.latitude, marker.longitude);
+          _pendingSnap = true;
+          if (mounted) {
+            setState(() {});
+            _snapCameraToArrow();
+          }
         }
     }
   }
@@ -727,15 +711,46 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
     if (_ready) _precacheScene(_scene);
   }
 
+  bool _markersVisuallyOverlap(TourMarker a, TourMarker b) {
+    final latDelta = (a.latitude - b.latitude).abs();
+    final lonDelta = _shortestLonDelta(a.longitude, b.longitude).abs();
+    return latDelta < 2.0 && lonDelta < 15.0;
+  }
+
+  List<TourMarker> _visibleMarkers(List<TourMarker> markers) {
+    final backs = markers.where((m) => m.type == TourMarkerType.back).toList();
+    Iterable<TourMarker> visible;
+
+    if (backs.length <= 1) {
+      visible = markers;
+    } else {
+      visible = markers.where((marker) {
+        if (marker.type != TourMarkerType.back) return true;
+        if (_previousSceneId == null) return false;
+        return marker.targetSceneId == _previousSceneId;
+      });
+    }
+
+    final nonBacks =
+        visible.where((m) => m.type != TourMarkerType.back).toList();
+    return visible.where((marker) {
+      if (marker.type != TourMarkerType.back) return true;
+      for (final other in nonBacks) {
+        if (_markersVisuallyOverlap(marker, other)) return false;
+      }
+      return true;
+    }).toList();
+  }
+
   List<Hotspot> _buildHotspots(List<TourMarker> markers) {
-    return markers.map((m) {
-      final isAnimal = m.type == TourMarkerType.animalArea;
+    final visible = _visibleMarkers(markers);
+    return visible.map((m) {
       return Hotspot(
         latitude: m.latitude,
         longitude: m.longitude,
-        orgin: const Offset(0.5, 0.5),
-        width: isAnimal ? 108 : 120,
-        height: isAnimal ? 96 : 112,
+        orgin: const Offset(0.5, 0.0),
+        width: 140,
+        height: 108,
         widget: _MarkerWidget(
           type: m.type,
           label: m.label,
@@ -751,8 +766,9 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
       backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.black54,
         elevation: 0,
+        toolbarHeight: 56,
         leading: IconButton(
           icon: Container(
             padding: const EdgeInsets.all(8),
@@ -763,125 +779,15 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
           ),
           onPressed: () => context.pop(),
         ),
-        title: Column(
-          children: [
-            const Text('جولة 360°',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16)),
-            Text(
-              _scene.title,
-              style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.8),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600),
-            ),
-            if (_isHorseRoute) ...[
-              const SizedBox(height: 2),
-              Container(
-                margin: const EdgeInsets.only(top: 2),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF8D6E63).withValues(alpha: 0.9),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('🐴', style: TextStyle(fontSize: 10)),
-                    SizedBox(width: 4),
-                    Text(
-                      'طريق الخيول',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            if (_isDuckRoute) ...[
-              const SizedBox(height: 2),
-              Container(
-                margin: const EdgeInsets.only(top: 2),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0277BD).withValues(alpha: 0.9),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('🦆', style: TextStyle(fontSize: 10)),
-                    SizedBox(width: 4),
-                    Text(
-                      'طريق البط والبجع',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            if (_isReptileRoute) ...[
-              const SizedBox(height: 2),
-              Container(
-                margin: const EdgeInsets.only(top: 2),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF558B2F).withValues(alpha: 0.9),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('🦎', style: TextStyle(fontSize: 10)),
-                    SizedBox(width: 4),
-                    Text(
-                      'طريق الزواحف',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            if (_isBigCatsRoute) ...[
-              const SizedBox(height: 2),
-              Container(
-                margin: const EdgeInsets.only(top: 2),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6D4C41).withValues(alpha: 0.9),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('🦁', style: TextStyle(fontSize: 10)),
-                    SizedBox(width: 4),
-                    Text(
-                      'طريق الأسود والنمور',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ],
+        title: Text(
+          _scene.title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         centerTitle: true,
         actions: [
@@ -992,11 +898,11 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppColors.accent.withValues(alpha: 0.15),
+                          color: AppColors.primary.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Icon(Icons.pets_rounded,
-                            color: AppColors.accent, size: 20),
+                            color: AppColors.primary, size: 20),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -1106,14 +1012,14 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                               ? _walkthroughPhase
                               : 'جولة تلقائية — اضغط ⏸ للإيقاف')
                           : _isHorseRoute
-                              ? 'طريق الخيول  •  انتقل أو منطقة الخيول'
+                              ? 'طريق الخيول  •  اضغط النقطة الخضراء للتنقل'
                               : _isDuckRoute
-                                  ? 'طريق البط والبجع  •  البرتقالي للبركة'
+                                  ? 'طريق البط والبجع  •  اضغط النقطة الخضراء للتنقل'
                                   : _isReptileRoute
-                                      ? 'طريق الزواحف  •  البوابات الخضراء للانتقال'
+                                      ? 'طريق الزواحف  •  اضغط النقطة الخضراء للتنقل'
                                       : _isBigCatsRoute
-                                          ? 'طريق الأسود والنمور  •  البرتقالي للأقفاص'
-                                          : 'اضغط البوابة الأرضية للانتقال  •  البرتقالي للحيوانات',
+                                          ? 'طريق الأسود والنمور  •  اضغط النقطة الخضراء للتنقل'
+                                          : 'اضغط النقطة الخضراء للتنقل بين المحطات',
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 12,
@@ -1171,6 +1077,14 @@ class _MarkerWidgetState extends State<_MarkerWidget>
     super.dispose();
   }
 
+  String _defaultLabelForType(TourMarkerType type) {
+    return switch (type) {
+      TourMarkerType.back => 'رجوع',
+      TourMarkerType.next => 'انتقل',
+      TourMarkerType.animalArea => 'عرض',
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -1179,139 +1093,104 @@ class _MarkerWidgetState extends State<_MarkerWidget>
       child: AnimatedBuilder(
         animation: Listenable.merge([_pulse, _ring]),
         builder: (_, __) {
-          return switch (widget.type) {
-            TourMarkerType.next => _NavPortal(
-                isForward: true,
-                label: widget.label,
-                pulse: _pulse.value,
-                ring: _ring.value,
-              ),
-            TourMarkerType.back => _NavPortal(
-                isForward: false,
-                label: widget.label,
-                pulse: _pulse.value,
-                ring: _ring.value,
-              ),
-            TourMarkerType.animalArea => _AnimalSpot(
-                label: widget.label,
-                pulse: _pulse.value,
-                ring: _ring.value,
-              ),
-          };
+          final label = widget.label ?? _defaultLabelForType(widget.type);
+          return _NavPortal(
+            label: label,
+            pulse: _pulse.value,
+            ring: _ring.value,
+          );
         },
       ),
     );
   }
 }
 
-/// بوابة أرضية — بدون أسهم، أسلوب Matterport / Street View
+/// نقطة تنقل موحّدة — أخضر في جميع المناطق
 class _NavPortal extends StatelessWidget {
   const _NavPortal({
-    required this.isForward,
     required this.pulse,
     required this.ring,
     this.label,
   });
 
-  final bool isForward;
   final String? label;
   final double pulse;
   final double ring;
 
-  Color get _accent => isForward ? AppColors.primary : const Color(0xFF607D8B);
-
-  String get _defaultLabel => isForward ? 'انتقل' : 'رجوع';
-
-  IconData get _labelIcon =>
-      isForward ? Icons.explore_rounded : Icons.restart_alt_rounded;
+  static const Color _green = AppColors.primary;
 
   @override
   Widget build(BuildContext context) {
     final scale = 1.0 + pulse * 0.04;
     final outerRing = 48 + ring * 32;
     final midRing = 36 + ring * 16;
+    final displayLabel = label ?? 'انتقل';
 
     return SizedBox(
-      width: label != null ? 120 : 84,
-      height: label != null ? 112 : 92,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        clipBehavior: Clip.none,
+      width: 140,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Positioned(
-            top: 0,
-            child: _HotspotLabel(
-              text: label ?? _defaultLabel,
-              color: _accent,
-              icon: _labelIcon,
-            ),
-          ),
-          Positioned(
-            bottom: 6,
-            child: Transform.scale(
-              scale: scale,
-              child: SizedBox(
-                width: isForward ? 80 : 68,
-                height: isForward ? 80 : 68,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // حلقة نبض خارجية
-                    Container(
-                      width: outerRing,
-                      height: outerRing * 0.42,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(
-                          color: _accent.withValues(alpha: (1 - ring) * 0.55),
-                          width: 2,
-                        ),
+          Transform.scale(
+            scale: scale,
+            child: SizedBox(
+              width: 80,
+              height: 72,
+              child: Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    width: outerRing,
+                    height: outerRing * 0.42,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(
+                        color: _green.withValues(alpha: (1 - ring) * 0.55),
+                        width: 2,
                       ),
                     ),
-                    // حلقة أرضية ثابتة
-                    Container(
-                      width: midRing,
-                      height: midRing * 0.38,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(999),
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.white.withValues(alpha: 0.95),
-                            Colors.white.withValues(alpha: 0.72),
-                          ],
-                        ),
-                        border: Border.all(
-                            color: _accent.withValues(alpha: 0.7), width: 2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: _accent.withValues(alpha: 0.4),
-                            blurRadius: 16,
-                            spreadRadius: 1,
-                          ),
+                  ),
+                  Container(
+                    width: midRing,
+                    height: midRing * 0.38,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(999),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white.withValues(alpha: 0.95),
+                          Colors.white.withValues(alpha: 0.72),
                         ],
                       ),
+                      border: Border.all(
+                          color: _green.withValues(alpha: 0.7), width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: _green.withValues(alpha: 0.4),
+                          blurRadius: 16,
+                          spreadRadius: 1,
+                        ),
+                      ],
                     ),
-                    // نواة متوهجة — نقطة فقط بدون سهم
-                    CustomPaint(
-                      size: Size(isForward ? 80 : 68, isForward ? 80 : 68),
-                      painter: _BeaconCorePainter(
-                        color: _accent,
-                        intensity: 0.55 + pulse * 0.35,
-                      ),
+                  ),
+                  CustomPaint(
+                    size: const Size(80, 72),
+                    painter: _BeaconCorePainter(
+                      color: _green,
+                      intensity: 0.55 + pulse * 0.35,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-          Positioned(
-            bottom: 0,
-            child: CustomPaint(
-              size: Size(isForward ? 64 : 52, 20),
-              painter: _GroundShadowPainter(color: _accent),
-            ),
+          const SizedBox(height: 2),
+          _HotspotLabel(
+            text: displayLabel,
+            color: _green,
+            icon: Icons.explore_rounded,
           ),
         ],
       ),
@@ -1377,101 +1256,7 @@ class _BeaconCorePainter extends CustomPainter {
       old.color != color || old.intensity != intensity;
 }
 
-/// نقطة اكتشاف حيوانات
-class _AnimalSpot extends StatelessWidget {
-  const _AnimalSpot({
-    required this.pulse,
-    required this.ring,
-    this.label,
-  });
-
-  final String? label;
-  final double pulse;
-  final double ring;
-
-  @override
-  Widget build(BuildContext context) {
-    final scale = 1.0 + pulse * 0.05;
-    final ringSize = 50 + ring * 26;
-    final ringOpacity = (1 - ring) * 0.4;
-
-    return SizedBox(
-      width: 108,
-      height: 96,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        clipBehavior: Clip.none,
-        children: [
-          if (label != null)
-            Positioned(
-              top: 0,
-              child: _HotspotLabel(
-                text: label!,
-                color: AppColors.accent,
-                icon: Icons.pets_rounded,
-              ),
-            ),
-          Positioned(
-            bottom: 8,
-            child: Transform.scale(
-              scale: scale,
-              child: SizedBox(
-                width: 68,
-                height: 68,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      width: ringSize,
-                      height: ringSize,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color:
-                              AppColors.accent.withValues(alpha: ringOpacity),
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: AppColors.accentGradient,
-                        border: Border.all(color: Colors.white, width: 2.5),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.accent.withValues(alpha: 0.45),
-                            blurRadius: 14,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.pets_rounded,
-                        color: Colors.white,
-                        size: 22,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            child: CustomPaint(
-              size: const Size(52, 16),
-              painter: _GroundShadowPainter(color: AppColors.accent),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
+/// ظل أرضي للعمق — كأن النقطة على الأرض
 class _HotspotLabel extends StatelessWidget {
   const _HotspotLabel({
     required this.text,
@@ -1486,8 +1271,8 @@ class _HotspotLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(maxWidth: 108),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      constraints: const BoxConstraints(maxWidth: 140),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.96),
         borderRadius: BorderRadius.circular(20),
@@ -1505,7 +1290,7 @@ class _HotspotLabel extends StatelessWidget {
         children: [
           if (icon != null) ...[
             Icon(icon, size: 12, color: color),
-            const SizedBox(width: 4),
+            const SizedBox(width: 8),
           ],
           Flexible(
             child: Text(
@@ -1513,10 +1298,11 @@ class _HotspotLabel extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 11,
                 fontWeight: FontWeight.w800,
                 color: color,
-                letterSpacing: 0.2,
+                letterSpacing: 1.6,
+                height: 1.2,
               ),
             ),
           ),
@@ -1524,33 +1310,4 @@ class _HotspotLabel extends StatelessWidget {
       ),
     );
   }
-}
-
-/// ظل أرضي للعمق — كأن النقطة على الأرض
-class _GroundShadowPainter extends CustomPainter {
-  const _GroundShadowPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = Rect.fromCenter(
-      center: Offset(size.width / 2, size.height / 2),
-      width: size.width,
-      height: size.height,
-    );
-    canvas.drawOval(
-      rect,
-      Paint()
-        ..shader = RadialGradient(
-          colors: [
-            color.withValues(alpha: 0.35),
-            color.withValues(alpha: 0.0),
-          ],
-        ).createShader(rect),
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant _GroundShadowPainter old) => old.color != color;
 }

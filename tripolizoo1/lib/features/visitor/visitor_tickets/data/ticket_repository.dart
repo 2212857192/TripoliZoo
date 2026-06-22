@@ -159,14 +159,16 @@ class ApiTicketRepository implements TicketRepository {
   TicketType _typeFromJson(Map<String, dynamic> json) {
     final isLocal = json['is_local'] as bool? ?? true;
     final ageGroup =
-        json['visitor_age_group']?.toString() ?? json['title']?.toString() ?? '';
+        json['visitor_age_group']?.toString() ?? json['subtitle']?.toString() ?? '';
+    final category =
+        json['title']?.toString() ?? json['name']?.toString() ?? '';
 
     return TicketType(
       id: json['id'].toString(),
-      title: json['title']?.toString() ?? ageGroup,
-      categoryLabel: json['category_label']?.toString() ?? ageGroup,
+      title: category,
+      categoryLabel: json['category_label']?.toString() ?? category,
       price: (json['price'] as num?)?.round() ?? 0,
-      subtitle: json['subtitle']?.toString() ?? '',
+      subtitle: ageGroup,
       icon: _iconForAgeGroup(ageGroup, isLocal),
       isLocal: isLocal,
       name: json['name']?.toString(),
@@ -174,11 +176,14 @@ class ApiTicketRepository implements TicketRepository {
   }
 
   IconData _iconForAgeGroup(String ageGroup, bool isLocal) {
-    return switch (ageGroup) {
-      'طفل' => isLocal ? Icons.child_care : Icons.child_friendly,
-      'طالب' => Icons.school,
-      _ => isLocal ? Icons.person : Icons.public,
-    };
+    final normalized = ageGroup.toLowerCase();
+    if (normalized.contains('طفل') || normalized.contains('child')) {
+      return isLocal ? Icons.child_care : Icons.child_friendly;
+    }
+    if (normalized.contains('طالب') || normalized.contains('student')) {
+      return Icons.school;
+    }
+    return isLocal ? Icons.person : Icons.public;
   }
 }
 

@@ -100,6 +100,37 @@ class PlutuTicketPaymentService
             return 'رفضت Plutu المصادقة. تأكد من PLUTU_API_KEY و Access Token (JWT) من لوحة Plutu وليس المفتاح السري فقط.';
         }
 
+        if ($message !== '' && ($arabic = $this->translatePlutuError($message)) !== null) {
+            return $arabic;
+        }
+
         return $message !== '' ? $message : 'تعذّر إتمام العملية عبر Plutu.';
+    }
+
+    private function translatePlutuError(string $message): ?string
+    {
+        $normalized = strtolower(trim($message));
+
+        if (str_contains($normalized, 'not subscribed to edfali')) {
+            return 'رقم الهاتف غير مسجّل في خدمة ادفع لي. سجّل رقمك في التطبيق أو استخدم الدفع النقدي.';
+        }
+
+        if (str_contains($normalized, 'invalid mobile') || str_contains($normalized, 'invalid phone')) {
+            return 'رقم الهاتف غير صالح لخدمة ادفع لي.';
+        }
+
+        if (str_contains($normalized, 'insufficient')) {
+            return 'الرصيد غير كافٍ لإتمام الدفع عبر ادفع لي.';
+        }
+
+        if (str_contains($normalized, 'otp') && str_contains($normalized, 'invalid')) {
+            return 'رمز التحقق غير صحيح. حاول مرة أخرى.';
+        }
+
+        if (str_contains($normalized, 'expired')) {
+            return 'انتهت صلاحية رمز التحقق. أعد طلب الدفع من البداية.';
+        }
+
+        return null;
     }
 }

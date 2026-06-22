@@ -15,27 +15,12 @@ import 'package:tripolizoo/shared/utils/localized_text.dart';
 import 'package:tripolizoo/shared/widgets/white_pinned_sliver_header.dart';
 
 String _localizedTicketTitle(BuildContext context, TicketType type) {
-  if (Localizations.localeOf(context).languageCode == 'ar') {
-    return type.title;
-  }
-  return switch (type.id) {
-    'adult_ly' || 'adult_intl' => 'Adult',
-    'child_ly' || 'child_intl' => 'Child',
-    'student' => 'Student',
-    _ => type.title,
-  };
+  final label = type.name?.isNotEmpty == true ? type.name! : type.title;
+  return label;
 }
 
 String _localizedTicketSubtitle(BuildContext context, TicketType type) {
-  if (Localizations.localeOf(context).languageCode == 'ar') {
-    return type.subtitle;
-  }
-  return switch (type.id) {
-    'adult_ly' || 'adult_intl' => 'Over 12 years',
-    'child_ly' || 'child_intl' => 'From 3 to 12 years',
-    'student' => 'Schools and universities',
-    _ => type.subtitle,
-  };
+  return type.subtitle;
 }
 
 class TicketsScreen extends StatefulWidget {
@@ -53,13 +38,23 @@ class _TicketsScreenState extends State<TicketsScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final cart = context.read<TicketCartProvider>();
+      cart.onTicketsTabOpened = _resetToSelection;
       await cart.loadTypes();
       await cart.loadPurchasedTickets();
-      if (!mounted) return;
-      if (cart.purchasedTickets.isNotEmpty) {
-        setState(() => _step = 2);
-      }
     });
+  }
+
+  @override
+  void dispose() {
+    context.read<TicketCartProvider>().onTicketsTabOpened = null;
+    super.dispose();
+  }
+
+  void _resetToSelection() {
+    if (!mounted) return;
+    if (_step != 0) {
+      setState(() => _step = 0);
+    }
   }
 
   void _goToPayment() => setState(() => _step = 1);
@@ -77,6 +72,8 @@ class _TicketsScreenState extends State<TicketsScreen> {
   @override
   Widget build(BuildContext context) {
     final hasAccount = context.watch<AuthProvider>().hasAccount;
+    final cart = context.watch<TicketCartProvider>();
+    final step = _step == 2 && cart.lastPurchaseTickets.isEmpty ? 0 : _step;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
@@ -85,7 +82,7 @@ class _TicketsScreenState extends State<TicketsScreen> {
         body: hasAccount
             ? AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
-                child: switch (_step) {
+                child: switch (step) {
                   0 => _SelectionView(
                       onContinue: _goToPayment,
                       onBack: _goBack,
@@ -569,7 +566,9 @@ class _TicketRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${_localizedTicketSubtitle(context, type)} · ${type.price} ${context.localized(ar: 'د.ل', en: 'LYD')}',
+                  type.subtitle.isNotEmpty
+                      ? '${type.subtitle} · ${type.price} ${context.localized(ar: 'د.ل', en: 'LYD')}'
+                      : '${type.price} ${context.localized(ar: 'د.ل', en: 'LYD')}',
                   style: GoogleFonts.cairo(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -1033,10 +1032,10 @@ class _PaymentViewState extends State<_PaymentView> {
                     const SizedBox(height: 10),
                     _PaymentMethodCard(
                       id: 'electronic',
-                      title: context.localized(ar: 'إلكتروني', en: 'Electronic'),
+                      title: context.localized(ar: 'ادفع لي', en: 'Adali'),
                       subtitle: context.localized(
-                        ar: 'الدفع عبر بوابة Plutu',
-                        en: 'Pay through Plutu gateway',
+                        ar: 'الدفع عبر خدمة ادفع لي',
+                        en: 'Pay through Adali service',
                       ),
                       icon: Icons.account_balance_wallet_rounded,
                       selected: _paymentMethod == 'electronic',
@@ -1082,8 +1081,8 @@ class _PaymentViewState extends State<_PaymentView> {
                           Expanded(
                             child: Text(
                               context.localized(
-                                ar: 'سيُرسل رمز OTP إلى هاتفك عبر Plutu لتأكيد الدفع الإلكتروني.',
-                                en: 'An OTP will be sent to your phone via Plutu to confirm electronic payment.',
+                                ar: 'سيُرسل رمز OTP إلى هاتفك عبر ادفع لي. يجب أن يكون الرقم مسجّلاً في الخدمة.',
+                                en: 'An OTP will be sent via Adali. The number must be registered with the service.',
                               ),
                               style: GoogleFonts.cairo(
                                 fontSize: 11,
@@ -1338,12 +1337,13 @@ class _TicketViewState extends State<_TicketView> {
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<TicketCartProvider>();
-    final tickets = cart.lastPurchaseTickets.isNotEmpty
-        ? cart.lastPurchaseTickets
-        : cart.purchasedTickets;
-    final bottomPad = MediaQuery.of(context).padding.bottom;
+    final tickets = cart.lastPurchaseTickets;
 
-    if (tickets.isEmpty) return const SizedBox.shrink();
+    if (tickets.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final bottomPad = MediaQuery.paddingOf(context).bottom;
 
     return CustomScrollView(
       slivers: [
@@ -1416,7 +1416,11 @@ class _TicketViewState extends State<_TicketView> {
                 const Icon(Icons.check_circle_rounded,
                     color: Color(0xFF2E7D32), size: 64),
                 const SizedBox(height: 12),
-                Text('تم الحجز بنجاح!',
+                Text(
+                  context.localized(
+                    ar: 'تم إصدار التذاكر بنجاح',
+                    en: 'Tickets issued successfully',
+                  ),
                     style: GoogleFonts.cairo(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,

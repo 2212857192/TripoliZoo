@@ -3,10 +3,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:tripolizoo/features/visitor/visitor_tickets/presentation/ticket_cart_provider.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
+import 'package:tripolizoo/shared/providers/locale_provider.dart';
+import 'package:tripolizoo/shared/utils/localized_text.dart';
 
-/// ترتيب RTL — أقصى اليمين → اليسار:
-/// الرئيسة → الخريطة → [مسح QR] → تذاكر → الحساب
 class MainShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
@@ -18,6 +20,8 @@ class MainShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final idx = navigationShell.currentIndex;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
+    final locale = context.watch<LocaleProvider>();
+    final isArabic = locale.locale == AppLocale.ar;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -47,7 +51,8 @@ class MainShell extends StatelessWidget {
               ],
             ),
             child: Directionality(
-              textDirection: TextDirection.rtl,
+              textDirection:
+                  isArabic ? TextDirection.rtl : TextDirection.ltr,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6),
                 child: Row(
@@ -56,7 +61,7 @@ class MainShell extends StatelessWidget {
                       child: _NavItem(
                         icon: Icons.home_outlined,
                         activeIcon: Icons.home_rounded,
-                        label: 'الرئيسة',
+                        label: context.localized(ar: 'الرئيسة', en: 'Home'),
                         selected: idx == 0,
                         onTap: () => _goBranch(context, 0),
                       ),
@@ -65,7 +70,7 @@ class MainShell extends StatelessWidget {
                       child: _NavItem(
                         icon: Icons.confirmation_number_outlined,
                         activeIcon: Icons.confirmation_number_rounded,
-                        label: 'تذاكر',
+                        label: context.localized(ar: 'تذاكر', en: 'Tickets'),
                         selected: idx == 2,
                         onTap: () => _goBranch(context, 2),
                       ),
@@ -74,7 +79,7 @@ class MainShell extends StatelessWidget {
                       child: _NavItem(
                         icon: Icons.map_outlined,
                         activeIcon: Icons.map_rounded,
-                        label: 'الخريطة',
+                        label: context.localized(ar: 'الخريطة', en: 'Map'),
                         selected: idx == 1,
                         onTap: () => _goBranch(context, 1),
                       ),
@@ -83,7 +88,7 @@ class MainShell extends StatelessWidget {
                       child: _NavItem(
                         icon: Icons.qr_code_scanner_rounded,
                         activeIcon: Icons.qr_code_scanner_rounded,
-                        label: 'ماسح',
+                        label: context.localized(ar: 'ماسح', en: 'Scan'),
                         selected: false,
                         onTap: () => context.push('/qr-scanner'),
                       ),
@@ -92,7 +97,7 @@ class MainShell extends StatelessWidget {
                       child: _NavItem(
                         icon: Icons.person_outline_rounded,
                         activeIcon: Icons.person_rounded,
-                        label: 'الحساب',
+                        label: context.localized(ar: 'الحساب', en: 'Account'),
                         selected: idx == 3,
                         onTap: () => _goBranch(context, 3),
                       ),
@@ -108,10 +113,14 @@ class MainShell extends StatelessWidget {
   }
 
   void _goBranch(BuildContext context, int index) {
+    final previousIndex = navigationShell.currentIndex;
     navigationShell.goBranch(
       index,
       initialLocation: index == navigationShell.currentIndex,
     );
+    if (index == 2 && previousIndex != 2) {
+      context.read<TicketCartProvider>().onTicketsTabOpened?.call();
+    }
   }
 }
 

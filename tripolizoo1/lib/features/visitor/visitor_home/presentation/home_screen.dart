@@ -7,11 +7,36 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/data/animal_repository.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/domain/animal.dart';
-import 'package:go_router/go_router.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/presentation/animal_detail_screen.dart';
 import 'package:tripolizoo/shared/constants/app_constants.dart';
 import 'package:tripolizoo/shared/providers/locale_provider.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
+import 'package:tripolizoo/shared/utils/localized_text.dart';
+
+List<_CatChip> _homeCategories(BuildContext context) {
+  return [
+    _CatChip(
+      'all',
+      context.localized(ar: 'الكل', en: 'All'),
+      Icons.auto_awesome_rounded,
+    ),
+    _CatChip(
+      'predators',
+      context.localized(ar: 'مفترسات', en: 'Predators'),
+      Icons.pets_rounded,
+    ),
+    _CatChip(
+      'birds',
+      context.localized(ar: 'طيور', en: 'Birds'),
+      Icons.flutter_dash_rounded,
+    ),
+    _CatChip(
+      'mammals',
+      context.localized(ar: 'ثدييات', en: 'Mammals'),
+      Icons.cruelty_free_rounded,
+    ),
+  ];
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,13 +55,6 @@ class _HomeScreenState extends State<HomeScreen>
   List<Animal> _animals = [];
   String _category = 'all';
   bool _headerScrolled = false;
-
-  static const _categories = [
-    _CatChip('all', 'الكل', Icons.auto_awesome_rounded),
-    _CatChip('predators', 'مفترسات', Icons.pets_rounded),
-    _CatChip('birds', 'طيور', Icons.flutter_dash_rounded),
-    _CatChip('mammals', 'ثدييات', Icons.cruelty_free_rounded),
-  ];
 
   @override
   void initState() {
@@ -104,6 +122,7 @@ class _HomeScreenState extends State<HomeScreen>
                 physics: const BouncingScrollPhysics(),
                 slivers: [
                   _buildHeroContent(
+                    context,
                     heroHeight,
                     sheetHeight,
                     sheetOverlap,
@@ -112,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen>
                     padding: EdgeInsets.fromLTRB(20, 16, 20, bottomPad + 100),
                     sliver: SliverToBoxAdapter(
                       child: _DiscoverSection(
-                        categories: _categories,
+                        categories: _homeCategories(context),
                         selected: _category,
                         animals: _filtered,
                         onCategoryTap: (id) => setState(() => _category = id),
@@ -136,10 +155,14 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildHeroContent(
+    BuildContext context,
     double heroHeight,
     double sheetHeight,
     double sheetOverlap,
   ) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final textDirection = isArabic ? TextDirection.rtl : TextDirection.ltr;
+
     return SliverToBoxAdapter(
       child: SizedBox(
         height: heroHeight + sheetHeight - sheetOverlap,
@@ -181,7 +204,10 @@ class _HomeScreenState extends State<HomeScreen>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '${AppConstants.appName.toUpperCase()} · حديقة ذكية',
+                          context.localized(
+                            ar: '${AppConstants.appName.toUpperCase()} · حديقة ذكية',
+                            en: '${AppConstants.appNameEn.toUpperCase()} · SMART ZOO',
+                          ),
                           style: GoogleFonts.cairo(
                             color: Colors.white.withValues(alpha: 0.88),
                             fontSize: 11,
@@ -194,21 +220,27 @@ class _HomeScreenState extends State<HomeScreen>
                           fit: BoxFit.scaleDown,
                           alignment: AlignmentDirectional.centerStart,
                           child: RichText(
-                            textDirection: TextDirection.rtl,
+                            textDirection: textDirection,
                             text: TextSpan(
                               style: GoogleFonts.cairo(
                                 fontSize: 42,
                                 fontWeight: FontWeight.w700,
                                 height: 1.1,
                               ),
-                              children: const [
+                              children: [
                                 TextSpan(
-                                  text: 'استكشف الحياة البرية ',
-                                  style: TextStyle(color: Colors.white),
+                                  text: context.localized(
+                                    ar: 'استكشف الحياة البرية ',
+                                    en: 'Explore Wildlife ',
+                                  ),
+                                  style: const TextStyle(color: Colors.white),
                                 ),
                                 TextSpan(
-                                  text: 'اليوم.',
-                                  style: TextStyle(color: Color(0xFFC5D639)),
+                                  text: context.localized(
+                                    ar: 'اليوم.',
+                                    en: 'Today.',
+                                  ),
+                                  style: const TextStyle(color: Color(0xFFC5D639)),
                                 ),
                               ],
                             ),
@@ -358,8 +390,11 @@ class _NavPanel extends StatelessWidget {
                               icon: Icons.qr_code_scanner_rounded,
                               iconColor: const Color(0xFF2E7D32),
                               iconBg: const Color(0xFFE8F5E9),
-                              title: 'ماسح QR',
-                              subtitle: 'امسح رمز أي حظيرة',
+                              title: context.localized(ar: 'ماسح QR', en: 'QR Scanner'),
+                              subtitle: context.localized(
+                                ar: 'امسح رمز أي حظيرة',
+                                en: 'Scan any enclosure code',
+                              ),
                               onTap: onQr,
                             ),
                           ),
@@ -369,8 +404,14 @@ class _NavPanel extends StatelessWidget {
                               icon: Icons.explore_outlined,
                               iconColor: const Color(0xFF558B2F),
                               iconBg: const Color(0xFFEDF5CE),
-                              title: 'جولة افتراضية',
-                              subtitle: 'بانوراما 360°',
+                              title: context.localized(
+                                ar: 'جولة افتراضية',
+                                en: 'Virtual Tour',
+                              ),
+                              subtitle: context.localized(
+                                ar: 'بانوراما 360°',
+                                en: '360° panorama',
+                              ),
                               onTap: onTour,
                             ),
                           ),
@@ -387,8 +428,14 @@ class _NavPanel extends StatelessWidget {
                               icon: Icons.map_outlined,
                               iconColor: const Color(0xFF5D4037),
                               iconBg: const Color(0xFFEFEBE9),
-                              title: 'خريطة تفاعلية',
-                              subtitle: 'توجيه حي',
+                              title: context.localized(
+                                ar: 'خريطة تفاعلية',
+                                en: 'Interactive Map',
+                              ),
+                              subtitle: context.localized(
+                                ar: 'توجيه حي',
+                                en: 'Live navigation',
+                              ),
                               onTap: onMap,
                             ),
                           ),
@@ -398,8 +445,14 @@ class _NavPanel extends StatelessWidget {
                               icon: Icons.access_time_rounded,
                               iconColor: const Color(0xFF1B5E20),
                               iconBg: const Color(0xFFE8F5E9),
-                              title: 'معلومات الزوار',
-                              subtitle: 'مفتوح 09:00 – 17:00',
+                              title: context.localized(
+                                ar: 'معلومات الزوار',
+                                en: 'Visitor Info',
+                              ),
+                              subtitle: context.localized(
+                                ar: 'مفتوح 09:00 – 17:00',
+                                en: 'Open 09:00 – 17:00',
+                              ),
                               onTap: onVisitInfo,
                             ),
                           ),
@@ -454,16 +507,7 @@ class _DiscoverSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'DISCOVER',
-                  style: GoogleFonts.cairo(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade500,
-                    letterSpacing: 1.5,
-                  ),
-                ),
-                Text(
-                  'اكتشف',
+                  context.localized(ar: 'اكتشف', en: 'Discover'),
                   style: GoogleFonts.cairo(
                     fontSize: 32,
                     fontWeight: FontWeight.w700,
@@ -476,7 +520,7 @@ class _DiscoverSection extends StatelessWidget {
             GestureDetector(
               onTap: onSeeAll,
               child: Text(
-                'عرض الكل',
+                context.localized(ar: 'عرض الكل', en: 'See All'),
                 style: GoogleFonts.cairo(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -540,7 +584,10 @@ class _DiscoverSection extends StatelessWidget {
           child: animals.isEmpty
               ? Center(
                   child: Text(
-                    'لا توجد حيوانات في هذا التصنيف',
+                    context.localized(
+                      ar: 'لا توجد حيوانات في هذا التصنيف',
+                      en: 'No animals in this category',
+                    ),
                     style: GoogleFonts.cairo(
                       color: const Color(0xFF9CA3AF),
                       fontWeight: FontWeight.w600,
@@ -564,11 +611,12 @@ class _AnimalCard extends StatelessWidget {
 
   final Animal animal;
 
-  String get _categoryLabel => switch (animal.category) {
-        'predators' => 'مفترسات',
-        'birds' => 'طيور',
-        'mammals' => 'ثدييات',
-        _ => 'حيوانات',
+  String _categoryLabel(BuildContext context) => switch (animal.category) {
+        'predators' =>
+          context.localized(ar: 'مفترسات', en: 'Predators'),
+        'birds' => context.localized(ar: 'طيور', en: 'Birds'),
+        'mammals' => context.localized(ar: 'ثدييات', en: 'Mammals'),
+        _ => context.localized(ar: 'حيوانات', en: 'Animals'),
       };
 
   @override
@@ -620,7 +668,7 @@ class _AnimalCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        _categoryLabel.toUpperCase(),
+                        _categoryLabel(context).toUpperCase(),
                         style: GoogleFonts.cairo(
                           color: Colors.white.withValues(alpha: 0.75),
                           fontSize: 10,
