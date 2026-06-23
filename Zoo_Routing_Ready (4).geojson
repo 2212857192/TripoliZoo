@@ -1,0 +1,8591 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "schema_version": "1.0",
+    "generated_by": "Tripoli Zoo Routing Editor",
+    "generated_at": "2026-06-23T08:00:15.628Z",
+    "coordinate_system": "image-pixel-xy",
+    "coordinate_order": "[x, y] in GeoJSON; convert to LatLng(y, x) in Flutter/Leaflet",
+    "image_width": 4516,
+    "image_height": 3374,
+    "node_count": 122,
+    "location_count": 44,
+    "edge_count": 157,
+    "routing_ready": true
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N001",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2850.5,
+          962.486
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N002",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3132,
+          1013.01
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N003",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3314,
+          1047.797
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N004",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3497,
+          1115.112
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N005",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3556,
+          1136.324
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N006",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3036.5,
+          1158.033
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N007",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3054.25,
+          1172.512
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N008",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3707.5,
+          1172.99
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N009",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3086,
+          1184.041
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N010",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2690.75,
+          1191.509
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N011",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2016.25,
+          1199.724
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N012",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3676,
+          1204.002
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N013",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3700.5,
+          1207.251
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N014",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2051,
+          1209.061
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N015",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3764.5,
+          1214.016
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N016",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3632.5,
+          1214.503
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N017",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3482.75,
+          1224.92
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N018",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1981.5,
+          1229.013
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N019",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2054.5,
+          1235.75
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N020",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2681,
+          1237.097
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N021",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3706.25,
+          1237.748
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N022",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2769,
+          1244.023
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N023",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1930.75,
+          1251.015
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N024",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3383,
+          1281.113
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N025",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1839.5,
+          1291.714
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N026",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2953,
+          1311.335
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N027",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2268.5,
+          1314.274
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N028",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1776,
+          1332.891
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N029",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2156,
+          1345.102
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N030",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2093.75,
+          1346.72
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N031",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3170.25,
+          1370.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N032",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2156,
+          1373.111
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N033",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2228.75,
+          1380.294
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N034",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2984,
+          1387.859
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N035",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1938,
+          1412.171
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N036",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1793.75,
+          1419
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N037",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2995.5,
+          1452.92
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N038",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3303,
+          1464.03
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N039",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3332,
+          1475.003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N040",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2967.5,
+          1483.941
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N041",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2893,
+          1484.884
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N042",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1681,
+          1496.754
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N043",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1844.5,
+          1507.026
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N044",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2960.25,
+          1513.95
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N045",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3392,
+          1518.532
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N046",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3260,
+          1602.587
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N047",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2294.5,
+          1615.099
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N048",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3106,
+          1628.23
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N049",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1919.25,
+          1643.795
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N050",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3081,
+          1660.24
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N051",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2031,
+          1682.275
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N052",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1956.75,
+          1707.064
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N053",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3152.5,
+          1733.627
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N054",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3033,
+          1744.384
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N055",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2116,
+          1747.139
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N056",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2152,
+          1752.076
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N057",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3518,
+          1757.975
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N058",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2305.75,
+          1781.026
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N059",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3090.75,
+          1800.496
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N060",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2166.5,
+          1819.538
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N061",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2533.25,
+          1838.502
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N062",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2336,
+          1883.057
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N063",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3001.5,
+          1906.028
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N064",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2534,
+          1909.582
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N065",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2219,
+          1914.567
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N066",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2093,
+          1933.11
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N067",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2552,
+          1935.063
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N068",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2422,
+          1944.114
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N069",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2749.5,
+          1958.588
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N070",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2419.75,
+          1968.823
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N071",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2250.25,
+          1970.833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N072",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2728.5,
+          1971.592
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N073",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2592.5,
+          1982.577
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N074",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3210,
+          1999.004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N075",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2177.5,
+          2017.003
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N076",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2277,
+          2032.279
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N077",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3158.25,
+          2038.119
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N078",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2644,
+          2060.07
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N079",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2822.75,
+          2071.517
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N080",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2592.5,
+          2093.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N081",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2755,
+          2102.526
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N082",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2474,
+          2104.424
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N083",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2918.5,
+          2135.595
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N084",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2477.75,
+          2136.001
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N085",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2869.5,
+          2166.122
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N086",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2626.25,
+          2166.287
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N087",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2517.75,
+          2170.288
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N088",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2205.25,
+          2177.54
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N089",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2546.25,
+          2179.541
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N090",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2262.5,
+          2181.291
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N091",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2367.75,
+          2185.792
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N092",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2563,
+          2196.796
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N093",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2394.25,
+          2212.3
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N094",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2135.5,
+          2224.034
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N095",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2636,
+          2235.808
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N096",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2406.25,
+          2240.008
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N097",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2582.25,
+          2247.311
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N098",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2675.5,
+          2256.03
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N099",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2418,
+          2267.016
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N100",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2560.5,
+          2267.747
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N101",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2327,
+          2299.511
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N102",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2471.25,
+          2304.527
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N103",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2933.25,
+          2309.235
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N104",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2388.5,
+          2349.541
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N105",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2490.75,
+          2362.795
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N106",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2779.75,
+          2400.056
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N107",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2512.5,
+          2404.058
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N108",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1997,
+          2412.748
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N109",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2606.25,
+          2431.816
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N110",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2358.75,
+          2432.566
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N111",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2432.25,
+          2440.569
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N112",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2766.5,
+          2468.077
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N113",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2170,
+          2503.79
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N114",
+        "name": null,
+        "node_kind": "manual",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2084.5,
+          2563.599
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N115",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2215.75,
+          2564
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N116",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2673,
+          2603.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N117",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2636.5,
+          2613.594
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N118",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2659.25,
+          2629.25
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N119",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2739,
+          2682.999
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N120",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1847.75,
+          2784.245
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N121",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1879,
+          2817.244
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_node",
+        "type": "node",
+        "node_key": "N122",
+        "name": null,
+        "node_kind": "auto_endpoint",
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1845.75,
+          2826.521
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L001",
+        "name": "المطعم",
+        "location_type": "restaurant",
+        "description": null,
+        "nearest_node_key": "N101",
+        "link_distance_units": 0.71,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2327.5,
+          2299
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L002",
+        "name": "البوابة الرئيسية",
+        "location_type": "entrance",
+        "description": null,
+        "nearest_node_key": "N122",
+        "link_distance_units": 0.55,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1845.25,
+          2826.75
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L003",
+        "name": "الحصان",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N118",
+        "link_distance_units": 10.82,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2651,
+          2636.25
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L004",
+        "name": "قفص الطيور",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N116",
+        "link_distance_units": 1.03,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2672,
+          2603.25
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L005",
+        "name": "بركة البجع والبط",
+        "location_type": "lake",
+        "description": null,
+        "nearest_node_key": "N112",
+        "link_distance_units": 15.61,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2781.5,
+          2463.75
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L006",
+        "name": "دورة المياه 1",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N094",
+        "link_distance_units": 1.44,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2136.5,
+          2223
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L007",
+        "name": "بيت الثديات الصغيرة",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N083",
+        "link_distance_units": 0.32,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2918.25,
+          2135.797
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L008",
+        "name": "مقهى 1",
+        "location_type": "restaurant",
+        "description": null,
+        "nearest_node_key": "N113",
+        "link_distance_units": 15.99,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2160,
+          2491.315
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L009",
+        "name": "حديقة الأطفال",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N075",
+        "link_distance_units": 0.77,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2177.75,
+          2016.275
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L010",
+        "name": "المسرح",
+        "location_type": "theater",
+        "description": null,
+        "nearest_node_key": "N066",
+        "link_distance_units": 0.07,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2093,
+          1933.038
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L011",
+        "name": "بيت الزواحف",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N098",
+        "link_distance_units": 1.13,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2674.5,
+          2255.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L012",
+        "name": "الاسد الإفريقي",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N078",
+        "link_distance_units": 0.81,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2643.5,
+          2060.702
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L013",
+        "name": "النمر البنغالي",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N082",
+        "link_distance_units": 0.34,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2473.72,
+          2104.624
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L014",
+        "name": "النمر الابيض",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N068",
+        "link_distance_units": 1.53,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2422.5,
+          1945.558
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L015",
+        "name": "الاسد الأبيض",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N061",
+        "link_distance_units": 0.36,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2533,
+          1838.249
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L016",
+        "name": "الاسد الآسوي",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N069",
+        "link_distance_units": 0.74,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2749,
+          1959.139
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L017",
+        "name": "طائر البشروش",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N056",
+        "link_distance_units": 0.74,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2151.5,
+          1751.526
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L018",
+        "name": "الدب البني",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N035",
+        "link_distance_units": 0.17,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1938,
+          1412
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L019",
+        "name": "مقهى 2",
+        "location_type": "restaurant",
+        "description": null,
+        "nearest_node_key": "N042",
+        "link_distance_units": 0.86,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1680.5,
+          1497.456
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L020",
+        "name": "دورة المياه 2",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N028",
+        "link_distance_units": 0.34,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1776,
+          1333.227
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L021",
+        "name": "الحمار الوحشي",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N023",
+        "link_distance_units": 13.78,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1925.5,
+          1238.276
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L022",
+        "name": "البقر",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N014",
+        "link_distance_units": 0.31,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2051.25,
+          1209.251
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L023",
+        "name": "العلند",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N029",
+        "link_distance_units": 0.68,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2156,
+          1345.778
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L024",
+        "name": "الجاموس",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N018",
+        "link_distance_units": 13.46,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1973.75,
+          1218.01
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L025",
+        "name": "الآيل الاسمر",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N027",
+        "link_distance_units": 0.35,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2268.25,
+          1314.524
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L026",
+        "name": "الكنغر",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N051",
+        "link_distance_units": 0.57,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2030.5,
+          1682.557
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L027",
+        "name": "ظبي",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N054",
+        "link_distance_units": 1.35,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3032,
+          1743.48
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L028",
+        "name": "النلجاي",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N048",
+        "link_distance_units": 0.9,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3105.5,
+          1628.974
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L029",
+        "name": "الباكا",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N037",
+        "link_distance_units": 0.51,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2995,
+          1453
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L030",
+        "name": "الغزال الليبي",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N041",
+        "link_distance_units": 0.26,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2892.75,
+          1484.941
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L031",
+        "name": "اللاما",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N038",
+        "link_distance_units": 0.14,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3303,
+          1463.893
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L032",
+        "name": "بركة البجع",
+        "location_type": "lake",
+        "description": null,
+        "nearest_node_key": "N024",
+        "link_distance_units": 0.18,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3383,
+          1280.937
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L033",
+        "name": "الشمبانزي",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N016",
+        "link_distance_units": 1.2,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3631.5,
+          1213.848
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L034",
+        "name": "قرد العشب",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N021",
+        "link_distance_units": 0.85,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3707,
+          1237.355
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L035",
+        "name": "قرد الباتاس",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N008",
+        "link_distance_units": 1.51,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3709,
+          1172.835
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L036",
+        "name": "قرد المكاك",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N015",
+        "link_distance_units": 0.53,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3765,
+          1213.848
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L037",
+        "name": "قرد البابون",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N004",
+        "link_distance_units": 0.71,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3497,
+          1115.818
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L038",
+        "name": "مها السياف",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N009",
+        "link_distance_units": 0.28,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3086,
+          1183.765
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L039",
+        "name": "الكودو الأكبر",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N006",
+        "link_distance_units": 0.34,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3036.25,
+          1158.258
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L040",
+        "name": "الفيل",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N074",
+        "link_distance_units": 0.62,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3209.5,
+          1999.378
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L041",
+        "name": "فرس النهر",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N045",
+        "link_distance_units": 1,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3392,
+          1519.533
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L042",
+        "name": "وحيد القرن",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N057",
+        "link_distance_units": 0.76,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3518.5,
+          1758.55
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L043",
+        "name": "الزرافة",
+        "location_type": "animal",
+        "description": null,
+        "nearest_node_key": "N020",
+        "link_distance_units": 1.52,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2680.5,
+          1238.528
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_location",
+        "type": "location",
+        "location_key": "L044",
+        "name": "مكتب الأمن",
+        "location_type": "security",
+        "description": null,
+        "nearest_node_key": "N115",
+        "link_distance_units": 14.72,
+        "is_active": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2223,
+          2576.808
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E001",
+        "name": null,
+        "from_node_key": "N121",
+        "to_node_key": "N115",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 434.75,
+        "original_path_index": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1879,
+            2817.244
+          ],
+          [
+            2090,
+            2610.178
+          ],
+          [
+            2179,
+            2562.019
+          ],
+          [
+            2198.25,
+            2567.501
+          ],
+          [
+            2215.75,
+            2564.248
+          ],
+          [
+            2215.85,
+            2564.198
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E002",
+        "name": null,
+        "from_node_key": "N115",
+        "to_node_key": "N111",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 251.27,
+        "original_path_index": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2215.85,
+            2564.198
+          ],
+          [
+            2256,
+            2544.014
+          ],
+          [
+            2277.5,
+            2519.527
+          ],
+          [
+            2329,
+            2492.019
+          ],
+          [
+            2398,
+            2458.021
+          ],
+          [
+            2432.478,
+            2441.032
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E003",
+        "name": null,
+        "from_node_key": "N111",
+        "to_node_key": "N107",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 88.17,
+        "original_path_index": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2432.478,
+            2441.032
+          ],
+          [
+            2467,
+            2424.022
+          ],
+          [
+            2512.479,
+            2404.01
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E004",
+        "name": null,
+        "from_node_key": "N107",
+        "to_node_key": "N109",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 105.33,
+        "original_path_index": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2512.479,
+            2404.01
+          ],
+          [
+            2512.5,
+            2404.001
+          ],
+          [
+            2539.5,
+            2399.499
+          ],
+          [
+            2567.25,
+            2400.25
+          ],
+          [
+            2585.5,
+            2416
+          ],
+          [
+            2606,
+            2431.501
+          ],
+          [
+            2606.326,
+            2431.664
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E005",
+        "name": null,
+        "from_node_key": "N109",
+        "to_node_key": "N112",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 167.92,
+        "original_path_index": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2606.326,
+            2431.664
+          ],
+          [
+            2666,
+            2461.503
+          ],
+          [
+            2725.5,
+            2471.537
+          ],
+          [
+            2766.25,
+            2468.5
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E006",
+        "name": null,
+        "from_node_key": "N112",
+        "to_node_key": "N119",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 272.03,
+        "original_path_index": 2
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2766.5,
+            2468.75
+          ],
+          [
+            2817.5,
+            2548.56
+          ],
+          [
+            2834,
+            2587.572
+          ],
+          [
+            2796,
+            2632.086
+          ],
+          [
+            2739,
+            2682.999
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E007",
+        "name": null,
+        "from_node_key": "N119",
+        "to_node_key": "N118",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 96.17,
+        "original_path_index": 3
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2738.883,
+            2683.17
+          ],
+          [
+            2659.5,
+            2629
+          ],
+          [
+            2659.441,
+            2628.961
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E008",
+        "name": null,
+        "from_node_key": "N118",
+        "to_node_key": "N117",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 27.63,
+        "original_path_index": 3
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2659.441,
+            2628.961
+          ],
+          [
+            2636.5,
+            2613.755
+          ],
+          [
+            2636.421,
+            2613.691
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E009",
+        "name": null,
+        "from_node_key": "N117",
+        "to_node_key": "N111",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 267.71,
+        "original_path_index": 3
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2636.421,
+            2613.691
+          ],
+          [
+            2578.5,
+            2566.502
+          ],
+          [
+            2432.056,
+            2440.795
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E010",
+        "name": null,
+        "from_node_key": "N120",
+        "to_node_key": "N114",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 327.85,
+        "original_path_index": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1847.75,
+            2784.245
+          ],
+          [
+            2017,
+            2596.53
+          ],
+          [
+            2083,
+            2564.247
+          ],
+          [
+            2084.471,
+            2563.539
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E011",
+        "name": null,
+        "from_node_key": "N114",
+        "to_node_key": "N113",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 110.62,
+        "original_path_index": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2084.471,
+            2563.539
+          ],
+          [
+            2164.5,
+            2525.027
+          ],
+          [
+            2170,
+            2504.021
+          ],
+          [
+            2170.086,
+            2503.982
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E012",
+        "name": null,
+        "from_node_key": "N113",
+        "to_node_key": "N110",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 206.61,
+        "original_path_index": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2170.086,
+            2503.982
+          ],
+          [
+            2232.5,
+            2476.012
+          ],
+          [
+            2255,
+            2482.014
+          ],
+          [
+            2358.75,
+            2432.75
+          ],
+          [
+            2358.823,
+            2432.715
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E013",
+        "name": null,
+        "from_node_key": "N110",
+        "to_node_key": "N105",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 149.93,
+        "original_path_index": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2358.823,
+            2432.715
+          ],
+          [
+            2463,
+            2381.532
+          ],
+          [
+            2491,
+            2363.026
+          ],
+          [
+            2490.903,
+            2362.743
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E014",
+        "name": null,
+        "from_node_key": "N105",
+        "to_node_key": "N102",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 61.8,
+        "original_path_index": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2490.903,
+            2362.743
+          ],
+          [
+            2471,
+            2304.5
+          ],
+          [
+            2471.245,
+            2304.477
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E015",
+        "name": null,
+        "from_node_key": "N102",
+        "to_node_key": "N100",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 99.73,
+        "original_path_index": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2471.245,
+            2304.477
+          ],
+          [
+            2502,
+            2301.532
+          ],
+          [
+            2538.5,
+            2288.028
+          ],
+          [
+            2560.39,
+            2267.63
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E016",
+        "name": null,
+        "from_node_key": "N100",
+        "to_node_key": "N097",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 29.84,
+        "original_path_index": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2560.39,
+            2267.63
+          ],
+          [
+            2582.225,
+            2247.284
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E017",
+        "name": null,
+        "from_node_key": "N097",
+        "to_node_key": "N098",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 93.81,
+        "original_path_index": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2582.225,
+            2247.284
+          ],
+          [
+            2582.5,
+            2247.028
+          ],
+          [
+            2675.5,
+            2256.03
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E018",
+        "name": null,
+        "from_node_key": "N097",
+        "to_node_key": "N092",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 53.3,
+        "original_path_index": 5
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2582.25,
+            2246.5
+          ],
+          [
+            2562.584,
+            2196.961
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E019",
+        "name": null,
+        "from_node_key": "N092",
+        "to_node_key": "N089",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 23.94,
+        "original_path_index": 5
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2562.584,
+            2196.961
+          ],
+          [
+            2562.5,
+            2196.75
+          ],
+          [
+            2546.75,
+            2179.75
+          ],
+          [
+            2546.237,
+            2179.579
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E020",
+        "name": null,
+        "from_node_key": "N089",
+        "to_node_key": "N087",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 30,
+        "original_path_index": 5
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2546.237,
+            2179.579
+          ],
+          [
+            2518.25,
+            2170.252
+          ],
+          [
+            2517.754,
+            2170.223
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E021",
+        "name": null,
+        "from_node_key": "N087",
+        "to_node_key": "N093",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 135.68,
+        "original_path_index": 5
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2517.754,
+            2170.223
+          ],
+          [
+            2471.25,
+            2167.502
+          ],
+          [
+            2394.25,
+            2212.25
+          ],
+          [
+            2394.226,
+            2212.282
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E022",
+        "name": null,
+        "from_node_key": "N093",
+        "to_node_key": "N101",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 110.13,
+        "original_path_index": 5
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2394.226,
+            2212.282
+          ],
+          [
+            2327,
+            2299.511
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E023",
+        "name": null,
+        "from_node_key": "N093",
+        "to_node_key": "N090",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 135.49,
+        "original_path_index": 6
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2394.205,
+            2212.489
+          ],
+          [
+            2263,
+            2181.021
+          ],
+          [
+            2262.469,
+            2181.2
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E024",
+        "name": null,
+        "from_node_key": "N090",
+        "to_node_key": "N094",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 134,
+        "original_path_index": 6
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2262.469,
+            2181.2
+          ],
+          [
+            2135.5,
+            2224.034
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E025",
+        "name": null,
+        "from_node_key": "N090",
+        "to_node_key": "N088",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 57.37,
+        "original_path_index": 7
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2262.504,
+            2181.219
+          ],
+          [
+            2205.243,
+            2177.645
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E026",
+        "name": null,
+        "from_node_key": "N088",
+        "to_node_key": "N108",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 1085.83,
+        "original_path_index": 7
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2205.243,
+            2177.645
+          ],
+          [
+            2148,
+            2174.071
+          ],
+          [
+            2084,
+            2194.077
+          ],
+          [
+            2057,
+            2215.999
+          ],
+          [
+            2035,
+            2249.75
+          ],
+          [
+            2027,
+            2264.251
+          ],
+          [
+            2012.5,
+            2270.755
+          ],
+          [
+            1976,
+            2260.097
+          ],
+          [
+            1911,
+            2226.252
+          ],
+          [
+            1881.75,
+            2211.751
+          ],
+          [
+            1846.75,
+            2196.749
+          ],
+          [
+            1823.25,
+            2181.499
+          ],
+          [
+            1797.25,
+            2177.251
+          ],
+          [
+            1749,
+            2181.5
+          ],
+          [
+            1702,
+            2186.998
+          ],
+          [
+            1695,
+            2328.118
+          ],
+          [
+            1840,
+            2433.15
+          ],
+          [
+            1911,
+            2475.503
+          ],
+          [
+            1957,
+            2471.161
+          ],
+          [
+            1982.25,
+            2448.251
+          ],
+          [
+            1997,
+            2412.748
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E027",
+        "name": null,
+        "from_node_key": "N060",
+        "to_node_key": "N065",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 108.57,
+        "original_path_index": 8
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2166.536,
+            1819.518
+          ],
+          [
+            2219.111,
+            1914.506
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E028",
+        "name": null,
+        "from_node_key": "N065",
+        "to_node_key": "N071",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 64.41,
+        "original_path_index": 8
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2219.111,
+            1914.506
+          ],
+          [
+            2219.25,
+            1914.756
+          ],
+          [
+            2250.5,
+            1970.25
+          ],
+          [
+            2250.674,
+            1970.648
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E029",
+        "name": null,
+        "from_node_key": "N071",
+        "to_node_key": "N076",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 67.02,
+        "original_path_index": 8
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2250.674,
+            1970.648
+          ],
+          [
+            2277.542,
+            2032.042
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E030",
+        "name": null,
+        "from_node_key": "N076",
+        "to_node_key": "N091",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 179.67,
+        "original_path_index": 8
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2277.542,
+            2032.042
+          ],
+          [
+            2304,
+            2092.501
+          ],
+          [
+            2342,
+            2158.502
+          ],
+          [
+            2368.087,
+            2185.466
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E031",
+        "name": null,
+        "from_node_key": "N091",
+        "to_node_key": "N093",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 37.27,
+        "original_path_index": 8
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2368.087,
+            2185.466
+          ],
+          [
+            2394,
+            2212.25
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E032",
+        "name": null,
+        "from_node_key": "N092",
+        "to_node_key": "N086",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 70.22,
+        "original_path_index": 9
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2562.894,
+            2196.576
+          ],
+          [
+            2626.187,
+            2166.155
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E033",
+        "name": null,
+        "from_node_key": "N086",
+        "to_node_key": "N081",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 143.67,
+        "original_path_index": 9
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2626.187,
+            2166.155
+          ],
+          [
+            2626.5,
+            2166.005
+          ],
+          [
+            2755.034,
+            2102.596
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E034",
+        "name": null,
+        "from_node_key": "N081",
+        "to_node_key": "N079",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 74.51,
+        "original_path_index": 9
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2755.034,
+            2102.596
+          ],
+          [
+            2755.25,
+            2102.489
+          ],
+          [
+            2822.786,
+            2071.596
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E035",
+        "name": null,
+        "from_node_key": "N079",
+        "to_node_key": "N063",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 249.7,
+        "original_path_index": 10
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2822.75,
+            2071.497
+          ],
+          [
+            2902.5,
+            2032.124
+          ],
+          [
+            2951.5,
+            1960.102
+          ],
+          [
+            3001.25,
+            1906.25
+          ],
+          [
+            3001.462,
+            1905.996
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E036",
+        "name": null,
+        "from_node_key": "N063",
+        "to_node_key": "N059",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 138.21,
+        "original_path_index": 10
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3001.462,
+            1905.996
+          ],
+          [
+            3062.5,
+            1833.014
+          ],
+          [
+            3090.5,
+            1801.005
+          ],
+          [
+            3090.867,
+            1800.603
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E037",
+        "name": null,
+        "from_node_key": "N059",
+        "to_node_key": "N053",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 91.02,
+        "original_path_index": 10
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3090.867,
+            1800.603
+          ],
+          [
+            3152,
+            1733.498
+          ],
+          [
+            3152.163,
+            1733.319
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E038",
+        "name": null,
+        "from_node_key": "N053",
+        "to_node_key": "N046",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 169.93,
+        "original_path_index": 10
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3152.163,
+            1733.319
+          ],
+          [
+            3230.5,
+            1647.518
+          ],
+          [
+            3260.252,
+            1602.755
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E039",
+        "name": null,
+        "from_node_key": "N046",
+        "to_node_key": "N039",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 146.76,
+        "original_path_index": 10
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3260.252,
+            1602.755
+          ],
+          [
+            3290,
+            1557.996
+          ],
+          [
+            3331.999,
+            1475.002
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E040",
+        "name": null,
+        "from_node_key": "N039",
+        "to_node_key": "N017",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 292.09,
+        "original_path_index": 10
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3331.999,
+            1475.002
+          ],
+          [
+            3332,
+            1475
+          ],
+          [
+            3408,
+            1342.998
+          ],
+          [
+            3469,
+            1244.998
+          ],
+          [
+            3482.955,
+            1225.063
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E041",
+        "name": null,
+        "from_node_key": "N017",
+        "to_node_key": "N005",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 115.09,
+        "original_path_index": 10
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3482.955,
+            1225.063
+          ],
+          [
+            3497,
+            1204.999
+          ],
+          [
+            3538,
+            1154.997
+          ],
+          [
+            3555.5,
+            1136.749
+          ],
+          [
+            3555.948,
+            1136.275
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E042",
+        "name": null,
+        "from_node_key": "N005",
+        "to_node_key": "N003",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 735.58,
+        "original_path_index": 10
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3555.948,
+            1136.275
+          ],
+          [
+            3568,
+            1123.501
+          ],
+          [
+            3604,
+            1060.993
+          ],
+          [
+            3681,
+            938.502
+          ],
+          [
+            3658.5,
+            886.496
+          ],
+          [
+            3613,
+            868.024
+          ],
+          [
+            3561,
+            849
+          ],
+          [
+            3510.5,
+            859.502
+          ],
+          [
+            3475.5,
+            892.032
+          ],
+          [
+            3440.5,
+            925.042
+          ],
+          [
+            3401,
+            944.502
+          ],
+          [
+            3359.5,
+            951.55
+          ],
+          [
+            3313.874,
+            1047.738
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E043",
+        "name": null,
+        "from_node_key": "N060",
+        "to_node_key": "N055",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 87.76,
+        "original_path_index": 11
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2166,
+            1819.258
+          ],
+          [
+            2116.023,
+            1747.123
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E044",
+        "name": null,
+        "from_node_key": "N055",
+        "to_node_key": "N052",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 196.91,
+        "original_path_index": 11
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2116.023,
+            1747.123
+          ],
+          [
+            2116,
+            1747.09
+          ],
+          [
+            2039,
+            1760.094
+          ],
+          [
+            1994,
+            1769.597
+          ],
+          [
+            1956.854,
+            1707.003
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E045",
+        "name": null,
+        "from_node_key": "N052",
+        "to_node_key": "N049",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 73.54,
+        "original_path_index": 11
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1956.854,
+            1707.003
+          ],
+          [
+            1919.5,
+            1644.059
+          ],
+          [
+            1919.33,
+            1643.751
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E046",
+        "name": null,
+        "from_node_key": "N049",
+        "to_node_key": "N043",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 155.85,
+        "original_path_index": 11
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1919.33,
+            1643.751
+          ],
+          [
+            1844,
+            1507.512
+          ],
+          [
+            1843.914,
+            1507.361
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E047",
+        "name": null,
+        "from_node_key": "N043",
+        "to_node_key": "N036",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 100.6,
+        "original_path_index": 11
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1843.914,
+            1507.361
+          ],
+          [
+            1794,
+            1420.013
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E048",
+        "name": null,
+        "from_node_key": "N036",
+        "to_node_key": "N025",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 136.76,
+        "original_path_index": 12
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1794.074,
+            1419.119
+          ],
+          [
+            1812.5,
+            1369.04
+          ],
+          [
+            1820.5,
+            1322.526
+          ],
+          [
+            1839.762,
+            1291.879
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E049",
+        "name": null,
+        "from_node_key": "N025",
+        "to_node_key": "N023",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 99.81,
+        "original_path_index": 12
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1839.762,
+            1291.879
+          ],
+          [
+            1840,
+            1291.5
+          ],
+          [
+            1931.097,
+            1251.813
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E050",
+        "name": null,
+        "from_node_key": "N023",
+        "to_node_key": "N018",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 55.44,
+        "original_path_index": 12
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1931.097,
+            1251.813
+          ],
+          [
+            1931.25,
+            1251.746
+          ],
+          [
+            1981.5,
+            1229.527
+          ],
+          [
+            1981.754,
+            1229.31
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E051",
+        "name": null,
+        "from_node_key": "N018",
+        "to_node_key": "N011",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 45.08,
+        "original_path_index": 12
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1981.754,
+            1229.31
+          ],
+          [
+            2016,
+            1200
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E052",
+        "name": null,
+        "from_node_key": "N011",
+        "to_node_key": "N019",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 52.59,
+        "original_path_index": 12
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2016,
+            1200
+          ],
+          [
+            2054.5,
+            1235.553
+          ],
+          [
+            2054.558,
+            1235.731
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E053",
+        "name": null,
+        "from_node_key": "N019",
+        "to_node_key": "N030",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 117.8,
+        "original_path_index": 12
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2054.558,
+            1235.731
+          ],
+          [
+            2080.5,
+            1315.565
+          ],
+          [
+            2093.739,
+            1346.725
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E054",
+        "name": null,
+        "from_node_key": "N030",
+        "to_node_key": "N032",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 76.6,
+        "original_path_index": 12
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2093.739,
+            1346.725
+          ],
+          [
+            2093.75,
+            1346.751
+          ],
+          [
+            2105,
+            1369.581
+          ],
+          [
+            2155.99,
+            1373.249
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E055",
+        "name": null,
+        "from_node_key": "N032",
+        "to_node_key": "N033",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 73.27,
+        "original_path_index": 12
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2155.99,
+            1373.249
+          ],
+          [
+            2156,
+            1373.25
+          ],
+          [
+            2173.5,
+            1377.084
+          ],
+          [
+            2228.737,
+            1380.5
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E056",
+        "name": null,
+        "from_node_key": "N033",
+        "to_node_key": "N047",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 243.73,
+        "original_path_index": 12
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2228.737,
+            1380.5
+          ],
+          [
+            2228.75,
+            1380.501
+          ],
+          [
+            2277.5,
+            1544.061
+          ],
+          [
+            2294.869,
+            1615.009
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E057",
+        "name": null,
+        "from_node_key": "N047",
+        "to_node_key": "N055",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 226.05,
+        "original_path_index": 12
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2294.869,
+            1615.009
+          ],
+          [
+            2295,
+            1615.546
+          ],
+          [
+            2235,
+            1645.555
+          ],
+          [
+            2192,
+            1673.063
+          ],
+          [
+            2146,
+            1706.574
+          ],
+          [
+            2115.773,
+            1746.969
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E058",
+        "name": null,
+        "from_node_key": "N047",
+        "to_node_key": "N058",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 178.73,
+        "original_path_index": 13
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2294.75,
+            1615
+          ],
+          [
+            2332,
+            1687.568
+          ],
+          [
+            2316,
+            1751.587
+          ],
+          [
+            2305.55,
+            1780.955
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E059",
+        "name": null,
+        "from_node_key": "N058",
+        "to_node_key": "N060",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 148.09,
+        "original_path_index": 13
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2305.55,
+            1780.955
+          ],
+          [
+            2305.5,
+            1781.096
+          ],
+          [
+            2252.5,
+            1781.596
+          ],
+          [
+            2206.5,
+            1794.6
+          ],
+          [
+            2166.531,
+            1819.588
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E060",
+        "name": null,
+        "from_node_key": "N080",
+        "to_node_key": "N073",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 111.01,
+        "original_path_index": 14
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2592.996,
+            2093.459
+          ],
+          [
+            2590.5,
+            2062.997
+          ],
+          [
+            2592.492,
+            1982.577
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E061",
+        "name": null,
+        "from_node_key": "N073",
+        "to_node_key": "N072",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 168.78,
+        "original_path_index": 14
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2592.492,
+            1982.577
+          ],
+          [
+            2592.5,
+            1982.249
+          ],
+          [
+            2637,
+            1934.95
+          ],
+          [
+            2687,
+            1937.951
+          ],
+          [
+            2728.422,
+            1971.687
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E062",
+        "name": null,
+        "from_node_key": "N072",
+        "to_node_key": "N081",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 134.86,
+        "original_path_index": 14
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2728.422,
+            1971.687
+          ],
+          [
+            2728.5,
+            1971.75
+          ],
+          [
+            2732,
+            2027.978
+          ],
+          [
+            2747,
+            2062.989
+          ],
+          [
+            2755.245,
+            2102.475
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E063",
+        "name": null,
+        "from_node_key": "N073",
+        "to_node_key": "N067",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 62.03,
+        "original_path_index": 15
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2592.25,
+            1982.252
+          ],
+          [
+            2552.25,
+            1935.496
+          ],
+          [
+            2551.967,
+            1935.086
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E064",
+        "name": null,
+        "from_node_key": "N067",
+        "to_node_key": "N064",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 31.19,
+        "original_path_index": 15
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2551.967,
+            1935.086
+          ],
+          [
+            2534.5,
+            1909.745
+          ],
+          [
+            2534.271,
+            1909.401
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E065",
+        "name": null,
+        "from_node_key": "N064",
+        "to_node_key": "N062",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 222.03,
+        "original_path_index": 15
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2534.271,
+            1909.401
+          ],
+          [
+            2506,
+            1866.982
+          ],
+          [
+            2417,
+            1869.012
+          ],
+          [
+            2336.25,
+            1883.25
+          ],
+          [
+            2336.224,
+            1883.277
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E066",
+        "name": null,
+        "from_node_key": "N062",
+        "to_node_key": "N071",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 122.3,
+        "original_path_index": 15
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2336.224,
+            1883.277
+          ],
+          [
+            2250.5,
+            1970.504
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E067",
+        "name": null,
+        "from_node_key": "N080",
+        "to_node_key": "N084",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 122.33,
+        "original_path_index": 16
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2592.674,
+            2093.968
+          ],
+          [
+            2478,
+            2136.502
+          ],
+          [
+            2477.976,
+            2136.512
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E068",
+        "name": null,
+        "from_node_key": "N084",
+        "to_node_key": "N091",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 120.52,
+        "original_path_index": 16
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2477.976,
+            2136.512
+          ],
+          [
+            2367.75,
+            2185.25
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E069",
+        "name": null,
+        "from_node_key": "N102",
+        "to_node_key": "N099",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 68.56,
+        "original_path_index": 17
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2471.25,
+            2304.247
+          ],
+          [
+            2439.25,
+            2295.251
+          ],
+          [
+            2418.25,
+            2267.251
+          ],
+          [
+            2418.125,
+            2266.962
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E070",
+        "name": null,
+        "from_node_key": "N099",
+        "to_node_key": "N096",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 29.45,
+        "original_path_index": 17
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2418.125,
+            2266.962
+          ],
+          [
+            2406.47,
+            2239.913
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E071",
+        "name": null,
+        "from_node_key": "N096",
+        "to_node_key": "N093",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 30.19,
+        "original_path_index": 17
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2406.47,
+            2239.913
+          ],
+          [
+            2394.521,
+            2212.184
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E072",
+        "name": null,
+        "from_node_key": "N098",
+        "to_node_key": "N095",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 44.25,
+        "original_path_index": 18
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2675.25,
+            2256.25
+          ],
+          [
+            2636.75,
+            2235.753
+          ],
+          [
+            2636.186,
+            2235.455
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E073",
+        "name": null,
+        "from_node_key": "N095",
+        "to_node_key": "N092",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 82.77,
+        "original_path_index": 18
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2636.186,
+            2235.455
+          ],
+          [
+            2563.013,
+            2196.771
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E074",
+        "name": null,
+        "from_node_key": "N100",
+        "to_node_key": "N109",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 173.37,
+        "original_path_index": 19
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2560.5,
+            2267.747
+          ],
+          [
+            2569.5,
+            2297
+          ],
+          [
+            2583.75,
+            2322.749
+          ],
+          [
+            2607.25,
+            2380.749
+          ],
+          [
+            2606.5,
+            2431.499
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E075",
+        "name": null,
+        "from_node_key": "N110",
+        "to_node_key": "N104",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 88.14,
+        "original_path_index": 20
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2358.75,
+            2432.506
+          ],
+          [
+            2388.476,
+            2349.532
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E076",
+        "name": null,
+        "from_node_key": "N104",
+        "to_node_key": "N099",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 87.54,
+        "original_path_index": 20
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2388.476,
+            2349.532
+          ],
+          [
+            2418,
+            2267.122
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E077",
+        "name": null,
+        "from_node_key": "N104",
+        "to_node_key": "N101",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 79.28,
+        "original_path_index": 21
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2388.498,
+            2349.544
+          ],
+          [
+            2327.005,
+            2299.505
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E078",
+        "name": null,
+        "from_node_key": "N096",
+        "to_node_key": "N101",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 98.9,
+        "original_path_index": 22
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2406,
+            2239.996
+          ],
+          [
+            2327,
+            2299.5
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E079",
+        "name": null,
+        "from_node_key": "N076",
+        "to_node_key": "N088",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 162.12,
+        "original_path_index": 23
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2276.696,
+            2032.13
+          ],
+          [
+            2205.5,
+            2177.5
+          ],
+          [
+            2205.25,
+            2177.5
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E080",
+        "name": null,
+        "from_node_key": "N094",
+        "to_node_key": "N088",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 83.81,
+        "original_path_index": 24
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2135.5,
+            2224
+          ],
+          [
+            2205.13,
+            2177.36
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E081",
+        "name": null,
+        "from_node_key": "N112",
+        "to_node_key": "N106",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 69.53,
+        "original_path_index": 25
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2766.553,
+            2468.084
+          ],
+          [
+            2772,
+            2425.554
+          ],
+          [
+            2779.962,
+            2400.123
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E082",
+        "name": null,
+        "from_node_key": "N106",
+        "to_node_key": "N109",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 208.34,
+        "original_path_index": 25
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2779.962,
+            2400.123
+          ],
+          [
+            2780,
+            2400
+          ],
+          [
+            2755.5,
+            2368.037
+          ],
+          [
+            2732,
+            2362.001
+          ],
+          [
+            2658,
+            2398.546
+          ],
+          [
+            2606.5,
+            2431.5
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E083",
+        "name": null,
+        "from_node_key": "N103",
+        "to_node_key": "N106",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 182.41,
+        "original_path_index": 26
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2933.25,
+            2309.235
+          ],
+          [
+            2885.75,
+            2339.751
+          ],
+          [
+            2832,
+            2354.256
+          ],
+          [
+            2812.25,
+            2364.25
+          ],
+          [
+            2780,
+            2400
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E084",
+        "name": null,
+        "from_node_key": "N103",
+        "to_node_key": "N085",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 156.31,
+        "original_path_index": 27
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2933,
+            2308.954
+          ],
+          [
+            2869.548,
+            2166.1
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E085",
+        "name": null,
+        "from_node_key": "N085",
+        "to_node_key": "N079",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 105.53,
+        "original_path_index": 27
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2869.548,
+            2166.1
+          ],
+          [
+            2869.5,
+            2165.992
+          ],
+          [
+            2822.757,
+            2071.513
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E086",
+        "name": null,
+        "from_node_key": "N105",
+        "to_node_key": "N107",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 46.63,
+        "original_path_index": 28
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2490.574,
+            2362.889
+          ],
+          [
+            2512.5,
+            2404.044
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E087",
+        "name": null,
+        "from_node_key": "N047",
+        "to_node_key": "N022",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 775.79,
+        "original_path_index": 29
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2294.5,
+            1615.5
+          ],
+          [
+            2372,
+            1615.896
+          ],
+          [
+            2475,
+            1569.882
+          ],
+          [
+            2566,
+            1538.873
+          ],
+          [
+            2648,
+            1572.883
+          ],
+          [
+            2667.5,
+            1576.752
+          ],
+          [
+            2690,
+            1568.882
+          ],
+          [
+            2726,
+            1511.865
+          ],
+          [
+            2747.75,
+            1469.749
+          ],
+          [
+            2774,
+            1420.837
+          ],
+          [
+            2793,
+            1344.814
+          ],
+          [
+            2765.75,
+            1297.251
+          ],
+          [
+            2768.985,
+            1244.022
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E088",
+        "name": null,
+        "from_node_key": "N022",
+        "to_node_key": "N010",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 95.02,
+        "original_path_index": 29
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2768.985,
+            1244.022
+          ],
+          [
+            2769,
+            1243.783
+          ],
+          [
+            2752.5,
+            1229.249
+          ],
+          [
+            2691,
+            1190.992
+          ],
+          [
+            2690.646,
+            1191.078
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E089",
+        "name": null,
+        "from_node_key": "N010",
+        "to_node_key": "N033",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 521.01,
+        "original_path_index": 29
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2690.646,
+            1191.078
+          ],
+          [
+            2634,
+            1204.771
+          ],
+          [
+            2577,
+            1261.789
+          ],
+          [
+            2504,
+            1308.803
+          ],
+          [
+            2406,
+            1347.815
+          ],
+          [
+            2343,
+            1375.823
+          ],
+          [
+            2294,
+            1376.002
+          ],
+          [
+            2249,
+            1364.82
+          ],
+          [
+            2228.757,
+            1380.303
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E090",
+        "name": null,
+        "from_node_key": "N022",
+        "to_node_key": "N001",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 292.86,
+        "original_path_index": 30
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2769.25,
+            1243.503
+          ],
+          [
+            2815.5,
+            1108.747
+          ],
+          [
+            2850.5,
+            962.52
+          ],
+          [
+            2850.485,
+            962.497
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E091",
+        "name": null,
+        "from_node_key": "N001",
+        "to_node_key": "N011",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 1081.2,
+        "original_path_index": 30
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2850.485,
+            962.497
+          ],
+          [
+            2816.5,
+            911.004
+          ],
+          [
+            2690,
+            884.52
+          ],
+          [
+            2476.5,
+            909.028
+          ],
+          [
+            2342.5,
+            914.53
+          ],
+          [
+            2194.5,
+            918.031
+          ],
+          [
+            2089.5,
+            944.039
+          ],
+          [
+            2054,
+            961.52
+          ],
+          [
+            2060,
+            1037.543
+          ],
+          [
+            2054,
+            1097.061
+          ],
+          [
+            2016.149,
+            1199.687
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E092",
+        "name": null,
+        "from_node_key": "N049",
+        "to_node_key": "N030",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 371.15,
+        "original_path_index": 31
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1919.252,
+            1643.798
+          ],
+          [
+            1974,
+            1598.997
+          ],
+          [
+            2036,
+            1567.998
+          ],
+          [
+            2074,
+            1486.526
+          ],
+          [
+            2093.962,
+            1346.75
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E093",
+        "name": null,
+        "from_node_key": "N028",
+        "to_node_key": "N036",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 87.92,
+        "original_path_index": 32
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1776,
+            1332.891
+          ],
+          [
+            1793.554,
+            1419.04
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E094",
+        "name": null,
+        "from_node_key": "N036",
+        "to_node_key": "N042",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 136.6,
+        "original_path_index": 33
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1794,
+            1420
+          ],
+          [
+            1681,
+            1496.754
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E095",
+        "name": null,
+        "from_node_key": "N065",
+        "to_node_key": "N075",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 110.52,
+        "original_path_index": 34
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2218.995,
+            1914.565
+          ],
+          [
+            2177.5,
+            2017.003
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E096",
+        "name": null,
+        "from_node_key": "N071",
+        "to_node_key": "N075",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 86.03,
+        "original_path_index": 35
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2250.245,
+            1970.825
+          ],
+          [
+            2177.5,
+            2016.75
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E097",
+        "name": null,
+        "from_node_key": "N076",
+        "to_node_key": "N075",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 100.38,
+        "original_path_index": 36
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2276.75,
+            2032.043
+          ],
+          [
+            2177.5,
+            2017.001
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E098",
+        "name": null,
+        "from_node_key": "N080",
+        "to_node_key": "N086",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 80.02,
+        "original_path_index": 37
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2593,
+            2093.505
+          ],
+          [
+            2626.439,
+            2166.199
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E099",
+        "name": null,
+        "from_node_key": "N086",
+        "to_node_key": "N095",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 69.72,
+        "original_path_index": 38
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2626.524,
+            2166.248
+          ],
+          [
+            2636.25,
+            2235.286
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E100",
+        "name": null,
+        "from_node_key": "N087",
+        "to_node_key": "N084",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 52.68,
+        "original_path_index": 39
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2517.873,
+            2170.143
+          ],
+          [
+            2477.75,
+            2136.001
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E101",
+        "name": null,
+        "from_node_key": "N063",
+        "to_node_key": "N077",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 205.73,
+        "original_path_index": 40
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3001.5,
+            1906.5
+          ],
+          [
+            3090,
+            1994.039
+          ],
+          [
+            3158.489,
+            2037.744
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E102",
+        "name": null,
+        "from_node_key": "N077",
+        "to_node_key": "N057",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 703.97,
+        "original_path_index": 40
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3158.489,
+            2037.744
+          ],
+          [
+            3158.5,
+            2037.751
+          ],
+          [
+            3216,
+            2072.062
+          ],
+          [
+            3291,
+            2162.09
+          ],
+          [
+            3360,
+            2156.088
+          ],
+          [
+            3428,
+            2099.07
+          ],
+          [
+            3471,
+            2045.054
+          ],
+          [
+            3472,
+            1941.022
+          ],
+          [
+            3518,
+            1757.975
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E103",
+        "name": null,
+        "from_node_key": "N005",
+        "to_node_key": "N012",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 138.7,
+        "original_path_index": 41
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3555.814,
+            1136.669
+          ],
+          [
+            3625,
+            1174.001
+          ],
+          [
+            3647,
+            1193.002
+          ],
+          [
+            3676,
+            1204.002
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E104",
+        "name": null,
+        "from_node_key": "N012",
+        "to_node_key": "N021",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 45.32,
+        "original_path_index": 42
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3676,
+            1204
+          ],
+          [
+            3706.25,
+            1237.748
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E105",
+        "name": null,
+        "from_node_key": "N012",
+        "to_node_key": "N013",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 24.71,
+        "original_path_index": 43
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3676.03,
+            1203.789
+          ],
+          [
+            3700.505,
+            1207.216
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E106",
+        "name": null,
+        "from_node_key": "N013",
+        "to_node_key": "N015",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 64.36,
+        "original_path_index": 43
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3700.505,
+            1207.216
+          ],
+          [
+            3700.75,
+            1207.25
+          ],
+          [
+            3764.5,
+            1214.016
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E107",
+        "name": null,
+        "from_node_key": "N012",
+        "to_node_key": "N016",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 40.12,
+        "original_path_index": 44
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3661.75,
+            1198.75
+          ],
+          [
+            3650.5,
+            1217.504
+          ],
+          [
+            3632.5,
+            1214.503
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E108",
+        "name": null,
+        "from_node_key": "N013",
+        "to_node_key": "N008",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 42.41,
+        "original_path_index": 45
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3700.5,
+            1207.251
+          ],
+          [
+            3716.5,
+            1185.244
+          ],
+          [
+            3707.5,
+            1172.99
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E109",
+        "name": null,
+        "from_node_key": "N003",
+        "to_node_key": "N002",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 200.19,
+        "original_path_index": 46
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3314,
+            1048.001
+          ],
+          [
+            3260,
+            1072.169
+          ],
+          [
+            3132.5,
+            1013.495
+          ],
+          [
+            3131.917,
+            1013.15
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E110",
+        "name": null,
+        "from_node_key": "N002",
+        "to_node_key": "N001",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 298.94,
+        "original_path_index": 46
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3131.917,
+            1013.15
+          ],
+          [
+            3056,
+            968.138
+          ],
+          [
+            2946,
+            942.13
+          ],
+          [
+            2850.503,
+            962.5
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E111",
+        "name": null,
+        "from_node_key": "N002",
+        "to_node_key": "N007",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 178,
+        "original_path_index": 47
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3132.5,
+            1013.501
+          ],
+          [
+            3072,
+            1150.168
+          ],
+          [
+            3054.28,
+            1172.536
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E112",
+        "name": null,
+        "from_node_key": "N007",
+        "to_node_key": "N026",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 172.04,
+        "original_path_index": 47
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3054.28,
+            1172.536
+          ],
+          [
+            2988,
+            1256.201
+          ],
+          [
+            2953.397,
+            1311.583
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E113",
+        "name": null,
+        "from_node_key": "N026",
+        "to_node_key": "N022",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 196.84,
+        "original_path_index": 47
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2953.397,
+            1311.583
+          ],
+          [
+            2953,
+            1312.218
+          ],
+          [
+            2769.25,
+            1243.753
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E114",
+        "name": null,
+        "from_node_key": "N026",
+        "to_node_key": "N034",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 81.58,
+        "original_path_index": 48
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2952.75,
+            1312.5
+          ],
+          [
+            2984.199,
+            1387.776
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E115",
+        "name": null,
+        "from_node_key": "N034",
+        "to_node_key": "N040",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 97.1,
+        "original_path_index": 49
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2984,
+            1388.497
+          ],
+          [
+            2976,
+            1453.559
+          ],
+          [
+            2967.285,
+            1483.879
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E116",
+        "name": null,
+        "from_node_key": "N040",
+        "to_node_key": "N044",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 30.88,
+        "original_path_index": 49
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2967.285,
+            1483.879
+          ],
+          [
+            2967.25,
+            1484
+          ],
+          [
+            2960.278,
+            1513.957
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E117",
+        "name": null,
+        "from_node_key": "N044",
+        "to_node_key": "N050",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 198.96,
+        "original_path_index": 49
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2960.278,
+            1513.957
+          ],
+          [
+            2960.25,
+            1514.078
+          ],
+          [
+            2985.5,
+            1587.537
+          ],
+          [
+            3061,
+            1636.034
+          ],
+          [
+            3080.75,
+            1660.251
+          ],
+          [
+            3080.883,
+            1660.371
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E118",
+        "name": null,
+        "from_node_key": "N050",
+        "to_node_key": "N053",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 102.51,
+        "original_path_index": 49
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3080.883,
+            1660.371
+          ],
+          [
+            3097.25,
+            1675.046
+          ],
+          [
+            3152.419,
+            1733.703
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E119",
+        "name": null,
+        "from_node_key": "N059",
+        "to_node_key": "N054",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 80.52,
+        "original_path_index": 50
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3090.918,
+            1800.322
+          ],
+          [
+            3033,
+            1744.384
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E120",
+        "name": null,
+        "from_node_key": "N063",
+        "to_node_key": "N054",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 165.64,
+        "original_path_index": 51
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3001.562,
+            1906.047
+          ],
+          [
+            3030,
+            1813.748
+          ],
+          [
+            3033,
+            1744.75
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E121",
+        "name": null,
+        "from_node_key": "N072",
+        "to_node_key": "N069",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 24.7,
+        "original_path_index": 52
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2728.5,
+            1971.592
+          ],
+          [
+            2749.5,
+            1958.588
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E122",
+        "name": null,
+        "from_node_key": "N064",
+        "to_node_key": "N061",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 71.08,
+        "original_path_index": 53
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2534.496,
+            1909.573
+          ],
+          [
+            2533.25,
+            1838.502
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E123",
+        "name": null,
+        "from_node_key": "N058",
+        "to_node_key": "N062",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 108.93,
+        "original_path_index": 54
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2305.5,
+            1781.251
+          ],
+          [
+            2308,
+            1831.062
+          ],
+          [
+            2335.991,
+            1883.061
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E124",
+        "name": null,
+        "from_node_key": "N067",
+        "to_node_key": "N070",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 136.92,
+        "original_path_index": 55
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2552,
+            1935.501
+          ],
+          [
+            2470,
+            1950.065
+          ],
+          [
+            2419.777,
+            1968.894
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E125",
+        "name": null,
+        "from_node_key": "N070",
+        "to_node_key": "N076",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 156.58,
+        "original_path_index": 55
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2419.777,
+            1968.894
+          ],
+          [
+            2419.5,
+            1968.998
+          ],
+          [
+            2336,
+            2000.08
+          ],
+          [
+            2276.75,
+            2031.75
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E126",
+        "name": null,
+        "from_node_key": "N017",
+        "to_node_key": "N004",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 110.73,
+        "original_path_index": 56
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3482.515,
+            1224.889
+          ],
+          [
+            3497,
+            1115.112
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E127",
+        "name": null,
+        "from_node_key": "N046",
+        "to_node_key": "N031",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 273.47,
+        "original_path_index": 57
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3260.178,
+            1602.416
+          ],
+          [
+            3210,
+            1550.126
+          ],
+          [
+            3159.5,
+            1497.501
+          ],
+          [
+            3158.75,
+            1431.5
+          ],
+          [
+            3170.25,
+            1370.75
+          ],
+          [
+            3170.343,
+            1370.542
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E128",
+        "name": null,
+        "from_node_key": "N031",
+        "to_node_key": "N003",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 353.21,
+        "original_path_index": 57
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3170.343,
+            1370.542
+          ],
+          [
+            3238.5,
+            1218.249
+          ],
+          [
+            3313.75,
+            1047.75
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E129",
+        "name": null,
+        "from_node_key": "N034",
+        "to_node_key": "N031",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 191.14,
+        "original_path_index": 58
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2984.365,
+            1388.921
+          ],
+          [
+            3070,
+            1359.537
+          ],
+          [
+            3170,
+            1370.506
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E130",
+        "name": null,
+        "from_node_key": "N039",
+        "to_node_key": "N038",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 31.01,
+        "original_path_index": 59
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3332.032,
+            1474.918
+          ],
+          [
+            3303,
+            1464.03
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E131",
+        "name": null,
+        "from_node_key": "N017",
+        "to_node_key": "N024",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 114.45,
+        "original_path_index": 60
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3482.75,
+            1225.001
+          ],
+          [
+            3383,
+            1281.113
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E132",
+        "name": null,
+        "from_node_key": "N050",
+        "to_node_key": "N048",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 40.62,
+        "original_path_index": 61
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3081,
+            1660.24
+          ],
+          [
+            3106,
+            1628.23
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E133",
+        "name": null,
+        "from_node_key": "N065",
+        "to_node_key": "N066",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 139.22,
+        "original_path_index": 62
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2219.028,
+            1914.619
+          ],
+          [
+            2149,
+            1952.004
+          ],
+          [
+            2119.5,
+            1947.001
+          ],
+          [
+            2093,
+            1933.11
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E134",
+        "name": null,
+        "from_node_key": "N110",
+        "to_node_key": "N111",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 73.94,
+        "original_path_index": 63
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2358.75,
+            2432.5
+          ],
+          [
+            2432.23,
+            2440.745
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E135",
+        "name": null,
+        "from_node_key": "N122",
+        "to_node_key": "N121",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 34.52,
+        "original_path_index": 64
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1845.75,
+            2826.521
+          ],
+          [
+            1878.94,
+            2817.035
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E136",
+        "name": null,
+        "from_node_key": "N120",
+        "to_node_key": "N122",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 42.32,
+        "original_path_index": 65
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1848,
+            2784.258
+          ],
+          [
+            1845.514,
+            2826.507
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E137",
+        "name": null,
+        "from_node_key": "N117",
+        "to_node_key": "N116",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 37.87,
+        "original_path_index": 67
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2636.5,
+            2613.594
+          ],
+          [
+            2673,
+            2603.5
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E138",
+        "name": null,
+        "from_node_key": "N077",
+        "to_node_key": "N074",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 64.61,
+        "original_path_index": 69
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3158.5,
+            2038.016
+          ],
+          [
+            3210,
+            1999.004
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E139",
+        "name": null,
+        "from_node_key": "N085",
+        "to_node_key": "N083",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 57.72,
+        "original_path_index": 70
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2869.5,
+            2166.105
+          ],
+          [
+            2918.5,
+            2135.595
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E140",
+        "name": null,
+        "from_node_key": "N108",
+        "to_node_key": "N114",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 189.49,
+        "original_path_index": 72
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1997,
+            2412.75
+          ],
+          [
+            2022,
+            2411.543
+          ],
+          [
+            2053,
+            2499.569
+          ],
+          [
+            2084,
+            2563.589
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E141",
+        "name": null,
+        "from_node_key": "N080",
+        "to_node_key": "N078",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 60.98,
+        "original_path_index": 73
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2593,
+            2093.504
+          ],
+          [
+            2644,
+            2060.07
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E142",
+        "name": null,
+        "from_node_key": "N089",
+        "to_node_key": "N080",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 97.6,
+        "original_path_index": 74
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2546.442,
+            2179.644
+          ],
+          [
+            2592.75,
+            2093.725
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E143",
+        "name": null,
+        "from_node_key": "N084",
+        "to_node_key": "N082",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 31.8,
+        "original_path_index": 75
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2477.449,
+            2136.034
+          ],
+          [
+            2474,
+            2104.424
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E144",
+        "name": null,
+        "from_node_key": "N070",
+        "to_node_key": "N068",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 24.81,
+        "original_path_index": 76
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2420.022,
+            1968.845
+          ],
+          [
+            2422,
+            1944.114
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E145",
+        "name": null,
+        "from_node_key": "N055",
+        "to_node_key": "N056",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 36.35,
+        "original_path_index": 77
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2116,
+            1747.075
+          ],
+          [
+            2152,
+            1752.076
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E146",
+        "name": null,
+        "from_node_key": "N043",
+        "to_node_key": "N035",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 133.19,
+        "original_path_index": 78
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1844.831,
+            1507.351
+          ],
+          [
+            1938,
+            1412.171
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E147",
+        "name": null,
+        "from_node_key": "N025",
+        "to_node_key": "N028",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 77.11,
+        "original_path_index": 79
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1839.576,
+            1291.798
+          ],
+          [
+            1807,
+            1321.502
+          ],
+          [
+            1775.926,
+            1332.686
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E148",
+        "name": null,
+        "from_node_key": "N019",
+        "to_node_key": "N014",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 26.92,
+        "original_path_index": 81
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2054.5,
+            1235.75
+          ],
+          [
+            2051,
+            1209.061
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E149",
+        "name": null,
+        "from_node_key": "N032",
+        "to_node_key": "N029",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 28.01,
+        "original_path_index": 82
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2156,
+            1373.111
+          ],
+          [
+            2156,
+            1345.102
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E150",
+        "name": null,
+        "from_node_key": "N033",
+        "to_node_key": "N027",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 77.06,
+        "original_path_index": 84
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2228.658,
+            1380.239
+          ],
+          [
+            2268.5,
+            1314.274
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E151",
+        "name": null,
+        "from_node_key": "N052",
+        "to_node_key": "N051",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 78.02,
+        "original_path_index": 85
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            1957,
+            1707.006
+          ],
+          [
+            2031,
+            1682.275
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E152",
+        "name": null,
+        "from_node_key": "N040",
+        "to_node_key": "N037",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 41.79,
+        "original_path_index": 86
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2967.532,
+            1483.97
+          ],
+          [
+            2995.5,
+            1452.92
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E153",
+        "name": null,
+        "from_node_key": "N044",
+        "to_node_key": "N041",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 73.01,
+        "original_path_index": 87
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2960,
+            1513.893
+          ],
+          [
+            2893,
+            1484.884
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E154",
+        "name": null,
+        "from_node_key": "N007",
+        "to_node_key": "N009",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 33.78,
+        "original_path_index": 88
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3054.375,
+            1172.178
+          ],
+          [
+            3086,
+            1184.041
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E155",
+        "name": null,
+        "from_node_key": "N007",
+        "to_node_key": "N006",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 22.24,
+        "original_path_index": 89
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3054,
+            1171.75
+          ],
+          [
+            3036.5,
+            1158.033
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E156",
+        "name": null,
+        "from_node_key": "N039",
+        "to_node_key": "N045",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 74.13,
+        "original_path_index": 90
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            3332,
+            1475
+          ],
+          [
+            3392,
+            1518.532
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "entity": "map_path_edge",
+        "type": "path_edge",
+        "edge_key": "E157",
+        "name": null,
+        "from_node_key": "N010",
+        "to_node_key": "N020",
+        "is_bidirectional": true,
+        "is_accessible": true,
+        "is_active": true,
+        "distance_units": 46.62,
+        "original_path_index": 91
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            2690.9,
+            1191.542
+          ],
+          [
+            2681,
+            1237.097
+          ]
+        ]
+      }
+    }
+  ]
+}

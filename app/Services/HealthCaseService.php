@@ -136,11 +136,17 @@ class HealthCaseService
             return collect();
         }
 
-        return Animal::query()
+        return Animal::withQuarantine()
             ->where('group', $group)
             ->whereIn('status', [
                 AnimalStatus::Active->value,
                 AnimalStatus::PendingReceipt->value,
+                AnimalStatus::UnderBirthFollowUp->value,
+            ])
+            ->whereNotIn('status', [
+                AnimalStatus::Dead->value,
+                AnimalStatus::PendingMortalityApproval->value,
+                AnimalStatus::Exited->value,
             ])
             ->orderBy('code')
             ->get();

@@ -11,68 +11,345 @@
 
 @section('styles')
 <style>
-    .top-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.4rem 1.8rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem; }
-    .filter-bar { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-    .search-box { flex: 1; min-width: 250px; position: relative; }
-    .search-box input { width: 100%; padding: 10px 40px 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600; outline: none; }
-    .search-box svg { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
-    .filter-select { padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 600; color: #334155; outline: none; cursor: pointer; }
-    .segmented-tabs { display: inline-flex; background: #f1f5f9; padding: 5px; border-radius: 10px; gap: 4px; }
-    .seg-tab { background: transparent; border: none; padding: 9px 24px; border-radius: 7px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 800; color: #64748b; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
-    .seg-tab:hover { color: #1a4a2e; }
-    .seg-tab.active { background: #fff; color: #1a4a2e; box-shadow: 0 2px 4px rgba(0,0,0,0.07); }
-    .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 2rem; }
-    .table-card-footer { padding: 1.1rem 1.75rem; display: flex; align-items: center; justify-content: flex-end; border-top: 1px solid #f1f5f9; background: #FAFBFC; }
-    .custom-table { width: 100%; border-collapse: collapse; text-align: right; }
-    .custom-table thead th { background: #F8FAFC; color: var(--text-muted); font-size: 0.8rem; font-weight: 800; padding: 14px 20px; border-bottom: 1px solid var(--border); }
-    .custom-table tbody tr:hover { background: #FAFBFC; }
-    .custom-table tbody td { padding: 16px 20px; border-bottom: 1px solid #F1F5F9; font-size: 0.92rem; font-weight: 600; color: var(--text-main); vertical-align: middle; }
-    .custom-table tbody tr:last-child td { border-bottom: none; }
-    .note-id { font-family: 'Courier New', monospace; font-size: 0.75rem; background: #f8fafc; padding: 3px 8px; border-radius: 6px; color: #334155; font-weight: 800; display: inline-block; border: 1px solid #e2e8f0; }
-    .note-summary { max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .badge { padding: 5px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-    .badge .dot { width: 6px; height: 6px; border-radius: 50%; }
-    .badge-new { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-    .badge-new .dot { background: #ef4444; }
-    .badge-reviewed { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
-    .badge-reviewed .dot { background: #22c55e; }
-    .badge-type-feeding { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
-    .badge-type-feeding .dot { background: #f59e0b; }
-    .badge-type-general { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
-    .badge-type-general .dot { background: #3b82f6; }
-    .btn-tbl { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 9px; cursor: pointer; text-decoration: none; transition: all 0.2s; border: 1px solid #e2e8f0; background: #f8fafc; color: #475569; }
-    .btn-tbl.view:hover { color: #0284C7; background: #E0F2FE; border-color: #BAE6FD; }
-    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; }
-    .modal-backdrop.open { display: flex; }
-    #noteModal .modal-box { background: #f8fafc; border-radius: 20px; width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.15); animation: modalIn 0.3s cubic-bezier(0.4,0,0.2,1); }
-    @keyframes modalIn { from { transform: translateY(24px) scale(0.97); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-    #noteModal .modal-header { background: transparent; border-bottom: none; display: flex; justify-content: center; position: relative; padding: 2rem 1.5rem 0; }
-    #noteModal .modal-header h3 { font-size: 1.4rem; font-weight: 800; color: #1e293b; margin: 0; text-align: center; }
-    #noteModal .modal-close { position: absolute; left: 1.5rem; top: 1.5rem; width: 32px; height: 32px; border-radius: 8px; background: #e2e8f0; border: none; color: #64748b; cursor: pointer; font-size: 1.2rem; font-weight: 700; }
-    #noteModal .modal-tabs-bar { display: flex; justify-content: center; gap: 0; padding: 1rem 2rem 0; }
-    #noteModal .modal-tab { padding: 8px 20px; border: none; background: transparent; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; color: #94a3b8; border-bottom: 3px solid transparent; }
-    #noteModal .modal-tab.active { color: #16a34a; border-bottom-color: #16a34a; }
-    #noteModal .modal-body { padding: 1.5rem 2rem; }
-    #noteModal .q-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    @media (max-width: 768px) { #noteModal .q-grid { grid-template-columns: 1fr; } }
-    #noteModal .q-card { background: #fff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-    #noteModal .q-card-title { font-size: 1.1rem; font-weight: 800; color: #1e293b; margin-bottom: 1.5rem; text-align: center; }
-    #noteModal .q-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9; }
-    #noteModal .q-label { color: #64748b; font-size: 0.9rem; font-weight: 700; }
-    #noteModal .q-value { color: #0f172a; font-size: 0.95rem; font-weight: 800; }
-    #noteModal .q-note-box { background: #f8fafc; padding: 12px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; color: #334155; border: 1px solid #f1f5f9; line-height: 1.7; white-space: pre-wrap; }
-    #noteModal .q-attach-wrap { text-align: center; padding: 2rem 1rem; }
-    #noteModal .q-attach-empty { width: 180px; height: 180px; border-radius: 16px; margin: 0 auto; background: #f8fafc; border: 2px dashed #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; color: #94a3b8; }
-    #noteModal .q-attach-img { width: 180px; height: 180px; border-radius: 16px; margin: 0 auto; object-fit: cover; border: 2px solid #e2e8f0; display: block; }
-    #noteModal .modal-footer { background: transparent; border-top: none; padding: 0 2rem 1.5rem; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
-    #noteModal .btn-action-release { padding: 8px 16px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
-    #noteModal .btn-cancel { padding: 8px 16px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
-    .dialog-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.45); backdrop-filter: blur(3px); z-index: 1100; align-items: center; justify-content: center; }
-    .dialog-backdrop.open { display: flex; }
-    .dialog-box { background: #fff; border-radius: 18px; width: 100%; max-width: 440px; box-shadow: 0 30px 80px rgba(0,0,0,0.2); overflow: hidden; }
-    .dialog-body { padding: 2rem 2rem 1.5rem; text-align: center; }
-    .dialog-footer { padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; justify-content: center; }
-    .btn-submit { padding: 10px 24px; background: linear-gradient(135deg, #1a4a2e, #2d7a47); color: #fff; border: none; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; }
+    /* تصميم راقي وعصري لصفحة الملاحظات التشغيلية */
+    .top-card {
+        background: #fff;
+        border: 1px solid #e8edf5;
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.02);
+    }
+    .filter-bar {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+    .search-box {
+        flex: 1;
+        min-width: 250px;
+        position: relative;
+    }
+    .search-box input {
+        width: 100%;
+        padding: 12px 42px 12px 16px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-box input:focus {
+        border-color: #1a4a2e;
+        box-shadow: 0 0 0 3px rgba(26, 74, 46, 0.1);
+    }
+    .search-box svg {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+    }
+    .filter-select {
+        padding: 12px 16px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #334155;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.2s;
+    }
+    .filter-select:focus {
+        border-color: #1a4a2e;
+    }
+    .segmented-tabs {
+        display: inline-flex;
+        background: #f1f5f9;
+        padding: 6px;
+        border-radius: 14px;
+        gap: 4px;
+    }
+    .seg-tab {
+        background: transparent;
+        border: none;
+        padding: 8px 24px;
+        border-radius: 10px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 800;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .seg-tab:hover {
+        color: #1a4a2e;
+    }
+    .seg-tab.active {
+        background: #fff;
+        color: #1a4a2e;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    }
+    
+    /* شبكة الكروت الاحترافية */
+    .notes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .note-card {
+        background: #fff;
+        border: 1px solid #e8edf5;
+        border-radius: 24px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 1.2rem;
+        position: relative;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.015);
+    }
+    .note-card:hover {
+        transform: translateY(-4px);
+        border-color: #cbd5e1;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+    }
+    .note-card-highlight {
+        border-color: #22c55e;
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+    }
+    .note-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+    }
+    .note-card-meta {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    .note-id {
+        font-family: 'Courier New', monospace;
+        font-size: 0.78rem;
+        background: #f8fafc;
+        padding: 4px 10px;
+        border-radius: 8px;
+        color: #475569;
+        font-weight: 800;
+        border: 1px solid #e2e8f0;
+    }
+    .note-card-body {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #1e293b;
+        line-height: 1.7;
+        flex-grow: 1;
+    }
+    .note-attach-wrap {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid #f1f5f9;
+        position: relative;
+    }
+    .note-attach-thumb {
+        width: 100%;
+        max-height: 190px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+        display: block;
+    }
+    .note-attach-wrap:hover .note-attach-thumb {
+        transform: scale(1.03);
+    }
+    .note-card-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding-top: 1rem;
+        border-top: 1px solid #f8fafc;
+    }
+    .note-card-author-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .note-card-author-info .group-name {
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: #334155;
+    }
+    .note-card-date {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #94a3b8;
+    }
+    .btn-review-note {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 16px;
+        background: #1a4a2e;
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.15s;
+    }
+    .btn-review-note:hover {
+        background: #123320;
+    }
+    .btn-review-note:active {
+        transform: scale(0.97);
+    }
+    
+    .badge {
+        padding: 5px 12px;
+        border-radius: 30px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid transparent;
+    }
+    .badge .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+    }
+    .badge-new {
+        background: #fef2f2;
+        color: #ef4444;
+        border-color: #fee2e2;
+    }
+    .badge-new .dot {
+        background: #ef4444;
+    }
+    .badge-reviewed {
+        background: #f0fdf4;
+        color: #22c55e;
+        border-color: #dcfce7;
+    }
+    .badge-reviewed .dot {
+        background: #22c55e;
+    }
+    .badge-type-feeding {
+        background: #fffbeb;
+        color: #d97706;
+        border-color: #fef3c7;
+    }
+    .badge-type-feeding .dot {
+        background: #f59e0b;
+    }
+    .badge-type-general {
+        background: #eff6ff;
+        color: #3b82f6;
+        border-color: #dbeafe;
+    }
+    .badge-type-general .dot {
+        background: #3b82f6;
+    }
+    /* تصميم المودال الاحترافي للتأكيد */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 0.25s ease-out;
+    }
+    .modal-container {
+        background: #fff;
+        border-radius: 24px;
+        padding: 2rem;
+        width: 100%;
+        max-width: 440px;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        border: 1px solid #e8edf5;
+        text-align: center;
+        animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .modal-icon {
+        width: 56px;
+        height: 56px;
+        background: #f0fdf4;
+        color: #22c55e;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.25rem;
+    }
+    .modal-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+    .modal-desc {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #64748b;
+        line-height: 1.6;
+        margin-bottom: 1.75rem;
+    }
+    .modal-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+    .modal-btn {
+        flex: 1;
+        padding: 12px;
+        border-radius: 12px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+    }
+    .modal-btn-confirm {
+        background: #1a4a2e;
+        color: #fff;
+    }
+    .modal-btn-confirm:hover {
+        background: #123320;
+    }
+    .modal-btn-cancel {
+        background: #f1f5f9;
+        color: #475569;
+    }
+    .modal-btn-cancel:hover {
+        background: #e2e8f0;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
 </style>
 @endsection
 
@@ -96,190 +373,103 @@
         <select class="filter-select" name="group" onchange="this.form.submit()">
             @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات', 'withValues' => true, 'selected' => $filters['group'] ?? ''])
         </select>
-        <button type="submit" style="padding:10px 20px;background:linear-gradient(135deg,#1a4a2e,#2d7a47);color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:0.85rem;font-weight:800;cursor:pointer;">بحث</button>
     </form>
 </div>
 
-<div class="table-card">
-    <div style="overflow-x:auto;">
-        <table class="custom-table">
-            <thead>
-                <tr>
-                    <th>رقم الملاحظة</th>
-                    <th>نوع الملاحظة</th>
-                    <th>المجموعة</th>
-                    <th>المشرف</th>
-                    <th>التاريخ</th>
-                    <th>الحالة</th>
-                    <th>الإجراءات</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($notes as $note)
-                    @php
-                        $typeBadge = $note->note_kind === OperationalNoteKind::Feeding ? 'badge-type-feeding' : 'badge-type-general';
-                        $statusBadge = $note->status === OperationalNoteStatus::New ? 'badge-new' : 'badge-reviewed';
-                    @endphp
-                    <tr>
-                        <td><span class="note-id">{{ $note->note_number }}</span></td>
-                        <td><span class="badge {{ $typeBadge }}"><span class="dot"></span>{{ $note->note_kind->label() }}</span></td>
-                        <td>{{ $note->group }}</td>
-                        <td>{{ $note->supervisor?->name ?? '—' }}</td>
-                        <td>{{ $note->noted_at?->format('Y-m-d') }}</td>
-                        <td><span class="badge {{ $statusBadge }}"><span class="dot"></span>{{ $note->status->label() }}</span></td>
-                        <td>
-                            <button type="button"
-                                class="btn-tbl view"
-                                title="عرض التفاصيل"
-                                data-note-number="{{ $note->note_number }}"
-                                onclick="openModal(this.dataset.noteNumber)">
-                                @include('partials.icon-eye-view')
-                            </button>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" style="text-align:center;padding:2.5rem;color:#64748b;font-weight:700;">
-                            لا توجد ملاحظات تشغيلية في هذا القسم حالياً.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+<div class="notes-grid">
+    @forelse($notes as $note)
+        @php
+            $typeBadge = $note->note_kind === OperationalNoteKind::Feeding ? 'badge-type-feeding' : 'badge-type-general';
+            $statusBadge = $note->status === OperationalNoteStatus::New ? 'badge-new' : 'badge-reviewed';
+            $attachmentUrl = $note->attachment_path ? \Illuminate\Support\Facades\Storage::url($note->attachment_path) : null;
+            $canReview = ! $readOnly && $note->status === OperationalNoteStatus::New;
+        @endphp
+        <article class="note-card" id="note-{{ $note->note_number }}">
+            <div class="note-card-head">
+                <span class="note-id">{{ $note->note_number }}</span>
+                <div class="note-card-meta">
+                    <span class="badge {{ $typeBadge }}"><span class="dot"></span>{{ $note->note_kind->label() }}</span>
+                    <span class="badge {{ $statusBadge }}"><span class="dot"></span>{{ $note->status->label() }}</span>
+                </div>
+            </div>
+            <div class="note-card-body">
+                <div class="note-summary-text">{{ $note->summary }}</div>
+                @if($note->details)
+                    <div class="note-details-text" style="font-size:0.85rem;font-weight:600;color:#64748b;margin-top:6px;border-top:1px dashed #e2e8f0;padding-top:6px;">{{ $note->details }}</div>
+                @endif
+            </div>
+
+            <div class="note-card-foot">
+                <div>
+                    <div style="font-size:0.82rem;font-weight:800;color:#475569;">{{ $note->group }} · {{ $note->supervisor?->name ?? '—' }}</div>
+                    <div class="note-card-date">{{ $note->noted_at?->format('Y-m-d') }}</div>
+                </div>
+                @if($canReview)
+                    <button type="button" class="btn-review-note" onclick="openReviewModal('{{ route('care.notes.review', $note->note_number) }}')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        تحديد كمراجعة
+                    </button>
+                @endif
+            </div>
+        </article>
+    @empty
+        <div class="notes-empty">لا توجد ملاحظات تشغيلية في هذا القسم حالياً.</div>
+    @endforelse
+</div>
+@if($notes->hasPages())
+    <div class="notes-pagination">{{ $notes->links() }}</div>
+@endif
+
+{{-- مودال التأكيد الاحترافي المشترك --}}
+<div id="confirmModalOverlay" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        </div>
+        <div class="modal-title">تأكيد مراجعة الملاحظة</div>
+        <div class="modal-desc">هل أنت متأكد من تحديد هذه الملاحظة كـ "تمت المراجعة"؟ سيتم نقلها للأرشيف.</div>
+        <form id="confirmModalForm" method="POST" action="">
+            @csrf
+            <div class="modal-actions">
+                <button type="submit" class="modal-btn modal-btn-confirm">تأكيد المراجعة</button>
+                <button type="button" class="modal-btn modal-btn-cancel" onclick="closeReviewModal()">إلغاء</button>
+            </div>
+        </form>
     </div>
-    @if($notes->hasPages())
-        <div class="table-card-footer">{{ $notes->links() }}</div>
-    @endif
 </div>
 @endsection
 
-@push('modals')
-<div class="modal-backdrop" id="noteModal" onclick="if(event.target===this) closeModal()">
-    <div class="modal-box">
-        <div class="modal-header">
-            <h3>تفاصيل الملاحظة — <span id="modalNoteId">—</span></h3>
-            <button type="button" class="modal-close" onclick="closeModal()">✕</button>
-        </div>
-        <div class="modal-tabs-bar">
-            <button type="button" class="modal-tab active" id="ntab-btn-1" onclick="switchNTab(1)">بيانات الملاحظة</button>
-            <button type="button" class="modal-tab" id="ntab-btn-2" onclick="switchNTab(2)">المرفقات</button>
-        </div>
-        <div class="modal-body">
-            <div id="ntab-1">
-                <div class="q-grid">
-                    <div class="q-card">
-                        <h4 class="q-card-title">بيانات الملاحظة</h4>
-                        <div class="q-row"><span class="q-label">رقم الملاحظة</span><span class="q-value" id="nNoteId">—</span></div>
-                        <div class="q-row"><span class="q-label">نوع الملاحظة</span><span class="q-value" id="nType">—</span></div>
-                        <div class="q-row"><span class="q-label">المجموعة</span><span class="q-value" id="nGroup">—</span></div>
-                        <div class="q-row"><span class="q-label">المشرف</span><span class="q-value" id="nSupervisor">—</span></div>
-                        <div class="q-row"><span class="q-label">تاريخ الملاحظة</span><span class="q-value" id="nDate">—</span></div>
-                        <div class="q-row" style="border-bottom:none;margin-bottom:0;padding-bottom:0;"><span class="q-label">الحالة</span><span class="q-value" id="nStatus">—</span></div>
-                    </div>
-                    <div class="q-card">
-                        <h4 class="q-card-title">نص الملاحظة</h4>
-                        <div class="q-note-box" id="nContent">—</div>
-                        <div id="nDetailsWrap" style="margin-top:1rem;display:none;">
-                            <h4 class="q-card-title" style="font-size:0.95rem;">تفاصيل إضافية</h4>
-                            <div class="q-note-box" id="nDetails">—</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="ntab-2" style="display:none;">
-                <div class="q-card">
-                    <h4 class="q-card-title">المرفقات</h4>
-                    <div class="q-attach-wrap" id="nAttachWrap">
-                        <div class="q-attach-empty">لا توجد مرفقات</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer" id="nFooter"></div>
-    </div>
-</div>
-
-@if(!$readOnly)
-<div class="dialog-backdrop" id="confirmReviewDialog" onclick="if(event.target===this) closeDialog('confirmReviewDialog')">
-    <div class="dialog-box">
-        <div class="dialog-body">
-            <h4>تأكيد المراجعة</h4>
-            <p>هل أنت متأكد من تحديد هذه الملاحظة التشغيلية كـ <strong>تمت المراجعة</strong>؟</p>
-        </div>
-        <div class="dialog-footer">
-            <button type="button" class="btn-cancel" onclick="closeDialog('confirmReviewDialog')">إلغاء</button>
-            <form method="POST" id="reviewForm" action="#">
-                @csrf
-                <button type="submit" class="btn-submit">نعم، تحديد كمراجعة</button>
-            </form>
-        </div>
-    </div>
-</div>
-@endif
-@endpush
-
 @section('scripts')
 <script>
-    const notes = @json($notesForJs ?? []);
+    let activeActionUrl = '';
 
-    function switchNTab(n) {
-        document.getElementById('ntab-1').style.display = n === 1 ? 'block' : 'none';
-        document.getElementById('ntab-2').style.display = n === 2 ? 'block' : 'none';
-        document.getElementById('ntab-btn-1').className = 'modal-tab' + (n === 1 ? ' active' : '');
-        document.getElementById('ntab-btn-2').className = 'modal-tab' + (n === 2 ? ' active' : '');
+    function openReviewModal(actionUrl) {
+        const modal = document.getElementById('confirmModalOverlay');
+        const form = document.getElementById('confirmModalForm');
+        form.action = actionUrl;
+        modal.style.display = 'flex';
     }
 
-    function openModal(noteNumber) {
-        const d = notes[noteNumber];
-        if (!d) return;
-        switchNTab(1);
-
-        document.getElementById('modalNoteId').textContent = d.note_number;
-        document.getElementById('nNoteId').textContent = d.note_number;
-        document.getElementById('nType').textContent = d.note_kind_label;
-        document.getElementById('nGroup').textContent = d.group;
-        document.getElementById('nSupervisor').textContent = d.supervisor || '—';
-        document.getElementById('nDate').textContent = d.noted_at_display || d.noted_at || '—';
-        document.getElementById('nStatus').textContent = d.status_label;
-        document.getElementById('nContent').textContent = d.summary;
-
-        const detailsWrap = document.getElementById('nDetailsWrap');
-        if (d.details) {
-            detailsWrap.style.display = 'block';
-            document.getElementById('nDetails').textContent = d.details;
-        } else {
-            detailsWrap.style.display = 'none';
-        }
-
-        const attachWrap = document.getElementById('nAttachWrap');
-        if (d.has_attachment && d.attachment_url) {
-            attachWrap.innerHTML = '<a href="' + d.attachment_url + '" target="_blank" rel="noopener"><img src="' + d.attachment_url + '" alt="مرفق الملاحظة" class="q-attach-img"></a>';
-        } else {
-            attachWrap.innerHTML = '<div class="q-attach-empty">لا توجد مرفقات</div>';
-        }
-
-        const footer = document.getElementById('nFooter');
-        const closeBtn = '<button type="button" class="btn-cancel" onclick="closeModal()">إغلاق</button>';
-        if (d.can_review && d.review_url) {
-            footer.innerHTML = closeBtn + '<button type="button" class="btn-action-release" onclick="markReviewed()">تحديد كمراجعة</button>';
-            const form = document.getElementById('reviewForm');
-            if (form) form.action = d.review_url;
-        } else {
-            footer.innerHTML = closeBtn;
-        }
-
-        document.getElementById('noteModal').classList.add('open');
+    function closeReviewModal() {
+        const modal = document.getElementById('confirmModalOverlay');
+        modal.style.display = 'none';
     }
 
-    function closeModal() { document.getElementById('noteModal').classList.remove('open'); }
-    function openDialog(id) { document.getElementById(id)?.classList.add('open'); }
-    function closeDialog(id) { document.getElementById(id)?.classList.remove('open'); }
-    function markReviewed() { openDialog('confirmReviewDialog'); }
-
-    window.openOperationalNoteModal = openModal;
+    // إغلاق المودال عند النقر خارج مساحة الحاوية
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('confirmModalOverlay');
+        if (event.target === modal) {
+            closeReviewModal();
+        }
+    });
 
     @if(!empty($highlightNote))
-        document.addEventListener('DOMContentLoaded', () => openModal(@json($highlightNote)));
+        document.addEventListener('DOMContentLoaded', () => {
+            const card = document.getElementById('note-{{ $highlightNote }}');
+            if (!card) return;
+            card.classList.add('note-card-highlight');
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
     @endif
 </script>
 @endsection

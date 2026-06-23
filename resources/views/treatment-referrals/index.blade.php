@@ -138,7 +138,6 @@
         <select class="filter-select" name="group" onchange="this.form.submit()">
             @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات', 'withValues' => true, 'selected' => $filters['group'] ?? ''])
         </select>
-        <button type="submit" class="btn-search">بحث</button>
     </div>
 </form>
 
@@ -274,7 +273,7 @@
                             </div>
                         </div>
 
-                        <div id="statusPending" class="status-section status-pending" style="display:none;">
+                        <div id="statusPending" class="status-section status-pending" style="display:none !important;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" style="margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     <div>الإحالة بانتظار مراجعة رئيس قسم المستشفى البيطري.</div>
                 </div>
@@ -323,10 +322,6 @@
                 </div>
 
                 <div class="info-grid">
-                    <div class="info-cell">
-                        <div class="info-cell-label">رقم الحالة الصحية</div>
-                        <div class="info-cell-value" style="font-family:'Courier New',monospace;" id="hId">—</div>
-                    </div>
                     <div class="info-cell">
                         <div class="info-cell-label">تاريخ تسجيل الحالة</div>
                         <div class="info-cell-value" id="hDate">—</div>
@@ -391,6 +386,7 @@
 @section('scripts')
 <script>
     const portalBase = @json($portalBase);
+    const isCarePortal = @json($isCarePortal);
     const isReadOnly = @json($readOnly ?? false);
     const canAct = @json($canAct ?? false);
     const referrals = @json($referralsForJs ?? []);
@@ -422,7 +418,6 @@
         document.getElementById('mGroup').textContent = d.group || '—';
         document.getElementById('mDate').textContent = d.date || '—';
 
-        document.getElementById('hId').textContent = d.case_number || '—';
         document.getElementById('hDate').textContent = d.case_date || '—';
         document.getElementById('hSupervisor').textContent = d.supervisor || '—';
         document.getElementById('hDesc').textContent = d.description || '—';
@@ -439,8 +434,11 @@
         const status = d.status;
 
         if (status === 'pending') {
-            document.getElementById('mStatusBadge').innerHTML = `<span class="badge badge-pending"><span class="dot"></span>${d.status_label}</span>`;
-            document.getElementById('statusPending').style.display = 'block';
+            if (isCarePortal) {
+                document.getElementById('mStatusBadge').innerHTML = `<span class="badge badge-pending"><span class="dot"></span>${d.status_label}</span>`;
+            } else {
+                document.getElementById('mStatusBadge').innerHTML = '';
+            }
             if (canAct) {
                 footer.innerHTML = `
                 <button type="button" class="btn-reject" onclick="showRejectConfirm()">رفض إحالة علاج</button>

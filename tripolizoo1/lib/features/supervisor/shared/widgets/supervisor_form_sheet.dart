@@ -369,74 +369,239 @@ class SupervisorFormMultilineField extends StatelessWidget {
   }
 }
 
-class SupervisorFormDropdown<T> extends StatelessWidget {
-  const SupervisorFormDropdown({
+class SupervisorFormDropdown<T> extends FormField<T> {
+  SupervisorFormDropdown({
     super.key,
-    required this.value,
+    required T? value,
+    required String hint,
+    required List<T> items,
+    required ValueChanged<T?> onChanged,
+    super.validator,
+    String Function(T)? itemLabel,
+  }) : super(
+          initialValue: value,
+          builder: (state) {
+            final label = state.value != null
+                ? (itemLabel != null
+                    ? itemLabel(state.value as T)
+                    : state.value.toString())
+                : null;
+
+            Future<void> openPicker() async {
+              final selected = await showModalBottomSheet<T>(
+                context: state.context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (ctx) => _SupervisorSearchablePickerSheet<T>(
+                  hint: hint,
+                  items: items,
+                  itemLabel: itemLabel,
+                  selected: state.value,
+                ),
+              );
+              if (selected == null) return;
+              state.didChange(selected);
+              onChanged(selected);
+            }
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: openPicker,
+                    borderRadius: BorderRadius.circular(14),
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: const Color(0xFFF8FAF8),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: const BorderSide(color: SupervisorUi.border),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(
+                            color: state.hasError
+                                ? AppColors.error
+                                : SupervisorUi.border,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: const BorderSide(
+                            color: AppColors.primary,
+                            width: 1.5,
+                          ),
+                        ),
+                        suffixIcon: const Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      child: Text(
+                        label ?? hint,
+                        style: GoogleFonts.cairo(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: label != null
+                              ? SupervisorUi.textPrimary
+                              : SupervisorUi.muted,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                if (state.hasError)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6, right: 4),
+                    child: Text(
+                      state.errorText!,
+                      style: GoogleFonts.cairo(
+                        fontSize: 12,
+                        color: AppColors.error,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        );
+}
+
+class _SupervisorSearchablePickerSheet<T> extends StatefulWidget {
+  const _SupervisorSearchablePickerSheet({
     required this.hint,
     required this.items,
-    required this.onChanged,
-    this.validator,
-    this.itemLabel,
+    required this.itemLabel,
+    required this.selected,
   });
 
-  final T? value;
   final String hint;
   final List<T> items;
-  final ValueChanged<T?> onChanged;
-  final String? Function(T?)? validator;
   final String Function(T)? itemLabel;
+  final T? selected;
+
+  @override
+  State<_SupervisorSearchablePickerSheet<T>> createState() =>
+      _SupervisorSearchablePickerSheetState<T>();
+}
+
+class _SupervisorSearchablePickerSheetState<T>
+    extends State<_SupervisorSearchablePickerSheet<T>> {
+  final _search = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  String _label(T item) =>
+      widget.itemLabel != null ? widget.itemLabel!(item) : item.toString();
+
+  List<T> get _filtered {
+    final q = _query.trim().toLowerCase();
+    if (q.isEmpty) return widget.items;
+    return widget.items
+        .where((item) => _label(item).toLowerCase().contains(q))
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<T>(
-      initialValue: value,
-      validator: validator,
-      isExpanded: true,
-      hint: Text(
-        hint,
-        style: GoogleFonts.cairo(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: SupervisorUi.muted,
-        ),
-      ),
-      items: items
-          .map(
-            (item) => DropdownMenuItem(
-              value: item,
-              child: Text(
-                itemLabel != null ? itemLabel!(item) : item.toString(),
-                style: GoogleFonts.cairo(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: SupervisorUi.textPrimary,
+    final bottomPad = MediaQuery.of(context).padding.bottom;
+    final maxHeight = MediaQuery.sizeOf(context).height * 0.72;
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          constraints: BoxConstraints(maxHeight: maxHeight),
+          margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 10),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE2E8E2),
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-            ),
-          )
-          .toList(),
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: const Color(0xFFF8FAF8),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: SupervisorUi.border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: SupervisorUi.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                child: TextField(
+                  controller: _search,
+                  onChanged: (v) => setState(() => _query = v),
+                  style: GoogleFonts.cairo(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'ابحث في ${widget.hint}',
+                    hintStyle: GoogleFonts.cairo(
+                      color: SupervisorUi.muted,
+                      fontSize: 14,
+                    ),
+                    prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary),
+                    filled: true,
+                    fillColor: const Color(0xFFF8FAF8),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(color: SupervisorUi.border),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(color: SupervisorUi.border),
+                    ),
+                  ),
+                ),
+              ),
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _filtered.length,
+                  itemBuilder: (context, index) {
+                    final item = _filtered[index];
+                    final selected = item == widget.selected;
+                    return ListTile(
+                      title: Text(
+                        _label(item),
+                        style: GoogleFonts.cairo(
+                          fontWeight: FontWeight.w700,
+                          color: selected
+                              ? AppColors.primary
+                              : SupervisorUi.textPrimary,
+                        ),
+                      ),
+                      trailing: selected
+                          ? const Icon(Icons.check_rounded, color: AppColors.primary)
+                          : null,
+                      onTap: () => Navigator.of(context).pop(item),
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: bottomPad + 8),
+            ],
+          ),
         ),
       ),
-      icon: const Icon(Icons.keyboard_arrow_down_rounded,
-          color: AppColors.primary),
     );
   }
 }

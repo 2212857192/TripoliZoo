@@ -7,16 +7,24 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:tripolizoo/firebase_options.dart';
+import 'package:tripolizoo/shared/api/api_config.dart';
 import 'package:tripolizoo/shared/api/device_token_service.dart';
-
+import 'package:tripolizoo/shared/push/push_notification_logic.dart';
 const _channelId = 'quarantine_alerts';
-const _channelName = 'تنبيهات الحجر الصحي';
+const _channelName = 'تنبيهات الحديقة';
 const _appDisplayName = 'حديقة حيوان طرابلس';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  await PushNotificationService.showLocalFromRemote(message);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // إذا وصل payload فيه notification، النظام يعرضه تلقائياً والهاتف مقفول.
+  // نعرض محلياً فقط للرسائل data-only.
+  if (PushNotificationLogic.shouldShowLocalInBackground(
+    hasNotificationPayload: message.notification != null,
+  )) {
+    await PushNotificationService.showLocalFromRemote(message);
+  }
 }
 
 class PushNotificationService {
@@ -30,6 +38,7 @@ class PushNotificationService {
   static GoRouter? _router;
   static String? pendingRoute;
   static bool _initialized = false;
+  static bool _shouldSyncToken = false;
 
   static void attachRouter(GoRouter router) {
     _router = router;
@@ -49,7 +58,9 @@ class PushNotificationService {
     if (_initialized || kIsWeb) return;
 
     try {
-      await Firebase.initializeApp();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
     } catch (e) {
       debugPrint('Firebase init skipped: $e');
       return;
@@ -69,7 +80,8 @@ class PushNotificationService {
     );
 
     if (Platform.isAndroid) {
-      await Permission.notification.request();
+      final status = await Permission.notification.request();
+      debugPrint('Android notification permission: $status');
     }
 
     await messaging.setForegroundNotificationPresentationOptions(
@@ -80,6 +92,11 @@ class PushNotificationService {
 
     FirebaseMessaging.onMessage.listen(showLocalFromRemote);
     FirebaseMessaging.onMessageOpenedApp.listen(_handleOpenedMessage);
+
+    messaging.onTokenRefresh.listen((token) async {
+      if (!_shouldSyncToken || token.isEmpty) return;
+      await _registerToken(token);
+    });
 
     final initial = await messaging.getInitialMessage();
     if (initial != null) {
@@ -121,33 +138,58 @@ class PushNotificationService {
       const AndroidNotificationChannel(
         _channelId,
         _channelName,
-        description: 'إشعارات الحيوانات الجديدة في الحجر الصحي',
+        description: 'إشعارات الطبيب البيطري والمشرف حتى مع إغلاق التطبيق',
         importance: Importance.max,
         playSound: true,
         enableVibration: true,
         showBadge: true,
       ),
     );
+
+    if (Platform.isIOS) {
+      await _localNotifications
+          .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+    }
   }
 
   static Future<void> syncTokenForLoggedInUser({
     required bool isDoctor,
     bool isSupervisor = false,
   }) async {
-    if (!_initialized || kIsWeb || (!isDoctor && !isSupervisor)) return;
+    _shouldSyncToken = isDoctor || isSupervisor;
+    if (!_initialized || kIsWeb || !_shouldSyncToken) return;
 
+    for (var attempt = 0; attempt < 3; attempt++) {
+      try {
+        final token = await FirebaseMessaging.instance.getToken();
+        if (token == null || token.isEmpty) {
+          debugPrint('FCM token unavailable (attempt ${attempt + 1})');
+        } else {
+          await _registerToken(token);
+          return;
+        }
+      } catch (e) {
+        debugPrint('FCM token sync failed (attempt ${attempt + 1}): $e');
+      }
+      await Future<void>.delayed(Duration(milliseconds: 800 * (attempt + 1)));
+    }
+  }
+
+  static Future<void> _registerToken(String token) async {
+    final platform = Platform.isIOS ? 'ios' : 'android';
     try {
-      final token = await FirebaseMessaging.instance.getToken();
-      if (token == null || token.isEmpty) return;
-
-      final platform = Platform.isIOS ? 'ios' : 'android';
       await DeviceTokenService().register(token: token, platform: platform);
+      debugPrint('FCM token synced to ${ApiConfig.baseUrl}');
     } catch (e) {
-      debugPrint('FCM token sync failed: $e');
+      debugPrint('FCM token registration failed (${ApiConfig.baseUrl}): $e');
+      rethrow;
     }
   }
 
   static Future<void> clearToken() async {
+    _shouldSyncToken = false;
     if (!_initialized || kIsWeb) return;
 
     try {
@@ -163,19 +205,22 @@ class PushNotificationService {
     final notification = message.notification;
     final data = message.data;
     final title = notification?.title ?? _appDisplayName;
-    final body = notification?.body ??
-        data['body'] ??
-        'حيوان جديد في الحجر الصحي';
+    final body = PushNotificationLogic.resolveNotificationBody(
+      notificationBody: notification?.body,
+      data: data,
+    );
 
     final androidDetails = AndroidNotificationDetails(
       _channelId,
       _channelName,
-      channelDescription: 'إشعارات الحيوانات الجديدة في الحجر الصحي',
+      channelDescription: 'إشعارات الطبيب البيطري والمشرف',
       importance: Importance.max,
       priority: Priority.high,
       visibility: NotificationVisibility.public,
+      category: AndroidNotificationCategory.message,
       playSound: true,
       enableVibration: true,
+      fullScreenIntent: false,
       icon: '@mipmap/ic_launcher',
       largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
       ticker: _appDisplayName,
@@ -185,6 +230,7 @@ class PushNotificationService {
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
+      interruptionLevel: InterruptionLevel.timeSensitive,
     );
 
     await _localNotifications.show(
@@ -202,8 +248,8 @@ class PushNotificationService {
   }
 
   static void _queueRouteFromMessage(RemoteMessage message) {
-    final route = message.data['route'];
-    if (route is String && route.isNotEmpty) {
+    final route = PushNotificationLogic.routeFromData(message.data);
+    if (route != null) {
       pendingRoute = route;
     }
   }

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\AutopsyReferralStatus;
+use App\Enums\HospitalCaseStatus;
 use App\Enums\MortalityCaseStatus;
 use App\Enums\MortalityVictimKind;
 use App\Models\MortalityCase;
@@ -17,6 +18,9 @@ class RecordsMortalityLogService
         $query = MortalityCase::query()
             ->with(['animal', 'autopsyReferral'])
             ->where('victim_kind', MortalityVictimKind::ZooAnimal)
+            ->whereDoesntHave('animal.hospitalCases', function (Builder $builder) {
+                $builder->where('status', HospitalCaseStatus::Slaughtered->value);
+            })
             ->orderByDesc('death_date')
             ->orderByDesc('id');
 

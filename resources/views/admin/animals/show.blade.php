@@ -8,7 +8,6 @@
     $sci = $animal?->group ?? '';
     $img = $profile->imageUrl();
     $mapLocation = $mapLocation ?? null;
-    $qrPayload = $qrPayload ?? $profile->qrPayload();
 @endphp
 
 @section('styles')
@@ -121,46 +120,6 @@
     }
     .img-display img  { width:100%; max-height:320px; height:auto; object-fit:contain; display:block; margin:0 auto; }
     .img-display span { font-size:5rem; }
-
-    /* ── Action buttons ── */
-    .actions-grid { display:flex; flex-direction:column; gap:10px; }
-
-    .btn-action {
-        width:100%; padding:13px; border-radius:12px;
-        font-family:'Cairo',sans-serif; font-weight:800; font-size:.95rem;
-        cursor:pointer; transition:all .2s;
-        display:flex; align-items:center; justify-content:center; gap:8px;
-        text-decoration:none; border:none;
-    }
-
-    .btn-action.edit {
-        background:var(--primary-gradient); color:white;
-        box-shadow:0 6px 18px rgba(30,58,30,.22);
-    }
-    .btn-action.edit:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(30,58,30,.32); }
-
-    .btn-action.qr {
-        background:rgba(45,90,39,.07); color:#1e3a1e;
-        border:1.5px solid rgba(45,90,39,.2);
-    }
-    .btn-action.qr:hover { background:rgba(45,90,39,.12); }
-
-    .btn-action.back {
-        background:var(--bg-color); color:var(--text-muted);
-        border:1.5px solid var(--border);
-    }
-    .btn-action.back:hover { background:#E2E8F0; color:var(--text-main); }
-
-    /* ── Toast ── */
-    .toast {
-        position:fixed; bottom:2rem; left:50%;
-        transform:translateX(-50%) translateY(80px);
-        background:#1E293B; color:white;
-        padding:12px 24px; border-radius:50px;
-        font-weight:700; font-size:.9rem; z-index:9999;
-        transition:transform .4s cubic-bezier(.4,0,.2,1); white-space:nowrap;
-    }
-    .toast.show { transform:translateX(-50%) translateY(0); }
 </style>
 @endsection
 
@@ -249,67 +208,6 @@
         </div>
     </div>
 
-    {{-- Actions --}}
-    <div class="bottom-card">
-        <div class="bottom-card-head">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-            <h3>الإجراءات المتاحة</h3>
-        </div>
-        <div class="bottom-card-body">
-            <div class="actions-grid">
-                <a href="{{ route('admin.animals.edit', $profile) }}" class="btn-action edit">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                    تعديل المحتوى التعريفي
-                </a>
-                <form method="POST" action="{{ route('admin.animals.visibility', $profile) }}" class="js-animal-visibility-form" data-visible="{{ $profile->is_visible ? '1' : '0' }}">
-                    @csrf
-                    @method('PATCH')
-                    <button type="submit" class="btn-action qr" style="width:100%;">
-                        {{ $profile->is_visible ? 'إخفاء عن تطبيق الزائر' : 'إظهار في تطبيق الزائر' }}
-                    </button>
-                </form>
-                @php
-                    $qrButtonData = [
-                        'name' => $displayName,
-                        'subtitle' => $sci,
-                        'code' => $profile->display_code ?? '',
-                        'group' => $animal?->group,
-                        'image' => $img,
-                        'scanUrl' => $profile->visitorQrUrl(),
-                        'publicUrl' => config('app.visitor_public_url') ?: '',
-                        'qrImageUrl' => route('admin.animals.qr', $profile, absolute: false),
-                        'payload' => $qrPayload,
-                    ];
-                @endphp
-                <button
-                    class="btn-action qr js-animal-qr-trigger"
-                    type="button"
-                    data-qr='@json($qrButtonData)'
-                >
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                    عرض رمز QR التعريفي
-                </button>
-                <a href="{{ route('admin.animals.index') }}" class="btn-action back">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-                    العودة للقائمة
-                </a>
-            </div>
-        </div>
-    </div>
-
 </div>
 
-@include('partials.admin-animal-qr-modal')
-
-@endsection
-
-@section('scripts')
-@include('partials.admin-animal-qr-scripts')
-<script>
-    bindAdminConfirmForms('.js-animal-visibility-form', (form) => {
-        return form.dataset.visible === '1'
-            ? 'هل أنت متأكد من إخفاء هذا المحتوى عن الزوار؟'
-            : 'هل أنت متأكد من إظهار هذا المحتوى للزوار؟';
-    });
-</script>
 @endsection

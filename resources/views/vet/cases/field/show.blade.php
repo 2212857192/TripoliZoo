@@ -325,14 +325,14 @@
             }
 
             const preview = f.diagnosis || f.treatment || 'متابعة طبية';
-            const openClass = index === 0 ? ' is-open' : '';
+            const openClass = '';
 
             return `
                 <div class="follow-card${openClass}">
                     <button
                         type="button"
                         class="follow-card-toggle"
-                        aria-expanded="${index === 0 ? 'true' : 'false'}"
+                        aria-expanded="false"
                         onclick="toggleFollowCard(this)"
                     >
                         <div class="follow-card-main">

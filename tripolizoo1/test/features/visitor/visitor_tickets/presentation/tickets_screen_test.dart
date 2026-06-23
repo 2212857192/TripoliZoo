@@ -55,6 +55,18 @@ void main() {
     );
   }
 
+  Future<void> completeElectronicPayment(WidgetTester tester) async {
+    await tester.enterText(
+      find.byKey(const ValueKey('payment-phone-field')),
+      '0912345678',
+    );
+    await tester.tap(find.byKey(const ValueKey('confirm-payment-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).last, '1234');
+    await tester.tap(find.text('تأكيد'));
+    await tester.pumpAndSettle();
+  }
+
   testWidgets('uses a compact summary and neutral inactive filter',
       (tester) async {
     final auth = await registeredAuth(tester);
@@ -120,8 +132,7 @@ void main() {
     );
     expect((totalCard.decoration! as BoxDecoration).color, Colors.white);
 
-    await tester.tap(find.byKey(const ValueKey('confirm-payment-button')));
-    await tester.pumpAndSettle();
+    await completeElectronicPayment(tester);
 
     expect(find.byType(QrImageView), findsNWidgets(5));
     expect(find.text('تم إصدار 5 تذاكر منفصلة'), findsOneWidget);
@@ -145,8 +156,7 @@ void main() {
       find.byKey(const ValueKey('continue-to-payment-button')),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('confirm-payment-button')));
-    await tester.pumpAndSettle();
+    await completeElectronicPayment(tester);
 
     expect(find.text('Entry Ticket'), findsOneWidget);
     expect(find.text('Category'), findsOneWidget);
@@ -163,8 +173,6 @@ void main() {
     await tester.tap(
       find.byKey(const ValueKey('continue-to-payment-button')),
     );
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('payment-method-electronic')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('confirm-payment-button')));
     await tester.pumpAndSettle();

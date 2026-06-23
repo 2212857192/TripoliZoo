@@ -10,21 +10,39 @@ class MapLocationBottomSheet extends StatelessWidget {
     required this.onClose,
     required this.onShowRoute,
     this.isNavigating = false,
+    this.routeDistanceMeters,
+    this.routeWalkMinutes,
   });
 
   final VisitorMapLocation location;
   final VoidCallback onClose;
   final VoidCallback onShowRoute;
   final bool isNavigating;
+  final int? routeDistanceMeters;
+  final int? routeWalkMinutes;
 
   String get _displayName =>
       location.animalName?.isNotEmpty == true ? location.animalName! : location.name;
+
+  Color get _categoryColor => switch (location.category) {
+        'dining' => const Color(0xFFB45309),
+        'service' => const Color(0xFF1D4ED8),
+        _ => const Color(0xFF1B4332),
+      };
+
+  IconData get _categoryIcon => switch (location.category) {
+        'dining' => Icons.restaurant_rounded,
+        'service' => Icons.wc_rounded,
+        _ => Icons.pets_rounded,
+      };
 
   @override
   Widget build(BuildContext context) {
     if (isNavigating) {
       return _NavigationBar(
         title: _displayName,
+        distanceMeters: routeDistanceMeters,
+        walkMinutes: routeWalkMinutes,
         onStop: onClose,
       );
     }
@@ -38,116 +56,118 @@ class MapLocationBottomSheet extends StatelessWidget {
         color: Colors.white,
         elevation: 16,
         shadowColor: Colors.black.withValues(alpha: 0.22),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(20),
         clipBehavior: Clip.antiAlias,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Stack(
-              children: [
-                AspectRatio(
-                  aspectRatio: 16 / 9,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // ── Thumbnail / icon ──────────────────────────────────────
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: SizedBox(
+                  width: 56,
+                  height: 56,
                   child: hasPhoto
                       ? Image.network(
                           location.animalPhotoUrl!,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => _fallbackHero(),
+                          errorBuilder: (_, __, ___) =>
+                              _iconBox(_categoryColor, _categoryIcon),
                         )
-                      : _fallbackHero(),
+                      : _iconBox(_categoryColor, _categoryIcon),
                 ),
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: Material(
-                    color: Colors.white.withValues(alpha: 0.94),
-                    shape: const CircleBorder(),
-                    elevation: 4,
-                    child: InkWell(
-                      customBorder: const CircleBorder(),
-                      onTap: onClose,
-                      child: const SizedBox(
-                        width: 36,
-                        height: 36,
-                        child: Icon(
-                          Icons.close_rounded,
-                          size: 22,
-                          color: Color(0xFF374151),
+              ),
+              const SizedBox(width: 12),
+
+              // ── Name + description ────────────────────────────────────
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _displayName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.cairo(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFF111827),
+                      ),
+                    ),
+                    if (location.description.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        location.description,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.cairo(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF6B7280),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    _displayName,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.cairo(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      color: const Color(0xFF111827),
-                    ),
-                  ),
-                  if (location.description.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      location.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.cairo(
-                        fontSize: 13,
-                        height: 1.6,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF64748B),
-                      ),
-                    ),
+                    ],
                   ],
-                  const SizedBox(height: 16),
-                  const Divider(height: 1, color: Color(0xFFE5E7EB)),
-                  const SizedBox(height: 16),
+                ),
+              ),
+              const SizedBox(width: 10),
+
+              // ── Buttons ───────────────────────────────────────────────
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   FilledButton.icon(
                     key: const ValueKey('map-show-route-button'),
                     onPressed: onShowRoute,
                     style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFF1B4332),
+                      backgroundColor: _categoryColor,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 10),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    icon: const Icon(Icons.directions_rounded, size: 18),
+                    label: Text(
+                      context.localized(ar: 'ابدأ التنقل', en: 'Navigate'),
+                      style: GoogleFonts.cairo(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
-                    icon: const Icon(Icons.directions_rounded, size: 20),
-                    label: Text(
-                      context.localized(
-                        ar: 'أظهر الطريق',
-                        en: 'Show the way',
-                      ),
+                  ),
+                  const SizedBox(height: 6),
+                  GestureDetector(
+                    onTap: onClose,
+                    child: Text(
+                      context.localized(ar: 'إغلاق', en: 'Close'),
                       style: GoogleFonts.cairo(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w900,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF9CA3AF),
                       ),
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _fallbackHero() {
+  Widget _iconBox(Color color, IconData icon) {
     return Container(
-      color: const Color(0xFFE8F3E6),
-      child: const Center(
-        child: Icon(Icons.pets_rounded, size: 56, color: Color(0xFF2D5A27)),
+      color: color.withValues(alpha: 0.12),
+      child: Center(
+        child: Icon(icon, color: color, size: 28),
       ),
     );
   }
@@ -157,10 +177,14 @@ class _NavigationBar extends StatelessWidget {
   const _NavigationBar({
     required this.title,
     required this.onStop,
+    this.distanceMeters,
+    this.walkMinutes,
   });
 
   final String title;
   final VoidCallback onStop;
+  final int? distanceMeters;
+  final int? walkMinutes;
 
   @override
   Widget build(BuildContext context) {
@@ -215,6 +239,18 @@ class _NavigationBar extends StatelessWidget {
                     color: const Color(0xFF111827),
                   ),
                 ),
+                if (distanceMeters != null && walkMinutes != null)
+                  Text(
+                    context.localized(
+                      ar: 'حوالي $distanceMeters م · $walkMinutes د',
+                      en: 'About $distanceMeters m · $walkMinutes min',
+                    ),
+                    style: GoogleFonts.cairo(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF64748B),
+                    ),
+                  ),
               ],
             ),
           ),

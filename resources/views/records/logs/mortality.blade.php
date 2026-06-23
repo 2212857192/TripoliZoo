@@ -21,7 +21,7 @@
     <form method="GET" action="{{ $portalBase }}/logs/mortality" class="filter-bar" id="mortalityFilterForm">
         <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="بحث برقم الحيوان، النوع، أو المجموعة...">
+            <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="بحث برقم الحيوان، النوع، أو المجموعة..." onkeydown="if(event.key==='Enter'){event.preventDefault();this.form.submit();}">
         </div>
         <select class="filter-select" name="group" onchange="this.form.submit()">
             @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات', 'selected' => $filters['group']])
@@ -47,7 +47,6 @@
             style="display: {{ $filters['period'] === 'custom' ? 'block' : 'none' }};"
             onchange="document.getElementById('mortalityFilterForm').submit()"
         >
-        <button type="submit" class="filter-select" style="cursor:pointer;background:#f0fdf4;border-color:#bbf7d0;color:#15803d;">بحث</button>
     </form>
 </div>
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tripolizoo/features/supervisor/shared/supervisor_ui.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
 
 class SupervisorHomeHeader extends StatelessWidget {
@@ -9,13 +8,13 @@ class SupervisorHomeHeader extends StatelessWidget {
     super.key,
     required this.supervisorName,
     required this.groupName,
-    required this.unreadNotifications,
+    required this.pendingHealthReports,
     this.onNotificationsTap,
   });
 
   final String supervisorName;
   final String groupName;
-  final int unreadNotifications;
+  final int pendingHealthReports;
   final VoidCallback? onNotificationsTap;
 
   @override
@@ -23,25 +22,32 @@ class SupervisorHomeHeader extends StatelessWidget {
     final topPad = MediaQuery.of(context).padding.top;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark, // استخدام نص داكن لشريط الحالة لأن الخلفية بيضاء
+      value: SystemUiOverlayStyle.dark,
       child: Container(
         padding: EdgeInsets.fromLTRB(16, topPad + 16, 16, 18),
         decoration: BoxDecoration(
-          color: Colors.white, // خلفية بيضاء عصرية ونظيفة
+          gradient: AppColors.headerGradient,
           borderRadius: const BorderRadius.vertical(
             bottom: Radius.circular(28),
           ),
-          border: Border.all(
-            color: SupervisorUi.border,
-            width: 1.5,
-          ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF1A3521).withValues(alpha: 0.03),
-              blurRadius: 18,
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 16,
               offset: const Offset(0, 8),
             ),
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
           ],
+          border: Border(
+            bottom: BorderSide(
+              color: AppColors.primary.withValues(alpha: 0.12),
+              width: 1.2,
+            ),
+          ),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -84,7 +90,7 @@ class SupervisorHomeHeader extends StatelessWidget {
                     style: GoogleFonts.cairo(
                       fontSize: 16.5,
                       fontWeight: FontWeight.w900,
-                      color: SupervisorUi.textPrimary, // أخضر غاباتي داكن وراقي
+                      color: AppColors.textPrimary,
                       height: 1.2,
                     ),
                   ),
@@ -96,10 +102,10 @@ class SupervisorHomeHeader extends StatelessWidget {
                       vertical: 3.5,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.08), // خلفية ناعمة جداً
+                      color: AppColors.primary.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: AppColors.primary.withValues(alpha: 0.15),
+                        color: AppColors.primary.withValues(alpha: 0.18),
                         width: 1,
                       ),
                     ),
@@ -119,7 +125,7 @@ class SupervisorHomeHeader extends StatelessWidget {
             const SizedBox(width: 12),
             // ─── Notification bell ───
             _NotificationBell(
-              unreadCount: unreadNotifications,
+              badgeCount: pendingHealthReports,
               onTap: onNotificationsTap,
             ),
           ],
@@ -131,9 +137,9 @@ class SupervisorHomeHeader extends StatelessWidget {
 
 // ─────────────────────────────────────────────
 class _NotificationBell extends StatelessWidget {
-  const _NotificationBell({required this.unreadCount, this.onTap});
+  const _NotificationBell({required this.badgeCount, this.onTap});
 
-  final int unreadCount;
+  final int badgeCount;
   final VoidCallback? onTap;
 
   @override
@@ -147,41 +153,52 @@ class _NotificationBell extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: const Color(0xFFF4F7F4), // خلفية رمادية مخضرة خفيفة
+              color: Colors.white,
               shape: BoxShape.circle,
               border: Border.all(
-                color: SupervisorUi.border,
-                width: 1.2,
+                color: const Color(0xFFE2E8F0),
+                width: 1.5,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: const Icon(
               Icons.notifications_outlined,
-              color: SupervisorUi.textPrimary, // أيقونة داكنة هادئة
+              color: Color(0xFF64748B),
               size: 20,
             ),
           ),
-          if (unreadCount > 0)
+          if (badgeCount > 0)
             Positioned(
               top: -1,
               left: -1,
               child: Container(
-                width: 15,
-                height: 15,
+                width: badgeCount > 9 ? 18 : 16,
+                height: 16,
+                padding: badgeCount > 9
+                    ? const EdgeInsets.symmetric(horizontal: 3)
+                    : EdgeInsets.zero,
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
+                  color: AppColors.accent,
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: Colors.white,
                     width: 2,
                   ),
                 ),
                 child: Center(
-                  child: Container(
-                    width: 5,
-                    height: 5,
-                    decoration: const BoxDecoration(
+                  child: Text(
+                    badgeCount > 9 ? '9+' : '$badgeCount',
+                    style: GoogleFonts.cairo(
                       color: Colors.white,
-                      shape: BoxShape.circle,
+                      fontSize: 8,
+                      fontWeight: FontWeight.w900,
+                      height: 1,
                     ),
                   ),
                 ),

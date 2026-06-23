@@ -1,6 +1,6 @@
-import 'dart:convert';
-
+import 'package:flutter/foundation.dart';
 import 'package:tripolizoo/features/visitor/visitor_explore/domain/animal.dart';
+import 'package:tripolizoo/features/visitor/visitor_explore/services/qr_code_parser.dart';
 import 'package:tripolizoo/shared/api/api_client.dart';
 import 'package:tripolizoo/shared/api/api_config.dart';
 
@@ -37,7 +37,9 @@ class ApiAnimalRepository implements AnimalRepository {
 
   @override
   Future<Animal?> getByQrCode(String code) async {
-    final identifier = _identifierFromQr(code);
+    final identifier = parseAnimalIdentifierFromQr(code);
+    if (identifier.isEmpty) return null;
+
     try {
       final response = await _apiClient.get(
         '${ApiConfig.animals}/${Uri.encodeComponent(identifier)}',
@@ -48,10 +50,16 @@ class ApiAnimalRepository implements AnimalRepository {
         return _animalFromJson(data);
       }
     } catch (_) {
-      return _fallback.getByQrCode(identifier);
+      if (kDebugMode) {
+        return _fallback.getByQrCode(identifier);
+      }
+      return null;
     }
 
-    return _fallback.getByQrCode(identifier);
+    if (kDebugMode) {
+      return _fallback.getByQrCode(identifier);
+    }
+    return null;
   }
 
   Animal _animalFromJson(Map<String, dynamic> json) {
@@ -61,31 +69,6 @@ class ApiAnimalRepository implements AnimalRepository {
     });
   }
 
-  String _identifierFromQr(String code) {
-    try {
-      final parsed = jsonDecode(code);
-      if (parsed is Map<String, dynamic>) {
-        final profileId = parsed['profile_id']?.toString();
-        if (profileId != null && profileId.isNotEmpty) return profileId;
-
-        final animalCode = parsed['animal_code']?.toString();
-        if (animalCode != null && animalCode.isNotEmpty) return animalCode;
-      }
-    } catch (_) {
-      // QR codes can also be plain animal codes or visitor URLs.
-    }
-
-    final uri = Uri.tryParse(code.trim());
-    if (uri != null) {
-      final segments = uri.pathSegments;
-      final animalsIndex = segments.lastIndexOf('animals');
-      if (animalsIndex != -1 && animalsIndex + 1 < segments.length) {
-        return segments[animalsIndex + 1];
-      }
-    }
-
-    return code.trim();
-  }
 }
 
 class MockAnimalRepository implements AnimalRepository {

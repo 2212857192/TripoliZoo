@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AnimalGroupController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AuthPasswordController;
 use App\Http\Controllers\Api\DeviceTokenController;
@@ -21,14 +22,18 @@ use App\Http\Controllers\Api\SupervisorDashboardController;
 use App\Http\Controllers\Api\SupervisorHealthReportController;
 use App\Http\Controllers\Api\SupervisorNotificationController;
 use App\Http\Controllers\Api\VisitorAnimalController;
+use App\Http\Controllers\Api\VisitorMapCalibrationController;
 use App\Http\Controllers\Api\VisitorMapController;
 use App\Http\Controllers\Api\VisitorTicketController;
 use App\Http\Controllers\Api\VisitorVisitInfoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/animals', [VisitorAnimalController::class, 'index']);
+Route::get('/animal-groups', [AnimalGroupController::class, 'index']);
 Route::get('/animals/{identifier}', [VisitorAnimalController::class, 'show']);
 Route::get('/map', [VisitorMapController::class, 'show']);
+Route::get('/map/active', [VisitorMapController::class, 'active']);
+Route::get('/calibration-points', [VisitorMapCalibrationController::class, 'show']);
 Route::get('/visit-info', [VisitorVisitInfoController::class, 'show']);
 Route::get('/ticket-types', [VisitorTicketController::class, 'types']);
 

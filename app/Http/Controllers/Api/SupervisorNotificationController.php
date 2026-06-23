@@ -18,13 +18,13 @@ class SupervisorNotificationController extends Controller
 
         $receivingItems = SupervisorNotification::query()
             ->where('user_id', $supervisor->id)
-            ->with(['receivingTask:id,task_number'])
+            ->with(['receivingTask:id,task_number', 'nutritionRecommendation:id'])
             ->latest()
             ->limit(50)
             ->get()
             ->map(fn (SupervisorNotification $notification) => [
                 'id' => $notification->id,
-                'type' => 'receiving_task',
+                'type' => $notification->medical_nutrition_recommendation_id ? 'nutrition_recommendation' : 'receiving_task',
                 'title' => $notification->title,
                 'message' => $notification->message,
                 'task_number' => $notification->receivingTask?->task_number,

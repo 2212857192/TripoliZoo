@@ -73,10 +73,27 @@ class AnimalLifecycleService
     {
         $exists = HealthCase::query()
             ->where('animal_id', $animal->id)
-            ->whereIn('status', [
-                HealthCaseStatus::New->value,
-                HealthCaseStatus::Referred->value,
-            ])
+            ->where(function ($query) {
+                $query->where('status', HealthCaseStatus::New->value)
+                    ->orWhere(function ($referred) {
+                        $referred->where('status', HealthCaseStatus::Referred->value)
+                            ->where(function ($referralScope) {
+                                $referralScope->whereDoesntHave('treatmentReferral')
+                                    ->orWhereHas('treatmentReferral', function ($referral) {
+                                        $referral->whereIn('status', [
+                                            TreatmentReferralStatus::Pending->value,
+                                            TreatmentReferralStatus::Approved->value,
+                                        ])
+                                            ->whereDoesntHave('hospitalCase', function ($hospital) {
+                                                $hospital->whereIn('status', [
+                                                    HospitalCaseStatus::Discharged->value,
+                                                    HospitalCaseStatus::Slaughtered->value,
+                                                ]);
+                                            });
+                                    });
+                            });
+                    });
+            })
             ->exists();
 
         if ($exists) {
@@ -144,6 +161,29 @@ class AnimalLifecycleService
                 'closed_at' => now(),
                 'close_reason' => 'نفوق داخل الحجر',
                 'close_notes' => self::HOSPITAL_CLOSED_MORTALITY,
+            ]);
+    }
+
+    public function finalizeAfterHospitalDischarge(Animal $animal, HospitalCase $hospitalCase): void
+    {
+        if ($hospitalCase->health_case_id) {
+            HealthCase::query()
+                ->whereKey($hospitalCase->health_case_id)
+                ->where('status', HealthCaseStatus::Referred->value)
+                ->update([
+                    'status' => HealthCaseStatus::Reviewed->value,
+                    'reviewed_at' => now(),
+                ]);
+        }
+
+        FieldCase::query()
+            ->where('animal_id', $animal->id)
+            ->where('hospital_case_id', $hospitalCase->id)
+            ->where('status', FieldCaseStatus::ReferredToHospital->value)
+            ->update([
+                'status' => FieldCaseStatus::CompletedTreatment->value,
+                'closed_at' => now(),
+                'closing_note' => "اكتمل العلاج في المستشفى — {$hospitalCase->case_number}.",
             ]);
     }
 
@@ -218,7 +258,10 @@ class AnimalLifecycleService
     {
         HealthCase::query()
             ->where('animal_id', $animal->id)
-            ->where('status', HealthCaseStatus::New->value)
+            ->whereIn('status', [
+                HealthCaseStatus::New->value,
+                HealthCaseStatus::Referred->value,
+            ])
             ->update([
                 'status' => HealthCaseStatus::Reviewed->value,
                 'reviewed_at' => now(),

@@ -10,6 +10,7 @@ class SupervisorNotification extends Model
     protected $fillable = [
         'user_id',
         'receiving_task_id',
+        'medical_nutrition_recommendation_id',
         'title',
         'message',
         'read_at',
@@ -30,6 +31,11 @@ class SupervisorNotification extends Model
     public function receivingTask(): BelongsTo
     {
         return $this->belongsTo(ReceivingTask::class);
+    }
+
+    public function nutritionRecommendation(): BelongsTo
+    {
+        return $this->belongsTo(MedicalNutritionRecommendation::class, 'medical_nutrition_recommendation_id');
     }
 
     public function isUnread(): bool

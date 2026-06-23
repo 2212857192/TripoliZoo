@@ -21,6 +21,7 @@ class SupervisorDashboardApiRepository {
       groupName: json['group_name']?.toString() ?? '—',
       pendingReceivingTasks: _asInt(json['pending_receiving_tasks']),
       unreadNotifications: _asInt(json['unread_notifications']),
+      pendingHealthReportsCount: _asInt(json['pending_health_reports_count']),
       activeDietRecommendations: _asInt(
         json['active_diet_recommendations'],
         fallback: recommendations.length,
@@ -59,6 +60,7 @@ class SupervisorDashboardProvider extends ChangeNotifier {
 
   int get pendingReceivingTasks => _data?.pendingReceivingTasks ?? 0;
   int get unreadNotifications => _data?.unreadNotifications ?? 0;
+  int get pendingHealthReportsCount => _data?.pendingHealthReportsCount ?? 0;
   int get activeDietRecommendations => _data?.activeDietRecommendations ?? 0;
   List<DietRecommendation> get dietRecommendations =>
       _data?.dietRecommendations ?? const [];

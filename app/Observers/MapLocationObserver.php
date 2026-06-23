@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\MapLocation;
+use App\Models\MapPathNode;
 use App\Services\MapPathGraphService;
 
 class MapLocationObserver
@@ -11,11 +12,15 @@ class MapLocationObserver
 
     public function saved(MapLocation $mapLocation): void
     {
-        $this->pathGraphService->syncFromLocations();
+        // Only re-link this location to the nearest pathway node.
+        // Never rebuild the whole graph — that destroys GeoJSON routing data.
+        $this->pathGraphService->linkLocationToNearestNode($mapLocation);
     }
 
     public function deleted(MapLocation $mapLocation): void
     {
-        $this->pathGraphService->syncFromLocations();
+        MapPathNode::query()
+            ->where('map_location_id', $mapLocation->id)
+            ->update(['map_location_id' => null]);
     }
 }

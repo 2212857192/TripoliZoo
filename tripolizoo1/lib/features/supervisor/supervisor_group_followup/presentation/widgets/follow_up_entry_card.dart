@@ -150,8 +150,6 @@ class _FollowUpEntryCardState extends State<FollowUpEntryCard> {
           if (e.hasAttachment) _attachmentPreview(e.attachmentUrl),
         ],
       OperationalNoteEntry e => [
-          if (e.fullText != null) _expandedText(e.fullText!),
-          if (e.extraNotes != null) _expandedText(e.extraNotes!),
           if (e.hasAttachment) _attachmentPreview(e.attachmentUrl),
         ],
     };

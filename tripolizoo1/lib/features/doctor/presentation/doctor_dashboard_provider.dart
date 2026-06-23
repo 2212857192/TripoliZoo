@@ -28,6 +28,7 @@ class DoctorDashboardProvider extends ChangeNotifier {
   int get activeFieldCasesCount => _data?.activeFieldCasesCount ?? 0;
   int get activeHospitalCasesCount => _data?.activeHospitalCasesCount ?? 0;
   int get unreadNotifications => _data?.unreadNotifications ?? 0;
+  int get pendingHealthReportsCount => _data?.pendingHealthReportsCount ?? 0;
   List<DoctorDashboardAlert> get alerts => _data?.alerts ?? const [];
 
   Future<void> load() async {

@@ -188,6 +188,8 @@ class ApiTicketRepository implements TicketRepository {
 }
 
 class MockTicketRepository implements TicketRepository {
+  Map<String, int> _lastCart = const {};
+
   @override
   Future<List<TicketType>> fetchTypes() async {
     await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -207,6 +209,7 @@ class MockTicketRepository implements TicketRepository {
     required String mobile,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 100));
+    _lastCart = cart;
     return ElectronicPaymentSession(
       processId: 'mock-process',
       amount: _mockTotal(cart),
@@ -220,7 +223,7 @@ class MockTicketRepository implements TicketRepository {
     required String otp,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 100));
-    return const [];
+    return _mockPurchase(_lastCart);
   }
 
   @override

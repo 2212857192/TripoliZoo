@@ -35,7 +35,7 @@ return new class extends Migration
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
 
-            $table->unique(['user_id', 'health_report_id']);
+            $table->unique(['user_id', 'health_report_id'], 'health_rep_notif_user_rep_unique');
         });
     }
 

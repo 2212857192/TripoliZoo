@@ -35,7 +35,7 @@ return new class extends Migration
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
 
-            $table->unique(['user_id', 'autopsy_referral_id']);
+            $table->unique(['user_id', 'autopsy_referral_id'], 'autopsy_ref_notif_user_ref_unique');
         });
     }
 

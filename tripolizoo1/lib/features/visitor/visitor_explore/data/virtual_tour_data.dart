@@ -182,7 +182,7 @@ abstract final class VirtualTourData {
         ),
       ],
     ),
-    // 7 — 🟢 رجوع→6 lon=46.6 lat=4.4 | 🔴 ساحة→8 lon=-102.7 lat=-0.2 | 🟠 حصان 1 lon=162.9 lat=-2.2
+    // 7 — 🔴 ساحة→8 lon=-102.7 lat=-0.2 | 🟠 حصان 1 lon=162.9 lat=-2.2 (بدون رجوع)
     TourScene(
       id: 'scene_7',
       title: 'منطقة الخيول',
@@ -190,12 +190,6 @@ abstract final class VirtualTourData {
       markerReferenceAsset: marked(7),
       animalAreaLabel: 'الحصان الأول',
       manualMarkers: [
-        TourMarker(
-          type: TourMarkerType.back,
-          latitude: 4.4,
-          longitude: 46.6,
-          targetSceneId: 'scene_6',
-        ),
         TourMarker(
           type: TourMarkerType.next,
           latitude: -0.2,
@@ -812,8 +806,18 @@ abstract final class VirtualTourData {
   /// المشهد التالي في الجولة التلقائية
   static String? walkthroughNextSceneId(String currentId) {
     final idx = walkthroughRoute.indexOf(currentId);
-    if (idx == -1 || idx >= walkthroughRoute.length - 1) return null;
-    return walkthroughRoute[idx + 1];
+    if (idx != -1) {
+      if (idx < walkthroughRoute.length - 1) {
+        return walkthroughRoute[idx + 1];
+      }
+      return null;
+    }
+    for (final m in sceneById(currentId).manualMarkers) {
+      if (m.type == TourMarkerType.next && m.targetSceneId != null) {
+        return m.targetSceneId;
+      }
+    }
+    return null;
   }
 
   /// نقطة الخروج للمشهد التالي (اتجاه المشي)
@@ -916,5 +920,119 @@ abstract final class VirtualTourData {
               m.type == TourMarkerType.animalArea && m.targetSceneId == null,
         )
         .toList();
+  }
+
+  /// مناطق الحيوانات في الجولة التلقائية (منطقة الخيول: الساحة فقط بدون توقف عند الحصان)
+  static List<TourMarker> walkthroughAnimalMarkers(String sceneId) {
+    if (sceneId == 'scene_7') return const [];
+    return animalMarkers(sceneId);
+  }
+
+  /// يخفي نصوص التنقل العامة مع الإبقاء على أسماء المناطق والحيوانات.
+  static String? markerDisplayLabel(TourMarker marker) {
+    final label = marker.label;
+    if (label == 'انتقل' || label == 'رجوع') return null;
+    if (marker.type == TourMarkerType.next ||
+        marker.type == TourMarkerType.back) {
+      if (label == null || label.isEmpty) return null;
+    }
+    return label;
+  }
+
+  /// يحدّد نقاط التنقل الظاهرة حسب المشهد السابق (منطق الفروع لطريق الخيول فقط).
+  static List<TourMarker> filterVisibleMarkers(
+    String sceneId,
+    List<TourMarker> markers, {
+    String? arrivedFromSceneId,
+  }) {
+    if (sceneId == 'scene_7') {
+      return markers.where((m) => m.type != TourMarkerType.back).toList();
+    }
+
+    if (arrivedFromSceneId == null) return markers;
+
+    if (!isHorseRoute(sceneId)) {
+      return _filterMultipleBackMarkers(markers, arrivedFromSceneId);
+    }
+
+    final backs =
+        markers.where((m) => m.type == TourMarkerType.back).toList();
+    final nexts =
+        markers.where((m) => m.type == TourMarkerType.next).toList();
+
+    Iterable<TourMarker> visible = markers;
+
+    if (backs.length > 1) {
+      visible = visible.where(
+        (marker) =>
+            marker.type != TourMarkerType.back ||
+            marker.targetSceneId == arrivedFromSceneId,
+      );
+    } else if (backs.length == 1) {
+      final back = backs.first;
+      final hasAlternateReturn = markers.any(
+        (marker) =>
+            marker.targetSceneId == arrivedFromSceneId &&
+            marker != back,
+      );
+      if (back.targetSceneId != arrivedFromSceneId && hasAlternateReturn) {
+        visible = visible.where((marker) => marker.type != TourMarkerType.back);
+      }
+    }
+
+    if (nexts.length > 1) {
+      visible = visible.where(
+        (marker) =>
+            marker.type != TourMarkerType.next ||
+            !_shouldHideReturnNext(sceneId, marker, arrivedFromSceneId),
+      );
+    }
+
+    return visible.toList();
+  }
+
+  /// نقاط المشاهدة فقط (بدون انتقال) — تسبب تضارباً بصرياً ولفّ العرض.
+  static bool isViewOnlyAnimalMarker(TourMarker marker) {
+    return marker.type == TourMarkerType.animalArea &&
+        marker.targetSceneId == null;
+  }
+
+  static List<TourMarker> _filterMultipleBackMarkers(
+    List<TourMarker> markers,
+    String arrivedFromSceneId,
+  ) {
+    final backs =
+        markers.where((m) => m.type == TourMarkerType.back).toList();
+    if (backs.length <= 1) return markers;
+
+    return markers
+        .where(
+          (marker) =>
+              marker.type != TourMarkerType.back ||
+              marker.targetSceneId == arrivedFromSceneId,
+        )
+        .toList();
+  }
+
+  static bool _shouldHideReturnNext(
+    String sceneId,
+    TourMarker marker,
+    String arrivedFromSceneId,
+  ) {
+    if (marker.targetSceneId != arrivedFromSceneId) return false;
+
+    final arrivedViaBack = sceneById(arrivedFromSceneId).manualMarkers.any(
+          (m) =>
+              m.targetSceneId == sceneId && m.type == TourMarkerType.back,
+        );
+    if (!arrivedViaBack) return false;
+
+    if (marker.label == 'منطقة الخيول') return true;
+
+    final sceneIdx = walkthroughRoute.indexOf(sceneId);
+    final fromIdx = walkthroughRoute.indexOf(arrivedFromSceneId);
+    if (sceneIdx != -1 && fromIdx == sceneIdx + 1) return false;
+
+    return true;
   }
 }

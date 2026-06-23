@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\UserRole;
+use App\Models\MedicalNutritionRecommendation;
 use App\Models\ReceivingTask;
 use App\Models\SupervisorNotification;
 use App\Models\User;
@@ -10,6 +11,57 @@ use App\Models\User;
 class SupervisorNotificationService
 {
     public function __construct(private FcmPushService $fcm) {}
+
+    public function notifyNutritionRecommendation(MedicalNutritionRecommendation $nutrition): void
+    {
+        $nutrition->loadMissing([
+            'procedure.recorder',
+            'procedure.caseable.animal',
+        ]);
+
+        $procedure = $nutrition->procedure;
+        $case = $procedure?->caseable;
+        $animal = $case?->animal;
+        $group = $case?->group ?? $animal?->group;
+
+        if (! $group || ! $animal) {
+            return;
+        }
+
+        $label = $animal->displayLabel();
+        $vetName = $procedure?->recorder?->name ?? 'الطبيب المعالج';
+
+        foreach ($this->supervisorsForGroup($group) as $supervisor) {
+            SupervisorNotification::updateOrCreate(
+                [
+                    'user_id' => $supervisor->id,
+                    'medical_nutrition_recommendation_id' => $nutrition->id,
+                ],
+                [
+                    'receiving_task_id' => null,
+                    'title' => "توصية غذائية علاجية — {$group}",
+                    'message' => "سجّل د. {$vetName} توصية غذائية علاجية للحيوان {$label} ({$animal->code}) تتطلب المتابعة.",
+                    'read_at' => null,
+                ]
+            );
+        }
+
+        $supervisors = collect($this->supervisorsForGroup($group));
+
+        if ($supervisors->isNotEmpty()) {
+            $this->fcm->sendToUsers(
+                $supervisors,
+                'حديقة حيوان طرابلس',
+                "توصية غذائية علاجية جديدة — {$label}",
+                [
+                    'type' => 'nutrition_recommendation',
+                    'animal_code' => $animal->code,
+                    'route' => '/supervisor/home',
+                    'group' => $group,
+                ]
+            );
+        }
+    }
 
     public function notifyReceivingTask(ReceivingTask $task): void
     {

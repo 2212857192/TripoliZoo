@@ -86,8 +86,8 @@ class OperationalNoteFlowTest extends TestCase
             ->get(route('care.notes.index'))
             ->assertOk()
             ->assertSee($note->note_number, false)
-            ->assertSee('عرض التفاصيل', false)
-            ->assertSee('id="noteModal"', false);
+            ->assertSee('تحديد كمراجعة', false)
+            ->assertDontSee('id="noteModal"', false);
     }
 
     public function test_care_head_can_mark_operational_note_as_reviewed(): void

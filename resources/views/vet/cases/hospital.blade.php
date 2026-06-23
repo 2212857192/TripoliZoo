@@ -417,7 +417,7 @@
     <div class="filter-bar">
         <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="بحث برقم الحيوان أو نوعه...">
+            <input type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="بحث برقم الحيوان أو نوعه..." onkeydown="if(event.key==='Enter'){event.preventDefault();this.form.submit();}">
         </div>
         <select class="filter-select" name="group">
             @include('partials.animal-group-options', ['emptyLabel' => 'جميع المجموعات', 'selected' => $filters['group'] ?? '', 'withValues' => true])
@@ -437,7 +437,6 @@
                 <option value="{{ $statusOption->value }}" @selected(($filters['status'] ?? '') === $statusOption->value)>{{ $statusOption->label() }}</option>
             @endforeach
         </select>
-        <button type="submit" class="btn-search">بحث</button>
     </div>
 </form>
 
@@ -795,7 +794,7 @@ function selectDecision(el) {
 }
 function switchTab(evt, tabId) {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.seg-tab').forEach(btn => btn.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
     evt.currentTarget.classList.add('active');
     updateStatusFilter(tabId);

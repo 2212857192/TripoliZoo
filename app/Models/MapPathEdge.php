@@ -8,15 +8,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class MapPathEdge extends Model
 {
     protected $fillable = [
+        'edge_key',
         'from_node_id',
         'to_node_id',
         'distance_meters',
+        'geometry',
+        'is_active',
+        'is_accessible',
     ];
 
     protected function casts(): array
     {
         return [
             'distance_meters' => 'integer',
+            'geometry' => 'array',
+            'is_active' => 'bool',
+            'is_accessible' => 'bool',
         ];
     }
 

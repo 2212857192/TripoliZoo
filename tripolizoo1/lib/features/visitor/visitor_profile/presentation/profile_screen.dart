@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:tripolizoo/features/visitor/visitor_explore/data/visit_info_repository.dart';
 import 'package:tripolizoo/features/visitor/visitor_tickets/domain/ticket_type.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
 import 'package:tripolizoo/shared/constants/app_constants.dart';
@@ -1070,21 +1071,78 @@ class _LanguageSection extends StatelessWidget {
   }
 }
 
-class _EmergencyNumbersSection extends StatelessWidget {
+class _EmergencyNumbersSection extends StatefulWidget {
   final VoidCallback onBack;
 
   const _EmergencyNumbersSection({required this.onBack});
 
+  @override
+  State<_EmergencyNumbersSection> createState() =>
+      _EmergencyNumbersSectionState();
+}
+
+class _EmergencyNumbersSectionState extends State<_EmergencyNumbersSection> {
+  String? _ambulancePhone;
+  String? _securityPhone;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPhones();
+  }
+
+  Future<void> _loadPhones() async {
+    try {
+      final info = await ApiVisitInfoRepository().fetch();
+      if (!mounted) return;
+      setState(() {
+        _ambulancePhone = _normalizePhone(
+          info.ambulancePhone ?? AppConstants.emergencyMedical,
+        );
+        _securityPhone = _normalizePhone(
+          info.securityPhone ?? AppConstants.emergencySecurity,
+        );
+        _loading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _ambulancePhone = AppConstants.emergencyMedical;
+        _securityPhone = AppConstants.emergencySecurity;
+        _loading = false;
+      });
+    }
+  }
+
+  String _normalizePhone(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return trimmed;
+    final digits = trimmed.replaceAll(RegExp(r'[^0-9+]'), '');
+    return digits.isEmpty ? trimmed : digits;
+  }
+
   Future<void> _callNumber(BuildContext context, String number) async {
-    final dialerUri = Uri(
-      scheme: 'tel',
-      path: number.replaceAll(RegExp(r'[^0-9+]'), ''),
-    );
+    final normalized = _normalizePhone(number);
+    if (normalized.isEmpty) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'رقم الطوارئ غير متاح حالياً',
+            style: GoogleFonts.cairo(fontWeight: FontWeight.w700),
+          ),
+        ),
+      );
+      return;
+    }
+
+    final dialerUri = Uri(scheme: 'tel', path: normalized);
     var launched = false;
     try {
       launched = await launchUrl(
         dialerUri,
-        mode: LaunchMode.externalNonBrowserApplication,
+        mode: LaunchMode.externalApplication,
       );
     } catch (_) {
       launched = false;
@@ -1094,7 +1152,7 @@ class _EmergencyNumbersSection extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'تعذر بدء الاتصال بالرقم $number',
+          'تعذر بدء الاتصال بالرقم $normalized',
           style: GoogleFonts.cairo(fontWeight: FontWeight.w700),
         ),
       ),
@@ -1112,7 +1170,7 @@ class _EmergencyNumbersSection extends StatelessWidget {
               ar: 'أرقام الطوارئ',
               en: 'Emergency Numbers',
             ),
-            onBack: onBack,
+            onBack: widget.onBack,
           ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
@@ -1128,23 +1186,33 @@ class _EmergencyNumbersSection extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                _EmergencyNumberCard(
-                  icon: Icons.medical_services_rounded,
-                  title: 'الإسعاف',
-                  number: AppConstants.emergencyMedical,
-                  color: const Color(0xFFDC2626),
-                  onTap: () =>
-                      _callNumber(context, AppConstants.emergencyMedical),
-                ),
-                const SizedBox(height: 12),
-                _EmergencyNumberCard(
-                  icon: Icons.security_rounded,
-                  title: 'الأمن',
-                  number: AppConstants.emergencySecurity,
-                  color: AppColors.primary,
-                  onTap: () =>
-                      _callNumber(context, AppConstants.emergencySecurity),
-                ),
+                if (_loading)
+                  const Center(child: CircularProgressIndicator())
+                else ...[
+                  if (_ambulancePhone != null && _ambulancePhone!.isNotEmpty)
+                    _EmergencyNumberCard(
+                      icon: Icons.medical_services_rounded,
+                      title: 'الإسعاف',
+                      number: _ambulancePhone!,
+                      color: const Color(0xFFDC2626),
+                      onTap: () =>
+                          _callNumber(context, _ambulancePhone!),
+                    ),
+                  if (_ambulancePhone != null &&
+                      _ambulancePhone!.isNotEmpty &&
+                      _securityPhone != null &&
+                      _securityPhone!.isNotEmpty)
+                    const SizedBox(height: 12),
+                  if (_securityPhone != null && _securityPhone!.isNotEmpty)
+                    _EmergencyNumberCard(
+                      icon: Icons.security_rounded,
+                      title: 'الأمن',
+                      number: _securityPhone!,
+                      color: AppColors.primary,
+                      onTap: () =>
+                          _callNumber(context, _securityPhone!),
+                    ),
+                ],
               ]),
             ),
           ),

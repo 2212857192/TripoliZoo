@@ -31,7 +31,7 @@ class VisitorTicketController extends Controller
     {
         $types = TicketType::query()
             ->where('is_active', true)
-            ->orderBy('name')
+            ->orderBy('target_description')
             ->get();
 
         return response()->json([

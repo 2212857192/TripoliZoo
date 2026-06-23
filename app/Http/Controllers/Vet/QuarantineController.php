@@ -463,9 +463,6 @@ class QuarantineController extends Controller
                 'vaccines' => $quarantine->vaccines
                     ->map(function ($vaccine) {
                         $line = $vaccine->administered_at->format('Y-m-d').' — '.$vaccine->name;
-                        if ($vaccine->author) {
-                            $line .= ' ('.$vaccine->author->name.')';
-                        }
                         if ($vaccine->note) {
                             $line .= ' — '.$vaccine->note;
                         }

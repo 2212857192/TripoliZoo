@@ -59,7 +59,7 @@ class _SupervisorHomeScreenState extends State<SupervisorHomeScreen>
     final pendingReceivingTasks = dashboard.pendingReceivingTasks > 0
         ? dashboard.pendingReceivingTasks
         : context.watch<ReceivingTasksProvider>().pendingCount;
-    final unreadNotifications = dashboard.unreadNotifications;
+    final pendingHealthReports = dashboard.pendingHealthReportsCount;
     final dietRecommendations = dashboard.dietRecommendations;
     final activeDietCount = dashboard.activeDietRecommendations;
     final bottomPad = MediaQuery.of(context).padding.bottom;
@@ -87,7 +87,7 @@ class _SupervisorHomeScreenState extends State<SupervisorHomeScreen>
                   child: SupervisorHomeHeader(
                     supervisorName: supervisorName,
                     groupName: groupName,
-                    unreadNotifications: unreadNotifications,
+                    pendingHealthReports: pendingHealthReports,
                     onNotificationsTap: () =>
                         context.push('/supervisor/notifications'),
                   ),

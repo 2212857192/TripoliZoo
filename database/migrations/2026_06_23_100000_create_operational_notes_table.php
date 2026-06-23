@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('status')->default('new');
             $table->foreignId('reviewed_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('reviewed_at')->nullable();
-            $table->timestamp('noted_at');
+            $table->dateTime('noted_at');
             $table->timestamps();
         });
 
@@ -34,7 +34,7 @@ return new class extends Migration
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
 
-            $table->unique(['user_id', 'operational_note_id']);
+            $table->unique(['user_id', 'operational_note_id'], 'op_note_notif_user_note_unique');
         });
     }
 

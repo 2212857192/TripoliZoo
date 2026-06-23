@@ -103,6 +103,67 @@
         display:flex; align-items:center; justify-content:center;
         font-size:2.2rem; overflow:hidden;
     }
+    .profile-layout {
+        display: grid;
+        grid-template-columns: minmax(240px, 300px) 1fr;
+        gap: 1.5rem;
+        align-items: start;
+        margin-bottom: 1.5rem;
+    }
+    @media (max-width: 900px) { .profile-layout { grid-template-columns: 1fr; } }
+    .profile-photo-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.25rem;
+        text-align: center;
+    }
+    .profile-photo-card .animal-photo {
+        width: 100%;
+        max-width: 260px;
+        height: auto;
+        aspect-ratio: 1;
+        margin: 0 auto;
+        font-size: 4rem;
+        border-radius: 18px;
+    }
+    .profile-fields-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+    }
+    .attachments-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1rem;
+    }
+    .attachment-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .attachment-card-type {
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: #64748b;
+    }
+    .attachment-card-date {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #94a3b8;
+    }
+    .repro-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem 1.1rem;
+        margin-bottom: 0.75rem;
+    }
     .q-row {
         display:flex; justify-content:space-between; align-items:center;
         margin-bottom:0.8rem; padding-bottom:0.8rem; border-bottom:1px solid #f1f5f9;
@@ -493,10 +554,6 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
             التاريخ الطبي
         </button>
-        <button type="button" class="tab-btn" onclick="switchTab('attachments', this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-            المرفقات والتقارير
-        </button>
     </div>
 
 {{-- TAB 1: البيانات الأساسية --}}
@@ -513,46 +570,54 @@
     </div>
 
     <h3 class="section-title">بيانات الحيوان</h3>
-    <div class="animal-photo-wrap" style="margin-bottom:1.25rem;">
-        <div class="animal-photo" id="basicPhoto">🦁</div>
-    </div>
-    <div class="info-grid" style="margin-bottom:0;">
-        <div class="info-cell">
-            <div class="info-cell-label">رقم الحيوان</div>
-            <div class="info-cell-value id-tag" id="fAnimalId">—</div>
+    <div class="profile-layout">
+        <div class="profile-photo-card">
+            <div class="animal-photo-wrap" style="margin-bottom:0;">
+                <div class="animal-photo" id="basicPhoto">🦁</div>
+            </div>
         </div>
-        <div class="info-cell">
-            <div class="info-cell-label">الاسم</div>
-            <div class="info-cell-value" id="fAnimalName">—</div>
-        </div>
-        <div class="info-cell">
-            <div class="info-cell-label">النوع</div>
-            <div class="info-cell-value" id="fAnimalType">—</div>
-        </div>
-        <div class="info-cell">
-            <div class="info-cell-label">المجموعة</div>
-            <div class="info-cell-value" id="fGroup">—</div>
-        </div>
-        <div class="info-cell">
-            <div class="info-cell-label">الجنس</div>
-            <div class="info-cell-value" id="fGender">—</div>
-        </div>
-        <div class="info-cell">
-            <div class="info-cell-label">العمر</div>
-            <div class="info-cell-value" id="fAge">—</div>
-        </div>
-        <div class="info-cell">
-            <div class="info-cell-label">تاريخ التسجيل</div>
-            <div class="info-cell-value" id="fRegDate">—</div>
-        </div>
-        <div class="info-cell">
-            <div class="info-cell-label">العلامة المميزة</div>
-            <div class="info-cell-value" id="fMarks">—</div>
+        <div class="profile-fields-card">
+            <div class="q-row">
+                <span class="q-value id-tag" id="fAnimalId">—</span>
+                <span class="q-label">رقم الحيوان</span>
+            </div>
+            <div class="q-row">
+                <span class="q-value" id="fAnimalName">—</span>
+                <span class="q-label">الاسم</span>
+            </div>
+            <div class="q-row">
+                <span class="q-value" id="fAnimalType">—</span>
+                <span class="q-label">النوع</span>
+            </div>
+            <div class="q-row">
+                <span class="q-value" id="fGroup">—</span>
+                <span class="q-label">المجموعة</span>
+            </div>
+            <div class="q-row">
+                <span class="q-value" id="fGender">—</span>
+                <span class="q-label">الجنس</span>
+            </div>
+            <div class="q-row">
+                <span class="q-value" id="fAge">—</span>
+                <span class="q-label">العمر</span>
+            </div>
+            <div class="q-row">
+                <span class="q-value" id="fRegDate">—</span>
+                <span class="q-label">تاريخ التسجيل</span>
+            </div>
+            <div class="q-row">
+                <span class="q-value" id="fMarks">—</span>
+                <span class="q-label">العلامة المميزة</span>
+            </div>
         </div>
     </div>
 
     <div id="statusCardWrap"></div>
     <div id="reproSection"></div>
+    <div id="profileAttachmentsSection" class="status-block" style="display:none;">
+        <h3 class="section-title">المرفقات والتقارير</h3>
+        <div id="profileAttachmentsGrid" class="attachments-grid"></div>
+    </div>
 </div>
 
 {{-- ══════════════════════════════════════════ --}}
@@ -715,8 +780,8 @@
                         <textarea name="reason" class="form-textarea" required placeholder="اكتب سبب الخروج بوضوح..."></textarea>
                     </div>
                     <div class="form-group full">
-                        <label class="form-label">مرفق الخروج <span style="color:#64748b">(اختياري)</span></label>
-                        <input type="file" name="attachment" class="form-input" accept=".pdf,image/*">
+                        <label class="form-label">مرفق الخروج <span style="color:#ef4444">*</span></label>
+                        <input type="file" name="attachment" class="form-input" accept=".pdf,image/*" required>
                     </div>
                     <div class="form-group full">
                         <label class="form-label">ملاحظات <span style="color:#64748b">(اختياري)</span></label>
@@ -1025,30 +1090,42 @@
         btn.classList.add('active');
     }
 
+    function renderProfileAttachments(d) {
+        const items = buildAttachments(d);
+        const section = document.getElementById('profileAttachmentsSection');
+        const grid = document.getElementById('profileAttachmentsGrid');
+        if (!section || !grid) return;
+
+        if (!items.length) {
+            section.style.display = 'none';
+            grid.innerHTML = '';
+            return;
+        }
+
+        section.style.display = '';
+        grid.innerHTML = items.map(item => `
+            <div class="attachment-card">
+                <div class="attachment-card-type">${item.type}</div>
+                <div class="attachment-card-date">${item.date}</div>
+                <div>${renderAttachmentCell(item)}</div>
+            </div>`).join('');
+    }
+
     function renderReproSection(repro) {
         const el = document.getElementById('reproSection');
         if (!repro || !repro.length) { el.innerHTML = ''; return; }
         el.innerHTML = `
             <div class="status-block">
                 <h3 class="section-title">التاريخ التناسلي</h3>
-                <div class="table-card">
-                    <div style="overflow-x:auto;">
-                        <table class="custom-table">
-                        <thead><tr>
-                            <th>رقم المولود</th><th>تاريخ الولادة</th><th>النوع</th><th>الجنس</th>
-                            <th>علامة التمييز</th><th>حالة المولود</th><th>السجل المرتبط</th>
-                        </tr></thead>
-                        <tbody>${repro.map(r => `
-                            <tr>
-                                <td><a href="${portalBase}/animals/${r.code}" class="animal-id" style="text-decoration:none;">${r.id}</a></td>
-                                <td style="color:#64748b;font-size:0.83rem;">${r.date}</td>
-                                <td>${r.type}</td><td>${r.gender}</td><td>${r.mark}</td>
-                                <td><span class="badge ${r.statusClass}"><span class="dot"></span>${r.status}</span></td>
-                                <td><span class="ref-tag">${r.ref}</span></td>
-                            </tr>`).join('')}</tbody>
-                    </table>
-                    </div>
-                </div>
+                ${repro.map(r => `
+                    <div class="repro-card">
+                        <div class="q-row"><span class="q-value"><a href="${portalBase}/animals/${r.code}" class="animal-id" style="text-decoration:none;">${r.id}</a></span><span class="q-label">رقم المولود</span></div>
+                        <div class="q-row"><span class="q-value">${r.date}</span><span class="q-label">تاريخ الولادة</span></div>
+                        <div class="q-row"><span class="q-value">${r.type}</span><span class="q-label">النوع</span></div>
+                        <div class="q-row"><span class="q-value">${r.gender}</span><span class="q-label">الجنس</span></div>
+                        <div class="q-row"><span class="q-value">${r.mark}</span><span class="q-label">علامة التمييز</span></div>
+                        <div class="q-row"><span class="q-value"><span class="badge ${r.statusClass}"><span class="dot"></span>${r.status}</span></span><span class="q-label">حالة المولود</span></div>
+                    </div>`).join('')}
             </div>`;
     }
 
@@ -1095,9 +1172,10 @@
         document.getElementById('manualNotice').style.display = d.manualEntry ? 'flex' : 'none';
 
         renderStatusCard(d);
-        renderReproSection(d.state === 'active' ? d.repro : null);
+        const showRepro = d.state === 'active' && d.gender === 'أنثى';
+        renderReproSection(showRepro ? d.repro : null);
         renderMedicalTab(d.medical);
-        renderAttachmentsTab(d);
+        renderProfileAttachments(d);
     }
 
     window.onload = loadAnimal;

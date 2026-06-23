@@ -245,7 +245,6 @@
             <option value="reviewed" @selected(($filters['status'] ?? '') === 'reviewed')>تمت المراجعة</option>
             <option value="referred" @selected(($filters['status'] ?? '') === 'referred')>محالة للعلاج</option>
         </select>
-        <button type="submit" class="btn-search">بحث</button>
     </div>
 </form>
 
@@ -471,11 +470,11 @@
         const footer = document.getElementById('mFooter');
         const closeBtn = `<button type="button" class="btn-cancel" onclick="closeModal()">إغلاق</button>`;
 
-        if (canAct && data.status === 'new') {
-            const referBtn = data.follow_up_kind === 'needs_referral'
-                ? `<button type="button" class="btn-action-close" onclick="referTreatment('${data.case_number}')">إحالة للعلاج</button>`
-                : '';
-            footer.innerHTML = closeBtn + referBtn +
+        if (canAct && data.status === 'new' && data.follow_up_kind === 'needs_referral') {
+            footer.innerHTML = closeBtn +
+                `<button type="button" class="btn-action-close" onclick="referTreatment('${data.case_number}')">إحالة للعلاج</button>`;
+        } else if (canAct && data.status === 'new' && data.follow_up_kind === 'no_referral') {
+            footer.innerHTML = closeBtn +
                 `<button type="button" class="btn-action-release" onclick="markReviewed('${data.case_number}')">تحديد كمراجعة</button>`;
         } else if (data.status === 'referred') {
             footer.innerHTML = closeBtn +
@@ -517,9 +516,5 @@
     };
 
     window.openHealthCaseModal = openCaseModal;
-
-    @if(!empty($highlightCase))
-        document.addEventListener('DOMContentLoaded', () => openCaseModal(@json($highlightCase)));
-    @endif
 </script>
 @endsection

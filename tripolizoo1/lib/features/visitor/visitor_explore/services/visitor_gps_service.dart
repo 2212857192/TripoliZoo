@@ -6,10 +6,12 @@ class VisitorGpsPosition {
   const VisitorGpsPosition({
     required this.latitude,
     required this.longitude,
+    this.accuracyMeters,
   });
 
   final double latitude;
   final double longitude;
+  final double? accuracyMeters;
 }
 
 class VisitorGpsService {
@@ -26,6 +28,7 @@ class VisitorGpsService {
       return VisitorGpsPosition(
         latitude: position.latitude,
         longitude: position.longitude,
+        accuracyMeters: position.accuracyMeters,
       );
     } catch (_) {
       return null;
@@ -44,6 +47,7 @@ class VisitorGpsService {
       (position) => VisitorGpsPosition(
         latitude: position.latitude,
         longitude: position.longitude,
+        accuracyMeters: position.accuracyMeters,
       ),
     );
   }

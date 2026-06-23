@@ -34,7 +34,18 @@ class SupervisorNotificationCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(SupervisorUi.cardRadius),
         child: Ink(
-          decoration: SupervisorUi.cardDecoration(),
+          decoration: SupervisorUi.cardDecoration(
+            color: notification.isRead
+                ? Colors.white
+                : const Color(0xFFF0FAF2),
+          ).copyWith(
+            border: Border.all(
+              color: notification.isRead
+                  ? SupervisorUi.border
+                  : AppColors.primary.withValues(alpha: 0.35),
+              width: notification.isRead ? 1.5 : 1.8,
+            ),
+          ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(SupervisorUi.cardRadius),
             child: Column(

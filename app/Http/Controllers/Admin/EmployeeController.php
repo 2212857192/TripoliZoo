@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Mail\EmployeeWelcomeMail;
+use App\Models\AnimalGroup;
 use App\Models\User;
 use App\Services\AdminActivityLogger;
 use Illuminate\Http\RedirectResponse;
@@ -41,7 +42,7 @@ class EmployeeController extends Controller
             'employees' => $query->get(),
             'roleOptions' => UserRole::employeeOptions(),
             'createRoleOptions' => $this->availableRolesForCreate(),
-            'groupOptions' => $this->groupOptions(),
+            'groupRecords' => animal_group_records(),
         ]);
     }
 
@@ -103,7 +104,7 @@ class EmployeeController extends Controller
         if ($willActivate) {
             $conflict = $this->findActiveAccountConflict(
                 $employee->role,
-                $employee->assigned_group,
+                $employee->animal_group_id,
                 $employee->id,
             );
 
@@ -152,12 +153,11 @@ class EmployeeController extends Controller
             ],
             'role' => ['required', Rule::in(UserRole::employeeOptions())],
             'status' => ['required', Rule::in(['active', 'inactive'])],
-            'assigned_group' => [
+            'animal_group_id' => [
                 Rule::requiredIf($roleEnum?->requiresAssignedGroup() ?? false),
                 'nullable',
-                'string',
-                'max:255',
-                Rule::in(animal_groups()),
+                'integer',
+                Rule::exists('animal_groups', 'id')->where(fn ($query) => $query->where('is_active', true)),
             ],
         ];
 
@@ -167,27 +167,31 @@ class EmployeeController extends Controller
             'email.email' => 'صيغة البريد الإلكتروني غير صحيحة.',
             'name.required' => 'اسم الموظف مطلوب.',
             'role.required' => 'يجب اختيار الدور الوظيفي.',
-            'assigned_group.required' => 'يجب اختيار المجموعة المسندة لهذا الدور.',
+            'animal_group_id.required' => 'يجب اختيار المجموعة المسندة لهذا الدور.',
         ]);
 
         if (! ($roleEnum?->requiresAssignedGroup())) {
+            $data['animal_group_id'] = null;
             $data['assigned_group'] = null;
+        } else {
+            $group = AnimalGroup::query()->find($data['animal_group_id'] ?? null);
+            $data['assigned_group'] = $group?->name;
         }
 
-        if ($roleEnum?->requiresAssignedGroup() && filled($data['assigned_group'] ?? null)) {
+        if ($roleEnum?->requiresAssignedGroup() && filled($data['animal_group_id'] ?? null)) {
             $duplicateExists = User::query()
                 ->where('role', $data['role'])
-                ->where('assigned_group', $data['assigned_group'])
+                ->where('animal_group_id', $data['animal_group_id'])
                 ->where('status', 'active')
                 ->when($employee, fn ($query) => $query->whereKeyNot($employee->id))
                 ->exists();
 
             if ($duplicateExists) {
                 $roleLabel = $data['role'];
-                $groupLabel = $data['assigned_group'];
+                $groupLabel = $data['assigned_group'] ?? '';
 
                 return throw \Illuminate\Validation\ValidationException::withMessages([
-                    'assigned_group' => ["يوجد {$roleLabel} مفعّل مسبقاً للمجموعة «{$groupLabel}». لا يمكن إضافة أكثر من حساب بنفس الدور لنفس المجموعة."],
+                    'animal_group_id' => ["يوجد {$roleLabel} مفعّل مسبقاً للمجموعة «{$groupLabel}». لا يمكن إضافة أكثر من حساب بنفس الدور لنفس المجموعة."],
                 ]);
             }
         }
@@ -195,7 +199,7 @@ class EmployeeController extends Controller
         if (($data['status'] ?? 'inactive') === 'active') {
             $conflict = $this->findActiveAccountConflict(
                 $data['role'],
-                $data['assigned_group'] ?? null,
+                $data['animal_group_id'] ?? null,
                 $employee?->id,
             );
 
@@ -241,7 +245,7 @@ class EmployeeController extends Controller
         ));
     }
 
-    private function findActiveAccountConflict(string $role, ?string $assignedGroup, ?int $ignoreUserId = null): bool
+    private function findActiveAccountConflict(string $role, ?int $animalGroupId, ?int $ignoreUserId = null): bool
     {
         $roleEnum = UserRole::tryFrom($role);
 
@@ -256,19 +260,13 @@ class EmployeeController extends Controller
             ->when($ignoreUserId, fn ($builder) => $builder->whereKeyNot($ignoreUserId));
 
         if ($roleEnum->requiresAssignedGroup()) {
-            if (! filled($assignedGroup)) {
+            if (! filled($animalGroupId)) {
                 return false;
             }
 
-            $query->where('assigned_group', $assignedGroup);
+            $query->where('animal_group_id', $animalGroupId);
         }
 
         return $query->exists();
-    }
-
-    /** @return list<string> */
-    private function groupOptions(): array
-    {
-        return animal_groups();
     }
 }

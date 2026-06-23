@@ -18,13 +18,13 @@ class DoctorNotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: notification.isRead ? Colors.white : const Color(0xFFF0FAF2),
         borderRadius: BorderRadius.circular(DoctorUi.cardRadiusSm),
         border: Border.all(
           color: notification.isRead
               ? DoctorUi.border
-              : AppColors.primary.withValues(alpha: 0.35),
-          width: notification.isRead ? 1.2 : 1.5,
+              : AppColors.primary.withValues(alpha: 0.4),
+          width: notification.isRead ? 1.2 : 1.6,
         ),
         boxShadow: DoctorUi.softShadow,
       ),

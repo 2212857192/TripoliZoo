@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class MapPathNode extends Model
 {
     protected $fillable = [
+        'node_key',
         'name',
         'x',
         'y',

@@ -5,7 +5,7 @@ import 'package:tripolizoo/shared/constants/app_colors.dart';
 /// نظام تصميم احترافي لواجهة المشرف — مستوى enterprise.
 abstract final class SupervisorUi {
   // Palette
-  static const Color background   = Color(0xFFF4F7F4); // رمادي مخضر هادئ وراقي جداً
+  static const Color background   = Colors.white;
   static const Color card         = Color(0xFFFFFFFF);
   static const Color border       = Color(0xFFE2EBE3); // حدود بلون أخضر المريمية الخفيف
   static const Color borderStrong = Color(0xFFC8D5CB);

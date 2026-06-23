@@ -549,7 +549,8 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
       if (!_walkthrough || !mounted || gen != _walkthroughGen) return;
 
       // 2) زيارة مناطق الحيوانات
-      for (final animal in VirtualTourData.animalMarkers(_currentSceneId)) {
+      for (final animal
+          in VirtualTourData.walkthroughAnimalMarkers(_currentSceneId)) {
         await _visitAnimalDuringWalk(animal, gen);
         if (!_walkthrough || !mounted || gen != _walkthroughGen) return;
       }
@@ -599,13 +600,8 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
     if (!_walkthrough || !mounted || gen != _walkthroughGen) return;
 
     _setWalkthroughPhase('ندخل $nextTitle...');
-    TourMarker? forward;
-    for (final m in _markers) {
-      if (m.type == TourMarkerType.next) {
-        forward = m;
-        break;
-      }
-    }
+    final forward = VirtualTourData.walkthroughExitMarker(fromSceneId, nextId) ??
+        VirtualTourData.entryMarker(nextId, fromSceneId);
     if (forward != null) {
       await _animateViewTo(
         forward.latitude,
@@ -718,23 +714,17 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
   }
 
   List<TourMarker> _visibleMarkers(List<TourMarker> markers) {
-    final backs = markers.where((m) => m.type == TourMarkerType.back).toList();
-    Iterable<TourMarker> visible;
-
-    if (backs.length <= 1) {
-      visible = markers;
-    } else {
-      visible = markers.where((marker) {
-        if (marker.type != TourMarkerType.back) return true;
-        if (_previousSceneId == null) return false;
-        return marker.targetSceneId == _previousSceneId;
-      });
-    }
+    final visible = VirtualTourData.filterVisibleMarkers(
+      _currentSceneId,
+      markers,
+      arrivedFromSceneId: _previousSceneId,
+    ).where((marker) => !VirtualTourData.isViewOnlyAnimalMarker(marker));
 
     final nonBacks =
         visible.where((m) => m.type != TourMarkerType.back).toList();
     return visible.where((marker) {
       if (marker.type != TourMarkerType.back) return true;
+      if (marker.targetSceneId == _previousSceneId) return true;
       for (final other in nonBacks) {
         if (_markersVisuallyOverlap(marker, other)) return false;
       }
@@ -745,15 +735,16 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
   List<Hotspot> _buildHotspots(List<TourMarker> markers) {
     final visible = _visibleMarkers(markers);
     return visible.map((m) {
+      final displayLabel = VirtualTourData.markerDisplayLabel(m);
+      final hasLabel = displayLabel != null && displayLabel.isNotEmpty;
       return Hotspot(
         latitude: m.latitude,
         longitude: m.longitude,
         orgin: const Offset(0.5, 0.0),
         width: 140,
-        height: 108,
+        height: hasLabel ? 108 : 80,
         widget: _MarkerWidget(
-          type: m.type,
-          label: m.label,
+          label: displayLabel,
           onTap: () => _onMarkerTap(m),
         ),
       );
@@ -1039,12 +1030,10 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
 
 class _MarkerWidget extends StatefulWidget {
   const _MarkerWidget({
-    required this.type,
     required this.onTap,
     this.label,
   });
 
-  final TourMarkerType type;
   final VoidCallback onTap;
   final String? label;
 
@@ -1077,14 +1066,6 @@ class _MarkerWidgetState extends State<_MarkerWidget>
     super.dispose();
   }
 
-  String _defaultLabelForType(TourMarkerType type) {
-    return switch (type) {
-      TourMarkerType.back => 'رجوع',
-      TourMarkerType.next => 'انتقل',
-      TourMarkerType.animalArea => 'عرض',
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -1093,9 +1074,8 @@ class _MarkerWidgetState extends State<_MarkerWidget>
       child: AnimatedBuilder(
         animation: Listenable.merge([_pulse, _ring]),
         builder: (_, __) {
-          final label = widget.label ?? _defaultLabelForType(widget.type);
           return _NavPortal(
-            label: label,
+            label: widget.label,
             pulse: _pulse.value,
             ring: _ring.value,
           );
@@ -1124,7 +1104,8 @@ class _NavPortal extends StatelessWidget {
     final scale = 1.0 + pulse * 0.04;
     final outerRing = 48 + ring * 32;
     final midRing = 36 + ring * 16;
-    final displayLabel = label ?? 'انتقل';
+    final displayLabel = label?.trim();
+    final showLabel = displayLabel != null && displayLabel.isNotEmpty;
 
     return SizedBox(
       width: 140,
@@ -1186,12 +1167,13 @@ class _NavPortal extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 2),
-          _HotspotLabel(
-            text: displayLabel,
-            color: _green,
-            icon: Icons.explore_rounded,
-          ),
+          if (showLabel) ...[
+            const SizedBox(height: 2),
+            _HotspotLabel(
+              text: displayLabel,
+              color: _green,
+            ),
+          ],
         ],
       ),
     );
@@ -1261,12 +1243,10 @@ class _HotspotLabel extends StatelessWidget {
   const _HotspotLabel({
     required this.text,
     required this.color,
-    this.icon,
   });
 
   final String text;
   final Color color;
-  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -1285,28 +1265,18 @@ class _HotspotLabel extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Icon(icon, size: 12, color: color),
-            const SizedBox(width: 8),
-          ],
-          Flexible(
-            child: Text(
-              text,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-                color: color,
-                letterSpacing: 1.6,
-                height: 1.2,
-              ),
-            ),
-          ),
-        ],
+      child: Text(
+        text,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w800,
+          color: color,
+          letterSpacing: 0.4,
+          height: 1.2,
+        ),
       ),
     );
   }

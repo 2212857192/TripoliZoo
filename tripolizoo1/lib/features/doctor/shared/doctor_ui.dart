@@ -5,7 +5,7 @@ import 'package:tripolizoo/shared/constants/app_colors.dart';
 /// نظام تصميم احترافي لواجهة الطبيب — متطابق مع هوية المشرف الجديدة.
 abstract final class DoctorUi {
   // Palette
-  static const Color background   = Color(0xFFF4F7F5); // رمادي مخضر هادئ وراقٍ جداً
+  static const Color background   = Colors.white;
   static const Color card         = Color(0xFFFFFFFF);
   static const Color border       = Color(0xFFE4EDE5); // حدود بلون أخضر المريمية الخفيف والراقي
   static const Color borderStrong = Color(0xFFC2D3C5);

@@ -2,10 +2,12 @@ class GpsReading {
   const GpsReading({
     required this.latitude,
     required this.longitude,
+    this.accuracyMeters,
   });
 
   final double latitude;
   final double longitude;
+  final double? accuracyMeters;
 }
 
 abstract class GpsReader {

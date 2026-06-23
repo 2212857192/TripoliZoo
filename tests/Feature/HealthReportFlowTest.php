@@ -86,7 +86,8 @@ class HealthReportFlowTest extends TestCase
 
         $this->getJson('/api/auth/doctor/dashboard')
             ->assertOk()
-            ->assertJsonPath('unread_notifications', 1);
+            ->assertJsonPath('unread_notifications', 1)
+            ->assertJsonPath('pending_health_reports_count', 1);
     }
 
     public function test_supervisor_can_upload_attachment_with_health_report(): void

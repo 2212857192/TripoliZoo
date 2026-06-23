@@ -55,7 +55,7 @@
             <svg style="position: absolute; right: 12px; top: 11px; color: #94a3b8;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="بحث برقم الحيوان أو نوعه..." style="width: 100%; padding: 10px 35px 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 600; outline: none; color: #0f172a;">
         </div>
-        <select name="group" style="flex: 1; padding: 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; color: #475569; font-weight: 600; outline: none;">
+        <select name="group" onchange="this.form.submit()" style="flex: 1; padding: 10px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 0.9rem; color: #475569; font-weight: 600; outline: none;">
             @include('partials.animal-group-options', ['emptyLabel' => 'جميع المجموعات', 'selected' => $filters['group'] ?? '', 'withValues' => true])
         </select>
         @include('partials.date-filter', [
@@ -67,7 +67,6 @@
             'showLast7' => true,
             'showLast30' => true,
         ])
-        <button type="submit" class="btn-search" style="flex: 0 0 auto;">بحث</button>
     </div>
 </form>
 

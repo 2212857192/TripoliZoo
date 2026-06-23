@@ -21,6 +21,44 @@ class MapPathGraphService
         'east' => 13.1789,
     ];
 
+    public function linkLocationToNearestNode(MapLocation $location): void
+    {
+        MapPathNode::query()
+            ->where('map_location_id', $location->id)
+            ->update(['map_location_id' => null]);
+
+        $x = (float) $location->longitude;
+        $y = (float) $location->latitude;
+
+        $nodes = MapPathNode::query()
+            ->where('is_active', true)
+            ->whereNull('map_location_id')
+            ->get();
+
+        if ($nodes->isEmpty()) {
+            $nodes = MapPathNode::query()
+                ->where('is_active', true)
+                ->get();
+        }
+
+        $best = null;
+        $bestDist = PHP_FLOAT_MAX;
+
+        foreach ($nodes as $node) {
+            $dx = ((float) $node->x) - $x;
+            $dy = ((float) $node->y) - $y;
+            $dist = ($dx * $dx) + ($dy * $dy);
+            if ($dist < $bestDist) {
+                $bestDist = $dist;
+                $best = $node;
+            }
+        }
+
+        if ($best) {
+            $best->update(['map_location_id' => $location->id]);
+        }
+    }
+
     public function syncFromLocations(): void
     {
         $locations = MapLocation::query()->where('is_active', true)->get();
@@ -85,37 +123,72 @@ class MapPathGraphService
      */
     public function navigationPayload(): array
     {
-        if (! MapPathNode::query()->where('is_active', true)->exists()) {
-            $this->syncFromLocations();
-        }
-
         $nodes = MapPathNode::query()
             ->where('is_active', true)
             ->orderBy('id')
             ->get()
             ->map(fn (MapPathNode $node) => [
                 'id' => $node->id,
+                'node_key' => $node->node_key,
                 'name' => $node->name,
                 'x' => (float) $node->x,
                 'y' => (float) $node->y,
                 'map_location_id' => $node->map_location_id,
+                'is_active' => (bool) $node->is_active,
             ])
             ->values()
             ->all();
 
+        if ($nodes === []) {
+            return [
+                'bounds' => self::GEO_BOUNDS,
+                'image_width' => self::MAP_IMAGE_WIDTH,
+                'image_height' => self::MAP_IMAGE_HEIGHT,
+                'nodes' => [],
+                'edges' => [],
+            ];
+        }
+
         $edges = MapPathEdge::query()
+            ->with(['fromNode', 'toNode'])
             ->get()
             ->flatMap(function (MapPathEdge $edge) {
+                if ($edge->is_active === false) {
+                    return [];
+                }
+
+                $geometry = $edge->geometry ?? [];
+                $reversed = array_reverse($geometry);
+                $isAccessible = $edge->is_accessible !== false;
+
                 return [
                     [
+                        'id' => $edge->id,
+                        'edge_key' => $edge->edge_key,
                         'from' => $edge->from_node_id,
                         'to' => $edge->to_node_id,
+                        'from_node_key' => $edge->fromNode?->node_key,
+                        'to_node_key' => $edge->toNode?->node_key,
                         'distance' => $edge->distance_meters,
+                        'distance_units' => $edge->distance_meters,
+                        'geometry' => $geometry ?: null,
+                        'is_bidirectional' => true,
+                        'is_accessible' => $isAccessible,
+                        'is_active' => true,
                     ],
                     [
+                        'id' => $edge->id,
+                        'edge_key' => $edge->edge_key,
                         'from' => $edge->to_node_id,
                         'to' => $edge->from_node_id,
+                        'from_node_key' => $edge->toNode?->node_key,
+                        'to_node_key' => $edge->fromNode?->node_key,
                         'distance' => $edge->distance_meters,
+                        'distance_units' => $edge->distance_meters,
+                        'geometry' => $reversed ?: null,
+                        'is_bidirectional' => true,
+                        'is_accessible' => $isAccessible,
+                        'is_active' => true,
                     ],
                 ];
             })

@@ -13,6 +13,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (! Schema::hasTable('hospital_cases')) {
+            return;
+        }
+
         if (! Schema::hasColumn('receiving_tasks', 'hospital_case_id')) {
             Schema::table('receiving_tasks', function (Blueprint $table) {
                 $table->foreignId('hospital_case_id')

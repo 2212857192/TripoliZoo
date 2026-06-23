@@ -135,6 +135,8 @@ class RecordsAnimalFlowTest extends TestCase
 
     public function test_records_officer_can_document_animal_exit(): void
     {
+        Storage::fake('public');
+
         $officer = User::factory()->create([
             'role' => UserRole::RecordsOfficer->value,
             'status' => 'active',
@@ -160,6 +162,7 @@ class RecordsAnimalFlowTest extends TestCase
                 'exit_type' => 'transfer',
                 'recipient' => 'حديقة طرابلس',
                 'reason' => 'برنامج تبادل',
+                'attachment' => UploadedFile::fake()->create('exit.pdf', 100, 'application/pdf'),
             ])
             ->assertRedirect(route('records.animals.show', $animal));
 

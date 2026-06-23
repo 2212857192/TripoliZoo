@@ -267,6 +267,44 @@
         white-space: nowrap;
     }
 
+    .portal-notification-footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    .notification-mark-read-btn {
+        border: 1px solid #bbf7d0;
+        background: #f0fdf4;
+        color: #15803d;
+        border-radius: 999px;
+        padding: 4px 12px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+    .notification-mark-read-btn:hover {
+        background: #dcfce7;
+        border-color: #86efac;
+    }
+
+    .notification-read-badge {
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .portal-notification-item.is-read .portal-notification-title {
+        color: #64748b;
+    }
+
     .notification-empty-state {
         font-size: 0.8rem;
         text-align: center;

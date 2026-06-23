@@ -265,7 +265,7 @@
     <!-- Controls -->
     <div class="control-panel">
         <div class="search-filter-box">
-            <input type="text" id="searchInput" class="search-input" placeholder="البحث باسم التذكرة..." onkeyup="filterTickets()">
+            <input type="text" id="searchInput" class="search-input" placeholder="البحث باسم فئة التذكرة..." onkeyup="filterTickets()">
             <select id="statusFilter" class="filter-select" onchange="filterTickets()">
                 <option value="all">كل الحالات</option>
                 <option value="active">تذاكر نشطة</option>
@@ -283,7 +283,7 @@
     <!-- Tickets Grid -->
     <div class="tickets-grid" id="ticketsGrid">
         @forelse($ticketTypes as $type)
-        <div class="ticket-card-premium {{ $type->is_active ? '' : 'suspended' }}" data-name="{{ $type->target_description }}" data-status="{{ $type->is_active ? 'active' : 'suspended' }}" id="ticket-{{ $type->id }}">
+        <div class="ticket-card-premium {{ $type->is_active ? '' : 'suspended' }}" data-category="{{ $type->target_description }}" data-status="{{ $type->is_active ? 'active' : 'suspended' }}" id="ticket-{{ $type->id }}">
             <div class="ticket-header-gradient">
                 <h4 class="ticket-name">{{ $type->target_description }}</h4>
                 <div class="ticket-price"><span>{{ number_format((float) $type->price, 2) }}</span> <span>د.ل</span></div>
@@ -323,7 +323,7 @@
         </div>
         @empty
         <div style="grid-column:1/-1;padding:2rem;text-align:center;color:var(--text-muted);font-weight:700;">
-            لا توجد فئات تذاكر بعد. أضف فئة جديدة لعرضها في تطبيق الزوار.
+            لا توجد فئات تذاكر بعد.
         </div>
         @endforelse
     </div>
@@ -340,11 +340,11 @@
         const cards = document.querySelectorAll('.ticket-card-premium');
 
         cards.forEach(card => {
-            const name = card.getAttribute('data-name').toLowerCase();
+            const category = (card.getAttribute('data-category') || '').toLowerCase();
             const cardStatus = card.getAttribute('data-status');
 
-            const matchesQuery = name.includes(query);
-            const matchesStatus = (status === 'all') || (cardStatus === status);
+            const matchesQuery = category.includes(query);
+            const matchesStatus = status === 'all' || cardStatus === status;
 
             card.style.display = (matchesQuery && matchesStatus) ? 'flex' : 'none';
         });

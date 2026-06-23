@@ -18,7 +18,23 @@ abstract final class AppColors {
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF2E7D32), Color(0xFF4CAF50), Color(0xFF1B5E20)],
+    colors: [
+      Color(0xFF1A3D1A),
+      Color(0xFF2D6A30),
+      Color(0xFF3A7D3E),
+    ],
+    stops: [0.0, 0.6, 1.0],
+  );
+
+  static const LinearGradient headerGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      Color(0xFFE8F5E9),
+      Color(0xFFF0FDF4),
+      Color(0xFFFFFFFF),
+    ],
+    stops: [0.0, 0.6, 1.0],
   );
 
   static const LinearGradient accentGradient = LinearGradient(

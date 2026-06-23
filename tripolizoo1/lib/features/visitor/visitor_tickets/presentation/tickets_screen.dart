@@ -755,7 +755,9 @@ class _PaymentView extends StatefulWidget {
 class _PaymentViewState extends State<_PaymentView> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
-  String _paymentMethod = 'cash';
+
+  // Whether the user has selected the electronic payment method
+  bool _paymentMethodSelected = false;
 
   static const _green = Color(0xFF2E7D32);
 
@@ -766,8 +768,7 @@ class _PaymentViewState extends State<_PaymentView> {
   }
 
   Future<void> _confirmPayment() async {
-    if (_paymentMethod == 'electronic' &&
-        !(_formKey.currentState?.validate() ?? false)) {
+    if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
 
@@ -776,13 +777,6 @@ class _PaymentViewState extends State<_PaymentView> {
     final messenger = ScaffoldMessenger.of(context);
 
     try {
-      if (_paymentMethod == 'cash') {
-        final tickets = await cart.purchaseCash();
-        if (!mounted) return;
-        if (tickets.isNotEmpty) widget.onSuccess();
-        return;
-      }
-
       final session = await cart.verifyElectronicPayment(
         mobile: _phoneController.text,
       );
@@ -879,6 +873,7 @@ class _PaymentViewState extends State<_PaymentView> {
       key: _formKey,
       child: Column(
         children: [
+          // ── Header ──
           Container(
             color: Colors.white,
             padding: EdgeInsets.fromLTRB(20, topPad + 8, 20, 8),
@@ -894,6 +889,8 @@ class _PaymentViewState extends State<_PaymentView> {
               ),
             ),
           ),
+
+          // ── Scrollable Body ──
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
@@ -901,6 +898,7 @@ class _PaymentViewState extends State<_PaymentView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // ── Total Amount Card ──
                     Container(
                       key: const ValueKey('payment-total-card'),
                       padding: const EdgeInsets.symmetric(vertical: 28),
@@ -921,8 +919,8 @@ class _PaymentViewState extends State<_PaymentView> {
                           Container(
                             width: 54,
                             height: 54,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFE8F5E9),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFE8F5E9),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -974,7 +972,10 @@ class _PaymentViewState extends State<_PaymentView> {
                         ],
                       ),
                     ),
+
                     const SizedBox(height: 28),
+
+                    // ── Invoice Summary ──
                     _PaymentSectionTitle(
                       title:
                           context.localized(ar: 'ملخص الفاتورة', en: 'Invoice'),
@@ -1012,93 +1013,193 @@ class _PaymentViewState extends State<_PaymentView> {
                         ],
                       ),
                     ),
+
                     const SizedBox(height: 26),
+
+                    // ── Payment Method ──
                     _PaymentSectionTitle(
                       title: context.localized(
                           ar: 'طريقة الدفع', en: 'Payment Method'),
                     ),
-                    const SizedBox(height: 10),
-                    _PaymentMethodCard(
-                      id: 'cash',
-                      title: context.localized(ar: 'نقدي', en: 'Cash'),
-                      subtitle: context.localized(
-                        ar: 'الدفع عند نقطة البيع أو الكشك',
-                        en: 'Pay at the ticket counter',
-                      ),
-                      icon: Icons.payments_rounded,
-                      selected: _paymentMethod == 'cash',
-                      onTap: () => setState(() => _paymentMethod = 'cash'),
-                    ),
-                    const SizedBox(height: 10),
-                    _PaymentMethodCard(
-                      id: 'electronic',
-                      title: context.localized(ar: 'ادفع لي', en: 'Adali'),
-                      subtitle: context.localized(
-                        ar: 'الدفع عبر خدمة ادفع لي',
-                        en: 'Pay through Adali service',
-                      ),
-                      icon: Icons.account_balance_wallet_rounded,
-                      selected: _paymentMethod == 'electronic',
-                      onTap: () =>
-                          setState(() => _paymentMethod = 'electronic'),
-                    ),
-                    if (_paymentMethod == 'electronic') ...[
-                      const SizedBox(height: 26),
-                      _PaymentSectionTitle(
-                        title: context.localized(
-                            ar: 'رقم الهاتف', en: 'Phone Number'),
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        key: const ValueKey('payment-phone-field'),
-                        controller: _phoneController,
-                        keyboardType: TextInputType.phone,
-                        textDirection: TextDirection.ltr,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(10),
-                        ],
-                        decoration: InputDecoration(
-                          hintText: '09X XXX XXXX',
-                          prefixText: '+218  ',
-                          prefixStyle: GoogleFonts.cairo(
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w700,
+                    const SizedBox(height: 12),
+
+                    // ادفع لي card (selectable)
+                    GestureDetector(
+                      key: const ValueKey('adfalee-payment-card'),
+                      onTap: () {
+                        setState(() => _paymentMethodSelected = true);
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: _paymentMethodSelected
+                                ? _green
+                                : Colors.grey.shade200,
+                            width: _paymentMethodSelected ? 2 : 1.5,
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: _paymentMethodSelected
+                                  ? _green.withValues(alpha: 0.08)
+                                  : Colors.black.withValues(alpha: 0.03),
+                              blurRadius: 14,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        validator: _validatePhone,
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Icon(
-                            Icons.info_outline_rounded,
-                            size: 17,
-                            color: Colors.grey,
-                          ),
-                          const SizedBox(width: 7),
-                          Expanded(
-                            child: Text(
-                              context.localized(
-                                ar: 'سيُرسل رمز OTP إلى هاتفك عبر ادفع لي. يجب أن يكون الرقم مسجّلاً في الخدمة.',
-                                en: 'An OTP will be sent via Adali. The number must be registered with the service.',
+                        child: Row(
+                          children: [
+                            // Selection indicator
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: _paymentMethodSelected
+                                    ? _green
+                                    : Colors.transparent,
+                                border: Border.all(
+                                  color: _paymentMethodSelected
+                                      ? _green
+                                      : Colors.grey.shade400,
+                                  width: 2,
+                                ),
                               ),
-                              style: GoogleFonts.cairo(
-                                fontSize: 11,
-                                height: 1.5,
-                                color: Colors.grey.shade600,
+                              child: _paymentMethodSelected
+                                  ? const Icon(Icons.check_rounded,
+                                      color: Colors.white, size: 14)
+                                  : null,
+                            ),
+                            const SizedBox(width: 14),
+                            // Icon badge
+                            Container(
+                              width: 46,
+                              height: 46,
+                              decoration: BoxDecoration(
+                                color: _paymentMethodSelected
+                                    ? const Color(0xFFE8F5E9)
+                                    : const Color(0xFFF5F5F5),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Icon(
+                                Icons.phone_android_rounded,
+                                color: _paymentMethodSelected
+                                    ? _green
+                                    : Colors.grey.shade400,
+                                size: 24,
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 14),
+                            // Text
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    context.localized(
+                                        ar: 'ادفع لي',
+                                        en: 'Adfa Lee (ادفع لي)'),
+                                    style: GoogleFonts.cairo(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                      color: _paymentMethodSelected
+                                          ? _green
+                                          : const Color(0xFF1A1A1A),
+                                    ),
+                                  ),
+                                  Text(
+                                    context.localized(
+                                      ar: 'دفع إلكتروني عبر رقم هاتفك',
+                                      en: 'Electronic payment via your phone number',
+                                    ),
+                                    style: GoogleFonts.cairo(
+                                      fontSize: 11,
+                                      color: Colors.grey.shade500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
+                    ),
+
+                    // ── Phone Number Field (shown after selecting payment method) ──
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 350),
+                      curve: Curves.easeOutCubic,
+                      child: _paymentMethodSelected
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                const SizedBox(height: 26),
+                                _PaymentSectionTitle(
+                                  title: context.localized(
+                                      ar: 'رقم الهاتف المرتبط بـ ادفع لي',
+                                      en: 'Phone Number linked to Adfa Lee'),
+                                ),
+                                const SizedBox(height: 10),
+                                TextFormField(
+                                  key: const ValueKey('payment-phone-field'),
+                                  controller: _phoneController,
+                                  keyboardType: TextInputType.phone,
+                                  textDirection: TextDirection.ltr,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(10),
+                                  ],
+                                  decoration: InputDecoration(
+                                    hintText: '09X XXX XXXX',
+                                    prefixText: '+218  ',
+                                    prefixStyle: GoogleFonts.cairo(
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  validator: _validatePhone,
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Icon(
+                                      Icons.info_outline_rounded,
+                                      size: 17,
+                                      color: Colors.grey,
+                                    ),
+                                    const SizedBox(width: 7),
+                                    Expanded(
+                                      child: Text(
+                                        context.localized(
+                                          ar: 'سيُرسل رمز OTP إلى هاتفك عبر ادفع لي. يجب أن يكون الرقم مسجّلاً في الخدمة.',
+                                          en: 'An OTP will be sent via Adfa Lee. The number must be registered with the service.',
+                                        ),
+                                        style: GoogleFonts.cairo(
+                                          fontSize: 11,
+                                          height: 1.5,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            )
+                          : const SizedBox.shrink(),
+                    ),
                   ],
                 ),
               ),
             ),
           ),
+
+          // ── Bottom Action Button ──
           Container(
             padding: EdgeInsets.fromLTRB(24, 14, 24, bottomPad + 14),
             decoration: BoxDecoration(
@@ -1115,10 +1216,12 @@ class _PaymentViewState extends State<_PaymentView> {
               width: double.infinity,
               child: ElevatedButton(
                 key: const ValueKey('confirm-payment-button'),
-                onPressed: _confirmPayment,
+                onPressed: _paymentMethodSelected ? _confirmPayment : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _green,
                   foregroundColor: Colors.white,
+                  disabledBackgroundColor: Colors.grey.shade200,
+                  disabledForegroundColor: Colors.grey.shade400,
                   padding: const EdgeInsets.symmetric(vertical: 17),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),

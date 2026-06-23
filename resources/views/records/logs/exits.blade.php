@@ -49,7 +49,6 @@
             style="display: {{ $filters['period'] === 'custom' ? 'block' : 'none' }};"
             onchange="document.getElementById('exitsFilterForm').submit()"
         >
-        <button type="submit" class="filter-select" style="cursor:pointer;background:#f0fdf4;border-color:#bbf7d0;color:#15803d;">بحث</button>
     </form>
 </div>
 

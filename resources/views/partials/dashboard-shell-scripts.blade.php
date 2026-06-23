@@ -197,7 +197,86 @@
         el.dataset.unread = '0';
         var badge = el.querySelector('.notification-new-badge');
         if (badge) badge.remove();
+        var markBtn = el.querySelector('.notification-mark-read-btn');
+        if (markBtn) {
+            var readBadge = document.createElement('span');
+            readBadge.className = 'notification-read-badge';
+            readBadge.textContent = 'مقروء';
+            markBtn.replaceWith(readBadge);
+        }
         refreshNotificationUi();
+    }
+
+    function portalNotificationMarkConfig(item) {
+        if (!item) return null;
+        var kind = item.dataset.notificationKind || '';
+        var reference = item.dataset.reference || '';
+        if (!reference) return null;
+
+        if (kind === 'receiving') {
+            var isVet = item.classList.contains('vet-notification-feed-item');
+            return {
+                markReadUrl: isVet
+                    ? (window.vetReceivingNotificationReadUrl || '/vet/notifications/read')
+                    : (window.careNotificationReadUrl || '/care/notifications/read'),
+                markReadBody: { task_number: reference },
+            };
+        }
+        if (kind === 'quarantine') {
+            return {
+                markReadUrl: window.quarantineNotificationReadUrl || '/vet/quarantine/notifications/read',
+                markReadBody: { case_number: reference },
+            };
+        }
+        if (kind === 'treatment_referral') {
+            return {
+                markReadUrl: window.vetTreatmentReferralNotificationReadUrl || '/vet/notifications/treatment-referral/read',
+                markReadBody: { referral_number: reference },
+            };
+        }
+        if (kind === 'autopsy_referral') {
+            return {
+                markReadUrl: window.vetAutopsyReferralNotificationReadUrl || '/vet/notifications/autopsy-referral/read',
+                markReadBody: { referral_number: reference },
+            };
+        }
+        if (kind === 'hospital_case') {
+            var hospitalReadUrl = typeof window.vetHospitalNotificationReadUrl === 'function'
+                ? window.vetHospitalNotificationReadUrl(reference)
+                : '/vet/notifications/hospital/' + encodeURIComponent(reference) + '/read';
+            return { markReadUrl: hospitalReadUrl, markReadBody: null };
+        }
+        if (kind === 'health') {
+            var healthReadUrl = typeof window.careHealthNotificationReadUrl === 'function'
+                ? window.careHealthNotificationReadUrl(reference)
+                : '/care/notifications/health/' + encodeURIComponent(reference) + '/read';
+            return { markReadUrl: healthReadUrl, markReadBody: null };
+        }
+        if (kind === 'operational_note') {
+            var noteReadUrl = typeof window.careOperationalNoteNotificationReadUrl === 'function'
+                ? window.careOperationalNoteNotificationReadUrl(reference)
+                : '/care/notifications/operational-note/' + encodeURIComponent(reference) + '/read';
+            return { markReadUrl: noteReadUrl, markReadBody: null };
+        }
+
+        return null;
+    }
+
+    function markPortalNotificationItemRead(event, btn) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        var item = btn ? btn.closest('.portal-notification-item') : null;
+        if (!item || item.dataset.unread !== '1') return false;
+
+        var config = portalNotificationMarkConfig(item);
+        if (!config) return false;
+
+        markPortalNotificationReadLocallyByElement(item);
+        portalNotificationPost(config.markReadUrl, config.markReadBody, false).catch(function () {});
+
+        return false;
     }
 
     function notificationDayBounds() {

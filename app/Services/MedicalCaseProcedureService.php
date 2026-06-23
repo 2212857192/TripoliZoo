@@ -19,6 +19,7 @@ class MedicalCaseProcedureService
         private HospitalCaseNotificationService $hospitalNotifier,
         private ReceivingTaskService $receivingTasks,
         private AnimalLifecycleService $animalLifecycle,
+        private SupervisorNotificationService $supervisorNotifier,
     ) {}
 
     public function record(
@@ -53,6 +54,13 @@ class MedicalCaseProcedureService
                 $this->applyHospitalResult($case, $vet, $result);
             }
         });
+
+        if ($nutrition !== null && $procedure) {
+            $procedure->load('nutritionRecommendation');
+            if ($procedure->nutritionRecommendation) {
+                $this->supervisorNotifier->notifyNutritionRecommendation($procedure->nutritionRecommendation);
+            }
+        }
 
         /** @var MedicalCaseProcedure $procedure */
         return $procedure->fresh(['nutritionRecommendation', 'recorder']);

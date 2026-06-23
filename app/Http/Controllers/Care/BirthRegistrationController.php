@@ -86,6 +86,11 @@ class BirthRegistrationController extends Controller
                 $query->where('status', AnimalStatus::UnderBirthFollowUp->value);
             } elseif ($status === 'completed') {
                 $query->where('status', AnimalStatus::Active->value);
+            } elseif ($status === 'deceased') {
+                $query->whereIn('status', [
+                    AnimalStatus::Dead->value,
+                    AnimalStatus::PendingMortalityApproval->value,
+                ]);
             }
         }
 
@@ -130,6 +135,7 @@ class BirthRegistrationController extends Controller
             $supervisor = $animal->birthRegistration?->supervisor;
             $monitoring = $service->isMonitoring($animal);
             $daysRemaining = $service->daysRemaining($animal);
+            $displayStatus = $service->displayStatus($animal);
 
             return [$animal->code => [
                 'code' => $animal->code,
@@ -142,8 +148,8 @@ class BirthRegistrationController extends Controller
                 'birth_date' => $animal->birth_date?->format('Y-m-d'),
                 'days_remaining' => $daysRemaining,
                 'days_label' => $this->daysLabel($daysRemaining, $monitoring),
-                'status' => $monitoring ? 'monitoring' : 'completed',
-                'status_label' => $monitoring ? 'قيد المتابعة' : 'دائم داخل الحديقة',
+                'status' => $displayStatus['key'],
+                'status_label' => $displayStatus['label'],
                 'supervisor' => $supervisor?->name,
                 'mark' => $animal->distinguishing_marks ?: '—',
                 'notes' => $animal->registration_note ?: '—',

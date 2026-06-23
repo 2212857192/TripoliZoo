@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\HealthCaseStatus;
 use App\Enums\TreatmentReferralStatus;
 use App\Enums\UserRole;
 use App\Models\TreatmentReferral;
@@ -52,6 +53,15 @@ class TreatmentReferralService
             'reviewed_at' => now(),
             'rejection_reason' => $reason,
         ]);
+
+        $referral->loadMissing('healthCase');
+        if ($referral->healthCase?->status === HealthCaseStatus::Referred) {
+            $referral->healthCase->update([
+                'status' => HealthCaseStatus::Reviewed,
+                'reviewed_by' => $vetHead->id,
+                'reviewed_at' => now(),
+            ]);
+        }
 
         $this->notifier->markAsReadForUser($referral, $vetHead);
 

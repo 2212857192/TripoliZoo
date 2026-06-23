@@ -545,7 +545,8 @@
                 data-name="{{ $employee->name }}"
                 data-email="{{ $employee->email }}"
                 data-join="{{ $employee->joined_at?->format('d/m/Y') ?? '—' }}"
-                data-group="{{ $employee->assigned_group ?? '' }}">
+                data-group="{{ $employee->assigned_group ?? '' }}"
+                data-group-id="{{ $employee->animal_group_id ?? '' }}">
                 <td>
                     <div class="emp-info">
                         <strong>{{ $employee->name }}</strong>
@@ -678,10 +679,10 @@
                 </div>
                 <div class="form-group" id="editGroupField" style="display: none;">
                     <label>المجموعة المسندة</label>
-                    <select name="assigned_group" id="editGroup" class="form-input">
+                    <select name="animal_group_id" id="editGroup" class="form-input">
                         <option value="">اختر المجموعة</option>
-                        @foreach($groupOptions as $group)
-                        <option value="{{ $group }}" @selected(old('assigned_group') === $group)>{{ $group }}</option>
+                        @foreach($groupRecords as $group)
+                        <option value="{{ $group->id }}" @selected((string) old('animal_group_id') === (string) $group->id)>{{ $group->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -748,10 +749,10 @@
                 </div>
                 <div class="form-group" id="addGroupField" style="display: none;">
                     <label>المجموعة المسندة</label>
-                    <select name="assigned_group" id="addGroup" class="form-input">
+                    <select name="animal_group_id" id="addGroup" class="form-input">
                         <option value="">اختر المجموعة</option>
-                        @foreach($groupOptions as $group)
-                        <option value="{{ $group }}" @selected(old('assigned_group') === $group)>{{ $group }}</option>
+                        @foreach($groupRecords as $group)
+                        <option value="{{ $group->id }}" @selected((string) old('animal_group_id') === (string) $group->id)>{{ $group->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -841,7 +842,7 @@
         document.getElementById('editEmail').value = r.dataset.email;
         document.getElementById('editRole').value  = r.dataset.role;
         document.getElementById('editStatus').value = r.dataset.status || 'active';
-        document.getElementById('editGroup').value = r.dataset.group || '';
+        document.getElementById('editGroup').value = r.dataset.groupId || '';
         toggleEditGroupField();
         openModal('editModal');
     }

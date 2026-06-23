@@ -23,6 +23,7 @@ class ReceivingTaskService
         private CareNotificationService $careNotifier,
         private VetNotificationService $vetNotifier,
         private MedicalDecisionTreatmentCollector $treatmentCollector,
+        private AnimalLifecycleService $animalLifecycle,
     ) {}
 
     public function createFromQuarantineRelease(Quarantine $quarantine, User $issuer): ?ReceivingTask
@@ -203,6 +204,11 @@ class ReceivingTaskService
             'closed_at' => $task->received_at ?? now(),
             'closing_outcome' => $outcome,
         ]);
+
+        $case->loadMissing('animal');
+        if ($case->animal) {
+            $this->animalLifecycle->finalizeAfterHospitalDischarge($case->animal, $case);
+        }
     }
 
     private function markHospitalCaseHandoverDelayed(ReceivingTask $task): void

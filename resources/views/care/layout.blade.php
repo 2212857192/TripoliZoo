@@ -569,15 +569,6 @@
             </a>
         </nav>
 
-        <div class="sidebar-footer">
-            <div class="user-card">
-                <div class="user-avatar">{{ mb_substr(auth()->user()->name ?? 'م', 0, 1) }}</div>
-                <div class="user-info">
-                    <h4>{{ auth()->user()->name ?? 'مستخدم' }}</h4>
-                    <p>{{ auth()->user()->role ?? 'رعاية وتغذية' }}</p>
-                </div>
-            </div>
-        </div>
     </aside>
 
     <!-- Main Content -->

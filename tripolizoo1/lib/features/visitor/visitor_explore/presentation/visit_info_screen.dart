@@ -222,6 +222,29 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                           },
                         ),
                       ],
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: () => context.go('/tickets'),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          icon: const Icon(Icons.confirmation_number_outlined),
+                          label: Text(
+                            context.localized(
+                              ar: 'شراء تذكرة',
+                              en: 'Buy Ticket',
+                            ),
+                            style: const TextStyle(fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                      ),
                       if (info.guidelinesWithNotes().isNotEmpty) ...[
                         const SizedBox(height: 20),
                         _SectionCard(

@@ -63,7 +63,7 @@ class HealthCaseController extends Controller
                 ->with('error', 'تعذر إنشاء إحالة العلاج. يرجى المحاولة مرة أخرى.');
         }
 
-        return $this->healthIndexRedirect($request, $healthCase, ['status' => HealthCaseStatus::Referred->value])
+        return $this->healthIndexRedirect($request, null, ['status' => HealthCaseStatus::Referred->value])
             ->with('success', "تم إحالة الحالة {$healthCase->case_number} للعلاج — رقم الإحالة: {$healthCase->treatmentReferral->referral_number}.");
     }
 
@@ -179,13 +179,13 @@ class HealthCaseController extends Controller
         return $user;
     }
 
-    private function healthIndexRedirect(Request $request, HealthCase $healthCase, array $overrides = []): RedirectResponse
+    private function healthIndexRedirect(Request $request, ?HealthCase $healthCase = null, array $overrides = []): RedirectResponse
     {
         $params = array_filter([
             'q' => $request->query('q'),
             'group' => $request->query('group'),
             'follow_up' => $request->query('follow_up'),
-            'case' => $healthCase->case_number,
+            'case' => $healthCase?->case_number,
             ...$overrides,
         ], fn ($value) => $value !== null && $value !== '');
 

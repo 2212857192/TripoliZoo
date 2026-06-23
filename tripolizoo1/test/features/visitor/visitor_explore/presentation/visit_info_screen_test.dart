@@ -38,6 +38,16 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Future<void> scrollUntilText(WidgetTester tester, String text) async {
+    final finder = find.text(text);
+    var attempts = 0;
+    while (finder.evaluate().isEmpty && attempts < 8) {
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -300));
+      await tester.pumpAndSettle();
+      attempts++;
+    }
+  }
+
   testWidgets('shows dynamic visit information with location and ticket prices',
       (tester) async {
     await tester.pumpWidget(buildVisitInfo());
@@ -60,9 +70,11 @@ void main() {
     expect(find.text('10 د.ل'), findsOneWidget);
     expect(find.text('5 د.ل'), findsAtLeastNWidgets(2));
     expect(find.text('12 سنة فأكثر'), findsOneWidget);
-    expect(find.text('أرقام الطوارئ'), findsNothing);
 
-    await scrollVisitInfo(tester, -200);
+    await scrollUntilText(tester, 'شراء تذكرة');
+    expect(find.text('شراء تذكرة'), findsOneWidget);
+
+    await scrollUntilText(tester, 'تعليمات وإرشادات الزيارة');
 
     expect(find.text('تعليمات وإرشادات الزيارة'), findsOneWidget);
   });

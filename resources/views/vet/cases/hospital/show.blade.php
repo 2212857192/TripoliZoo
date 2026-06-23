@@ -485,7 +485,7 @@
             <h3>إصدار قرار طبي — {{ $hospitalCase->animal?->name ?: $hospitalCase->animal?->species }}</h3>
             <button type="button" class="modal-close" onclick="closeDecisionModal()">✕</button>
         </div>
-        <form method="POST" action="{{ $vetBase }}/cases/hospital/{{ $hospitalCase->case_number }}/issue-decision" id="decisionForm" onsubmit="return confirmDecisionSubmit(event)">
+        <form method="POST" action="{{ $vetBase }}/cases/hospital/{{ $hospitalCase->case_number }}/issue-decision" id="decisionForm">
             @csrf
             <input type="hidden" name="decision" id="decisionInput" value="{{ $recommendedDecision ?? 'discharge' }}">
             <div class="decision-body">
@@ -517,9 +517,29 @@
             </div>
             <div class="decision-footer">
                 <button type="button" class="btn-cancel" onclick="closeDecisionModal()">إلغاء</button>
-                <button type="submit" class="btn-submit">تأكيد القرار</button>
+                <button type="button" class="btn-submit" onclick="openDecisionConfirmModal()">تأكيد القرار</button>
             </div>
         </form>
+    </div>
+</div>
+@endif
+
+@if($canIssueDecision ?? false)
+<div class="modal-backdrop" id="decisionConfirmModal">
+    <div class="decision-box" style="max-width:480px;">
+        <div class="decision-header">
+            <h3>تأكيد القرار الطبي</h3>
+            <button type="button" class="modal-close" onclick="closeDecisionConfirmModal()">✕</button>
+        </div>
+        <div class="decision-body">
+            <p id="decisionConfirmText" style="font-size:0.92rem;color:#334155;font-weight:700;line-height:1.7;margin:0;">
+                هل أنت متأكد من تنفيذ هذا القرار؟
+            </p>
+        </div>
+        <div class="decision-footer">
+            <button type="button" class="btn-cancel" onclick="closeDecisionConfirmModal()">إلغاء</button>
+            <button type="button" class="btn-submit" onclick="submitDecisionForm()">نعم، تنفيذ القرار</button>
+        </div>
     </div>
 </div>
 @endif
@@ -551,14 +571,32 @@
         document.getElementById('decisionInput').value = el.dataset.decision;
     }
 
-    function confirmDecisionSubmit(event) {
+    function openDecisionConfirmModal() {
         const decision = document.getElementById('decisionInput').value;
         const labels = {
             discharge: 'خروج بعد العلاج',
             slaughter: 'ذبح اضطراري',
         };
-        return confirm('تأكيد القرار: ' + (labels[decision] || decision) + '؟');
+        const label = labels[decision] || decision;
+        const textEl = document.getElementById('decisionConfirmText');
+        if (textEl) {
+            textEl.textContent = 'هل أنت متأكد من اعتماد قرار «' + label + '» لهذه الحالة؟';
+        }
+        document.getElementById('decisionConfirmModal')?.classList.add('open');
     }
+
+    function closeDecisionConfirmModal() {
+        document.getElementById('decisionConfirmModal')?.classList.remove('open');
+    }
+
+    function submitDecisionForm() {
+        closeDecisionConfirmModal();
+        document.getElementById('decisionForm')?.requestSubmit();
+    }
+
+    document.getElementById('decisionConfirmModal')?.addEventListener('click', function (e) {
+        if (e.target === this) closeDecisionConfirmModal();
+    });
 
     document.getElementById('decisionModal')?.addEventListener('click', function (e) {
         if (e.target === this) closeDecisionModal();
@@ -737,7 +775,7 @@
             }
 
             const preview = f.diagnosis || f.treatment || 'متابعة طبية';
-            const openClass = index === 0 ? ' is-open' : '';
+            const openClass = '';
             const statusHtml = f.status ? `
                 <div class="follow-field">
                     <div class="follow-field-label">الحالة</div>
@@ -751,7 +789,7 @@
                     <button
                         type="button"
                         class="follow-card-toggle"
-                        aria-expanded="${index === 0 ? 'true' : 'false'}"
+                        aria-expanded="false"
                         onclick="toggleFollowCard(this)"
                     >
                         <div class="follow-card-main">

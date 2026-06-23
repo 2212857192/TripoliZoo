@@ -113,7 +113,6 @@ class HealthCaseFlowTest extends TestCase
         );
 
         $response->assertRedirect(route('care.health.index', [
-            'case' => $healthCase->case_number,
             'status' => HealthCaseStatus::Referred->value,
         ]));
         $response->assertSessionHas('success');
@@ -170,7 +169,6 @@ class HealthCaseFlowTest extends TestCase
         $this->actingAs($careHead)
             ->post(route('care.health.refer', $healthCase->case_number))
             ->assertRedirect(route('care.health.index', [
-                'case' => $healthCase->case_number,
                 'status' => HealthCaseStatus::Referred->value,
             ]))
             ->assertSessionHas('success');
@@ -309,7 +307,6 @@ class HealthCaseFlowTest extends TestCase
         $this->actingAs($careHead)->post(
             route('care.health.refer', $healthCase->case_number),
         )->assertRedirect(route('care.health.index', [
-            'case' => $healthCase->case_number,
             'status' => HealthCaseStatus::Referred->value,
         ]));
 
@@ -375,6 +372,50 @@ class HealthCaseFlowTest extends TestCase
             ->get(route('vet.cases.hospital.show', $hospitalCase->case_number))
             ->assertOk()
             ->assertSee($healthCase->description, false);
+    }
+
+    public function test_supervisor_can_create_new_health_case_after_treatment_referral_rejected(): void
+    {
+        [$careHead, $healthCase] = $this->seedHealthCase();
+
+        $supervisor = User::query()
+            ->where('role', UserRole::GroupSupervisor->value)
+            ->firstOrFail();
+
+        $vetHead = User::factory()->create([
+            'role' => UserRole::VetHead->value,
+            'status' => 'active',
+        ]);
+
+        $this->actingAs($careHead)->post(route('care.health.refer', $healthCase->case_number));
+        $referral = TreatmentReferral::query()->firstOrFail();
+
+        $this->actingAs($vetHead)
+            ->post(route('vet.referrals.treatment.reject', $referral->referral_number), [
+                'rejection_reason' => 'الحالة لا تستدعي علاجاً في المستشفى حالياً.',
+            ])
+            ->assertRedirect(route('vet.referrals.treatment.index'));
+
+        $this->assertDatabaseHas('treatment_referrals', [
+            'id' => $referral->id,
+            'status' => TreatmentReferralStatus::Rejected->value,
+        ]);
+
+        $this->assertDatabaseHas('health_cases', [
+            'id' => $healthCase->id,
+            'status' => HealthCaseStatus::Reviewed->value,
+        ]);
+
+        Sanctum::actingAs($supervisor);
+
+        $this->postJson('/api/auth/supervisor/health-cases', [
+            'animal_code' => 'G003',
+            'description' => 'متابعة جديدة بعد رفض الإحالة',
+            'follow_up_kind' => HealthCaseFollowUpKind::NeedsReferral->value,
+            'animal_notes' => 'لا يزال يظهر خمولاً خفيفاً.',
+        ])->assertCreated();
+
+        $this->assertDatabaseCount('health_cases', 2);
     }
 
     public function test_vet_head_approving_referral_closes_open_field_case_as_referred_to_hospital(): void

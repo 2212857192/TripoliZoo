@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\HealthReportStatus;
 use App\Enums\QuarantineStatus;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Models\HealthReport;
 use App\Models\HealthReportNotification;
 use App\Models\Quarantine;
 use App\Models\QuarantineNotification;
@@ -24,6 +26,11 @@ class DoctorDashboardController extends Controller
         $activeCount = Quarantine::query()
             ->where('status', QuarantineStatus::UnderFollowUp)
             ->whereHas('animal', fn ($q) => $q->where('group', $group))
+            ->count();
+
+        $pendingHealthReportsCount = HealthReport::query()
+            ->where('group', $group)
+            ->where('status', HealthReportStatus::Sent->value)
             ->count();
 
         $unreadCount = QuarantineNotification::query()
@@ -92,6 +99,7 @@ class DoctorDashboardController extends Controller
             'active_field_cases_count' => $cases->activeFieldCount($group),
             'active_hospital_cases_count' => $cases->activeHospitalCount($group),
             'unread_notifications' => $unreadCount,
+            'pending_health_reports_count' => $pendingHealthReportsCount,
             'alerts' => $alerts,
         ]);
     }

@@ -16,6 +16,20 @@ class Animal extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new ExcludeQuarantineAnimals);
+
+        static::saving(function (Animal $animal): void {
+            if ($animal->isDirty('animal_group_id')) {
+                if ($animal->animal_group_id) {
+                    $animal->group = AnimalGroup::query()
+                        ->whereKey($animal->animal_group_id)
+                        ->value('name');
+                }
+            } elseif ($animal->isDirty('group') && filled($animal->group)) {
+                $animal->animal_group_id = AnimalGroup::query()
+                    ->where('name', $animal->group)
+                    ->value('id');
+            }
+        });
     }
 
     protected $fillable = [
@@ -23,6 +37,7 @@ class Animal extends Model
         'name',
         'species',
         'group',
+        'animal_group_id',
         'gender',
         'distinguishing_marks',
         'photo_path',
@@ -47,6 +62,11 @@ class Animal extends Model
             'birth_date' => 'date',
             'registered_at' => 'date',
         ];
+    }
+
+    public function animalGroup(): BelongsTo
+    {
+        return $this->belongsTo(AnimalGroup::class);
     }
 
     public function profile(): HasOne
@@ -87,6 +107,11 @@ class Animal extends Model
     public function receivingTasks(): HasMany
     {
         return $this->hasMany(ReceivingTask::class);
+    }
+
+    public function hospitalCases(): HasMany
+    {
+        return $this->hasMany(HospitalCase::class);
     }
 
     /** حيوان حي مسجّل رسمياً داخل الحديقة (وليس مجرد وجود ملف أو مسار حجر). */

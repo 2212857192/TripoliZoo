@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\HealthReportStatus;
 use App\Enums\ReceivingTaskStatus;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Models\HealthReport;
 use App\Models\ReceivingTask;
 use App\Models\SupervisorNotification;
 use App\Models\User;
@@ -35,6 +37,13 @@ class SupervisorDashboardController extends Controller
             'unread_notifications' => SupervisorNotification::query()
                 ->where('user_id', $user->id)
                 ->whereNull('read_at')
+                ->count(),
+            'pending_health_reports_count' => HealthReport::query()
+                ->where('group', $user->assigned_group)
+                ->whereIn('status', [
+                    HealthReportStatus::Sent->value,
+                    HealthReportStatus::Received->value,
+                ])
                 ->count(),
             'active_diet_recommendations' => count($dietRecommendations),
             'diet_recommendations' => $dietRecommendations,

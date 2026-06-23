@@ -83,7 +83,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
     final quarantineCases = dashboard.data != null
         ? dashboard.quarantineActiveCount
         : quarantineProvider.activeCount;
-    final unreadNotifications = dashboard.unreadNotifications;
+    final pendingHealthReports = dashboard.pendingHealthReportsCount;
     final alerts = dashboard.alerts;
     final dashboardError = dashboard.errorMessage;
 
@@ -112,7 +112,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                       context,
                       doctorName,
                       groupName,
-                      unreadNotifications,
+                      dashboard.pendingHealthReportsCount,
                     ),
                   ),
                   
@@ -127,7 +127,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                         ],
                         _buildOverviewSection(
                           context,
-                          notifications: unreadNotifications,
+                          pendingHealthReports: pendingHealthReports,
                           quarantine: quarantineCases,
                           fieldCases: dashboard.activeFieldCasesCount,
                           hospitalCases: dashboard.activeHospitalCasesCount,
@@ -160,7 +160,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
     BuildContext context,
     String name,
     String? groupName,
-    int unreadNotifications,
+    int pendingHealthReports,
   ) {
     final topPad = MediaQuery.of(context).padding.top;
 
@@ -169,17 +169,28 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
       child: Container(
         padding: EdgeInsets.fromLTRB(16, topPad + 16, 16, 20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          gradient: AppColors.headerGradient,
           borderRadius: const BorderRadius.vertical(
             bottom: Radius.circular(32),
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
+            ),
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
           border: Border(
             bottom: BorderSide(
-              color: DoctorUi.border,
-              width: 1.5,
+              color: AppColors.primary.withValues(alpha: 0.12),
+              width: 1.2,
             ),
           ),
-          boxShadow: DoctorUi.cardShadow,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -222,7 +233,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                     style: GoogleFonts.cairo(
                       fontSize: 16.5,
                       fontWeight: FontWeight.w900,
-                      color: DoctorUi.textPrimary,
+                      color: AppColors.textPrimary,
                       height: 1.2,
                     ),
                   ),
@@ -236,7 +247,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                       color: AppColors.primary.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: AppColors.primary.withValues(alpha: 0.15),
+                        color: AppColors.primary.withValues(alpha: 0.18),
                         width: 1,
                       ),
                     ),
@@ -257,7 +268,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
             ),
             const SizedBox(width: 12),
             // Notification bell
-            _buildNotificationBell(context, unreadNotifications),
+            _buildNotificationBell(context, pendingHealthReports),
           ],
         ),
       ),
@@ -266,12 +277,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
 
   Widget _buildNotificationBell(BuildContext context, int unreadCount) {
     return GestureDetector(
-      onTap: () async {
-        await context.push('/doctor/notifications');
-        if (context.mounted) {
-          context.read<DoctorDashboardProvider>().load();
-        }
-      },
+      onTap: () => context.push('/doctor/notifications'),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -279,23 +285,23 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.6),
+              color: Colors.white,
               shape: BoxShape.circle,
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.9),
-                width: 1.2,
+                color: const Color(0xFFE2E8F0),
+                width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF142E1B).withValues(alpha: 0.04),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
             child: const Icon(
               Icons.notifications_outlined,
-              color: DoctorUi.textPrimary,
+              color: Color(0xFF64748B),
               size: 20,
             ),
           ),
@@ -304,11 +310,15 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
               top: -1,
               left: -1,
               child: Container(
-                width: 16,
+                width: unreadCount > 9 ? 18 : 16,
                 height: 16,
+                padding: unreadCount > 9
+                    ? const EdgeInsets.symmetric(horizontal: 3)
+                    : EdgeInsets.zero,
                 decoration: BoxDecoration(
                   color: AppColors.accent,
-                  shape: BoxShape.circle,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: Colors.white,
                     width: 2,
@@ -337,7 +347,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
   // ─────────────────────────────────────────────
   Widget _buildOverviewSection(
     BuildContext context, {
-    required int notifications,
+    required int pendingHealthReports,
     required int quarantine,
     required int fieldCases,
     required int hospitalCases,
@@ -362,16 +372,11 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
             childAspectRatio: 1.35,
             children: [
               _StatTile(
-                count: notifications,
-                title: 'إشعارات الحجر',
-                subtitle: 'تنبيهات غير مقروءة',
-                icon: Icons.notifications_active_outlined,
-                onTap: () async {
-                  await context.push('/doctor/notifications');
-                  if (context.mounted) {
-                    context.read<DoctorDashboardProvider>().load();
-                  }
-                },
+                count: pendingHealthReports,
+                title: 'البلاغات',
+                subtitle: 'بلاغات جديدة بانتظار الاطلاع',
+                icon: Icons.assignment_outlined,
+                onTap: () => context.go('/doctor/reports'),
               ),
               _StatTile(
                 count: quarantine,

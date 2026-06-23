@@ -43,7 +43,8 @@ class TicketTypeController extends Controller
 
     public function update(Request $request, TicketType $ticket): RedirectResponse
     {
-        $ticket->update($this->validated($request));
+        $data = $this->validated($request, $ticket);
+        $ticket->update($data);
 
         AdminActivityLogger::log('ticket_type', $ticket->id, 'updated', "تعديل فئة تذكرة: {$ticket->displayLabel()}");
 
@@ -67,7 +68,7 @@ class TicketTypeController extends Controller
     }
 
     /** @return array<string, mixed> */
-    private function validated(Request $request): array
+    private function validated(Request $request, ?TicketType $ticket = null): array
     {
         $data = $request->validate([
             'target_description' => ['required', 'string', 'max:255'],
@@ -80,7 +81,9 @@ class TicketTypeController extends Controller
             'visitor_age_group.required' => 'يرجى إدخال العمر.',
         ]);
 
-        $data['is_active'] = $request->boolean('is_active', true);
+        $data['is_active'] = $request->has('is_active')
+            ? $request->boolean('is_active')
+            : ($ticket?->is_active ?? true);
 
         return $data;
     }

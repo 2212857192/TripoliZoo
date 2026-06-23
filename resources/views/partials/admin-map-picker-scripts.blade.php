@@ -11,13 +11,14 @@
 
         function imageMetrics() {
             const pickerRect = picker.getBoundingClientRect();
-            const imgRect = img.getBoundingClientRect();
+            const imgElemRect = img.getBoundingClientRect();
+            const content = getImageContentRect(img);
 
             return {
-                offsetX: imgRect.left - pickerRect.left,
-                offsetY: imgRect.top - pickerRect.top,
-                width: imgRect.width,
-                height: imgRect.height,
+                offsetX: (imgElemRect.left - pickerRect.left) + content.offsetX,
+                offsetY: (imgElemRect.top - pickerRect.top) + content.offsetY,
+                width: content.width,
+                height: content.height,
             };
         }
 

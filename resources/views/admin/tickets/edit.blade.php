@@ -266,7 +266,7 @@
     <!-- Header Hero -->
     <div class="page-hero">
         <h2>تعديل فئة التذكرة</h2>
-        <p>حدّث السعر والحالة والبيانات المعروضة في تطبيق الزوار.</p>
+        <p>حدّث السعر وبيانات فئة التذكرة.</p>
     </div>
 
     <!-- Main Container -->
@@ -308,17 +308,6 @@
                         <input type="text" name="visitor_age_group" class="form-input" value="{{ old('visitor_age_group', $ticket->visitor_age_group) }}" placeholder="مثال: 12 سنة فأكثر" required>
                         @error('visitor_age_group')<div style="color:#EF4444;font-size:0.82rem;margin-top:6px;">{{ $message }}</div>@enderror
                     </div>
-                </div>
-
-                <div class="form-divider"></div>
-
-                <div class="toggle-row">
-                    <label>تفعيل فئة التذكرة للبيع في تطبيق الزوار</label>
-                    <label class="switch">
-                        <input type="hidden" name="is_active" value="0">
-                        <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $ticket->is_active))>
-                        <span class="slider"></span>
-                    </label>
                 </div>
 
                 <div class="actions-row">

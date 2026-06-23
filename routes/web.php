@@ -10,6 +10,7 @@ use App\Http\Controllers\Records\RecordsMortalityLogController;
 use App\Http\Controllers\Records\RecordsSlaughterLogController;
 use App\Http\Controllers\Records\RecordsStillbirthLogController;
 use App\Http\Controllers\Director\DirectorDashboardController;
+use App\Http\Controllers\Admin\AnimalGroupController;
 use App\Http\Controllers\Admin\AnimalProfileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EmployeeController;
@@ -91,6 +92,13 @@ Route::prefix('admin')
         Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
         Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
         Route::patch('/employees/{employee}/toggle', [EmployeeController::class, 'toggleStatus'])->name('employees.toggle');
+
+        Route::get('/animal-groups', [AnimalGroupController::class, 'index'])->name('animal-groups.index');
+        Route::get('/animal-groups/create', [AnimalGroupController::class, 'create'])->name('animal-groups.create');
+        Route::post('/animal-groups', [AnimalGroupController::class, 'store'])->name('animal-groups.store');
+        Route::get('/animal-groups/{animalGroup}/edit', [AnimalGroupController::class, 'edit'])->name('animal-groups.edit');
+        Route::put('/animal-groups/{animalGroup}', [AnimalGroupController::class, 'update'])->name('animal-groups.update');
+        Route::patch('/animal-groups/{animalGroup}/toggle', [AnimalGroupController::class, 'toggle'])->name('animal-groups.toggle');
 
         Route::get('/animals', [AnimalProfileController::class, 'index'])->name('animals.index');
         Route::get('/animals/create', [AnimalProfileController::class, 'create'])->name('animals.create');
@@ -226,6 +234,7 @@ Route::prefix('director')
 
         Route::prefix('admin')->group(function () {
             Route::get('/employees', fn () => directorPage('admin.employees.index', app(EmployeeController::class)->index(request())->getData()));
+            Route::get('/animal-groups', fn () => directorPage('admin.animal-groups.index', app(AnimalGroupController::class)->index(request())->getData()));
             Route::get('/animals', fn (Request $request) => directorPage(
                 'admin.animals.index',
                 app(AdminAnimalProfileService::class)->indexViewData($request, readOnly: true),

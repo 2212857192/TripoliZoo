@@ -7,6 +7,7 @@ use App\Enums\Portal;
 use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -25,8 +26,28 @@ class User extends Authenticatable
         'role',
         'status',
         'assigned_group',
+        'animal_group_id',
         'joined_at',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (User $user): void {
+            if ($user->isDirty('animal_group_id')) {
+                if ($user->animal_group_id) {
+                    $user->assigned_group = AnimalGroup::query()
+                        ->whereKey($user->animal_group_id)
+                        ->value('name');
+                } else {
+                    $user->assigned_group = null;
+                }
+            } elseif ($user->isDirty('assigned_group') && filled($user->assigned_group)) {
+                $user->animal_group_id = AnimalGroup::query()
+                    ->where('name', $user->assigned_group)
+                    ->value('id');
+            }
+        });
+    }
 
     protected $hidden = [
         'password',
@@ -40,6 +61,11 @@ class User extends Authenticatable
             'password' => 'hashed',
             'joined_at' => 'date',
         ];
+    }
+
+    public function animalGroup(): BelongsTo
+    {
+        return $this->belongsTo(AnimalGroup::class);
     }
 
     public function roleEnum(): ?UserRole

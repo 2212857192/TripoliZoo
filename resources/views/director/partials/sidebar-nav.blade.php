@@ -7,7 +7,6 @@
     <span class="nav-item-text">نظرة عامة</span>
 </a>
 
-<div class="nav-label">المستشفى البيطري</div>
 <div class="nav-dropdown {{ request()->is('director/vet*') ? 'open' : '' }}">
     <button class="nav-item dropdown-toggle" onclick="toggleDropdown(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
@@ -15,9 +14,6 @@
         <svg class="arrow-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
     </button>
     <div class="dropdown-menu" style="{{ request()->is('director/vet*') ? 'display: flex;' : 'display: none;' }}">
-        <span class="nav-item" style="cursor:default; opacity:0.85; padding-right:28px;">
-            <span style="font-size:0.72rem;color:#94a3b8;font-weight:800;">الحالات الطبية</span>
-        </span>
         <a href="{{ $dp }}/vet/cases/field" class="nav-item {{ request()->is('director/vet/cases/field*') ? 'active' : '' }}"><span style="font-size:0.8rem;color:#64748b;">•</span><span class="nav-item-text">الميدانية الطبية</span></a>
         <a href="{{ $dp }}/vet/cases/hospital" class="nav-item {{ request()->is('director/vet/cases/hospital*') ? 'active' : '' }}"><span style="font-size:0.8rem;color:#64748b;">•</span><span class="nav-item-text">داخل المستشفى</span></a>
         <a href="{{ $dp }}/vet/quarantine" class="nav-item {{ request()->is('director/vet/quarantine*') ? 'active' : '' }}"><span style="font-size:0.8rem;color:#64748b;">•</span><span class="nav-item-text">الحجر الصحي</span></a>
@@ -27,7 +23,6 @@
     </div>
 </div>
 
-<div class="nav-label">الرعاية والتغذية</div>
 <div class="nav-dropdown {{ request()->is('director/care*') ? 'open' : '' }}">
     <button class="nav-item dropdown-toggle" onclick="toggleDropdown(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -45,7 +40,6 @@
     </div>
 </div>
 
-<div class="nav-label">السجلات والتوثيق</div>
 <div class="nav-dropdown {{ request()->is('director/records*') ? 'open' : '' }}">
     <button class="nav-item dropdown-toggle" onclick="toggleDropdown(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>

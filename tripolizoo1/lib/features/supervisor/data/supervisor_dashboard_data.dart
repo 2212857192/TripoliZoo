@@ -4,6 +4,7 @@ class SupervisorDashboardData {
     required this.supervisorName,
     required this.groupName,
     required this.unreadNotifications,
+    required this.pendingHealthReportsCount,
     required this.pendingReceivingTasks,
     required this.activeDietRecommendations,
     required this.dietRecommendations,
@@ -12,6 +13,7 @@ class SupervisorDashboardData {
   final String supervisorName;
   final String groupName;
   final int unreadNotifications;
+  final int pendingHealthReportsCount;
   final int pendingReceivingTasks;
   final int activeDietRecommendations;
   final List<DietRecommendation> dietRecommendations;
@@ -20,6 +22,7 @@ class SupervisorDashboardData {
     supervisorName: 'محمد',
     groupName: 'القططية',
     unreadNotifications: 2,
+    pendingHealthReportsCount: 1,
     pendingReceivingTasks: 1,
     activeDietRecommendations: 3,
     dietRecommendations: [

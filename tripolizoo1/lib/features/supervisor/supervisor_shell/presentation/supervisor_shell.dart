@@ -19,7 +19,7 @@ class SupervisorShell extends StatelessWidget {
     final bottomPad = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: Colors.white,
       body: navigationShell,
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(

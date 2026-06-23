@@ -26,7 +26,6 @@ class _OperationalNoteFormSheetState extends State<OperationalNoteFormSheet> {
   final _formKey = GlobalKey<FormState>();
   final _scrollController = ScrollController();
   final _summary = TextEditingController();
-  final _fullText = TextEditingController();
   final _repository = OperationalNotesApiRepository();
   final _attachmentPicker = ImageAttachmentPicker();
 
@@ -38,7 +37,6 @@ class _OperationalNoteFormSheetState extends State<OperationalNoteFormSheet> {
   void dispose() {
     _scrollController.dispose();
     _summary.dispose();
-    _fullText.dispose();
     super.dispose();
   }
 
@@ -69,7 +67,6 @@ class _OperationalNoteFormSheetState extends State<OperationalNoteFormSheet> {
             ? 'feeding'
             : 'general',
         summary: _summary.text,
-        details: _fullText.text,
         attachment: _attachment,
       );
 
@@ -122,13 +119,6 @@ class _OperationalNoteFormSheetState extends State<OperationalNoteFormSheet> {
           hint: 'تأخر وصول الغذاء للمجموعة',
           validator: (v) =>
               v == null || v.trim().isEmpty ? 'أدخل نص الملاحظة' : null,
-        ),
-        const SizedBox(height: 16),
-        const SupervisorFormLabel('تفاصيل إضافية'),
-        SupervisorFormMultilineField(
-          controller: _fullText,
-          hint: 'اختياري — يظهر عند عرض المزيد',
-          minLines: 2,
         ),
         const SizedBox(height: 12),
         SupervisorAttachmentButton(

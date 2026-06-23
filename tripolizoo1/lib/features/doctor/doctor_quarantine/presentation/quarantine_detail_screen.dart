@@ -187,24 +187,6 @@ class _QuarantineDetailScreenState extends State<QuarantineDetailScreen> {
                             ),
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            record.tempNumber,
-                            style: GoogleFonts.cairo(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.primaryDark,
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -216,11 +198,6 @@ class _QuarantineDetailScreenState extends State<QuarantineDetailScreen> {
                       _SectionCard(
                         title: 'بيانات الحيوان داخل الحجر',
                         children: [
-                          if (record.animalCode != null)
-                            _DetailRow(
-                              label: 'الكود الفريد',
-                              value: record.animalCode!,
-                            ),
                           _DetailRow(
                             label: 'الرقم المؤقت',
                             value: record.tempNumber,
@@ -239,11 +216,6 @@ class _QuarantineDetailScreenState extends State<QuarantineDetailScreen> {
                             label: 'المجموعة المتوقعة',
                             value: record.expectedGroup,
                           ),
-                          if (record.animalSource != null)
-                            _DetailRow(
-                              label: 'مصدر الحيوان',
-                              value: record.animalSource!,
-                            ),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -340,21 +312,6 @@ class _QuarantineDetailScreenState extends State<QuarantineDetailScreen> {
                                             fontSize: 13,
                                             fontWeight: FontWeight.w600,
                                             color: DoctorUi.textPrimary,
-                                          ),
-                                        ),
-                                      ],
-                                      if (vaccine.doctorName != null) ...[
-                                        const SizedBox(height: 4),
-                                        Align(
-                                          alignment:
-                                              AlignmentDirectional.centerEnd,
-                                          child: Text(
-                                            _doctorLabel(vaccine.doctorName),
-                                            style: GoogleFonts.cairo(
-                                              fontSize: 11.5,
-                                              fontWeight: FontWeight.w600,
-                                              color: DoctorUi.muted,
-                                            ),
                                           ),
                                         ),
                                       ],

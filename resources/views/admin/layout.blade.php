@@ -427,6 +427,11 @@
                 <span class="nav-item-text">حسابات الموظفين</span>
             </a>
 
+            <a href="/admin/animal-groups" class="nav-item {{ request()->is('admin/animal-groups*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18"/><path d="M6 3h12v18H6z"/><path d="M9 12h6"/><path d="M9 16h6"/></svg>
+                <span class="nav-item-text">المجموعات الحيوانية</span>
+            </a>
+
             <a href="/admin/animals" class="nav-item {{ request()->is('admin/animals') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 12H16c-.7 2-2 3-4 3s-3.3-1-4-3H2.5"/><path d="M5.5 5.1L2 12v6c0 1.1.9 2 2 2h16a2 2 0 002-2v-6l-3.4-6.9A2 2 0 0017 5H7a2 2 0 00-1.5.1z"/></svg>
                 <span class="nav-item-text">المحتوى التعريفي للحيوانات</span>

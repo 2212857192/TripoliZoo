@@ -175,6 +175,37 @@ class BirthRegistrationService
         return $newborn->status === AnimalStatus::UnderBirthFollowUp->value;
     }
 
+    public function isDeceased(Animal $newborn): bool
+    {
+        return in_array($newborn->status, [
+            AnimalStatus::Dead->value,
+            AnimalStatus::PendingMortalityApproval->value,
+        ], true);
+    }
+
+    /** @return array{key: string, label: string} */
+    public function displayStatus(Animal $newborn): array
+    {
+        if ($this->isDeceased($newborn)) {
+            return ['key' => 'deceased', 'label' => 'نافق'];
+        }
+
+        if ($this->isMonitoring($newborn)) {
+            return ['key' => 'monitoring', 'label' => 'قيد المتابعة'];
+        }
+
+        if ($newborn->status === AnimalStatus::Active->value) {
+            return ['key' => 'completed', 'label' => 'دائم داخل الحديقة'];
+        }
+
+        $status = AnimalStatus::tryFrom((string) $newborn->status);
+
+        return [
+            'key' => 'other',
+            'label' => $status?->label() ?? '—',
+        ];
+    }
+
     public function careHeadUser(): User
     {
         /** @var User $user */

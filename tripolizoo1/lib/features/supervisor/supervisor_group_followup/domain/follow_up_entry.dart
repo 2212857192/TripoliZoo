@@ -172,8 +172,5 @@ class OperationalNoteEntry extends FollowUpEntry {
   @override
   FollowUpEntryType get type => FollowUpEntryType.operationalNote;
 
-  bool get isExpandable =>
-      (fullText != null && fullText!.length > summary.length) ||
-      (extraNotes != null && extraNotes!.isNotEmpty) ||
-      hasAttachment;
+  bool get isExpandable => hasAttachment;
 }

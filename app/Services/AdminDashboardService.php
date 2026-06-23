@@ -63,11 +63,9 @@ class AdminDashboardService
                 $animalsWithoutProfile,
             ),
             'alerts' => $this->alerts(
-                $visitSettings,
                 $ticketTypes,
                 $profiles,
                 $mapLocations,
-                $animalsWithoutProfile,
             ),
             'recentActivities' => $this->recentActivities(),
         ];
@@ -149,21 +147,11 @@ class AdminDashboardService
      * @return list<array{message: string, url: string, tone: string}>
      */
     private function alerts(
-        VisitSetting $visitSettings,
         Collection $ticketTypes,
         Collection $profiles,
         Collection $mapLocations,
-        int $animalsWithoutProfile,
     ): array {
         $alerts = [];
-
-        if ($animalsWithoutProfile > 0) {
-            $alerts[] = [
-                'message' => "{$animalsWithoutProfile} حيوان داخل الحديقة بلا محتوى تعريفي في تطبيق الزائر.",
-                'url' => route('admin.animals.create'),
-                'tone' => 'warn',
-            ];
-        }
 
         if ($ticketTypes->where('is_active', true)->isEmpty()) {
             $alerts[] = [
@@ -185,14 +173,6 @@ class AdminDashboardService
             $alerts[] = [
                 'message' => 'لا توجد مواقع نشطة على الخريطة التفاعلية.',
                 'url' => route('admin.map-locations.index'),
-                'tone' => 'warn',
-            ];
-        }
-
-        if (! $visitSettings->status_visible) {
-            $alerts[] = [
-                'message' => 'حالة الزيارة مخفية عن تطبيق الزائر.',
-                'url' => route('admin.visit-info.show'),
                 'tone' => 'warn',
             ];
         }

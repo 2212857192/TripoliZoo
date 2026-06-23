@@ -50,6 +50,8 @@
     .badge-status-monitoring .dot { background: #3b82f6; }
     .badge-status-completed { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
     .badge-status-completed .dot { background: #22c55e; }
+    .badge-status-deceased { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .badge-status-deceased .dot { background: #ef4444; }
 
     .days-ok { color: #16a34a; font-weight: 800; }
     .days-warn { color: #d97706; font-weight: 800; }
@@ -159,8 +161,8 @@
             <option value="" @selected(empty($filters['status']))>كل الحالات</option>
             <option value="monitoring" @selected(($filters['status'] ?? '') === 'monitoring')>قيد المتابعة</option>
             <option value="completed" @selected(($filters['status'] ?? '') === 'completed')>دائم داخل الحديقة</option>
+            <option value="deceased" @selected(($filters['status'] ?? '') === 'deceased')>نافق</option>
         </select>
-        <button type="submit" class="btn-submit" style="padding:10px 18px;">بحث</button>
     </form>
 </div>
 
@@ -182,8 +184,10 @@
             <tbody>
                 @forelse($newborns as $newborn)
                     @php
-                        $monitoring = $newborn->status === \App\Enums\AnimalStatus::UnderBirthFollowUp->value;
-                        $daysRemaining = app(\App\Services\BirthRegistrationService::class)->daysRemaining($newborn);
+                        $birthService = app(\App\Services\BirthRegistrationService::class);
+                        $monitoring = $birthService->isMonitoring($newborn);
+                        $displayStatus = $birthService->displayStatus($newborn);
+                        $daysRemaining = $birthService->daysRemaining($newborn);
                         $daysClass = 'days-ok';
                         if ($monitoring && $daysRemaining !== null) {
                             if ($daysRemaining <= 1) {
@@ -230,10 +234,14 @@
                             @endif
                         </td>
                         <td>
-                            @if($monitoring)
-                                <span class="badge badge-status-monitoring"><span class="dot"></span>قيد المتابعة</span>
+                            @if($displayStatus['key'] === 'monitoring')
+                                <span class="badge badge-status-monitoring"><span class="dot"></span>{{ $displayStatus['label'] }}</span>
+                            @elseif($displayStatus['key'] === 'deceased')
+                                <span class="badge badge-status-deceased"><span class="dot"></span>{{ $displayStatus['label'] }}</span>
+                            @elseif($displayStatus['key'] === 'completed')
+                                <span class="badge badge-status-completed"><span class="dot"></span>{{ $displayStatus['label'] }}</span>
                             @else
-                                <span class="badge badge-status-completed"><span class="dot"></span>دائم داخل الحديقة</span>
+                                <span class="badge badge-status-completed"><span class="dot"></span>{{ $displayStatus['label'] }}</span>
                             @endif
                         </td>
                         <td>

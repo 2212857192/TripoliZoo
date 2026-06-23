@@ -38,7 +38,7 @@ return new class extends Migration
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
 
-            $table->unique(['user_id', 'mortality_case_id']);
+            $table->unique(['user_id', 'mortality_case_id'], 'mort_case_notif_user_case_unique');
         });
     }
 

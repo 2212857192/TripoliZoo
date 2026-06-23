@@ -30,6 +30,7 @@ Future<GpsReading?> _currentPosition() async {
   return GpsReading(
     latitude: position.latitude,
     longitude: position.longitude,
+    accuracyMeters: position.accuracy,
   );
 }
 
@@ -43,6 +44,7 @@ Stream<GpsReading> _watchPosition({Duration interval = const Duration(seconds: 2
     (position) => GpsReading(
       latitude: position.latitude,
       longitude: position.longitude,
+      accuracyMeters: position.accuracy,
     ),
   );
 }

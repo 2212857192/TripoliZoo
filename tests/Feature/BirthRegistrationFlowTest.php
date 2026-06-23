@@ -226,6 +226,21 @@ class BirthRegistrationFlowTest extends TestCase
             ->assertSee('قيد المتابعة');
     }
 
+    public function test_care_births_index_shows_deceased_newborn_status(): void
+    {
+        [$supervisor, $mother, $careHead] = $this->seedMother();
+        $this->registerBirth($supervisor, $mother, 1);
+        $newborn = Animal::underBirthFollowUp()->firstOrFail();
+        $newborn->update(['status' => AnimalStatus::Dead->value]);
+
+        $this->actingAs($careHead)
+            ->get(route('care.births.index'))
+            ->assertOk()
+            ->assertSee($newborn->code)
+            ->assertSee('badge-status-deceased', false)
+            ->assertSee('نافق', false);
+    }
+
     public function test_birth_registration_requires_newborn_photo(): void
     {
         [$supervisor, $mother] = $this->seedMother();

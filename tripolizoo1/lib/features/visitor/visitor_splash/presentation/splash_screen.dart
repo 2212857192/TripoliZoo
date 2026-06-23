@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 import 'package:tripolizoo/shared/constants/app_colors.dart';
 import 'package:tripolizoo/shared/constants/app_constants.dart';
 import 'package:tripolizoo/features/visitor/visitor_auth/presentation/auth_provider.dart';
@@ -15,173 +16,208 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnim;
-  late Animation<double> _slideAnim;
+  late VideoPlayerController _videoController;
+  bool _isVideoInitialized = false;
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _fadeController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1000),
     );
-    _fadeAnim = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
-    _slideAnim = Tween<double>(begin: 30, end: 0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+    _fadeAnimation = CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeIn,
     );
-    _controller.forward();
+    _initializeVideo();
+  }
+
+  Future<void> _initializeVideo() async {
+    _videoController = VideoPlayerController.asset('assets/welcome.MP4');
+    try {
+      await _videoController.initialize();
+      await _videoController.setVolume(0.0);
+      _videoController.setLooping(false);
+      _videoController.play();
+      _videoController.addListener(_videoListener);
+      if (mounted) {
+        setState(() => _isVideoInitialized = true);
+        _fadeController.forward();
+      }
+    } catch (e) {
+      debugPrint('Video error: $e');
+      _navigateToNextScreen();
+    }
+  }
+
+  void _videoListener() {
+    if (_videoController.value.position >= _videoController.value.duration) {
+      _videoController.removeListener(_videoListener);
+      _navigateToNextScreen();
+    }
+  }
+
+  void _navigateToNextScreen() {
+    if (!mounted) return;
+    final auth = context.read<AuthProvider>();
+    if (auth.isAuthenticated) {
+      context.go(postLoginRoute(auth.user));
+    } else {
+      context.go('/login');
+    }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _videoController.removeListener(_videoListener);
+    _videoController.dispose();
+    _fadeController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.primaryDark,
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            'assets/images/background.jpg',
-            fit: BoxFit.cover,
-          ),
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black.withValues(alpha: 0.2),
-                  AppColors.primaryDark.withValues(alpha: 0.85),
-                  AppColors.primaryDark,
-                ],
+          // ── 1. فيديو كامل الشاشة ──────────────────────────────
+          if (_isVideoInitialized)
+            FittedBox(
+              fit: BoxFit.cover,
+              clipBehavior: Clip.hardEdge,
+              child: SizedBox(
+                width: _videoController.value.size.width,
+                height: _videoController.value.size.height,
+                child: VideoPlayer(_videoController),
               ),
-            ),
-          ),
-          FadeTransition(
-            opacity: _fadeAnim,
-            child: AnimatedBuilder(
-              animation: _slideAnim,
-              builder: (context, child) => Transform.translate(
-                offset: Offset(0, _slideAnim.value),
-                child: child,
-              ),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 60),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.primaryLight.withValues(alpha: 0.7),
-                            width: 3,
-                          ),
-                        ),
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/images/image2.png',
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        AppConstants.appName,
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                            ),
-                      ),
-                      Text(
-                        AppConstants.appNameEn,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.7),
-                          letterSpacing: 4,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'اكتشف عجائب الطبيعة في قلب طرابلس',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.85),
-                          fontSize: 15,
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-                      PrimarySplashButton(
-                        onTap: () {
-                          final auth = context.read<AuthProvider>();
-                          if (auth.isAuthenticated) {
-                            context.go(postLoginRoute(auth.user));
-                          } else {
-                            context.go('/login');
-                          }
-                        },
-                      ),
-                    ],
-                  ),
+            )
+          else
+            Container(color: AppColors.primaryDark),
+
+          // ── 2. Overlay فقط في الأسفل ──────────────────────────
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: MediaQuery.of(context).size.height * 0.52,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    AppColors.primaryDark.withValues(alpha: 0.55),
+                    AppColors.primaryDark.withValues(alpha: 0.88),
+                    AppColors.primaryDark.withValues(alpha: 0.97),
+                  ],
+                  stops: const [0.0, 0.35, 0.65, 1.0],
                 ),
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
 
-class PrimarySplashButton extends StatelessWidget {
-  final VoidCallback onTap;
+          // ── 3. المحتوى في الأسفل ────────────────────────────────
+          FadeTransition(
+            opacity: _fadeAnimation,
+            child: SafeArea(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  // شعار دائري مع إطار أخضر مميز مثل الصورة تماماً
+                  Container(
+                    width: 90,
+                    height: 90,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: const Color(0xFF2E7D32),
+                        width: 3,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/app_logo.jpg',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
 
-  const PrimarySplashButton({super.key, required this.onTap});
+                  const SizedBox(height: 12),
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        height: 58,
-        decoration: BoxDecoration(
-          gradient: AppColors.primaryGradient,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.4),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'ابدأ رحلتك',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+                  // اسم الحديقة بالعربي
+                  Text(
+                    AppConstants.appName,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontFamily: 'Cairo',
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black45,
+                          offset: Offset(0, 1.5),
+                          blurRadius: 6,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  // اسم بالإنجليزي
+                  Text(
+                    AppConstants.appNameEn,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.75),
+                      fontSize: 13,
+                      letterSpacing: 1.2,
+                      fontWeight: FontWeight.w500,
+                      shadows: const [
+                        Shadow(
+                          color: Colors.black38,
+                          offset: Offset(0, 1),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // ── زر سهم مزدوج لأسفل بدون خلفية دائرية ────────
+                  GestureDetector(
+                    onTap: _navigateToNextScreen,
+                    child: const Icon(
+                      Icons.keyboard_double_arrow_down_rounded,
+                      color: Color(0xFF9CCC65), // لون أخضر فاتح/ليموني مطبق مثل الصورة تماماً
+                      size: 46,
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+                ],
               ),
             ),
-            SizedBox(width: 8),
-            Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 16),
-          ],
-        ),
+          ),
+
+
+        ],
       ),
     );
   }

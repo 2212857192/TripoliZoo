@@ -26,6 +26,8 @@ class FcmPushService
   public function sendToUsers(Collection|array $users, string $title, string $body, array $data = []): void
   {
     if (! $this->isConfigured()) {
+      Log::warning('FCM push skipped: configure FCM_PROJECT_ID and FCM_CREDENTIALS in .env');
+
       return;
     }
 
@@ -40,6 +42,14 @@ class FcmPushService
       ->pluck('token')
       ->unique()
       ->values();
+
+    if ($tokens->isEmpty()) {
+      Log::info('FCM push skipped: no device tokens for users', [
+        'user_ids' => $userIds->all(),
+      ]);
+
+      return;
+    }
 
     foreach ($tokens as $token) {
       $this->sendToToken($token, $title, $body, $data);
@@ -76,16 +86,26 @@ class FcmPushService
         'data' => $stringData,
         'android' => [
           'priority' => 'HIGH',
+          'ttl' => '86400s',
           'notification' => [
             'channel_id' => 'quarantine_alerts',
             'sound' => 'default',
             'notification_priority' => 'PRIORITY_MAX',
             'visibility' => 'PUBLIC',
+            'default_vibrate_timings' => true,
+            'default_sound' => true,
           ],
         ],
         'apns' => [
+          'headers' => [
+            'apns-priority' => '10',
+          ],
           'payload' => [
             'aps' => [
+              'alert' => [
+                'title' => $title,
+                'body' => $body,
+              ],
               'sound' => 'default',
               'content-available' => 1,
             ],

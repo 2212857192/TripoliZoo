@@ -7,7 +7,6 @@ import 'package:tripolizoo/features/doctor/doctor_cases/domain/medical_case.dart
 import 'package:tripolizoo/features/doctor/doctor_cases/presentation/forms/close_field_case_sheet.dart';
 import 'package:tripolizoo/features/doctor/doctor_cases/presentation/forms/register_medical_procedure_sheet.dart';
 import 'package:tripolizoo/features/doctor/doctor_cases/presentation/medical_cases_provider.dart';
-import 'package:tripolizoo/features/doctor/doctor_cases/presentation/widgets/medical_case_status_badge.dart';
 import 'package:tripolizoo/features/doctor/doctor_cases/presentation/widgets/medical_case_type_badge.dart';
 import 'package:tripolizoo/features/doctor/shared/doctor_form_launcher.dart';
 import 'package:tripolizoo/features/doctor/shared/doctor_ui.dart';
@@ -134,19 +133,9 @@ class _MedicalCaseDetailScreenState extends State<MedicalCaseDetailScreen> {
                       margin: const EdgeInsets.only(top: 8),
                       color: Colors.transparent,
                       padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
-                      child: Row(
-                        children: [
-                          Text(
-                            '#${medicalCase.caseNumber}',
-                            style: GoogleFonts.cairo(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: DoctorUi.muted,
-                            ),
-                          ),
-                          const Spacer(),
-                          MedicalCaseTypeBadge(type: medicalCase.type),
-                        ],
+                      child: Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: MedicalCaseTypeBadge(type: medicalCase.type),
                       ),
                     ),
                   ),
@@ -158,24 +147,9 @@ class _MedicalCaseDetailScreenState extends State<MedicalCaseDetailScreen> {
                           title: 'بيانات الحالة',
                           children: [
                             _DetailRow(
-                              label: 'رقم الحالة',
-                              value: medicalCase.caseNumber,
-                            ),
-                            _DetailRow(
                               label: 'نوع الحالة',
                               value: medicalCase.type.detailLabel,
                             ),
-                            _DetailRow(
-                              label: 'حالة الحالة',
-                              valueWidget: MedicalCaseStatusBadge(
-                                status: medicalCase.status,
-                              ),
-                            ),
-                            if (medicalCase.hospitalStatusLabel != null)
-                              _DetailRow(
-                                label: 'الحالة داخل المستشفى',
-                                value: medicalCase.hospitalStatusLabel!,
-                              ),
                             _DetailRow(
                               label: 'تاريخ فتح الحالة',
                               value: formatMedicalCaseDateTime(
@@ -186,13 +160,9 @@ class _MedicalCaseDetailScreenState extends State<MedicalCaseDetailScreen> {
                               label: 'سبب فتح الحالة',
                               value: medicalCase.openReason,
                             ),
-                            _DetailRow(
-                              label: 'مصدر الحالة',
-                              value: medicalCase.sourceLabel,
-                            ),
                             if (medicalCase.initialNote != null)
                               _DetailRow(
-                                label: 'ملاحظة أولية',
+                                label: 'ملاحظة مسجلة على الحيوان',
                                 value: medicalCase.initialNote!,
                               ),
                           ],
@@ -208,10 +178,6 @@ class _MedicalCaseDetailScreenState extends State<MedicalCaseDetailScreen> {
                             _DetailRow(
                               label: 'نوع الحيوان',
                               value: medicalCase.animalType,
-                            ),
-                            _DetailRow(
-                              label: 'المجموعة',
-                              value: medicalCase.animalGroup,
                             ),
                             if (medicalCase.gender != null)
                               _DetailRow(

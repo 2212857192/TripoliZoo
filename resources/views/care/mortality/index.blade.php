@@ -184,7 +184,6 @@
         <select class="filter-select" name="group" onchange="this.form.submit()">
             @include('partials.animal-group-options', ['emptyLabel' => 'كل المجموعات', 'withValues' => true, 'selected' => $filters['group'] ?? ''])
         </select>
-        <button type="submit" class="btn-search" style="padding:10px 20px;background:linear-gradient(135deg,#1a4a2e,#2d7a47);color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:0.85rem;font-weight:800;cursor:pointer;">بحث</button>
     </div>
 </form>
 

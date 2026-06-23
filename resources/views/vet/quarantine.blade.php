@@ -419,10 +419,6 @@
                         <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;" id="mdl_releasedAt">—</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9;">
-                        <span style="color: #64748b; font-size: 0.9rem; font-weight: 700;">الطبيب المسؤول</span>
-                        <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;" id="mdl_vet">—</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f5f9;">
                         <span style="color: #64748b; font-size: 0.9rem; font-weight: 700;">تاريخ دخول الحجر</span>
                         <span style="color: #0f172a; font-size: 0.95rem; font-weight: 800;" id="mdl_entryDate">—</span>
                     </div>
@@ -982,7 +978,6 @@ function populateDetailModal(d) {
     document.getElementById('mdl_age').textContent = d.age || '—';
     document.getElementById('mdl_initialHealth').textContent = d.initialHealth || '—';
     document.getElementById('mdl_source').textContent = d.source || '—';
-    document.getElementById('mdl_vet').textContent = d.vet || '—';
     document.getElementById('mdl_entryDate').textContent = d.entryDate || '—';
     document.getElementById('mdl_initialNotes').textContent = (d.initialNotes && String(d.initialNotes).trim()) ? d.initialNotes : '—';
 

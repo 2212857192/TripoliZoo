@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Enums\AnimalStatus;
 use App\Enums\FieldCaseStatus;
+use App\Enums\HealthCaseFollowUpKind;
+use App\Enums\HealthCaseStatus;
 use App\Enums\HospitalCaseStatus;
 use App\Enums\ReceivingTaskSource;
 use App\Enums\ReceivingTaskStatus;
@@ -96,6 +98,64 @@ class HospitalCaseDecisionTest extends TestCase
             'id' => $hospitalCase->animal_id,
             'status' => AnimalStatus::Active->value,
         ]);
+    }
+
+    public function test_supervisor_can_register_new_actions_after_hospital_discharge_receipt(): void
+    {
+        [$hospitalCase, $vetHead] = $this->seedPendingDischargeCase();
+        $healthCase = HealthCase::query()->findOrFail($hospitalCase->health_case_id);
+
+        $supervisor = User::query()
+            ->where('role', UserRole::GroupSupervisor->value)
+            ->where('assigned_group', $hospitalCase->group)
+            ->firstOrFail();
+
+        User::factory()->create([
+            'role' => UserRole::CareHead->value,
+            'status' => 'active',
+        ]);
+
+        $this->actingAs($vetHead)->post(
+            route('vet.cases.hospital.issue-decision', $hospitalCase),
+            ['decision' => 'discharge']
+        )->assertRedirect();
+
+        $task = ReceivingTask::query()
+            ->where('animal_id', $hospitalCase->animal_id)
+            ->where('source', ReceivingTaskSource::Hospital)
+            ->firstOrFail();
+
+        app(ReceivingTaskService::class)->confirmReceipt($task, $supervisor, 'تم الاستلام في المجموعة');
+
+        $this->assertDatabaseHas('health_cases', [
+            'id' => $healthCase->id,
+            'status' => HealthCaseStatus::Reviewed->value,
+        ]);
+
+        $this->assertDatabaseHas('hospital_cases', [
+            'id' => $hospitalCase->id,
+            'status' => HospitalCaseStatus::Discharged->value,
+        ]);
+
+        Sanctum::actingAs($supervisor);
+
+        $this->getJson('/api/auth/supervisor/animals')
+            ->assertOk()
+            ->assertJsonFragment(['id' => 'G050']);
+
+        $this->postJson('/api/auth/supervisor/health-cases', [
+            'animal_code' => 'G050',
+            'description' => 'متابعة بعد العودة من المستشفى',
+            'follow_up_kind' => HealthCaseFollowUpKind::NoReferral->value,
+        ])->assertCreated();
+
+        $this->postJson('/api/auth/supervisor/health-reports', [
+            'animal_code' => 'G050',
+            'description' => 'بلاغ متابعة بعد الخروج من المستشفى',
+        ])->assertCreated();
+
+        $this->assertDatabaseCount('health_cases', 2);
+        $this->assertDatabaseCount('health_reports', 1);
     }
 
     public function test_discharge_decision_moves_case_to_pending_handover_tab(): void

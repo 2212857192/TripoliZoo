@@ -15,5 +15,12 @@
         @if(!empty($item['time_label']))
             <span class="portal-notification-time">{{ $item['time_label'] }}</span>
         @endif
+        <div class="portal-notification-footer">
+            @if($item['is_unread'])
+                <button type="button" class="notification-mark-read-btn" onclick="markPortalNotificationItemRead(event, this)">تمت القراءة</button>
+            @else
+                <span class="notification-read-badge">مقروء</span>
+            @endif
+        </div>
     </div>
 @endforeach

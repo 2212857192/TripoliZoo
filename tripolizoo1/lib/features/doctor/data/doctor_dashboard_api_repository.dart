@@ -9,6 +9,7 @@ class DoctorDashboardData {
     required this.activeFieldCasesCount,
     required this.activeHospitalCasesCount,
     required this.unreadNotifications,
+    required this.pendingHealthReportsCount,
     required this.alerts,
   });
 
@@ -18,6 +19,7 @@ class DoctorDashboardData {
   final int activeFieldCasesCount;
   final int activeHospitalCasesCount;
   final int unreadNotifications;
+  final int pendingHealthReportsCount;
   final List<DoctorDashboardAlert> alerts;
 }
 
@@ -62,6 +64,7 @@ class DoctorDashboardApiRepository {
       activeFieldCasesCount: _asInt(json['active_field_cases_count']),
       activeHospitalCasesCount: _asInt(json['active_hospital_cases_count']),
       unreadNotifications: _asInt(json['unread_notifications']),
+      pendingHealthReportsCount: _asInt(json['pending_health_reports_count']),
       alerts: alerts,
     );
   }

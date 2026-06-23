@@ -30,6 +30,9 @@ class RecordsDashboardService
             'entries' => Quarantine::query()->passedQuarantine()->count(),
             'mortality' => MortalityCase::query()
                 ->where('victim_kind', MortalityVictimKind::ZooAnimal)
+                ->whereDoesntHave('animal.hospitalCases', function ($builder) {
+                    $builder->where('status', HospitalCaseStatus::Slaughtered->value);
+                })
                 ->count(),
             'slaughter' => HospitalCase::query()
                 ->where('status', HospitalCaseStatus::Slaughtered)

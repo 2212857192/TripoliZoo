@@ -106,10 +106,12 @@ class RecordsAnimalService
     {
         $animal->loadMissing(['birthRegistration', 'exitRecord']);
 
-        $newborns = Animal::withQuarantine()
-            ->where('mother_id', $animal->id)
-            ->orderByDesc('registered_at')
-            ->get();
+        $newborns = $animal->gender === 'أنثى'
+            ? Animal::withQuarantine()
+                ->where('mother_id', $animal->id)
+                ->orderByDesc('registered_at')
+                ->get()
+            : collect();
 
         $mortalityCase = MortalityCase::query()
             ->with(['autopsyReferral', 'supervisor', 'reviewer'])
@@ -239,12 +241,13 @@ class RecordsAnimalService
             'recipient' => ['required', 'string', 'max:255'],
             'reason' => ['required', 'string', 'max:2000'],
             'notes' => ['nullable', 'string', 'max:2000'],
-            'attachment' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
+            'attachment' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
         ], [
             'exit_date.required' => 'تاريخ الخروج مطلوب.',
             'exit_type.required' => 'نوع الخروج مطلوب.',
             'recipient.required' => 'الجهة المستلمة مطلوبة.',
             'reason.required' => 'سبب الخروج مطلوب.',
+            'attachment.required' => 'لا يمكن توثيق الخروج بدون إرفاق المستند المطلوب.',
         ]);
 
         $attachmentPath = $request->file('attachment')?->store('animal-exits', 'public');
@@ -680,12 +683,12 @@ class RecordsAnimalService
             return 'stillborn';
         }
 
-        if ($animal->status === AnimalStatus::Dead->value || $mortalityCase) {
-            return 'dead';
-        }
-
         if ($slaughterCase) {
             return 'slaughter';
+        }
+
+        if ($animal->status === AnimalStatus::Dead->value || $mortalityCase) {
+            return 'dead';
         }
 
         if ($animal->status === AnimalStatus::Quarantine->value) {
