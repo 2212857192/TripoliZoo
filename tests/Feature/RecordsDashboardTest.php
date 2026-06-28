@@ -52,7 +52,7 @@ class RecordsDashboardTest extends TestCase
         $stats = app(RecordsDashboardService::class)->stats();
 
         $this->assertSame(3, $stats['active_animals']);
-        $this->assertSame(6, $stats['total_profiles']);
+        $this->assertSame(7, $stats['total_profiles']);
         $this->assertSame(1, $stats['births']);
         $this->assertSame(1, $stats['entries']);
         $this->assertSame(1, $stats['mortality']);
@@ -168,11 +168,20 @@ class RecordsDashboardTest extends TestCase
             'reason' => 'نقل',
         ]);
 
+        $slaughterAnimal = Animal::withoutGlobalScopes()->create([
+            'code' => 'SLTR01',
+            'species' => 'بقرة',
+            'group' => 'الأبقار',
+            'gender' => 'أنثى',
+            'status' => AnimalStatus::Dead->value,
+            'registered_at' => '2024-06-01',
+        ]);
+
         $healthCase = HealthCase::create([
             'case_number' => 'HC-001',
-            'animal_id' => $deadAnimal->id,
+            'animal_id' => $slaughterAnimal->id,
             'supervisor_id' => $supervisor->id,
-            'group' => 'الطيور',
+            'group' => 'الأبقار',
             'description' => 'حالة',
             'follow_up_kind' => 'needs_referral',
             'status' => 'referred',
@@ -181,8 +190,8 @@ class RecordsDashboardTest extends TestCase
         $referral = TreatmentReferral::create([
             'referral_number' => 'TR-001',
             'health_case_id' => $healthCase->id,
-            'animal_id' => $deadAnimal->id,
-            'group' => 'الطيور',
+            'animal_id' => $slaughterAnimal->id,
+            'group' => 'الأبقار',
             'status' => TreatmentReferralStatus::Approved,
             'referred_by' => User::factory()->create(['role' => UserRole::CareHead->value])->id,
             'referred_at' => now(),
@@ -192,13 +201,13 @@ class RecordsDashboardTest extends TestCase
             'case_number' => 'VH-SL-1',
             'treatment_referral_id' => $referral->id,
             'health_case_id' => $healthCase->id,
-            'animal_id' => $deadAnimal->id,
-            'group' => 'الطيور',
+            'animal_id' => $slaughterAnimal->id,
+            'group' => 'الأبقار',
             'chief_complaint' => 'إصابة',
             'status' => HospitalCaseStatus::Slaughtered,
             'admitted_by' => User::factory()->create([
                 'role' => UserRole::Veterinarian->value,
-                'assigned_group' => 'الطيور',
+                'assigned_group' => 'الأبقار',
             ])->id,
             'admitted_at' => now(),
             'closed_at' => '2026-03-01',

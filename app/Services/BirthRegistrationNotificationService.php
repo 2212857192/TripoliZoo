@@ -55,7 +55,8 @@ class BirthRegistrationNotificationService
 
     private function storeNotification(User $user, BirthRegistration $registration, string $title, string $message): void
     {
-        BirthRegistrationNotification::updateOrCreate(
+        NotificationRecordUpsert::save(
+            BirthRegistrationNotification::class,
             [
                 'user_id' => $user->id,
                 'birth_registration_id' => $registration->id,
@@ -63,8 +64,7 @@ class BirthRegistrationNotificationService
             [
                 'title' => $title,
                 'message' => $message,
-                'read_at' => null,
-            ]
+            ],
         );
     }
 }

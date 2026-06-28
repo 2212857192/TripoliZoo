@@ -63,7 +63,8 @@ class OperationalNoteNotificationService
 
     private function storeNotification(User $user, OperationalNote $note, string $title, string $message): void
     {
-        OperationalNoteNotification::updateOrCreate(
+        NotificationRecordUpsert::save(
+            OperationalNoteNotification::class,
             [
                 'user_id' => $user->id,
                 'operational_note_id' => $note->id,
@@ -71,8 +72,7 @@ class OperationalNoteNotificationService
             [
                 'title' => $title,
                 'message' => $message,
-                'read_at' => null,
-            ]
+            ],
         );
     }
 }

@@ -104,6 +104,47 @@ class PortalNotificationTest extends TestCase
             ->assertSee('data-notification-kind="receiving"', false);
     }
 
+    public function test_marking_vet_receiving_notification_read_persists_after_reload(): void
+    {
+        $vetHead = User::factory()->create([
+            'role' => UserRole::VetHead->value,
+            'status' => 'active',
+        ]);
+
+        $task = $this->makeReceivingTask($vetHead, 'RCV-2026-503');
+
+        VetNotification::create([
+            'user_id' => $vetHead->id,
+            'receiving_task_id' => $task->id,
+            'title' => 'تعذر استلام مؤقت',
+            'message' => 'القفص غير جاهز',
+            'read_at' => null,
+        ]);
+
+        $this->actingAs($vetHead)
+            ->postJson(route('vet.notification.read'), [
+                'task_number' => $task->task_number,
+            ])
+            ->assertOk()
+            ->assertJsonPath('ok', true);
+
+        $this->actingAs($vetHead)
+            ->get('/vet/dashboard')
+            ->assertOk()
+            ->assertSee('تعذر استلام مؤقت')
+            ->assertSee('vet-notification-feed-item is-read', false);
+
+        $this->actingAs($vetHead)
+            ->getJson(route('vet.notifications.feed'))
+            ->assertOk()
+            ->assertJsonPath('unread_count', 0);
+
+        $this->actingAs($vetHead)
+            ->get('/vet/decisions/'.$task->task_number)
+            ->assertOk()
+            ->assertSee('csrf-token', false);
+    }
+
     public function test_marking_care_receiving_notification_read_keeps_record(): void
     {
         $careHead = User::factory()->create([

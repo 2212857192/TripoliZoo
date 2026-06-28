@@ -54,7 +54,7 @@ class DirectorDashboardTest extends TestCase
         $response->assertOk();
         $response->assertSee('إجمالي الحيوانات داخل الحديقة', false);
         $response->assertSee('>1<', false);
-        $response->assertSee('ملخص اليوم', false);
+        $response->assertSee('الحالات الصحية الجديدة', false);
         $response->assertDontSee('ANM-109', false);
         $response->assertDontSee('248', false);
     }

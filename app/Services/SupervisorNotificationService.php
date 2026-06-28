@@ -32,7 +32,8 @@ class SupervisorNotificationService
         $vetName = $procedure?->recorder?->name ?? 'الطبيب المعالج';
 
         foreach ($this->supervisorsForGroup($group) as $supervisor) {
-            SupervisorNotification::updateOrCreate(
+            NotificationRecordUpsert::save(
+                SupervisorNotification::class,
                 [
                     'user_id' => $supervisor->id,
                     'medical_nutrition_recommendation_id' => $nutrition->id,
@@ -41,8 +42,7 @@ class SupervisorNotificationService
                     'receiving_task_id' => null,
                     'title' => "توصية غذائية علاجية — {$group}",
                     'message' => "سجّل د. {$vetName} توصية غذائية علاجية للحيوان {$label} ({$animal->code}) تتطلب المتابعة.",
-                    'read_at' => null,
-                ]
+                ],
             );
         }
 
@@ -76,7 +76,8 @@ class SupervisorNotificationService
         $label = $animal->displayLabel();
         $issuerName = $task->decisionIssuer?->name ?? 'رئيس قسم المستشفى البيطري';
 
-        SupervisorNotification::updateOrCreate(
+        NotificationRecordUpsert::save(
+            SupervisorNotification::class,
             [
                 'user_id' => $supervisor->id,
                 'receiving_task_id' => $task->id,
@@ -84,8 +85,7 @@ class SupervisorNotificationService
             [
                 'title' => "مهمة استلام جديدة — {$animal->group}",
                 'message' => "صدر قرار إفراج صحي للحيوان {$label} ({$animal->code}). المطلوب: تأكيد الاستلام في المجموعة.",
-                'read_at' => null,
-            ]
+            ],
         );
 
         $this->fcm->sendToUsers(

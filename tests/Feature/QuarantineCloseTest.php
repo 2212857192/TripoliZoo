@@ -9,6 +9,7 @@ use App\Models\Animal;
 use App\Models\Quarantine;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class QuarantineCloseTest extends TestCase
@@ -62,7 +63,7 @@ class QuarantineCloseTest extends TestCase
         $this->assertSame('توثيق إداري', $quarantine->close_notes);
     }
 
-    public function test_veterinarian_can_add_note_and_vaccine_from_web(): void
+    public function test_veterinarian_can_add_note_and_vaccine_from_mobile_api(): void
     {
         $vet = User::factory()->create([
             'role' => UserRole::Veterinarian->value,
@@ -90,15 +91,19 @@ class QuarantineCloseTest extends TestCase
             'created_by' => $vet->id,
         ]);
 
-        $this->actingAs($vet)->post(route('quarantine.notes.store', $quarantine), [
-            'note' => 'تحسّن ملحوظ في الشهية',
-        ])->assertRedirect(route('quarantine.index', ['open' => $quarantine->case_number]));
+        Sanctum::actingAs($vet);
 
-        $this->actingAs($vet)->post(route('quarantine.vaccines.store', $quarantine), [
+        $this->postJson("/api/auth/doctor/quarantines/{$quarantine->case_number}/notes", [
+            'note' => 'تحسّن ملحوظ في الشهية',
+        ])->assertOk()
+            ->assertJsonPath('message', 'تم تسجيل الملاحظة الصحية.');
+
+        $this->postJson("/api/auth/doctor/quarantines/{$quarantine->case_number}/vaccines", [
             'name' => 'لقاح الحمى القلاعية',
             'administered_at' => now()->toDateString(),
             'note' => 'جرعة أولى',
-        ])->assertRedirect(route('quarantine.index', ['open' => $quarantine->case_number]));
+        ])->assertOk()
+            ->assertJsonPath('message', 'تم تسجيل الجرعة الوقائية.');
 
         $this->assertDatabaseHas('quarantine_notes', [
             'quarantine_id' => $quarantine->id,

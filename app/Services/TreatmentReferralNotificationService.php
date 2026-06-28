@@ -54,7 +54,8 @@ class TreatmentReferralNotificationService
 
     private function storeNotification(User $user, TreatmentReferral $referral, string $title, string $message): void
     {
-        TreatmentReferralNotification::updateOrCreate(
+        NotificationRecordUpsert::save(
+            TreatmentReferralNotification::class,
             [
                 'user_id' => $user->id,
                 'treatment_referral_id' => $referral->id,
@@ -62,8 +63,7 @@ class TreatmentReferralNotificationService
             [
                 'title' => $title,
                 'message' => $message,
-                'read_at' => null,
-            ]
+            ],
         );
     }
 }

@@ -71,7 +71,8 @@ class HealthCaseNotificationService
 
     private function storeNotification(User $user, HealthCase $healthCase, string $title, string $message): void
     {
-        HealthCaseNotification::updateOrCreate(
+        NotificationRecordUpsert::save(
+            HealthCaseNotification::class,
             [
                 'user_id' => $user->id,
                 'health_case_id' => $healthCase->id,
@@ -79,8 +80,7 @@ class HealthCaseNotificationService
             [
                 'title' => $title,
                 'message' => $message,
-                'read_at' => null,
-            ]
+            ],
         );
     }
 }

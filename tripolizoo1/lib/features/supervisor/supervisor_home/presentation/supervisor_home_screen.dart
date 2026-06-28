@@ -11,6 +11,7 @@ import 'package:tripolizoo/features/supervisor/supervisor_home/presentation/widg
 import 'package:tripolizoo/features/supervisor/supervisor_home/presentation/widgets/urgent_health_button.dart';
 import 'package:tripolizoo/features/supervisor/shared/supervisor_form_launcher.dart';
 import 'package:tripolizoo/features/supervisor/shared/supervisor_form_type.dart';
+import 'package:tripolizoo/features/supervisor/supervisor_notifications/presentation/supervisor_notifications_provider.dart';
 import 'package:tripolizoo/features/visitor/visitor_auth/presentation/auth_provider.dart';
 
 class SupervisorHomeScreen extends StatefulWidget {
@@ -56,10 +57,15 @@ class _SupervisorHomeScreenState extends State<SupervisorHomeScreen>
   Widget build(BuildContext context) {
     final dashboard = context.watch<SupervisorDashboardProvider>();
     final authUser = context.watch<AuthProvider>().user;
+    final notificationUnread =
+        context.watch<SupervisorNotificationsProvider>().unreadCount;
     final pendingReceivingTasks = dashboard.pendingReceivingTasks > 0
         ? dashboard.pendingReceivingTasks
         : context.watch<ReceivingTasksProvider>().pendingCount;
     final pendingHealthReports = dashboard.pendingHealthReportsCount;
+    final notificationBadgeCount = notificationUnread > pendingHealthReports
+        ? notificationUnread
+        : pendingHealthReports;
     final dietRecommendations = dashboard.dietRecommendations;
     final activeDietCount = dashboard.activeDietRecommendations;
     final bottomPad = MediaQuery.of(context).padding.bottom;
@@ -87,7 +93,7 @@ class _SupervisorHomeScreenState extends State<SupervisorHomeScreen>
                   child: SupervisorHomeHeader(
                     supervisorName: supervisorName,
                     groupName: groupName,
-                    pendingHealthReports: pendingHealthReports,
+                    pendingHealthReports: notificationBadgeCount,
                     onNotificationsTap: () =>
                         context.push('/supervisor/notifications'),
                   ),

@@ -57,7 +57,8 @@ class MortalityCaseNotificationService
 
     private function storeNotification(User $user, MortalityCase $mortalityCase, string $title, string $message): void
     {
-        MortalityCaseNotification::updateOrCreate(
+        NotificationRecordUpsert::save(
+            MortalityCaseNotification::class,
             [
                 'user_id' => $user->id,
                 'mortality_case_id' => $mortalityCase->id,
@@ -65,8 +66,7 @@ class MortalityCaseNotificationService
             [
                 'title' => $title,
                 'message' => $message,
-                'read_at' => null,
-            ]
+            ],
         );
     }
 }

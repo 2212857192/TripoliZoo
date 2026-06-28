@@ -113,7 +113,7 @@ class AdminAnimalProfileTest extends TestCase
             ->assertOk()
             ->assertSee('فهد', false)
             ->assertSee('القططية', false)
-            ->assertSee('profile_id', false);
+            ->assertSee('محتوى تعريفي جديد للفهد يظهر في تطبيق الزائر بعد النشر.', false);
 
         $this->actingAs($admin)
             ->put(route('admin.animals.update', $profile), [

@@ -28,7 +28,8 @@ class QuarantineNotificationService
             : $animal->species;
 
         foreach ($recipients as $vet) {
-            QuarantineNotification::updateOrCreate(
+            NotificationRecordUpsert::save(
+                QuarantineNotification::class,
                 [
                     'user_id' => $vet->id,
                     'quarantine_id' => $quarantine->id,
@@ -36,8 +37,7 @@ class QuarantineNotificationService
                 [
                     'title' => "حيوان جديد في الحجر — {$group}",
                     'message' => "تمت إضافة {$label} برقم {$quarantine->case_number} إلى الحجر الصحي. المجموعة: {$group}.",
-                    'read_at' => null,
-                ]
+                ],
             );
         }
 
@@ -82,7 +82,8 @@ class QuarantineNotificationService
             : $animal->species;
 
         foreach ($recipients as $head) {
-            QuarantineNotification::updateOrCreate(
+            NotificationRecordUpsert::save(
+                QuarantineNotification::class,
                 [
                     'user_id' => $head->id,
                     'quarantine_id' => $quarantine->id,
@@ -90,8 +91,7 @@ class QuarantineNotificationService
                 [
                     'title' => $title,
                     'message' => $message,
-                    'read_at' => null,
-                ]
+                ],
             );
         }
 

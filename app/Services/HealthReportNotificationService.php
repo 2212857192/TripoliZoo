@@ -85,7 +85,8 @@ class HealthReportNotificationService
 
     private function storeNotification(User $user, HealthReport $report, string $title, string $message): void
     {
-        HealthReportNotification::updateOrCreate(
+        NotificationRecordUpsert::save(
+            HealthReportNotification::class,
             [
                 'user_id' => $user->id,
                 'health_report_id' => $report->id,
@@ -93,8 +94,8 @@ class HealthReportNotificationService
             [
                 'title' => $title,
                 'message' => $message,
-                'read_at' => null,
-            ]
+            ],
+            reopenOnContentChange: true,
         );
     }
 }

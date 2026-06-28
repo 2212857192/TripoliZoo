@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tripolizoo/features/doctor/data/doctor_dashboard_api_repository.dart';
+import 'package:tripolizoo/features/doctor/doctor_notifications/presentation/doctor_notifications_provider.dart';
 import 'package:tripolizoo/features/doctor/doctor_quarantine/presentation/quarantine_provider.dart';
 import 'package:tripolizoo/features/doctor/presentation/doctor_dashboard_provider.dart';
 import 'package:tripolizoo/features/doctor/shared/doctor_form_launcher.dart';
@@ -84,6 +85,11 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
         ? dashboard.quarantineActiveCount
         : quarantineProvider.activeCount;
     final pendingHealthReports = dashboard.pendingHealthReportsCount;
+    final notificationUnread =
+        context.watch<DoctorNotificationsProvider>().unreadCount;
+    final notificationBadgeCount = notificationUnread > pendingHealthReports
+        ? notificationUnread
+        : pendingHealthReports;
     final alerts = dashboard.alerts;
     final dashboardError = dashboard.errorMessage;
 
@@ -112,7 +118,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                       context,
                       doctorName,
                       groupName,
-                      dashboard.pendingHealthReportsCount,
+                      notificationBadgeCount,
                     ),
                   ),
                   
@@ -160,7 +166,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
     BuildContext context,
     String name,
     String? groupName,
-    int pendingHealthReports,
+    int notificationBadgeCount,
   ) {
     final topPad = MediaQuery.of(context).padding.top;
 
@@ -268,7 +274,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
             ),
             const SizedBox(width: 12),
             // Notification bell
-            _buildNotificationBell(context, pendingHealthReports),
+            _buildNotificationBell(context, notificationBadgeCount),
           ],
         ),
       ),

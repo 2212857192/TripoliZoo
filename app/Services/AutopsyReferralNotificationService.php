@@ -51,7 +51,8 @@ class AutopsyReferralNotificationService
 
     private function storeNotification(User $user, AutopsyReferral $referral, string $title, string $message): void
     {
-        AutopsyReferralNotification::updateOrCreate(
+        NotificationRecordUpsert::save(
+            AutopsyReferralNotification::class,
             [
                 'user_id' => $user->id,
                 'autopsy_referral_id' => $referral->id,
@@ -59,8 +60,7 @@ class AutopsyReferralNotificationService
             [
                 'title' => $title,
                 'message' => $message,
-                'read_at' => null,
-            ]
+            ],
         );
     }
 }

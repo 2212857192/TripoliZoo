@@ -92,7 +92,8 @@ class VetNotificationService
             ->get();
 
         foreach ($recipients as $user) {
-            VetNotification::updateOrCreate(
+            NotificationRecordUpsert::save(
+                VetNotification::class,
                 [
                     'user_id' => $user->id,
                     'receiving_task_id' => $task->id,
@@ -100,8 +101,7 @@ class VetNotificationService
                 [
                     'title' => $title,
                     'message' => $message,
-                    'read_at' => null,
-                ]
+                ],
             );
         }
     }

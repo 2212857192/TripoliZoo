@@ -30,18 +30,29 @@ class DoctorNotificationsProvider extends ChangeNotifier {
     };
   }
 
-  Future<void> load() async {
-    _loading = true;
-    _errorMessage = null;
-    notifyListeners();
+  Future<void> load() => refresh();
+
+  Future<void> refresh({bool silent = false}) async {
+    if (!silent) {
+      _loading = true;
+      _errorMessage = null;
+      notifyListeners();
+    }
 
     try {
       final result = await _repository.fetchAll();
       _items = result.items;
+      if (silent) {
+        _errorMessage = null;
+      }
     } catch (error) {
-      _errorMessage = error.toString();
+      if (!silent) {
+        _errorMessage = error.toString();
+      }
     } finally {
-      _loading = false;
+      if (!silent) {
+        _loading = false;
+      }
       notifyListeners();
     }
   }

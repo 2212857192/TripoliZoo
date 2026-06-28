@@ -17,6 +17,7 @@ import 'package:tripolizoo/features/doctor/doctor_quarantine/presentation/quaran
 import 'package:tripolizoo/features/supervisor/supervisor_home/presentation/supervisor_dashboard_provider.dart';
 import 'package:tripolizoo/features/supervisor/supervisor_receiving_tasks/presentation/receiving_tasks_provider.dart';
 import 'package:tripolizoo/shared/constants/app_constants.dart';
+import 'package:tripolizoo/shared/notifications/web_in_app_notification_sync.dart';
 import 'package:tripolizoo/shared/push/push_notification_service.dart';
 
 class TripoliZooApp extends StatefulWidget {
@@ -96,9 +97,11 @@ class _TripoliZooAppState extends State<TripoliZooApp> {
             ],
             builder: (context, child) {
               final isRtl = localeProvider.locale == AppLocale.ar;
-              return Directionality(
-                textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-                child: child ?? const SizedBox.shrink(),
+              return WebInAppNotificationSync(
+                child: Directionality(
+                  textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+                  child: child ?? const SizedBox.shrink(),
+                ),
               );
             },
           );

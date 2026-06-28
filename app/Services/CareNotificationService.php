@@ -85,7 +85,8 @@ class CareNotificationService
             ->get();
 
         foreach ($careStaff as $user) {
-            CareNotification::updateOrCreate(
+            NotificationRecordUpsert::save(
+                CareNotification::class,
                 [
                     'user_id' => $user->id,
                     'receiving_task_id' => $task->id,
@@ -93,8 +94,7 @@ class CareNotificationService
                 [
                     'title' => $title,
                     'message' => $message,
-                    'read_at' => null,
-                ]
+                ],
             );
         }
     }

@@ -262,6 +262,18 @@
         return null;
     }
 
+    function bumpPortalNotificationFeedEpoch() {
+        if (typeof window.bumpPortalNotificationFeedEpoch === 'function') {
+            window.bumpPortalNotificationFeedEpoch();
+        }
+    }
+
+    function refreshPortalNotificationFeedState() {
+        if (typeof window.syncPortalNotificationFeed === 'function') {
+            window.syncPortalNotificationFeed(true);
+        }
+    }
+
     function markPortalNotificationItemRead(event, btn) {
         if (event) {
             event.preventDefault();
@@ -273,8 +285,17 @@
         var config = portalNotificationMarkConfig(item);
         if (!config) return false;
 
-        markPortalNotificationReadLocallyByElement(item);
-        portalNotificationPost(config.markReadUrl, config.markReadBody, false).catch(function () {});
+        if (btn) btn.disabled = true;
+
+        portalNotificationPost(config.markReadUrl, config.markReadBody, false)
+            .then(function () {
+                bumpPortalNotificationFeedEpoch();
+                markPortalNotificationReadLocallyByElement(item);
+                refreshPortalNotificationFeedState();
+            })
+            .catch(function () {
+                if (btn) btn.disabled = false;
+            });
 
         return false;
     }
@@ -460,16 +481,33 @@
         var lastFingerprint = '';
         var pollTimer = null;
         var inFlight = false;
+        var pendingForceSync = false;
+        var feedEpoch = 0;
+
+        window.bumpPortalNotificationFeedEpoch = function () {
+            feedEpoch += 1;
+        };
 
         function syncFeed(forceUpdate) {
-            if (inFlight || document.visibilityState === 'hidden') {
+            if (document.visibilityState === 'hidden') {
+                return;
+            }
+
+            if (inFlight) {
+                if (forceUpdate) {
+                    pendingForceSync = true;
+                }
                 return;
             }
 
             inFlight = true;
+            var requestEpoch = feedEpoch;
+
             fetchPortalNotificationFeed()
                 .then(function (payload) {
-                    if (!payload) return;
+                    if (!payload || requestEpoch !== feedEpoch) {
+                        return;
+                    }
 
                     var fingerprint = portalNotificationFeedFingerprint(payload);
                     if (forceUpdate || (fingerprint && fingerprint !== lastFingerprint)) {
@@ -480,6 +518,10 @@
                 .catch(function () {})
                 .finally(function () {
                     inFlight = false;
+                    if (pendingForceSync) {
+                        pendingForceSync = false;
+                        syncFeed(true);
+                    }
                 });
         }
 
@@ -501,6 +543,8 @@
                 pollTimer = null;
             }
         });
+
+        window.syncPortalNotificationFeed = syncFeed;
 
         schedulePoll();
         setTimeout(function () {
@@ -560,28 +604,33 @@
 
         var item = event && event.currentTarget ? event.currentTarget : null;
         var wasUnread = !!(item && item.dataset.unread === '1');
-        var openedInPlace = false;
 
-        if (typeof config.tryOpenInPlace === 'function') {
-            openedInPlace = config.tryOpenInPlace() === true;
+        function openTarget() {
+            if (typeof config.tryOpenInPlace === 'function' && config.tryOpenInPlace() === true) {
+                return;
+            }
+            if (config.fallbackUrl) {
+                window.location.href = config.fallbackUrl;
+            }
         }
 
-        if (openedInPlace) {
-            if (wasUnread) {
-                markPortalNotificationReadLocallyByElement(item);
-                portalNotificationPost(config.markReadUrl, config.markReadBody, false).catch(function () {});
-            }
+        if (!wasUnread || !config.markReadUrl) {
+            openTarget();
             return false;
         }
 
-        if (config.fallbackUrl) {
-            if (wasUnread) {
-                markPortalNotificationReadLocallyByElement(item);
-                portalNotificationPost(config.markReadUrl, config.markReadBody, true).catch(function () {});
-            }
-            window.location.href = config.fallbackUrl;
-            return false;
-        }
+        portalNotificationPost(config.markReadUrl, config.markReadBody, false)
+            .then(function () {
+                bumpPortalNotificationFeedEpoch();
+                if (item) {
+                    markPortalNotificationReadLocallyByElement(item);
+                }
+                refreshPortalNotificationFeedState();
+                openTarget();
+            })
+            .catch(function () {
+                openTarget();
+            });
 
         return false;
     }
